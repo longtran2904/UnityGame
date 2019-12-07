@@ -7,40 +7,33 @@ public class PlayerController : MonoBehaviour
 {
 
     public float speed;
-    public float jumpForce;
-    public float extraJumps;
-    private float extraJumpsValue;
     private Rigidbody2D rb;
     private float moveInput;
     private bool isGrounded;
     private SpriteRenderer sprite;
-    public float dashSpeed;
-    private bool isDashing;
     public bool facingRight = true;
-    private bool jumpFromGround;
-    private float dashTime;
-    public float startDashTime;
-    private bool canDash;
     private Animator anim;
     public RaycastHit2D hitInfo;
-    private int jumpCount;
-    bool top;
+    public bool top;
+    Camera mainCamera;
+    Vector3 mousePos;
 
     // Start is called before the first frame update
     void Start()
     {
-        extraJumpsValue = extraJumps;
         rb = GetComponent<Rigidbody2D>();
         sprite = GetComponent<SpriteRenderer>();
-        dashTime = startDashTime;
         anim = GetComponent<Animator>();
+        mainCamera = Camera.main;
         rb.drag = GetDragFromAcceleration(Physics.gravity.magnitude, 10);
-        Debug.Log(rb.drag);
     }
 
     // Update is called once per frame
     void Update()
     {
+        mousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
+
+        // play the "run" animation
         if (anim)
         {
             if (Input.GetAxisRaw("Horizontal") != 0)
@@ -55,8 +48,10 @@ public class PlayerController : MonoBehaviour
 
         Vector2 boxSize = new Vector2(0.25f, 0.01f);
 
+        // cast a box under the player
         hitInfo = Physics2D.BoxCast(transform.position - new Vector3(0, sprite.bounds.extents.y * 1.4f + boxSize.y + 0.01f, 0), boxSize, 0, Vector2.down, boxSize.y);
 
+        // check to see if the player is grounded or not
         if (hitInfo && hitInfo.transform.tag == "Ground")        
             isGrounded = true;                 
         else
@@ -64,14 +59,15 @@ public class PlayerController : MonoBehaviour
 
         moveInput = Input.GetAxisRaw("Horizontal");
 
-        JumpInput();
-
         SwitchGravity();
 
         FlipPlayer();
+    }
 
-        DashInput();
-
+    private void FixedUpdate()
+    {
+        // make the player move
+        rb.velocity = new Vector2(moveInput * speed, rb.velocity.y);
     }
 
     public static float GetDrag(float aVelocityChange, float aFinalVelocity)
@@ -83,96 +79,33 @@ public class PlayerController : MonoBehaviour
         return GetDrag(aAcceleration * Time.fixedDeltaTime, aFinalVelocity);
     }
 
-    private void FixedUpdate()
-    {
-        rb.velocity = new Vector2(moveInput * speed, rb.velocity.y);
-
-        if (isDashing == true)
-        {
-            if (facingRight == true)
-            {
-                rb.velocity = Vector2.right * dashSpeed;
-            }
-            else
-            {
-                rb.velocity = Vector2.left * dashSpeed;
-            }
-        }
-    }
-
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.tag == "Hook")
-        {
-            rb.velocity = Vector2.zero;
-            rb.gravityScale = 0;
-            extraJumpsValue = extraJumps;
-        }
-    }
-
-    private void OnTriggerExit2D(Collider2D collision)
-    {
-        if (collision.tag == "Hook")
-        {
-            rb.gravityScale = 3;
-        }
-    }
-
-    void DashInput()
-    {
-
-        if (isGrounded)
-        {
-            canDash = true;
-        }
-
-        // Press Space to dash
-        if (Input.GetKeyDown(KeyCode.LeftShift) && canDash)
-        {
-            isDashing = true;
-        }
-
-        // Make the player don't have gravity while dashing
-        if (isDashing == true && dashTime > 0)
-        {
-            dashTime -= Time.deltaTime;
-            rb.gravityScale = 0;
-        }
-        else if (dashTime <= 0)
-        {
-            dashTime = startDashTime;
-            rb.gravityScale = 3;
-            isDashing = false;
-            canDash = false;
-        }
-    }
-
-
     void FlipPlayer()
     {
         if (top)
         {
-            // flip the player when move right or left
-            if (moveInput > 0 && isDashing == false)
+            // flip the player towards the mouse when upside down
+            if (mousePos.x - transform.position.x > 0)
             {
                 transform.eulerAngles = new Vector3(0, 180, 180);
                 facingRight = true;
+                Debug.Log("upside down right");
             }
-            else if (moveInput < 0 && isDashing == false)
+            else if (mousePos.x - transform.position.x < 0)
             {
                 transform.eulerAngles = new Vector3(0, 0, 180);
                 facingRight = false;
+                Debug.Log("upside down left");
             }
         }
         else
         {
-            // flip the player when move right or left
-            if (moveInput > 0 && isDashing == false)
+            // flip the player towards the mouse when normal
+            if (mousePos.x - transform.position.x > 0)
             {
                 transform.eulerAngles = new Vector3(0, 0, 0);
                 facingRight = true;
             }
-            else if (moveInput < 0 && isDashing == false)
+            else if (mousePos.x - transform.position.x < 0)
             {
                 transform.eulerAngles = new Vector3(0, 180, 0);
                 facingRight = false;
@@ -182,9 +115,9 @@ public class PlayerController : MonoBehaviour
 
     void SwitchGravity()
     {
-        if (Input.GetKeyDown(KeyCode.R))
+        // switch the gravity upside down
+        if (Input.GetButtonDown("Jump"))
         {
-
             rb.gravityScale *= -1;
 
             if (top == false)
@@ -197,44 +130,6 @@ public class PlayerController : MonoBehaviour
             }
             
             top = !top;
-        }
-    }
-
-    void JumpInput()
-    {
-        if (isGrounded && extraJumpsValue < extraJumps)
-        {
-            extraJumpsValue = extraJumps;
-        }
-
-        if (isGrounded && jumpFromGround)
-        {
-            jumpCount += 1;
-        }
-
-        if (jumpCount > 1 && isGrounded)
-        {
-            jumpFromGround = false;
-            jumpCount = 0;
-        }
-
-        if (Input.GetButtonDown("Jump"))
-        {
-            if (isGrounded)
-            {
-                rb.velocity = Vector2.up * jumpForce;
-                jumpFromGround = true;
-            }
-            else if (!isGrounded && extraJumpsValue > 0)
-            {
-                rb.velocity = Vector2.up * jumpForce;
-                extraJumpsValue--;
-            }
-            else if (!isGrounded && extraJumpsValue == 0 && !jumpFromGround)
-            {
-                rb.velocity = Vector2.up * jumpForce;
-                jumpFromGround = true;
-            }
         }
     }
 }
