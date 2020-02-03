@@ -8,7 +8,7 @@ public class Weapon : MonoBehaviour
 
     public float offset;
 
-    public GameObject projectile;
+    public GameObject projectilePrefab;
     public Transform shotPos;
 
     private float timeBtwShots;
@@ -16,11 +16,19 @@ public class Weapon : MonoBehaviour
 
     PlayerController player;
 
+    public float damage;
+    private Projectile projectile;
+
+    public GameObject muzzleFlash;
+    public float muzzelFlashTime;
+    private float muzzelFlashTimeValue;
+
     // Start is called before the first frame update
     void Start()
     {
         mainCamera = Camera.main;
         player = GetComponentInParent<PlayerController>();
+        muzzelFlashTimeValue = muzzelFlashTime;
     }
 
     // Update is called once per frame
@@ -65,12 +73,25 @@ public class Weapon : MonoBehaviour
     // shoot projectile toward the mouse position
     void ShootProjectile()
     {
+        if (muzzelFlashTimeValue <= 0)
+        {
+            muzzleFlash.SetActive(false);
+            muzzelFlashTimeValue = muzzelFlashTime;
+        }
+        if (muzzleFlash.activeSelf == true)
+        {
+            muzzelFlashTimeValue -= Time.deltaTime;
+        }
         if (timeBtwShots <= 0)
         {
             if (Input.GetMouseButtonDown(0))
             {
-                Instantiate(projectile, shotPos.position, transform.rotation);
+                Instantiate(projectilePrefab, shotPos.position, transform.rotation);
+                projectile = projectilePrefab.gameObject.GetComponent<Projectile>();
+                projectile.damage = damage;
                 timeBtwShots = startTimeBtwShots;
+                muzzleFlash.SetActive(true);
+                muzzelFlashTimeValue = muzzelFlashTime;
             }
         }
         else

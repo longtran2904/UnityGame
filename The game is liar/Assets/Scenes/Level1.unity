@@ -140,7 +140,7 @@ PrefabInstance:
     - target: {fileID: 8019262457458668947, guid: 9fac0b33a73077843bd04153b56473c5,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -2
+      value: -5
       objectReference: {fileID: 0}
     - target: {fileID: 8019262457458668947, guid: 9fac0b33a73077843bd04153b56473c5,
         type: 3}
@@ -344,6 +344,12 @@ PrefabInstance:
       propertyPath: map
       value: 
       objectReference: {fileID: 2800000, guid: aff90ea9428108e4686680d64ea51602, type: 3}
+    - target: {fileID: 1890753479772848546, guid: 916302815081e404f9c3f461111446c8,
+        type: 3}
+      propertyPath: player
+      value: 
+      objectReference: {fileID: 3270666049824074917, guid: 49f015417ed449445be47d7556a59c4e,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 916302815081e404f9c3f461111446c8, type: 3}
 --- !u!1001 &5734834527511957701

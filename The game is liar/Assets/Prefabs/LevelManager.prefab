@@ -48,7 +48,7 @@ MonoBehaviour:
     prefab: {fileID: 3956303739353501410, guid: 0c77617fc47885e43b8cd20d5602848d,
       type: 3}
   - color: {r: 0, g: 0, b: 1, a: 1}
-    prefab: {fileID: 4634701522286088223, guid: 39e387051e507944590831a135f8002d,
+    prefab: {fileID: 3270666049824074917, guid: 49f015417ed449445be47d7556a59c4e,
       type: 3}
   - color: {r: 1, g: 0, b: 0, a: 1}
     prefab: {fileID: 5890256727062032613, guid: 42276b8e90617ff4d8187f3ed65aab73,
@@ -63,3 +63,5 @@ MonoBehaviour:
     prefab: {fileID: 7135583868716047434, guid: 9dc09a41dd2d7ff4c908c3cf16605ac3,
       type: 3}
   map: {fileID: 2800000, guid: a119a0c8bbb6b884a86473c4968e02e4, type: 3}
+  grid: {fileID: 0}
+  player: {fileID: 0}

@@ -15,8 +15,11 @@ public class LevelGenerator : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        //GenerateLevel();
+        GenerateLevel();        
+    }
 
+    void GenerateOgmoLevel()
+    {
         string levelFolder = "Levels";
 
         Object[] rooms = Resources.LoadAll(levelFolder + "/Generated Assets", typeof(TextAsset));
@@ -28,9 +31,8 @@ public class LevelGenerator : MonoBehaviour
             levels.Add(new OgmoLevel(rooms[ii] as TextAsset));
         }
         int[,] tiles = levels[0].layers["Grounds"].tiles;
-        Debug.Log(levels[0].layers["Objects"].entities[0].y);
         OgmoEntity playerEntity = levels[0].layers["Objects"].entities[0];
-        Vector2 position = new Vector2(playerEntity.x/32, -playerEntity.y/32);
+        Vector2 position = new Vector2(playerEntity.x / 32, -playerEntity.y / 32);
         if (playerEntity.name == "Player")
         {
             Instantiate(player, position, Quaternion.identity, transform);
@@ -47,39 +49,38 @@ public class LevelGenerator : MonoBehaviour
         }
         Debug.Log("Level has been generated!");
     }
+    void GenerateLevel()
+    {
+        for (int x = 0; x < map.width; x++)
+        {
+            for (int y = 0; y < map.height; y++)
+            {
+                GenerateTile(x, y);
+            }
+        }
+    }
 
-    //void GenerateLevel()
-    //{
-    //    for (int x = 0; x < map.width; x++)
-    //    {
-    //        for (int y = 0; y < map.height; y++)
-    //        {
-    //            GenerateTile(x, y);
-    //        }
-    //    }
-    //}
+    void GenerateTile(int x, int y)
+    {
+        Color pixelColor = map.GetPixel(x, y);
 
-    //void GenerateTile(int x, int y)
-    //{
-    //    Color pixelColor = map.GetPixel(x, y);
+        // This pixel is transparent so ignore it!
+        if (pixelColor.a == 0)
+        {
+            return;
+        }
 
-    //    // This pixel is transparent so ignore it!
-    //    if (pixelColor.a == 0)
-    //    {
-    //        return;
-    //    }
+        foreach (ColorToPrefab colorMapping in colorMappings)
+        {
+            if (colorMapping.color.Equals(pixelColor))
+            {
+                Vector2 position = new Vector2(x, y);
 
-    //    foreach (ColorToPrefab colorMapping in colorMappings)
-    //    {
-    //        if (colorMapping.color.Equals(pixelColor))
-    //        {
-    //            Vector2 position = new Vector2(x, y);
-
-    //            if (colorMapping.prefab != null)
-    //            {
-    //                Instantiate(colorMapping.prefab, position, colorMapping.prefab.transform.rotation, transform);
-    //            }
-    //        }
-    //    }
-    //}
+                if (colorMapping.prefab != null)
+                {
+                    Instantiate(colorMapping.prefab, position, colorMapping.prefab.transform.rotation, transform);
+                }
+            }
+        }
+    }
 }
