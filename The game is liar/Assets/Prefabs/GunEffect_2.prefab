@@ -10,13 +10,13 @@ GameObject:
   m_Component:
   - component: {fileID: 6437524722174862673}
   - component: {fileID: 7718576828028463632}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: GunEffect_2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &6437524722174862673
 Transform:
   m_ObjectHideFlags: 0
@@ -26,7 +26,7 @@ Transform:
   m_GameObject: {fileID: 5523569913668251960}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 19.28, y: -18.34, z: 0}
-  m_LocalScale: {x: 6, y: 6, z: 1}
+  m_LocalScale: {x: 3, y: 3, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -45,6 +45,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -69,7 +70,7 @@ SpriteRenderer:
   m_SortingLayerID: 338600657
   m_SortingLayer: 1
   m_SortingOrder: 2
-  m_Sprite: {fileID: -2056512896300584649, guid: 001373775fa49c045afd3dc00aeb5171,
+  m_Sprite: {fileID: 3459242712115555106, guid: af964b4118ebe224eb4d9b09ecb2a770,
     type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0

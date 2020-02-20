@@ -50,6 +50,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -137,14 +138,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: af720d773eb959d42aa6a593093a5628, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  health: 2
+  health: 0
   damage: 1
   enemyType: 1
   matWhite: {fileID: 2100000, guid: a52db8d2e3bb7c84f9a724b122d7baa7, type: 2}
-  matDefault: {fileID: 0}
-  sr: {fileID: 0}
   explosionParitcle: {fileID: 8704956847754461958, guid: 3181c8d874d60414f9701b433c293e7d,
     type: 3}
+  turretBullet: {fileID: 0}
+  shootRange: 0
+  timeBtwShots: 0
+  shootPos: {fileID: 0}
+  rotOffset: 0
+  knockbackForce: {x: 2, y: 2}
+  knockbackTime: 0.2
 --- !u!114 &4817691860198644139
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -158,16 +164,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 15
+  enemyType: 1
+  triggerMaterial: {fileID: 0}
   wallCheck: {fileID: 0}
   radius: 0.05
   whatIsGround:
     serializedVersion: 2
     m_Bits: 256
-  enemyType: 1
   curve_point: {fileID: 0}
   distanceToExplode: 5
   explodeRange: 8
   timeToExplode: 1.5
+  distanceToChase: 0
+  timeBtwFlash: 0
+  flashTime: 0
 --- !u!58 &4817691860198644138
 CircleCollider2D:
   m_ObjectHideFlags: 0

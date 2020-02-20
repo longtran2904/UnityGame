@@ -157,7 +157,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 89c4af53bca9a0e4e96f7aae108aac18
+      spriteID: 533bd9eb34c6f1d4d85a90ce3b1fce35
       internalID: 2948968401522222964
       vertices: []
       indices: 
@@ -178,7 +178,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 792101b173ba3104a95e3aca5db1a451
+      spriteID: 6e820cd5698259f4aa87990a5353a0d2
       internalID: -8905535095039584858
       vertices: []
       indices: 
@@ -188,10 +188,10 @@ TextureImporter:
       name: GunEffect_2
       rect:
         serializedVersion: 2
-        x: 50
-        y: 50
-        width: 12
-        height: 12
+        x: 46
+        y: 49
+        width: 10
+        height: 13
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -199,7 +199,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 24e1483416297c942a4c61904ce904ad
+      spriteID: 08a8d6a6ed43bda4c882df20ee0682a5
       internalID: -2056512896300584649
       vertices: []
       indices: 

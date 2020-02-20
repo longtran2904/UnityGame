@@ -1,14 +1,23 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using EZCameraShake;
 
 public class Weapon : MonoBehaviour
 {
+    public enum FireMode
+    {
+        Auto,
+        Burst,
+        Single
+    }
+
+    public FireMode fireMode;
+
     Camera mainCamera;
 
     public float offset;
 
-    public GameObject projectilePrefab;
+    public Projectile projectilePrefab;
     public Transform shotPos;
 
     private float timeBtwShots;
@@ -16,35 +25,99 @@ public class Weapon : MonoBehaviour
 
     PlayerController player;
 
-    public float damage;
+    public int damage;
     private Projectile projectile;
 
     public GameObject muzzleFlash;
     public float muzzelFlashTime;
     private float muzzelFlashTimeValue;
 
+    private AudioManager audioManager;
+
+    public int burstCount;
+    private int shotsRemainingInBurst;
+    bool triggerReleasedSinceLastShot = true;
+
+    public int maxAmmo;
+    private int currentAmmo;
+    public float reloadTime;
+    private bool isReloading;
+
+    public float knockback;
+
     // Start is called before the first frame update
     void Start()
     {
-        mainCamera = Camera.main;
-        player = GetComponentInParent<PlayerController>();
+        try
+        {
+            mainCamera = Camera.main;
+            player = GetComponentInParent<PlayerController>();
+        }
+        catch (System.Exception _ex)
+        {
+            Debug.Log($"Error sending data to server via TCP: {_ex}");
+        }
         muzzelFlashTimeValue = muzzelFlashTime;
+        audioManager = FindObjectOfType<AudioManager>();
+        shotsRemainingInBurst = burstCount;
+        currentAmmo = maxAmmo;
+    }
+
+    private void OnEnable()
+    {
+        isReloading = false;
     }
 
     // Update is called once per frame
     void Update()
     {
+        MuzzleFlash();
+
+        if (isReloading)
+        {
+            return;
+        }
+
+        if (currentAmmo <= 0)
+        {
+            StartCoroutine(Reload());
+            return;
+        }
+
         Vector3 difference = mainCamera.ScreenToWorldPoint(Input.mousePosition) - transform.position;
         float rotationZ = Mathf.Atan2(difference.y, difference.x) * Mathf.Rad2Deg;
 
-        FlipWeapon(rotationZ);
+        if (player)
+        {
+            FlipWeapon(rotationZ);
+        }        
 
-        ShootProjectile();
+        OnTriggerHold();
+
+        OnTriggerReleased();
+    }
+
+    IEnumerator Reload()
+    {
+        isReloading = true;
+
+        Debug.Log("Reloading");
+
+        yield return new WaitForSeconds(reloadTime);
+
+        currentAmmo = maxAmmo;
+
+        isReloading = false;
     }
 
     // flip the weapon correctly toward the mouse position
     void FlipWeapon(float rotZ)
     {
+        if (player == null)
+        {
+            Debug.Log("Player is missing!");
+            return;
+        }
         if (player.top)
         {
             if (rotZ <= 90 && rotZ >= -90)
@@ -69,9 +142,7 @@ public class Weapon : MonoBehaviour
         }
     }
 
-
-    // shoot projectile toward the mouse position
-    void ShootProjectile()
+    void MuzzleFlash()
     {
         if (muzzelFlashTimeValue <= 0)
         {
@@ -82,21 +153,61 @@ public class Weapon : MonoBehaviour
         {
             muzzelFlashTimeValue -= Time.deltaTime;
         }
-        if (timeBtwShots <= 0)
+    }
+
+    // shoot projectile toward the mouse position
+    public void ShootProjectile()
+    {
+        if (Time.time > timeBtwShots)
         {
-            if (Input.GetMouseButtonDown(0))
+            if (fireMode == FireMode.Burst)
             {
-                Instantiate(projectilePrefab, shotPos.position, transform.rotation);
-                projectile = projectilePrefab.gameObject.GetComponent<Projectile>();
-                projectile.damage = damage;
-                timeBtwShots = startTimeBtwShots;
-                muzzleFlash.SetActive(true);
-                muzzelFlashTimeValue = muzzelFlashTime;
+                if (shotsRemainingInBurst == 0)
+                {
+                    return;
+                }
+                shotsRemainingInBurst--;
             }
+            else if (fireMode == FireMode.Single)
+            {
+                if (!triggerReleasedSinceLastShot)
+                {
+                    return;
+                }
+            }
+
+            currentAmmo--;
+
+            CameraShaker.Instance.ShakeOnce(4, 1, 0.1f, .1f);
+
+            projectile = Instantiate(projectilePrefab, shotPos.transform.position, transform.rotation) as Projectile;
+            projectile.damage = damage;
+            projectile.knockbackForce = new Vector2(knockback, knockback);
+
+            timeBtwShots = Time.time + startTimeBtwShots;
+
+            muzzleFlash.SetActive(true);
+            muzzelFlashTimeValue = muzzelFlashTime;
+
+            audioManager.Play("PlayerShoot");
         }
-        else
+    }
+
+    public void OnTriggerHold()
+    {
+        if (Input.GetMouseButton(0))
         {
-            timeBtwShots -= Time.deltaTime;
+            ShootProjectile();
+            triggerReleasedSinceLastShot = false;
+        }
+    }
+
+    public void OnTriggerReleased()
+    {
+        if (Input.GetMouseButtonUp(0))
+        {
+            triggerReleasedSinceLastShot = true;
+            shotsRemainingInBurst = burstCount;
         }
     }
 }

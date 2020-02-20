@@ -5,18 +5,25 @@ using System;
 
 public class PlayerController : MonoBehaviour
 {
-
+    
     public float speed;
     private Rigidbody2D rb;
     private float moveInput;
     private bool isGrounded;
     private SpriteRenderer sprite;
-    public bool facingRight = true;
+    //private bool facingRight = true;
     private Animator anim;
     public RaycastHit2D hitInfo;
+    [HideInInspector]
     public bool top;
     Camera mainCamera;
     Vector3 mousePos;
+    public ParticleSystem dust;
+    public float jumpPressedRemember;
+    private float jumpPressedRememberValue;
+    public float groundRememberTime;
+    private float groundRemember;
+    private AudioManager audioManager;
 
     // Start is called before the first frame update
     void Start()
@@ -25,7 +32,8 @@ public class PlayerController : MonoBehaviour
         sprite = GetComponent<SpriteRenderer>();
         anim = GetComponent<Animator>();
         mainCamera = Camera.main;
-        rb.drag = GetDragFromAcceleration(Physics.gravity.magnitude, 10);
+        rb.drag = GetDragFromAcceleration(Physics2D.gravity.magnitude, 8);
+        audioManager = FindObjectOfType<AudioManager>();
     }
 
     // Update is called once per frame
@@ -47,15 +55,32 @@ public class PlayerController : MonoBehaviour
         }          
 
         Vector2 boxSize = new Vector2(0.25f, 0.01f);
+        Vector3 boxOffset = new Vector3(0, sprite.bounds.extents.y + boxSize.y + 0.01f, 0);
+
+        if (top)
+        {
+            boxOffset = -boxOffset;
+        }
 
         // cast a box under the player
-        hitInfo = Physics2D.BoxCast(transform.position - new Vector3(0, sprite.bounds.extents.y * 1.4f + boxSize.y + 0.01f, 0), boxSize, 0, Vector2.down, boxSize.y);
+        hitInfo = Physics2D.BoxCast(transform.position - boxOffset, boxSize, 0, -transform.up, boxSize.y);
+        ExtDebug.DrawBoxCastBox(transform.position - boxOffset, boxSize, Quaternion.identity, -transform.up, boxSize.y, Color.red);
 
+        groundRemember -= Time.deltaTime;
         // check to see if the player is grounded or not
-        if (hitInfo && hitInfo.transform.tag == "Ground")        
-            isGrounded = true;                 
+        if (hitInfo && hitInfo.transform.tag == "Ground")
+        {
+            groundRemember = groundRememberTime;
+            if (isGrounded == false)
+            {
+                CreateDust();
+                isGrounded = true;
+            }
+        }
         else
+        {
             isGrounded = false;
+        }            
 
         moveInput = Input.GetAxisRaw("Horizontal");
 
@@ -80,21 +105,19 @@ public class PlayerController : MonoBehaviour
     }
 
     void FlipPlayer()
-    {
+    {        
         if (top)
         {
             // flip the player towards the mouse when upside down
             if (mousePos.x - transform.position.x > 0)
             {
                 transform.eulerAngles = new Vector3(0, 180, 180);
-                facingRight = true;
-                Debug.Log("upside down right");
+                //facingRight = true;
             }
             else if (mousePos.x - transform.position.x < 0)
             {
                 transform.eulerAngles = new Vector3(0, 0, 180);
-                facingRight = false;
-                Debug.Log("upside down left");
+                //facingRight = false;
             }
         }
         else
@@ -103,33 +126,50 @@ public class PlayerController : MonoBehaviour
             if (mousePos.x - transform.position.x > 0)
             {
                 transform.eulerAngles = new Vector3(0, 0, 0);
-                facingRight = true;
+                //facingRight = true;
             }
             else if (mousePos.x - transform.position.x < 0)
             {
                 transform.eulerAngles = new Vector3(0, 180, 0);
-                facingRight = false;
+                //facingRight = false;
             }
         }        
     }
 
     void SwitchGravity()
     {
-        // switch the gravity upside down
+        jumpPressedRememberValue -= Time.deltaTime;
+
         if (Input.GetButtonDown("Jump"))
         {
+            jumpPressedRememberValue = jumpPressedRemember;
+        }
+
+        // switch the gravity upside down
+        if (jumpPressedRememberValue > 0 && groundRemember > 0)
+        {
+            jumpPressedRememberValue = 0;
+
+            CreateDust();
+
+            rb.velocity = Vector2.zero;
+
             rb.gravityScale *= -1;
 
-            if (top == false)
-            {
-                transform.eulerAngles = new Vector3(0, 0, 180);
-            }
-            else
-            {
-                transform.eulerAngles = Vector3.zero;
-            }
-            
-            top = !top;
+            Invoke("SwitchTop", .1f);
+
+            audioManager.Play("PlayerJump");
         }
     }
+
+    void SwitchTop()
+    {
+        top = !top;
+    }
+
+    void CreateDust()
+    {
+        dust.Play();
+    }
+
 }

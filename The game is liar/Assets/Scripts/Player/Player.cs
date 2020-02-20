@@ -1,16 +1,19 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using EZCameraShake;
 
 public class Player : MonoBehaviour
 {
 
-    public float health;
+    public int health;
 
-    // Start is called before the first frame update
-    void Start()
+    private AudioManager audioManager;
+
+    public HealthBar healthBar;
+
+    private void Start()
     {
-        
+        audioManager = FindObjectOfType<AudioManager>();
+        healthBar.SetMaxHealth(health);
     }
 
     // Update is called once per frame
@@ -24,6 +27,15 @@ public class Player : MonoBehaviour
 
     void Die()
     {
+        audioManager.Play("PlayerDeath");
         Destroy(gameObject);
+    }
+
+    public void Hurt(int _damage)
+    {
+        health -= _damage;
+        audioManager.Play("GetHit");
+        CameraShaker.Instance.ShakeOnce(5, 4, .1f, .1f);
+        healthBar.SetHealth(health);
     }
 }
