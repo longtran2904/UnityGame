@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using EZCameraShake;
+using UnityEngine.SceneManagement;
 
 public class Player : MonoBehaviour
 {
@@ -10,10 +11,25 @@ public class Player : MonoBehaviour
 
     public HealthBar healthBar;
 
+    private PlayerController controller;
+
+    [HideInInspector] public Vector2 knockbackForce;
+
     private void Start()
     {
         audioManager = FindObjectOfType<AudioManager>();
-        healthBar.SetMaxHealth(health);
+
+        if (healthBar == null)
+        {
+            healthBar = FindObjectOfType<HealthBar>();
+        }
+
+        if (healthBar)
+        {
+            healthBar.SetMaxHealth(health);
+        }
+
+        controller = GetComponent<PlayerController>();
     }
 
     // Update is called once per frame
@@ -28,6 +44,7 @@ public class Player : MonoBehaviour
     void Die()
     {
         audioManager.Play("PlayerDeath");
+        GameManager.instance.LoadGame((int)SceneIndexes.START_MENU, true);
         Destroy(gameObject);
     }
 
@@ -37,5 +54,6 @@ public class Player : MonoBehaviour
         audioManager.Play("GetHit");
         CameraShaker.Instance.ShakeOnce(5, 4, .1f, .1f);
         healthBar.SetHealth(health);
+        controller.KnockBack(knockbackForce);
     }
 }

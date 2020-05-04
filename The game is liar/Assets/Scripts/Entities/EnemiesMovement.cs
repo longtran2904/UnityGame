@@ -8,21 +8,16 @@ public class EnemiesMovement : MonoBehaviour
 
     public float speed;
 
-    private float timer;
-
     private Player player;
 
     private Enemies enemies;
-    public EnemyType enemyType;
-
-    public Material triggerMaterial;
-    private SpriteRenderer sr;
-    private Material defaultMaterial;
+    [HideInInspector] public EnemyType enemyType;
 
     private AudioManager audioManager;
 
     private Animator anim;
-    float currentAngle = 0;
+
+    [HideInInspector] public float attackRange;
 
     #region MaggotVariables
     // Maggot
@@ -31,28 +26,43 @@ public class EnemiesMovement : MonoBehaviour
     BoxCollider2D box;
     
 
-    public Transform wallCheck;
-    public float radius;
-    public LayerMask whatIsGround;
+    private Transform wallCheck;
+    [HideInInspector] public float radius;
+    [HideInInspector] public LayerMask whatIsGround;
     #endregion
 
     #region BatVariables
     // Bat
-    public Transform curve_point;
+    [HideInInspector] public Material triggerMaterial;
+    private SpriteRenderer sr;
+    private Material defaultMaterial;
+
+    private Transform curve_point;
     private Vector2 point;
 
-    public float distanceToExplode;
-    public float explodeRange;
-    public float timeToExplode;
-    public float distanceToChase;
+    [HideInInspector] public float distanceToExplode;
+    [HideInInspector] public float explodeRange;
+    [HideInInspector] public float timeToExplode;
+    [HideInInspector] public float distanceToChase;
     private float timeToExplodeValue;
     private bool canChase = false;
     private bool canExplode = false;
 
-    public float timeBtwFlash;
+    [HideInInspector] public float timeBtwFlash;
     private float timeBtwFlashValue;
-    public float flashTime;
+    [HideInInspector] public float flashTime;
     private float flashTimeValue;
+    private float timer;
+    #endregion    
+
+    #region AlienVariables
+    private Weapon weapon;
+
+    private Transform arm;
+
+    float currentAngle = 0;
+
+    [HideInInspector] public float rayLength = .5f;
     #endregion
 
     #region Knockback
@@ -63,78 +73,124 @@ public class EnemiesMovement : MonoBehaviour
     private bool knockback;
     #endregion
 
-    private Weapon weapon;
-    private Transform arm;
-
     // Start is called before the first frame update
     void Start()
     {
         anim = GetComponent<Animator>();
+
         rb = GetComponent<Rigidbody2D>();
+
         sr = GetComponent<SpriteRenderer>() != null ? GetComponent<SpriteRenderer>() : GetComponentInChildren<SpriteRenderer>();
+
         defaultMaterial = sr.material;
+
         box = GetComponent<BoxCollider2D>();
+
         player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
+
         enemies = GetComponent<Enemies>();
+
         timeToExplodeValue = timeToExplode;
+
         timeBtwFlashValue = timeBtwFlash;
+
         flashTimeValue = flashTime;
+
         audioManager = FindObjectOfType<AudioManager>();
-        if (enemyType == EnemyType.Alien)
+
+        switch (enemyType)
         {
-            arm = transform.Find("Arm").GetComponent<Transform>();
-            weapon = transform.Find("AlienPistol").GetComponent<Weapon>();
-            Debug.Log(weapon.name);
+            case EnemyType.Maggot:
+                Transform[] childrens = GetComponentsInChildren<Transform>();
+
+                foreach (Transform child in childrens)
+                {
+                    if (child.name.Equals("WallCheck"))
+                    {
+                        wallCheck = child;
+                    }
+                }
+
+                break;
+            case EnemyType.Bat:
+                curve_point = player.transform.Find("Curve_point");
+                break;
+            case EnemyType.Alien:
+                arm = transform.Find("Arm").GetComponent<Transform>();
+
+                weapon = transform.Find("AlienPistol").GetComponent<Weapon>();
+
+                break;
         }
     }
 
     // Update is called once per frame
     void Update()
     {
-        WallCheck();
+        if (enemyType == EnemyType.Maggot)
+        {
+            WallCheck();
+        }
     }
     
     void FixedUpdate()
     {
+        if (knockbackCounter < 0)
+        {
+            knockback = false;
+        }
+
+        if (knockback == false)
+        {
+            rb.velocity = Vector2.zero;
+            knockback = true;
+        }
+
         if (knockbackCounter > 0)
         {
-            rb.velocity = new Vector2(knockbackForce.x, rb.velocity.y);
+            rb.velocity = new Vector2(knockbackForce.x, knockbackForce.y) * Time.deltaTime;
+
             knockbackCounter -= Time.deltaTime;
-
-            if (knockbackCounter < 0)
-            {
-                knockback = false;
-            }
-
-            if (knockback == false)
-            {
-                rb.velocity = Vector2.zero;
-                knockback = true;
-            }
 
             return;
         }
 
-        if (enemyType == EnemyType.Maggot)
+        switch (enemyType)
         {
-            MaggotMovement();
-        }
-        else if (enemyType == EnemyType.Bat)
-        {
-            BatMovement();
-        }
-        else if (enemyType == EnemyType.Alien)
-        {
-            AlienMovement();
-        }
-        
+            case EnemyType.Alien:
+                AlienMovement();
+                break;
+            case EnemyType.Bat:
+                BatMovement();
+                break;
+            case EnemyType.Maggot:
+                MaggotMovement();
+                break;
+            case EnemyType.Jelly:
+                JellyMovement();
+                break;
+        }        
     }
 
-    private void OnDrawGizmosSelected()
+    void JellyMovement()
     {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(wallCheck.position, radius);
-    }    
+        if (player.transform.position.x < transform.position.x)
+        {
+            transform.eulerAngles = new Vector3(0, 180, 0);
+        }
+        else
+        {
+            transform.eulerAngles = Vector3.zero;
+        }
+
+        if ((player.transform.position - transform.position).sqrMagnitude <= attackRange * attackRange && !enemies.touchingWall)
+        {
+            rb.velocity = Vector2.zero;
+            return;
+        }
+
+        rb.velocity = (player.transform.position - transform.position).normalized * speed * Time.deltaTime;
+    }
 
     #region BatLogic
     void BatMovement()
@@ -161,7 +217,7 @@ public class EnemiesMovement : MonoBehaviour
             timeToExplodeValue = timeToExplode;
             Vector2 old_point = point;
             point = GetBQCPoint(timer, transform.position, curve_point.position, player.transform.position);
-            rb.velocity = new Vector2(point.x - transform.position.x, point.y - transform.position.y).normalized * speed;
+            rb.velocity = new Vector2(point.x - transform.position.x, point.y - transform.position.y).normalized * speed * Time.deltaTime;
             timer += Time.deltaTime;
             Debug.DrawRay(transform.position, rb.velocity, Color.blue, .01f);
             Debug.DrawLine(old_point, point, Color.red, 3600);
@@ -222,10 +278,6 @@ public class EnemiesMovement : MonoBehaviour
 
     void AlienMovement()
     {
-        float rayLength = .4f;
-
-        float attackRange = 8f;
-
         int groundMask = LayerMask.GetMask("Ground");
 
         int playerMask = LayerMask.GetMask("Player");
@@ -278,6 +330,8 @@ public class EnemiesMovement : MonoBehaviour
             anim.SetBool("isRunning", false);
             anim.SetBool("isShooting", true);
 
+            weapon.projectilePrefab.isEnemy = true;
+
             weapon.ShootProjectile();
 
             return;
@@ -309,22 +363,19 @@ public class EnemiesMovement : MonoBehaviour
     }
     void WallCheck()
     {
-        if (enemyType == EnemyType.Maggot)
-        {
-            touchingWall = Physics2D.OverlapCircle(wallCheck.position, radius, whatIsGround);
-            //RaycastHit2D hitInfo;
-            //hitInfo = Physics2D.Raycast(transform.position - transform.up.normalized - transform.right.normalized, -transform.up, .5f);
-            //Debug.DrawRay(transform.position - transform.up.normalized - transform.right.normalized, -transform.up, Color.red);
+        touchingWall = Physics2D.OverlapCircle(wallCheck.position, radius, whatIsGround);
+        //RaycastHit2D hitInfo;
+        //hitInfo = Physics2D.Raycast(transform.position - transform.up.normalized - transform.right.normalized, -transform.up, .5f);
+        //Debug.DrawRay(transform.position - transform.up.normalized - transform.right.normalized, -transform.up, Color.red);
 
-            if (touchingWall)
-            {
-                transform.eulerAngles += new Vector3(0, 0, 90);
-            }
-            //else if (!hitInfo)
-            //{
-            //    transform.eulerAngles -= new Vector3(0, 0, 90);
-            //}
+        if (touchingWall)
+        {
+            transform.eulerAngles += new Vector3(0, 0, 90);
         }
+        //else if (!hitInfo)
+        //{
+        //    transform.eulerAngles -= new Vector3(0, 0, 90);
+        //}
     }
     #endregion
 
@@ -342,5 +393,14 @@ public class EnemiesMovement : MonoBehaviour
         float uu = u * u;
         Vector2 p = (uu * p0) + (2 * u * t * p1) + (tt * p2);
         return p;
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        if (enemyType == EnemyType.Maggot)
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireSphere(wallCheck.position, radius);
+        }
     }
 }

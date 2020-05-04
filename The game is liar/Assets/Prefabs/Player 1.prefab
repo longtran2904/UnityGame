@@ -133,13 +133,14 @@ MonoBehaviour:
     type: 3}
   shotPos: {fileID: 1846463771}
   startTimeBtwShots: 0.5
-  damage: 3
+  damage: 50
   muzzleFlash: {fileID: 7279661334866356471}
   muzzelFlashTime: 0.03
   burstCount: 3
-  maxAmmo: 2
+  maxAmmo: 5
   reloadTime: 2
   knockback: 0
+  hitEffect: {fileID: 0}
 --- !u!1 &1328484484
 GameObject:
   m_ObjectHideFlags: 0
@@ -272,14 +273,15 @@ MonoBehaviour:
     type: 3}
   shotPos: {fileID: 717335925}
   startTimeBtwShots: 0.3
-  damage: 3
+  damage: 30
   muzzleFlash: {fileID: 5523569913668251960, guid: ca77e67723e7ada4695d5381333d2f84,
     type: 3}
   muzzelFlashTime: 0.1
   burstCount: 0
-  maxAmmo: 5
-  reloadTime: 1
+  maxAmmo: 15
+  reloadTime: 0.5
   knockback: 0
+  hitEffect: {fileID: 0}
 --- !u!1 &1846463770
 GameObject:
   m_ObjectHideFlags: 0
@@ -503,6 +505,7 @@ MonoBehaviour:
   dust: {fileID: 7374823657885153856}
   jumpPressedRemember: 0.15
   groundRememberTime: 0.08
+  knockbackTime: 0
 --- !u!114 &318225057
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -515,8 +518,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec8e5b37fd6c1184b97d7eb89d0f6847, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  health: 10
+  health: 200
   healthBar: {fileID: 0}
+  knockbackForce: {x: 0, y: 0}
 --- !u!70 &318225054
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -5398,7 +5402,7 @@ PrefabInstance:
     - target: {fileID: 1243408987950801092, guid: d91ee0b0ed314134d865904ab79a9d9d,
         type: 3}
       propertyPath: damage
-      value: 1
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 1243408987950801092, guid: d91ee0b0ed314134d865904ab79a9d9d,
         type: 3}

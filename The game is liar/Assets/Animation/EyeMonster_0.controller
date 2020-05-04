@@ -87,7 +87,7 @@ AnimatorStateMachine:
   m_ChildStates:
   - serializedVersion: 1
     m_State: {fileID: 5777128100970038066}
-    m_Position: {x: 30, y: 90, z: 0}
+    m_Position: {x: 40, y: 90, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 8308077513039736}
     m_Position: {x: 300, y: 90, z: 0}
@@ -116,8 +116,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebc4c099538bd9646810212cd804a484, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 5
-  dashSpeed: 30
+  speed: 10
+  dashSpeed: 35
   chargeDamage: 30
   attackTime: 2
   dashTime: 1
@@ -141,13 +141,13 @@ AnimatorController:
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 0}
+    m_Controller: {fileID: 9100000}
   - m_Name: isDied
     m_Type: 4
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 0}
+    m_Controller: {fileID: 9100000}
   m_AnimatorLayers:
   - serializedVersion: 5
     m_Name: Base Layer

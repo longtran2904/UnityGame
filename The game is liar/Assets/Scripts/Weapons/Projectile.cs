@@ -23,6 +23,8 @@ public class Projectile : MonoBehaviour
 
     private AudioManager audioManager;
 
+    [HideInInspector] public GameObject hitEffect;
+
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -33,17 +35,37 @@ public class Projectile : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        if (hitEffect)
+        {
+            hitEffect = Instantiate(hitEffect, transform.position, transform.rotation);
+
+            Destroy(hitEffect, hitEffect.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).length);
+        }
+
         if (collision.tag == "Enemy" && !isEnemy)
         {
             enemy = collision.GetComponent<Enemies>();
-            enemy.knockbackForce = (transform.position - enemy.transform.position).normalized * knockbackForce;
+            enemy.knockbackForce = (-transform.position + enemy.transform.position).normalized * knockbackForce;
             enemy.Hurt(damage);
             Destroy(gameObject);
         }
         else if (collision.tag == "Player" && isEnemy)
         {
             player = collision.GetComponent<Player>();
+
+            if (transform.position.x <= player.transform.position.x)
+            {
+                player.knockbackForce.x = knockbackForce.x;
+            }
+            else
+            {
+                player.knockbackForce.x = -knockbackForce.x;
+            }
+
+            player.knockbackForce.y = knockbackForce.y;
+
             player.Hurt(damage);
+
             Destroy(gameObject);
         }
         else if (collision.tag == "Boss" && !isEnemy)

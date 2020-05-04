@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Assets.ProceduralLevelGenerator.Scripts.Generators.DungeonGenerator;
+using System;
 
 public class CameraFollow2D : MonoBehaviour
 {
@@ -8,12 +10,23 @@ public class CameraFollow2D : MonoBehaviour
     public float timeOffset;
     public Vector2 posOffset;
 
-    public Vector2 leftAndUpLimit;
-    public Vector2 rightAndBottomLimit;
+    public Vector2 leftAndBottomLimit;
+    public Vector2 rightAndUpLimit;
+
+    [HideInInspector] public CameraInfo[] cameraInfos;
+    [HideInInspector] public Bounds[] roomsBounds;
+    [HideInInspector] public Transform[] roomsPos;
+
+    public event Action<Bounds> hasPlayer;
 
     // Update is called once per frame
-    void Update()
+    void LateUpdate()
     {
+        if (player == null)
+        {
+            player = GameObject.FindGameObjectWithTag("Player");
+        }
+
         // Camera current position
         Vector3 starPos = transform.position;
 
@@ -28,9 +41,40 @@ public class CameraFollow2D : MonoBehaviour
 
         transform.position = new Vector3
         (
-        Mathf.Clamp(transform.position.x, leftAndUpLimit.x, rightAndBottomLimit.x),
-        Mathf.Clamp(transform.position.y, rightAndBottomLimit.y, leftAndUpLimit.y),
+        Mathf.Clamp(transform.position.x, leftAndBottomLimit.x, rightAndUpLimit.x),
+        Mathf.Clamp(transform.position.y, leftAndBottomLimit.y, rightAndUpLimit.y),
         transform.position.z
         );
+
+        ToNextRoom(cameraInfos, roomsBounds, roomsPos);
+    }
+
+    public void ToNextRoom(CameraInfo[] _infos, Bounds[] _roomsBounds, Transform[] _roomsPos)
+    {
+        if (_infos == null)
+        {
+            return;
+        }
+
+        int x = 0;
+
+        foreach (Bounds bounds in _roomsBounds)
+        {
+            ExtDebug.DrawBox(bounds.center, bounds.extents, Quaternion.identity, Color.cyan);
+            if (bounds.Contains(player.transform.position))
+            {
+                leftAndBottomLimit = _infos[x].leftAndBottomLimit + (Vector2)_roomsPos[x].position;
+
+                rightAndUpLimit = _infos[x].rightAndUpLimit + (Vector2)_roomsPos[x].position;
+
+                _roomsPos[x].Find("Enemies").GetComponent<EnemySpawner>().active = true;
+
+                hasPlayer?.Invoke(bounds);
+
+                break;
+            }
+
+            x++;
+        }
     }
 }

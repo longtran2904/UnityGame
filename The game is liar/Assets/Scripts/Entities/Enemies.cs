@@ -7,17 +7,26 @@ public enum EnemyType
     Maggot,
     Bat,
     Turret,
-    Alien
+    Alien,
+    Jelly
 }
 
 public class Enemies : MonoBehaviour
 {
 
+    public static int numberOfEnemiesAlive = 0;
+
     public int health;
     public int damage;
 
+    [HideInInspector] public bool touchingWall = false;
+
     private EnemiesMovement movement;
-    public EnemyType enemyType;
+
+    private AudioManager audioManager;
+
+    [HideInInspector] public EnemyType enemyType;
+
     private Player player;
 
     public Material matWhite;
@@ -26,19 +35,19 @@ public class Enemies : MonoBehaviour
 
     public GameObject explosionParitcle;
 
-    public GameObject turretBullet;
+    [HideInInspector] public GameObject hitEffect;
 
-    public float shootRange;
+    [HideInInspector] public Projectile bullet;
 
-    public float timeBtwShots;
+    [HideInInspector] public float shootRange;
+
+    [HideInInspector] public float timeBtwShots;
     private float timeBtwShotsValue;
 
-    public GameObject shootPos;
+    [HideInInspector] public GameObject shootPos;
     private Projectile projectile;
 
-    public float rotOffset;
-
-    private AudioManager audioManager;
+    [HideInInspector] public float rotOffset;
 
     [HideInInspector]
     public Vector2 knockbackForce;
@@ -55,6 +64,7 @@ public class Enemies : MonoBehaviour
         matDefault = sr.material;
         timeBtwShotsValue = timeBtwShots;
         audioManager = FindObjectOfType<AudioManager>();
+        numberOfEnemiesAlive += 1;
     }
 
     // Update is called once per frame
@@ -71,12 +81,17 @@ public class Enemies : MonoBehaviour
             float rotationZ = Mathf.Atan2(difference.y, difference.x) * Mathf.Rad2Deg;
             TurretAttack(rotationZ + rotOffset);
         }
+        else if (enemyType == EnemyType.Jelly)
+        {
+            JellyAttack();
+        }
     }
 
     void Death()
     {
         GameObject explosion = explosionParitcle;
         Instantiate(explosion, transform.position, Quaternion.identity);
+        numberOfEnemiesAlive -= 1;
         Destroy(gameObject);
     }
 
@@ -96,45 +111,69 @@ public class Enemies : MonoBehaviour
 
     void TurretAttack(float rotZ)
     {
+        RaycastHit2D hitInfo = Physics2D.Raycast(transform.position, (player.transform.position - transform.position), shootRange);
+
+        Debug.DrawRay(transform.position, (player.transform.position - transform.position).normalized * shootRange, Color.blue);
+
         if (Vector3.Distance(player.transform.position, transform.position) <= shootRange)
         {
             transform.rotation = Quaternion.Euler(0, 0, rotZ);
-            Shoot();
+
+            if (hitInfo && hitInfo.collider.CompareTag("Player"))
+            {
+                Shoot("TurretShoot", bullet, transform.rotation);
+            }
         }
     }
 
-    void Shoot()
+    void JellyAttack()
     {
-        if (timeBtwShotsValue <= 0)
+        if ((player.transform.position - transform.position).sqrMagnitude <= movement.attackRange * movement.attackRange && !touchingWall)
         {
-            audioManager.Play("TurretShoot");
+            Vector2 difference = -transform.position + player.transform.position;
+            float rotationZ = Mathf.Atan2(difference.y, difference.x) * Mathf.Rad2Deg;
+            Shoot("TurretShoot", bullet, Quaternion.Euler(0, 0, rotationZ));
+        }
+    }
 
-            Instantiate(turretBullet, shootPos.transform.position, transform.rotation);
+    void Shoot(string _soundToPlay, Projectile _bullet, Quaternion _rotation)
+    {
+        if (Time.time >= timeBtwShotsValue)
+        {
+            audioManager.Play(_soundToPlay);
 
-            projectile = turretBullet.gameObject.GetComponent<Projectile>();
+            projectile = Instantiate(_bullet, shootPos.transform.position, _rotation) as Projectile;
+
+            projectile.isEnemy = true;
+
+            projectile.hitEffect = hitEffect;
 
             projectile.damage = damage;
 
-            timeBtwShotsValue = timeBtwShots;
-        }
-        else
-        {
-            timeBtwShotsValue -= Time.deltaTime;
+            timeBtwShotsValue = timeBtwShots + Time.time;
         }
     }
 
     void MaggotAttack(Collider2D collision)
     {
-
         player = collision.gameObject.GetComponent<Player>();
         player.Hurt(damage);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.tag == "Player" && enemyType == EnemyType.Maggot)
+        if (collision.tag == "Player")
         {
             MaggotAttack(collision);
+        }
+
+        if (collision.CompareTag("Ground"))
+        {
+            touchingWall = true;
+        }
+        else
+        {
+            touchingWall = false;
         }
     }
 }

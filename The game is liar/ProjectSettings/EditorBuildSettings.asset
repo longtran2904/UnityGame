@@ -6,33 +6,18 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/MultiplayerTest.unity
-    guid: 1bea14ef2fca49f48917c832f289ecd8
-  - enabled: 0
-    path: Assets/Scenes/Level1.unity
-    guid: 26e70521f8c65eb41b899b2d760d0fd7
-  - enabled: 0
-    path: Assets/Scenes/level2.unity
-    guid: 31fc6e00578c4af459991c3f7f672f40
-  - enabled: 0
-    path: Assets/Scenes/Level3.unity
-    guid: e353a9dbbf3dd994f98b6ce02f1fa2a9
-  - enabled: 0
-    path: Assets/Scenes/level4.unity
-    guid: 9e35258975685c8469ddf475c0bc807e
-  - enabled: 0
-    path: Assets/Scenes/Level5.unity
-    guid: 6942363d7fa5d6942b7d90668949cfcf
-  - enabled: 0
-    path: Assets/Scenes/Level6.unity
-    guid: 81a09bc2449ebce4fa7f4ecd917f3d9a
-  - enabled: 0
-    path: Assets/Scenes/Level7.unity
-    guid: 017c95af986bfc2449e143b47126dc07
-  - enabled: 0
-    path: Assets/Scenes/Level8.unity
-    guid: 8c103c6ab554567488129e6106622814
-  - enabled: 0
-    path: Assets/Scenes/Boss.unity
-    guid: d8cadec751a32234b9e8ff54bb6c978b
+    path: Assets/Scenes/Persistent Scene.unity
+    guid: 11023aa9e11717442901eda18e691a8a
+  - enabled: 1
+    path: Assets/Scenes/StartMenu.unity
+    guid: c2754089116be7743ad0bf968100f45a
+  - enabled: 1
+    path: Assets/Scenes/cart.unity
+    guid: 4667a731d99d6e540ab0425a871b104a
+  - enabled: 1
+    path: Assets/Scenes/Room.unity
+    guid: 7b02d7a8d111e084e9378b1deacde697
+  - enabled: 1
+    path: Assets/Scenes/GiantEyeMonster.unity
+    guid: f3258a18d41c2124fa657eb5409fcb3c
   m_configObjects: {}

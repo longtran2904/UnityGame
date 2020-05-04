@@ -63,8 +63,6 @@ public class GiantEyeBoss : MonoBehaviour
 
         health -= _damage;
 
-        Debug.Log("a");
-
         sr.material = whiteMat;
 
         Invoke("ResetMaterial", .1f);
@@ -84,6 +82,8 @@ public class GiantEyeBoss : MonoBehaviour
         CameraShaker.Instance.ShakeOnce(8, 5, 0.1f, 0.5f);
 
         Instantiate(explosion, transform.position, Quaternion.identity);
+
+        AudioManager.instance.Stop("BossFight");
 
         Destroy(gameObject);
     }

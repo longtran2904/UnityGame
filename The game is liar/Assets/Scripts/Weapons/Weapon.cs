@@ -45,6 +45,8 @@ public class Weapon : MonoBehaviour
 
     public float knockback;
 
+    public GameObject hitEffect;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -71,6 +73,11 @@ public class Weapon : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (PauseMenu.isGamePaused)
+        {
+            return;
+        }
+
         MuzzleFlash();
 
         if (isReloading)
@@ -118,6 +125,7 @@ public class Weapon : MonoBehaviour
             Debug.Log("Player is missing!");
             return;
         }
+
         if (player.top)
         {
             if (rotZ <= 90 && rotZ >= -90)
@@ -178,16 +186,17 @@ public class Weapon : MonoBehaviour
 
             currentAmmo--;
 
-            CameraShaker.Instance.ShakeOnce(4, 1, 0.1f, .1f);
-
             projectile = Instantiate(projectilePrefab, shotPos.transform.position, transform.rotation) as Projectile;
             projectile.damage = damage;
             projectile.knockbackForce = new Vector2(knockback, knockback);
+            projectile.hitEffect = hitEffect;
 
             timeBtwShots = Time.time + startTimeBtwShots;
 
             muzzleFlash.SetActive(true);
             muzzelFlashTimeValue = muzzelFlashTime;
+
+            CameraShaker.Instance.ShakeOnce(4, 1, 0.1f, .1f);
 
             audioManager.Play("PlayerShoot");
         }

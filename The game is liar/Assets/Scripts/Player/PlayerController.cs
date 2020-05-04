@@ -7,23 +7,40 @@ public class PlayerController : MonoBehaviour
 {
     
     public float speed;
+
     private Rigidbody2D rb;
+
     private float moveInput;
+
     private bool isGrounded;
+
     private SpriteRenderer sprite;
-    //private bool facingRight = true;
+
     private Animator anim;
+
     public RaycastHit2D hitInfo;
+
     [HideInInspector]
     public bool top;
+
     Camera mainCamera;
     Vector3 mousePos;
+
     public ParticleSystem dust;
+
     public float jumpPressedRemember;
     private float jumpPressedRememberValue;
+
     public float groundRememberTime;
     private float groundRemember;
+
     private AudioManager audioManager;
+
+    // Knock back
+    public float knockbackTime;
+    private float knockbackCounter;
+    private Vector2 knockbackForce;
+    private bool knockback;
 
     // Start is called before the first frame update
     void Start()
@@ -67,6 +84,7 @@ public class PlayerController : MonoBehaviour
         ExtDebug.DrawBoxCastBox(transform.position - boxOffset, boxSize, Quaternion.identity, -transform.up, boxSize.y, Color.red);
 
         groundRemember -= Time.deltaTime;
+
         // check to see if the player is grounded or not
         if (hitInfo && hitInfo.transform.tag == "Ground")
         {
@@ -91,10 +109,40 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        // make the player move
+        // Knock the player back
+        if (knockbackCounter < 0)
+        {
+            knockback = false;
+        }
+
+        if (knockback == false)
+        {
+            rb.velocity = new Vector2(0, rb.velocity.y);
+            knockback = true;
+        }
+
+        if (knockbackCounter > 0.5 * knockbackTime)
+        {
+            rb.velocity = new Vector2(knockbackForce.x, knockbackForce.y) * Time.deltaTime;
+
+            knockbackCounter -= Time.deltaTime;
+
+            return;
+        }
+        else if (knockbackCounter > 0)
+        {
+            rb.velocity = new Vector2(knockbackForce.x, rb.velocity.y) * Time.deltaTime;
+
+            knockbackCounter -= Time.deltaTime;
+
+            return;
+        }
+
+        // Make the player move
         rb.velocity = new Vector2(moveInput * speed, rb.velocity.y);
     }
 
+    #region Drag Caculation
     public static float GetDrag(float aVelocityChange, float aFinalVelocity)
     {
         return aVelocityChange / ((aFinalVelocity + aVelocityChange) * Time.fixedDeltaTime);
@@ -103,9 +151,15 @@ public class PlayerController : MonoBehaviour
     {
         return GetDrag(aAcceleration * Time.fixedDeltaTime, aFinalVelocity);
     }
+    #endregion
 
     void FlipPlayer()
-    {        
+    {
+        if (PauseMenu.isGamePaused)
+        {
+            return;
+        }
+
         if (top)
         {
             // flip the player towards the mouse when upside down
@@ -172,4 +226,14 @@ public class PlayerController : MonoBehaviour
         dust.Play();
     }
 
+    public void KnockBack(Vector2 _knockbackForce)
+    {
+        if (!hitInfo || (hitInfo && hitInfo.collider.CompareTag("Ground")))
+        {
+            return;
+        }
+        knockbackCounter = knockbackTime;
+        knockbackForce = _knockbackForce;
+        rb.velocity = _knockbackForce;
+    }
 }

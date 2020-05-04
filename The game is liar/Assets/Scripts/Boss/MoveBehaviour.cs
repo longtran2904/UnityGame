@@ -45,6 +45,8 @@ public class MoveBehaviour : StateMachineBehaviour
         dashTimeValue = dashTime;
         attackTimeValue = attackTime;
         chargeTimeValue = chargeTime;
+        AudioManager.instance.Stop("8bit");
+        AudioManager.instance.Play("BossFight");
     }
 
     // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
