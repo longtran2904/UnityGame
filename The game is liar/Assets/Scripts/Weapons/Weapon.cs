@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using UnityEngine;
 using EZCameraShake;
+using System;
+using TMPro;
 
 public class Weapon : MonoBehaviour
 {
@@ -32,20 +34,30 @@ public class Weapon : MonoBehaviour
     public float muzzelFlashTime;
     private float muzzelFlashTimeValue;
 
-    private AudioManager audioManager;
-
     public int burstCount;
     private int shotsRemainingInBurst;
     bool triggerReleasedSinceLastShot = true;
 
     public int maxAmmo;
     private int currentAmmo;
-    public float reloadTime;
+    [HideInInspector] public float reloadTime;
     private bool isReloading;
 
     public float knockback;
 
     public GameObject hitEffect;
+
+    [Header("Reload Info")]
+    public float standardReload = 3.0f;
+    public float activeReload = 2.25f;
+    public float perfectReload = 1.8f;
+    public float failedReload = 4.1f;
+
+    public TextMeshProUGUI ammoText;
+
+    public event Action reloadingDelegate;
+
+    [HideInInspector] public bool canSwitch = true;
 
     // Start is called before the first frame update
     void Start()
@@ -60,9 +72,13 @@ public class Weapon : MonoBehaviour
             Debug.Log($"Error sending data to server via TCP: {_ex}");
         }
         muzzelFlashTimeValue = muzzelFlashTime;
-        audioManager = FindObjectOfType<AudioManager>();
         shotsRemainingInBurst = burstCount;
         currentAmmo = maxAmmo;
+        ammoText = GameObject.Find("AmmoText") ? GameObject.Find("AmmoText").GetComponent<TextMeshProUGUI>() : null;
+        if (ammoText != null)
+        {
+            ammoText.SetText("{0}/{1}", (float)currentAmmo, (float)maxAmmo);
+        }
     }
 
     private void OnEnable()
@@ -85,9 +101,14 @@ public class Weapon : MonoBehaviour
             return;
         }
 
-        if (currentAmmo <= 0)
+        if (currentAmmo <= 0 && Input.GetMouseButton(0))
         {
-            StartCoroutine(Reload());
+            Reload();
+            return;
+        }
+        else if (Input.GetKeyDown(KeyCode.R) && currentAmmo < maxAmmo)
+        {
+            Reload();
             return;
         }
 
@@ -97,24 +118,29 @@ public class Weapon : MonoBehaviour
         if (player)
         {
             FlipWeapon(rotationZ);
-        }        
+        }
 
         OnTriggerHold();
 
         OnTriggerReleased();
     }
 
-    IEnumerator Reload()
+    void Reload()
     {
         isReloading = true;
 
-        Debug.Log("Reloading");
+        canSwitch = false;
 
-        yield return new WaitForSeconds(reloadTime);
+        reloadingDelegate();
+    }
 
+    public void SetAmmo()
+    {
         currentAmmo = maxAmmo;
 
         isReloading = false;
+
+        canSwitch = true;
     }
 
     // flip the weapon correctly toward the mouse position
@@ -164,7 +190,7 @@ public class Weapon : MonoBehaviour
     }
 
     // shoot projectile toward the mouse position
-    public void ShootProjectile()
+    public void ShootProjectile(string poolName, string music)
     {
         if (Time.time > timeBtwShots)
         {
@@ -186,7 +212,7 @@ public class Weapon : MonoBehaviour
 
             currentAmmo--;
 
-            projectile = Instantiate(projectilePrefab, shotPos.transform.position, transform.rotation) as Projectile;
+            projectile = ObjectPooler.instance.SpawnFromPool<Projectile>(poolName, shotPos.transform.position, transform.rotation);
             projectile.damage = damage;
             projectile.knockbackForce = new Vector2(knockback, knockback);
             projectile.hitEffect = hitEffect;
@@ -196,9 +222,12 @@ public class Weapon : MonoBehaviour
             muzzleFlash.SetActive(true);
             muzzelFlashTimeValue = muzzelFlashTime;
 
+            if (ammoText != null)
+                ammoText.SetText("{0}/{1}", (float)currentAmmo, (float)maxAmmo);
+
             CameraShaker.Instance.ShakeOnce(4, 1, 0.1f, .1f);
 
-            audioManager.Play("PlayerShoot");
+            AudioManager.instance.Play(music);
         }
     }
 
@@ -206,7 +235,13 @@ public class Weapon : MonoBehaviour
     {
         if (Input.GetMouseButton(0))
         {
-            ShootProjectile();
+            string bullet = "PlayerBullet";
+            string sound = "PlayerShoot";
+            if (fireMode == FireMode.Single)
+            {
+                sound = "Shotgun";
+            }
+            ShootProjectile(bullet, sound);
             triggerReleasedSinceLastShot = false;
         }
     }

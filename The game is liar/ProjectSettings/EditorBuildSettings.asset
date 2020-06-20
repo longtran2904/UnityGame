@@ -12,9 +12,6 @@ EditorBuildSettings:
     path: Assets/Scenes/StartMenu.unity
     guid: c2754089116be7743ad0bf968100f45a
   - enabled: 1
-    path: Assets/Scenes/cart.unity
-    guid: 4667a731d99d6e540ab0425a871b104a
-  - enabled: 1
     path: Assets/Scenes/Room.unity
     guid: 7b02d7a8d111e084e9378b1deacde697
   - enabled: 1

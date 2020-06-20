@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 4817691860198644136}
   - component: {fileID: 4817691860198644139}
   - component: {fileID: 4817691860198644138}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Bat
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -145,8 +145,10 @@ MonoBehaviour:
   matWhite: {fileID: 2100000, guid: a52db8d2e3bb7c84f9a724b122d7baa7, type: 2}
   explosionParitcle: {fileID: 8704956847754461958, guid: 3181c8d874d60414f9701b433c293e7d,
     type: 3}
+  spawnEffect: {fileID: 6779077847636645100, guid: 36d7ac47e5d4fa94a978f44e53c8b68a,
+    type: 3}
   hitEffect: {fileID: 0}
-  bullet: {fileID: 0}
+  bullet: 
   shootRange: 0
   timeBtwShots: 0
   shootPos: {fileID: 0}
@@ -172,14 +174,17 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 256
   triggerMaterial: {fileID: 2100000, guid: d5792750c9f5bf240a7b854ab8aa3870, type: 2}
-  distanceToExplode: 1
+  distanceToExplode: 5
   explodeRange: 8
   timeToExplode: 1.5
   distanceToChase: 15
+  rayLength: 0.5
+  dashSpeed: 0
+  dashTime: 0
+  chargeTime: 0
+  knockbackTime: 0.2
   timeBtwFlash: 0.2
   flashTime: 0.1
-  rayLength: 0.5
-  knockbackTime: 0.2
 --- !u!58 &4817691860198644138
 CircleCollider2D:
   m_ObjectHideFlags: 0

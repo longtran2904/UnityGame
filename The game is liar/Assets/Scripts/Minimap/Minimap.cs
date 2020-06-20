@@ -15,9 +15,8 @@ public class Minimap : MonoBehaviour
     [HideInInspector] public BoundsInt bounds;
     public Dictionary<Vector2Int, bool[]> tilesDictionary = new Dictionary<Vector2Int, bool[]>();
 
-    Vector2Int previousPos;
-
     Player player;
+    [HideInInspector] public Vector2Int playerPosition;
 
     public int minimapWidth;
     public int minimapHeight;
@@ -26,6 +25,7 @@ public class Minimap : MonoBehaviour
     public Color wallColor;
     public Color roomColor;
     public Color playerColor;
+    public Color bossRoomColor;
 
     private void Awake()
     {
@@ -65,7 +65,14 @@ public class Minimap : MonoBehaviour
 
             int i = tile.x + tile.y * bounds.size.x;
 
-            colors[i] = roomColor;
+            if (tilesDictionary[tile][2])
+            {
+                colors[i] = bossRoomColor;
+            }
+            else
+            {
+                colors[i] = roomColor;
+            }
 
             if (tilesDictionary[tile][0])
             {
@@ -96,6 +103,8 @@ public class Minimap : MonoBehaviour
         x = Mathf.Clamp(x, 0, texture.width - minimapWidth);
         y = Mathf.Clamp(y, 0, texture.height - minimapHeight);
 
+        playerPosition = new Vector2Int(playerPos.x, playerPos.y);
+
         Color[] colors = texture.GetPixels(x, y, minimapWidth, minimapHeight);
         colors[minimapWidth / 2 + (minimapHeight / 2) * minimapWidth] = playerColor;
 
@@ -113,7 +122,6 @@ public class Minimap : MonoBehaviour
 
     void AddRoomTexture(Bounds _bounds)
     {
-        Debug.Log("Add room texture to minimap!");
 
         foreach (var tile in tilesDictionary.Keys)
         {

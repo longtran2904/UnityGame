@@ -41,6 +41,7 @@ GameObject:
   - component: {fileID: 3934604929807096829}
   - component: {fileID: 9063664553917413875}
   - component: {fileID: 1243408987950801092}
+  - component: {fileID: 8444539055536166379}
   m_Layer: 0
   m_Name: Riffle
   m_TagString: Untagged
@@ -78,6 +79,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -132,10 +134,60 @@ MonoBehaviour:
     type: 3}
   shotPos: {fileID: 8218987454117325006}
   startTimeBtwShots: 0.15
-  damage: 2
+  damage: 20
   muzzleFlash: {fileID: 2569665848930654450}
   muzzelFlashTime: 0.03
   burstCount: 0
+  maxAmmo: 0
+  reloadTime: 0
+  knockback: 100
+  hitEffect: {fileID: 3092298337086151100, guid: b464239d2df71e34a813cc57e7c2a3e1,
+    type: 3}
+  standardReload: 3
+  activeReload: 2.25
+  perfectReload: 1.8
+  failedReload: 4.1
+  ammoText: {fileID: 0}
+--- !u!114 &8444539055536166379
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7667507863186698648}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad693bf794c039b44977e66357db2b45, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  slider: {fileID: 0}
+  reloadBar: {fileID: 0}
+  curve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 1
+      outSlope: 1
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 1
+      outSlope: 1
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  perfectRange: {x: 150, y: 170}
+  activeRange: {x: 170, y: 230}
 --- !u!1001 &610223924336014380
 PrefabInstance:
   m_ObjectHideFlags: 0

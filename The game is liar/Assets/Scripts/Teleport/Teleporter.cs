@@ -7,11 +7,34 @@ public class Teleporter : MonoBehaviour
 {
     public string destination;
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    Player player;
+
+    bool hasPlay = false;
+
+    private void Start()
     {
-        if (collision.CompareTag("Player"))
+        player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
+        player.tpDelegate += Teleport;
+    }
+
+    private void OnTriggerStay2D(Collider2D collision)
+    {
+        if (hasPlay)
         {
-            GameManager.instance.LoadGame((int)SceneIndexes.BOSS, true);
+            return;
         }
+        if (player == null)
+        {
+            player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
+            player.tpDelegate += Teleport;
+        }
+        player.PlayTeleportAnimation();
+        hasPlay = true;
+    }
+
+    void Teleport()
+    {
+        player.tpDelegate -= Teleport;
+        GameManager.instance.LoadGame((int)SceneIndexes.BOSS, true);
     }
 }

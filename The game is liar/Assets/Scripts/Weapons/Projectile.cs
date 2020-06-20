@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Projectile : MonoBehaviour
+public class Projectile : MonoBehaviour, IPooledObject
 {
     public float speed;
 
@@ -21,16 +21,13 @@ public class Projectile : MonoBehaviour
 
     private Player player;
 
-    private AudioManager audioManager;
-
     [HideInInspector] public GameObject hitEffect;
 
-    void Start()
+    public void OnObjectSpawn()
     {
         rb = GetComponent<Rigidbody2D>();
         rb.velocity = transform.right * speed;
-        audioManager = FindObjectOfType<AudioManager>();
-        Destroy(gameObject, timer);
+        StartCoroutine(GameUtils.Deactive(gameObject, timer));
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -47,7 +44,9 @@ public class Projectile : MonoBehaviour
             enemy = collision.GetComponent<Enemies>();
             enemy.knockbackForce = (-transform.position + enemy.transform.position).normalized * knockbackForce;
             enemy.Hurt(damage);
-            Destroy(gameObject);
+            DamagePopup.Create(collision.transform.position, damage, false);
+
+            gameObject.SetActive(false);
         }
         else if (collision.tag == "Player" && isEnemy)
         {
@@ -66,16 +65,19 @@ public class Projectile : MonoBehaviour
 
             player.Hurt(damage);
 
-            Destroy(gameObject);
+            gameObject.SetActive(false);
         }
         else if (collision.tag == "Boss" && !isEnemy)
         {
             collision.GetComponent<GiantEyeBoss>().GetHurt(damage);
-            Destroy(gameObject);
+            DamagePopup.Create(collision.transform.position, damage, false);
+
+            gameObject.SetActive(false);
         }
+
         if (collision.tag == "Ground")
         {
-            Destroy(gameObject);
+            gameObject.SetActive(false);
         }
     }
 }

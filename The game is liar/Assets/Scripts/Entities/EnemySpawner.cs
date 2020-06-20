@@ -25,6 +25,19 @@ public class EnemySpawner : MonoBehaviour
 
     private List<GameObject> enemiesObject = new List<GameObject>();
 
+    Player player;
+
+    bool hasPlay = false;
+
+    private void Start()
+    {
+        if (teleportToNextScene)
+        {
+            player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
+            player.tpDelegate += Teleport;
+        }
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -60,10 +73,21 @@ public class EnemySpawner : MonoBehaviour
             numberOfWaves--;
         }
 
-        if (teleportToNextScene && numberOfWaves <= 0)
+        if (teleportToNextScene && numberOfWaves <= 0 && numberOfEnemiesAlive <= 0)
         {
-            GameManager.instance.LoadGame(SceneManager.GetActiveScene().buildIndex + 1, true);
+            if (hasPlay)
+            {
+                return;
+            }
+            player.PlayTeleportAnimation();
+            hasPlay = true;
         }
+    }
+
+    void Teleport()
+    {
+        GameObject.FindGameObjectWithTag("Player").GetComponent<Player>().tpDelegate -= Teleport;
+        GameManager.instance.LoadGame(SceneManager.GetActiveScene().buildIndex + 1, true);
     }
 
     public void SpawnEnemy(int _numberOfEnemiesToSpawn)

@@ -45,7 +45,7 @@ GameObject:
   - component: {fileID: 6353579188007680603}
   - component: {fileID: 6353579188007680602}
   - component: {fileID: 6353579188007680601}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: jellyfish
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -193,9 +193,11 @@ MonoBehaviour:
   matWhite: {fileID: 2100000, guid: a52db8d2e3bb7c84f9a724b122d7baa7, type: 2}
   explosionParitcle: {fileID: 8704956847754461958, guid: 3181c8d874d60414f9701b433c293e7d,
     type: 3}
+  spawnEffect: {fileID: 6779077847636645100, guid: 36d7ac47e5d4fa94a978f44e53c8b68a,
+    type: 3}
   hitEffect: {fileID: 3092298337086151100, guid: b464239d2df71e34a813cc57e7c2a3e1,
     type: 3}
-  bullet: {fileID: 7993573382134315027, guid: 3189b55b22ed0464b9a211e131202819, type: 3}
+  bullet: JellyBullet
   shootRange: 0
   timeBtwShots: 0.5
   shootPos: {fileID: 6353579187994963945}
@@ -228,4 +230,9 @@ MonoBehaviour:
   timeBtwFlash: 0
   flashTime: 0
   rayLength: 0.5
+  dashSpeed: 0
+  attackTime: 0
+  dashTime: 0
+  chargeTime: 0
+  chargeMat: {fileID: 0}
   knockbackTime: 0.4

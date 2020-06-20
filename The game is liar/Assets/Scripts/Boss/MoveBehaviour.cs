@@ -38,15 +38,16 @@ public class MoveBehaviour : StateMachineBehaviour
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         player = GameObject.FindGameObjectWithTag("Player").transform;
-        rb = animator.GetComponent<Rigidbody2D>();
-        sr = animator.GetComponent<SpriteRenderer>();
+        rb = animator.GetComponentInParent<Rigidbody2D>();
+        sr = animator.GetComponentInChildren<SpriteRenderer>();
         defMat = sr.material;
-        boss = animator.GetComponent<GiantEyeBoss>();
+        boss = animator.GetComponentInParent<GiantEyeBoss>();
         dashTimeValue = dashTime;
         attackTimeValue = attackTime;
         chargeTimeValue = chargeTime;
         AudioManager.instance.Stop("8bit");
         AudioManager.instance.Play("BossFight");
+        boss.isInvulnerable = false;
     }
 
     // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
@@ -85,12 +86,6 @@ public class MoveBehaviour : StateMachineBehaviour
         rb.MovePosition(newPos);
 
         ClampPosition();
-    }
-
-    // OnStateExit is called when a transition ends and the state machine finishes evaluating this state
-    override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
-    {
-
     }
 
     void ChargeAttack()
@@ -149,13 +144,9 @@ public class MoveBehaviour : StateMachineBehaviour
         {
             boss.isInvulnerable = false;
             _anim.SetBool("isEnraged", true);
-            Debug.Log("Change to enraged animation");
         }
 
         rb.MovePosition(Vector2.MoveTowards(_anim.transform.position, boss.enragedPos.position, speed * Time.fixedDeltaTime));
-
-        Debug.Log("Moving to enraged position with velocity: " + rb.velocity);
-        Debug.Log("enraged position is: " + boss.enragedPos.position);
 
         boss.isInvulnerable = true;
     }

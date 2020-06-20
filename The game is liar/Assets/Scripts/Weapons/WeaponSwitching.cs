@@ -17,6 +17,11 @@ public class WeaponSwitching : MonoBehaviour
 
         float scrollInput = Input.GetAxis("Mouse ScrollWheel");
 
+        if (!transform.GetChild(selectedWeapon).GetComponent<Weapon>().canSwitch)
+        {
+            return;
+        }
+
         if (scrollInput > 0)
         {
             if (selectedWeapon >= transform.childCount - 1)

@@ -5,13 +5,13 @@ using UnityEditor;
 public class CustomEnemyEditor : Editor
 {
     public SerializedProperty
-    enemyType_Prop,
-    hitEffect_Prop,
-    bullet_Prop,
-    shootRange_Prop,
-    timeBtwShots_Prop,
-    shootPos_Prop,
-    rotOffset_Prop;
+        enemyType_Prop,
+        hitEffect_Prop,
+        bullet_Prop,
+        shootRange_Prop,
+        timeBtwShots_Prop,
+        shootPos_Prop,
+        rotOffset_Prop;
 
     private void OnEnable()
     {

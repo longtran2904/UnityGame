@@ -102,7 +102,7 @@ MonoBehaviour:
     type: 3}
   shotPos: {fileID: 2186091041426574776}
   startTimeBtwShots: 1
-  damage: 3
+  damage: 30
   muzzleFlash: {fileID: 5523569913668251960, guid: ca77e67723e7ada4695d5381333d2f84,
     type: 3}
   muzzelFlashTime: 0.1
@@ -112,6 +112,11 @@ MonoBehaviour:
   knockback: 200
   hitEffect: {fileID: 3092298337086151100, guid: b464239d2df71e34a813cc57e7c2a3e1,
     type: 3}
+  standardReload: 3
+  activeReload: 2.25
+  perfectReload: 1.8
+  failedReload: 4.1
+  ammoText: {fileID: 0}
 --- !u!1 &2186091041426574777
 GameObject:
   m_ObjectHideFlags: 0
@@ -187,7 +192,7 @@ GameObject:
   - component: {fileID: 2186091042047168511}
   - component: {fileID: 2186091042047168504}
   - component: {fileID: 2186091042047168505}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Alien
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -346,6 +351,8 @@ MonoBehaviour:
   matWhite: {fileID: 2100000, guid: a52db8d2e3bb7c84f9a724b122d7baa7, type: 2}
   explosionParitcle: {fileID: 8704956847754461958, guid: 3181c8d874d60414f9701b433c293e7d,
     type: 3}
+  spawnEffect: {fileID: 6779077847636645100, guid: 36d7ac47e5d4fa94a978f44e53c8b68a,
+    type: 3}
   hitEffect: {fileID: 0}
   bullet: {fileID: 0}
   shootRange: 0
@@ -380,4 +387,9 @@ MonoBehaviour:
   timeBtwFlash: 0
   flashTime: 0
   rayLength: 0.5
+  dashSpeed: 0
+  attackTime: 0
+  dashTime: 0
+  chargeTime: 0
+  chargeMat: {fileID: 0}
   knockbackTime: 0.1

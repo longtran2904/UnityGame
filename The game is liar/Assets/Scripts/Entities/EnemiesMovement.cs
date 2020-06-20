@@ -3,8 +3,9 @@ using UnityEngine;
 
 public class EnemiesMovement : MonoBehaviour
 {
-
     private Rigidbody2D rb;
+
+    private Enemies enemy;
 
     public float speed;
 
@@ -47,11 +48,6 @@ public class EnemiesMovement : MonoBehaviour
     private float timeToExplodeValue;
     private bool canChase = false;
     private bool canExplode = false;
-
-    [HideInInspector] public float timeBtwFlash;
-    private float timeBtwFlashValue;
-    [HideInInspector] public float flashTime;
-    private float flashTimeValue;
     private float timer;
     #endregion    
 
@@ -65,12 +61,35 @@ public class EnemiesMovement : MonoBehaviour
     [HideInInspector] public float rayLength = .5f;
     #endregion
 
+    #region NoEye Variables
+    [HideInInspector] public float dashSpeed;
+
+    bool isAttack;
+    bool canCharge = true;
+
+    Vector2 oldPos;
+
+    [HideInInspector] public float dashTime;
+    float dashTimeValue;
+
+    [HideInInspector] public float chargeTime;
+    float chargeTimeValue;
+    #endregion
+
     #region Knockback
     // Knock back
     public float knockbackTime;
     private float knockbackCounter;
     private Vector2 knockbackForce;
     private bool knockback;
+    #endregion
+
+    #region Flash Color Variables
+    [HideInInspector] public float timeBtwFlash;
+    private float timeBtwFlashValue;
+    [HideInInspector] public float flashTime;
+    private float flashTimeValue;
+    bool isFlashing;
     #endregion
 
     // Start is called before the first frame update
@@ -95,6 +114,10 @@ public class EnemiesMovement : MonoBehaviour
         timeBtwFlashValue = timeBtwFlash;
 
         flashTimeValue = flashTime;
+
+        dashTimeValue = dashTime;
+
+        chargeTimeValue = chargeTime;
 
         audioManager = FindObjectOfType<AudioManager>();
 
@@ -127,10 +150,19 @@ public class EnemiesMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (player == null)
+        {
+            player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
+        }
+
         if (enemyType == EnemyType.Maggot)
         {
             WallCheck();
         }
+        /*else if (enemyType == EnemyType.NoEye)
+        {
+            MoveTowardPlayer();
+        }*/
     }
     
     void FixedUpdate()
@@ -169,19 +201,15 @@ public class EnemiesMovement : MonoBehaviour
             case EnemyType.Jelly:
                 JellyMovement();
                 break;
+            case EnemyType.NoEye:
+                MoveTowardPlayer();
+                break;
         }        
     }
 
     void JellyMovement()
     {
-        if (player.transform.position.x < transform.position.x)
-        {
-            transform.eulerAngles = new Vector3(0, 180, 0);
-        }
-        else
-        {
-            transform.eulerAngles = Vector3.zero;
-        }
+        LookAtPlayer();
 
         if ((player.transform.position - transform.position).sqrMagnitude <= attackRange * attackRange && !enemies.touchingWall)
         {
@@ -247,7 +275,7 @@ public class EnemiesMovement : MonoBehaviour
         else
         {
             timeToExplodeValue -= Time.deltaTime;
-            ExplodeFlashing();
+            Flashing();
         }
     }
 
@@ -298,14 +326,7 @@ public class EnemiesMovement : MonoBehaviour
         Debug.DrawLine(transform.position + new Vector3((sr.bounds.extents.x + .01f) * transform.right.x, 0, 0), 
             transform.position + new Vector3((sr.bounds.extents.x + .01f + attackRange) * transform.right.x, 0, 0), Color.green);
 
-        if (player.transform.position.x <= transform.position.x)
-        {
-            transform.eulerAngles = new Vector3(0, 180, 0);
-        }
-        else
-        {
-            transform.eulerAngles = new Vector3(0, 0, 0);
-        }
+        LookAtPlayer();
 
         if (playerCheck && playerCheck.transform.tag == "Player" && groundCheck == true)
         {
@@ -332,7 +353,7 @@ public class EnemiesMovement : MonoBehaviour
 
             weapon.projectilePrefab.isEnemy = true;
 
-            weapon.ShootProjectile();
+            weapon.ShootProjectile("FlyingAlienBullet", "PlayerShoot");
 
             return;
         }
@@ -379,8 +400,111 @@ public class EnemiesMovement : MonoBehaviour
     }
     #endregion
 
+    void MoveTowardPlayer()
+    {
+        if (((player.transform.position - transform.position).sqrMagnitude <= attackRange * attackRange && canCharge))
+        {
+            ChargeAttack();
+
+            return;
+        }
+        else if ((isFlashing && canCharge))
+        {
+            ChargeAttack();
+
+            return;
+        }
+        else if (isAttack)
+        {
+            if (dashTimeValue <= 0)
+            {
+                isAttack = false;
+                canCharge = true;
+            }
+
+            dashTimeValue -= Time.deltaTime;
+
+            return;
+        }
+
+        LookAtPlayer();
+
+        rb.velocity = (player.transform.position - transform.position).normalized * speed * Time.deltaTime;
+    }
+
+    void ChargeAttack()
+    {
+        if (chargeTimeValue <= 0)
+        {
+            sr.material = defaultMaterial;
+            Attack();
+            return;
+        }
+
+        chargeTimeValue -= Time.deltaTime;
+
+        rb.velocity = Vector2.zero;
+
+        Flashing();
+    }
+
+    void Attack()
+    {
+        Vector2 target = player.transform.position - rb.transform.position;
+
+        rb.velocity = target.normalized * dashSpeed * Time.deltaTime;
+
+        canCharge = false;
+
+        isAttack = true;
+
+        isFlashing = false;
+
+        dashTimeValue = dashTime;
+
+        chargeTimeValue = chargeTime;
+    }
+
+    public void LookAtPlayer()
+    {
+        if (player.transform.position.x <= transform.position.x)
+        {
+            transform.eulerAngles = new Vector3(0, 180, 0);
+        }
+        else if (player.transform.position.x > transform.position.x)
+        {
+            transform.eulerAngles = Vector3.zero;
+        }
+    }
+
+    void Flashing()
+    {
+        isFlashing = true;
+
+        if (sr.material.color == triggerMaterial.color)
+        {
+            flashTimeValue -= Time.deltaTime;
+        }
+
+        if (flashTimeValue <= 0)
+        {
+            sr.material = defaultMaterial;
+            flashTimeValue = flashTime;
+        }
+
+        if (Time.time >= timeBtwFlashValue)
+        {
+            sr.material = triggerMaterial;
+            timeBtwFlashValue = Time.time + timeBtwFlash;
+        }
+    }
+
     public void KnockBack(Vector2 _knockbackForce)
     {
+        if (knockbackTime == 0)
+        {
+            return;
+        }
         knockbackCounter = knockbackTime;
         knockbackForce = _knockbackForce;
         rb.velocity = _knockbackForce;

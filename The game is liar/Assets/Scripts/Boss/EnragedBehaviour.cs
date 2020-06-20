@@ -6,7 +6,6 @@ public class EnragedBehaviour : StateMachineBehaviour
 {
     public Projectile projectilePrefab;
     public float rotateSpeed;
-    public float projectileSpeed;
     public int projectileDamage;
 
     public float timeBtwShots;
@@ -28,9 +27,9 @@ public class EnragedBehaviour : StateMachineBehaviour
     // OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        boss = animator.GetComponent<GiantEyeBoss>();
+        boss = animator.GetComponentInParent<GiantEyeBoss>();
         sr = animator.GetComponent<SpriteRenderer>();
-        rb = animator.GetComponent<Rigidbody2D>();
+        rb = animator.GetComponentInParent<Rigidbody2D>();
         timeBtwShotsValue = timeBtwShots;
         timeBtwFlashValue = timeBtwFlash;
         flashTimeValue = flashTime;
@@ -104,12 +103,10 @@ public class EnragedBehaviour : StateMachineBehaviour
 
             float rotationZ = Mathf.Atan2(difference.y, difference.x) * Mathf.Rad2Deg;
 
-            Projectile projectile = Instantiate(projectilePrefab, boss.shootPos[i].position,
-                Quaternion.Euler(0, 0, rotationZ)) as Projectile;
+            /*Projectile projectile = Instantiate(projectilePrefab, boss.shootPos[i].position,
+                Quaternion.Euler(0, 0, rotationZ)) as Projectile;*/
 
-            projectile.isEnemy = true;
-
-            projectile.speed = projectileSpeed;
+            Projectile projectile = ObjectPooler.instance.SpawnFromPool<Projectile>("BloodProjectile", boss.shootPos[i].position, Quaternion.Euler(0, 0, rotationZ));
 
             projectile.damage = projectileDamage;
 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using EZCameraShake;
+using System;
 
 public class GiantEyeBoss : MonoBehaviour
 {
@@ -26,15 +27,25 @@ public class GiantEyeBoss : MonoBehaviour
     private AudioManager audioManager;
     private bool playSound = true;
 
+    public GameObject endScreen;
+
     // Start is called before the first frame update
     void Start()
     {
         audioManager = FindObjectOfType<AudioManager>();
         rb = GetComponent<Rigidbody2D>();
-        anim = GetComponent<Animator>();
-        sr = GetComponent<SpriteRenderer>();
+        anim = GetComponentInChildren<Animator>();
+        sr = GetComponentInChildren<SpriteRenderer>();
         defMat = sr.material;
         player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
+    }
+
+    private void Update()
+    {
+        if (anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1 && anim.GetBool("isDied"))
+        {
+            Death();
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -75,7 +86,7 @@ public class GiantEyeBoss : MonoBehaviour
         sr.material = defMat;
     }
 
-    void Death()
+    public void Death()
     {
         audioManager.Play("BossExplosion");
 
@@ -85,18 +96,29 @@ public class GiantEyeBoss : MonoBehaviour
 
         AudioManager.instance.Stop("BossFight");
 
-        Destroy(gameObject);
+        Invoke("EndDemo", 1);
+
+        gameObject.SetActive(false);
+
+        Destroy(gameObject, 1);
+    }
+
+    void EndDemo()
+    {
+        endScreen.SetActive(true);
+
+        Time.timeScale = 0;
     }
 
     public void LookAtPlayer()
     {
-        if (player.transform.position.x < transform.position.x)
-        {
-            transform.eulerAngles = new Vector3(0, 180, 0);
-        }
-        else if (player.transform.position.x > transform.position.x)
+        if (player.transform.position.x > transform.position.x)
         {
             transform.eulerAngles = Vector3.zero;
+        }
+        else if (player.transform.position.x < transform.position.x)
+        {
+            transform.eulerAngles = new Vector3(0, 180, 0);
         }
     }
 }

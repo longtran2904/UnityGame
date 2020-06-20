@@ -39,12 +39,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6691860176887862455}
-  - component: {fileID: 6691860176887862454}
   - component: {fileID: 6691860176887862450}
   - component: {fileID: 6691860176887862453}
   - component: {fileID: 6691860176887862452}
   - component: {fileID: 4491743802085791087}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: turret
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -67,56 +66,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!212 &6691860176887862454
-SpriteRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6691860176887862441}
-  m_Enabled: 0
-  m_CastShadows: 0
-  m_ReceiveShadows: 0
-  m_DynamicOccludee: 1
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 0
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 0
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 338600657
-  m_SortingLayer: 1
-  m_SortingOrder: -5
-  m_Sprite: {fileID: 21300000, guid: d65eab37fc55b634b951eac5cb3ff1bc, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_FlipX: 0
-  m_FlipY: 0
-  m_DrawMode: 0
-  m_Size: {x: 0.16, y: 0.16}
-  m_AdaptiveModeThreshold: 0.5
-  m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
-  m_MaskInteraction: 0
-  m_SpriteSortPoint: 0
 --- !u!58 &6691860176887862450
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -152,10 +101,12 @@ MonoBehaviour:
   matWhite: {fileID: 2100000, guid: a52db8d2e3bb7c84f9a724b122d7baa7, type: 2}
   explosionParitcle: {fileID: 8704956847754461958, guid: 3181c8d874d60414f9701b433c293e7d,
     type: 3}
+  spawnEffect: {fileID: 6779077847636645100, guid: 36d7ac47e5d4fa94a978f44e53c8b68a,
+    type: 3}
   hitEffect: {fileID: 0}
-  bullet: {fileID: -8673791678216433891, guid: c79d30dce0096394fa092a4d3ab858a2, type: 3}
-  shootRange: 15
-  timeBtwShots: 0.5
+  bullet: TurretBullet
+  shootRange: 30
+  timeBtwShots: 1
   shootPos: {fileID: 6691860176307009593}
   rotOffset: 0
   knockbackForce: {x: 0, y: 0}
@@ -183,10 +134,13 @@ MonoBehaviour:
   explodeRange: 0
   timeToExplode: 0
   distanceToChase: 0
+  rayLength: 0.5
+  dashSpeed: 0
+  dashTime: 0
+  chargeTime: 0
+  knockbackTime: 0
   timeBtwFlash: 0
   flashTime: 0
-  rayLength: 0.5
-  knockbackTime: 0
 --- !u!50 &4491743802085791087
 Rigidbody2D:
   serializedVersion: 4

@@ -145,7 +145,7 @@ GameObject:
   - component: {fileID: 3723891200985152329}
   - component: {fileID: 3723891200985152334}
   - component: {fileID: 3723891200985152335}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: flyingAlien
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -228,17 +228,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health: 40
-  damage: 40
+  damage: 30
   touchingWall: 0
   enemyType: 4
   matWhite: {fileID: 2100000, guid: a52db8d2e3bb7c84f9a724b122d7baa7, type: 2}
   explosionParitcle: {fileID: 8704956847754461958, guid: 3181c8d874d60414f9701b433c293e7d,
     type: 3}
+  spawnEffect: {fileID: 6779077847636645100, guid: 36d7ac47e5d4fa94a978f44e53c8b68a,
+    type: 3}
   hitEffect: {fileID: 2583980454224756823, guid: 7476d22f9e4460845be55019e11f9858,
     type: 3}
-  bullet: {fileID: 2418961360220588656, guid: eaeaa087048d7f545be3cd97d91fee0f, type: 3}
+  bullet: FlyingAlienBullet
   shootRange: 0
-  timeBtwShots: 0.3
+  timeBtwShots: 0.5
   shootPos: {fileID: 3723891200157486641}
   rotOffset: 0
   knockbackForce: {x: 0, y: 0}
@@ -269,4 +271,9 @@ MonoBehaviour:
   timeBtwFlash: 0
   flashTime: 0
   rayLength: 0.5
+  dashSpeed: 0
+  attackTime: 0
+  dashTime: 0
+  chargeTime: 0
+  chargeMat: {fileID: 0}
   knockbackTime: 0.2

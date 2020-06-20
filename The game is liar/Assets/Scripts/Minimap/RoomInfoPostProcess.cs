@@ -29,6 +29,7 @@ public class RoomInfoPostProcess : DungeonGeneratorPostProcessBase
 
                     bool isWall = false;
                     bool canShow = false;
+                    bool isBossRoom = false;
 
                     if (room.RoomTemplateInstance.name == "Starting Room(Clone)")
                     {
@@ -40,7 +41,12 @@ public class RoomInfoPostProcess : DungeonGeneratorPostProcessBase
                         isWall = true;
                     }
 
-                    Minimap.instance.tilesDictionary.Add(pos, new[] { isWall, canShow });
+                    if (room.RoomTemplateInstance.name == "Boss Room(Clone)")
+                    {
+                        isBossRoom = true;
+                    }
+
+                    Minimap.instance.tilesDictionary.Add(pos, new[] { isWall, canShow,  isBossRoom});
                 }
             }
         }

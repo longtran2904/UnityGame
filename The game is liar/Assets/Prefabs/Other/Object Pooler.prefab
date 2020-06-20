@@ -1,0 +1,66 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1061631942492205871
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1061631942492205865}
+  - component: {fileID: 1061631942492205864}
+  m_Layer: 0
+  m_Name: Object Pooler
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1061631942492205865
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1061631942492205871}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1061631942492205864
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1061631942492205871}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4fdfa8a52d1c514ba13f4cb83a8fdf5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pools:
+  - tag: PlayerBullet
+    prefab: {fileID: 3768115829352841195, guid: f93931237b1100d4f8ff9518401af730,
+      type: 3}
+    size: 150
+  - tag: FlyingAlienBullet
+    prefab: {fileID: 2319484991319350174, guid: eaeaa087048d7f545be3cd97d91fee0f,
+      type: 3}
+    size: 150
+  - tag: JellyBullet
+    prefab: {fileID: 7993573382134315026, guid: 3189b55b22ed0464b9a211e131202819,
+      type: 3}
+    size: 150
+  - tag: TurretBullet
+    prefab: {fileID: 7993573382134315026, guid: 3189b55b22ed0464b9a211e131202819,
+      type: 3}
+    size: 150
+  - tag: BloodProjectile
+    prefab: {fileID: 6920052880215728311, guid: 56678d641be11834eb20f7a3551e7bc9,
+      type: 3}
+    size: 150

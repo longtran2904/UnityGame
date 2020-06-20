@@ -5,17 +5,22 @@ using UnityEditor;
 public class CustomEnemyControllorEditor : Editor
 {
     public SerializedProperty
-    radius_Prop,
-    whatIsGround_Prop,
-    distanceToExplode_Prop,
-    explodeRange_Prop,
-    timeToExplode_Prop,
-    distanceToChase_Prop,
-    timeBtwFlash_Prop,
-    flashTime_Prop,
-    triggerMaterial_Prop,
-    attackRange_Prop,
-    rayLength_Prop;
+        radius_Prop,
+        whatIsGround_Prop,
+        distanceToExplode_Prop,
+        explodeRange_Prop,
+        timeToExplode_Prop,
+        distanceToChase_Prop,
+        timeBtwFlash_Prop,
+        flashTime_Prop,
+        triggerMaterial_Prop,
+        attackRange_Prop,
+        rayLength_Prop,
+        dashSpeed_Prop,
+        dashTime_Prop,
+        chargeTime_Prop,
+        chargeMat_Prop;
+
 
     private void OnEnable()
     {
@@ -30,6 +35,9 @@ public class CustomEnemyControllorEditor : Editor
         triggerMaterial_Prop = serializedObject.FindProperty("triggerMaterial");
         attackRange_Prop = serializedObject.FindProperty("attackRange");
         rayLength_Prop = serializedObject.FindProperty("rayLength");
+        dashSpeed_Prop = serializedObject.FindProperty("dashSpeed");
+        dashTime_Prop = serializedObject.FindProperty("dashTime");
+        chargeTime_Prop = serializedObject.FindProperty("chargeTime");
     }
 
     public override void OnInspectorGUI()
@@ -63,6 +71,14 @@ public class CustomEnemyControllorEditor : Editor
                 break;
             case EnemyType.Jelly:
                 EditorGUILayout.PropertyField(attackRange_Prop, new GUIContent("Attack range"));
+                break;
+            case EnemyType.NoEye:
+                EditorGUILayout.PropertyField(dashSpeed_Prop, new GUIContent("Dash Speed"));
+                EditorGUILayout.PropertyField(dashTime_Prop, new GUIContent("Dash Time"));
+                EditorGUILayout.PropertyField(chargeTime_Prop, new GUIContent("Charge Time"));
+                EditorGUILayout.PropertyField(triggerMaterial_Prop, new GUIContent("Trigger Material"));
+                EditorGUILayout.PropertyField(timeBtwFlash_Prop, new GUIContent("Time between flashes"));
+                EditorGUILayout.PropertyField(flashTime_Prop, new GUIContent("Flash time"));
                 break;
         }
 

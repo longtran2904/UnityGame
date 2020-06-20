@@ -10,7 +10,6 @@ public class GameManager : MonoBehaviour
     #region UI Variables
     public static GameManager instance;
     public GameObject loadingScreen;
-    public ProgressBar bar;
     #endregion
 
     //#region Multiplayer Variables
@@ -31,6 +30,8 @@ public class GameManager : MonoBehaviour
             Debug.Log("Instance already exists, Destroying object!");
             Destroy(this);
         }
+
+        QualitySettings.pixelLightCount = 20;
 
         SceneManager.LoadSceneAsync((int)SceneIndexes.START_MENU, LoadSceneMode.Additive);
     }
@@ -60,7 +61,7 @@ public class GameManager : MonoBehaviour
     {
         loadingScreen.gameObject.SetActive(true);
         scenesLoading.Add(SceneManager.UnloadSceneAsync((int)SceneIndexes.START_MENU));
-        scenesLoading.Add(SceneManager.LoadSceneAsync((int)SceneIndexes.CART, LoadSceneMode.Additive));
+        scenesLoading.Add(SceneManager.LoadSceneAsync((int)SceneIndexes.ROOM, LoadSceneMode.Additive));
 
         StartCoroutine(GetSceneLoadProgress());
     }
@@ -81,11 +82,6 @@ public class GameManager : MonoBehaviour
                 }
 
                 totalSceneProgress = (totalSceneProgress / scenesLoading.Count) * 100;
-
-                if (bar)
-                {
-                    bar.current = Mathf.RoundToInt(totalSceneProgress);
-                }
 
                 yield return null;
             }

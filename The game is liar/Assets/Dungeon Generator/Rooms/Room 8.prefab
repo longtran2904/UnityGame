@@ -13865,14 +13865,18 @@ MonoBehaviour:
   enemies:
   - enemyPrefab: {fileID: 2186091042047168454, guid: dcacad71a17630342b212f437b1e1dd7,
       type: 3}
-    prob: 0.5
+    prob: 0.4
   - enemyPrefab: {fileID: 4817691860198644129, guid: 946973c6766886d419466c4b6d4bfea8,
       type: 3}
     prob: 0.25
   - enemyPrefab: {fileID: 3723891200985152332, guid: 9dd7a0d452ccb014f9e1939675ed3f56,
       type: 3}
     prob: 0.25
+  - enemyPrefab: {fileID: 7850950392155626648, guid: c87b904466d026645bf0669aa8b4e29d,
+      type: 3}
+    prob: 0.1
   active: 0
+  teleportToNextScene: 0
 --- !u!1 &8973116138523212441
 GameObject:
   m_ObjectHideFlags: 0

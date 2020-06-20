@@ -4,8 +4,7 @@ using UnityEngine;
 using System;
 
 public class PlayerController : MonoBehaviour
-{
-    
+{    
     public float speed;
 
     private Rigidbody2D rb;
@@ -34,8 +33,6 @@ public class PlayerController : MonoBehaviour
     public float groundRememberTime;
     private float groundRemember;
 
-    private AudioManager audioManager;
-
     // Knock back
     public float knockbackTime;
     private float knockbackCounter;
@@ -50,7 +47,6 @@ public class PlayerController : MonoBehaviour
         anim = GetComponent<Animator>();
         mainCamera = Camera.main;
         rb.drag = GetDragFromAcceleration(Physics2D.gravity.magnitude, 8);
-        audioManager = FindObjectOfType<AudioManager>();
     }
 
     // Update is called once per frame
@@ -166,12 +162,10 @@ public class PlayerController : MonoBehaviour
             if (mousePos.x - transform.position.x > 0)
             {
                 transform.eulerAngles = new Vector3(0, 180, 180);
-                //facingRight = true;
             }
             else if (mousePos.x - transform.position.x < 0)
             {
                 transform.eulerAngles = new Vector3(0, 0, 180);
-                //facingRight = false;
             }
         }
         else
@@ -180,12 +174,10 @@ public class PlayerController : MonoBehaviour
             if (mousePos.x - transform.position.x > 0)
             {
                 transform.eulerAngles = new Vector3(0, 0, 0);
-                //facingRight = true;
             }
             else if (mousePos.x - transform.position.x < 0)
             {
                 transform.eulerAngles = new Vector3(0, 180, 0);
-                //facingRight = false;
             }
         }        
     }
@@ -212,7 +204,7 @@ public class PlayerController : MonoBehaviour
 
             Invoke("SwitchTop", .1f);
 
-            audioManager.Play("PlayerJump");
+            AudioManager.instance.Play("PlayerJump");
         }
     }
 
