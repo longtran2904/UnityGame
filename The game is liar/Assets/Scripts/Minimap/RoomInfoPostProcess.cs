@@ -1,5 +1,5 @@
-﻿using Assets.ProceduralLevelGenerator.Scripts.Generators.Common;
-using Assets.ProceduralLevelGenerator.Scripts.Generators.DungeonGenerator.PipelineTasks;
+﻿using ProceduralLevelGenerator.Unity.Generators.Common;
+using ProceduralLevelGenerator.Unity.Generators.DungeonGenerator.PipelineTasks;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 

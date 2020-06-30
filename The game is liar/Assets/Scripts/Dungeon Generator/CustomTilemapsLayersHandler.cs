@@ -1,4 +1,4 @@
-﻿using Assets.ProceduralLevelGenerator.Scripts.Generators.Common.RoomTemplates.TilemapLayers;
+﻿using ProceduralLevelGenerator.Unity.Generators.Common.RoomTemplates.TilemapLayers;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -9,6 +9,8 @@ namespace Assets.Scripts
     [CreateAssetMenu(menuName = "Dungeon generator/Custom tilemap layers handler", fileName = "CustomTilemapLayersHandler")]
     public class CustomTilemapsLayersHandler : TilemapLayersHandlerBase
     {
+        public Material material;
+
         public override void InitializeTilemaps(GameObject gameObject)
         {
             // First make sure that you add the grid component
@@ -40,6 +42,7 @@ namespace Assets.Scripts
             var tilemapRenderer = tilemapObject.AddComponent<TilemapRenderer>();
             tilemapRenderer.sortingOrder = sortingOrder;
             tilemapRenderer.sortingLayerName = sortingLayerName;
+            tilemapRenderer.material = material;
 
             return tilemapObject;
         }

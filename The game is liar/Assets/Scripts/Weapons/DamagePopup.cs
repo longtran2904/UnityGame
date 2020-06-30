@@ -11,7 +11,6 @@ public class DamagePopup : MonoBehaviour, IPooledObject
     public float moveSpeed;
     public Color defaultColor;
     public Color criticalColor;
-    public static GameObject popupObj;
 
     private float timer;
     private TextMeshPro text;

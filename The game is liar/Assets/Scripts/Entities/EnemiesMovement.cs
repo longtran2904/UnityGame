@@ -27,7 +27,7 @@ public class EnemiesMovement : MonoBehaviour
     BoxCollider2D box;
     
 
-    private Transform wallCheck;
+    private Transform wallCheckPos;
     [HideInInspector] public float radius;
     [HideInInspector] public LayerMask whatIsGround;
     #endregion
@@ -57,8 +57,6 @@ public class EnemiesMovement : MonoBehaviour
     private Transform arm;
 
     float currentAngle = 0;
-
-    [HideInInspector] public float rayLength = .5f;
     #endregion
 
     #region NoEye Variables
@@ -130,7 +128,7 @@ public class EnemiesMovement : MonoBehaviour
                 {
                     if (child.name.Equals("WallCheck"))
                     {
-                        wallCheck = child;
+                        wallCheckPos = child;
                     }
                 }
 
@@ -159,10 +157,6 @@ public class EnemiesMovement : MonoBehaviour
         {
             WallCheck();
         }
-        /*else if (enemyType == EnemyType.NoEye)
-        {
-            MoveTowardPlayer();
-        }*/
     }
     
     void FixedUpdate()
@@ -304,7 +298,7 @@ public class EnemiesMovement : MonoBehaviour
     }
     #endregion
 
-    void AlienMovement()
+    /*void AlienMovement()
     {
         int groundMask = LayerMask.GetMask("Ground");
 
@@ -375,6 +369,74 @@ public class EnemiesMovement : MonoBehaviour
         rb.velocity = new Vector2(transform.right.x * speed, rb.velocity.y);
 
         anim.SetBool("isRunning", true);
+    }*/
+
+
+    int groundMask;
+    float rayLength;
+    Vector2 wallRayPos;
+    Vector2 groundRayPos;
+    RaycastHit2D groundCheck, wallCheck, playerCheck;
+    bool _canChase = false;
+
+    void AlienMovement()
+    {
+        AlienSetup();
+        AlienStateMachine();
+    }
+
+    void AlienSetup()
+    {
+        groundMask = LayerMask.GetMask("Ground");
+        rayLength = .5f;
+        wallRayPos = transform.position + new Vector3(sr.bounds.extents.x * transform.right.x, -sr.bounds.extents.y - 0.01f, 0);
+        groundCheck = Physics2D.Raycast(wallRayPos, Vector2.down, rayLength, groundMask);
+        groundRayPos = transform.position + new Vector3((sr.bounds.extents.x + .01f) * transform.right.x, 0, 0);
+        wallCheck = Physics2D.Raycast(groundRayPos, transform.right, rayLength, groundMask);
+    }
+
+    void AlienStateMachine()
+    {
+        Vector3 lastSeenPos = new Vector3();
+        if (playerCheck && groundCheck)
+        {
+            rb.velocity = new Vector2(0, rb.velocity.y);
+            AlienAttack();
+            lastSeenPos = player.transform.position;
+            _canChase = true;
+        }
+        else if (_canChase)
+        {
+            AlienChase(lastSeenPos);
+            _canChase = false;
+        }
+        else
+        {
+            AlienPatrol();
+        }
+    }
+
+    void AlienPatrol()
+    {
+        rb.velocity = transform.right * speed;
+        if (!groundCheck || wallCheck)
+        {
+            transform.eulerAngles = new Vector3(0, 0, 180);
+        }
+    }
+
+    void AlienChase(Vector3 _lastSeenPos)
+    {
+        rb.velocity = (_lastSeenPos - transform.position).normalized * speed * Time.deltaTime;
+    }
+
+    void AlienAttack()
+    {
+        Vector2 difference = player.transform.position - weapon.transform.position;
+        float rotationZ = Mathf.Atan2(difference.y, difference.x) * Mathf.Rad2Deg;
+        weapon.projectilePrefab.isEnemy = true;
+        weapon.ShootProjectile("FlyingAlienBullet", "PlayerShoot");
+        return;
     }
 
     #region MaggotLogic
@@ -384,19 +446,12 @@ public class EnemiesMovement : MonoBehaviour
     }
     void WallCheck()
     {
-        touchingWall = Physics2D.OverlapCircle(wallCheck.position, radius, whatIsGround);
-        //RaycastHit2D hitInfo;
-        //hitInfo = Physics2D.Raycast(transform.position - transform.up.normalized - transform.right.normalized, -transform.up, .5f);
-        //Debug.DrawRay(transform.position - transform.up.normalized - transform.right.normalized, -transform.up, Color.red);
+        touchingWall = Physics2D.OverlapCircle(wallCheckPos.position, radius, whatIsGround);
 
         if (touchingWall)
         {
             transform.eulerAngles += new Vector3(0, 0, 90);
         }
-        //else if (!hitInfo)
-        //{
-        //    transform.eulerAngles -= new Vector3(0, 0, 90);
-        //}
     }
     #endregion
 
@@ -524,7 +579,7 @@ public class EnemiesMovement : MonoBehaviour
         if (enemyType == EnemyType.Maggot)
         {
             Gizmos.color = Color.red;
-            Gizmos.DrawWireSphere(wallCheck.position, radius);
+            Gizmos.DrawWireSphere(wallCheckPos.position, radius);
         }
     }
 }

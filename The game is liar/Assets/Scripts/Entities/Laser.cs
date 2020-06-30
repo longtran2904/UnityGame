@@ -8,11 +8,13 @@ public class Laser : MonoBehaviour
     public bool willTurnOff;
     public float timeOn;
     public float timeOff;
+    public float offsetTimer;
     public GameObject laserBeam;
 
     private float timeOnValue;
     private float timeOffValue;
-    private bool isOn;
+    private bool isOn = false;
+    private bool canStart = false;
     private Animator laserAnim;
 
     // Start is called before the first frame update
@@ -22,12 +24,18 @@ public class Laser : MonoBehaviour
         timeOnValue = timeOn;
         timeOffValue = timeOff;
         laserAnim = laserBeam.GetComponent<Animator>();
+        Invoke("Setup", offsetTimer);
     }
 
     // Update is called once per frame
     void Update()
     {
         if (!willTurnOff)
+        {
+            return;
+        }
+
+        if (!canStart)
         {
             return;
         }
@@ -51,6 +59,11 @@ public class Laser : MonoBehaviour
                 laserAnim.Play("laser");
             }
         }
+    }
+
+    void Setup()
+    {
+        canStart = true;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)

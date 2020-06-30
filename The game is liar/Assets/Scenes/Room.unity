@@ -98,7 +98,7 @@ LightmapSettings:
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
   m_LightingDataAsset: {fileID: 0}
-  m_UseShadowmask: 0
+  m_UseShadowmask: 1
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -296,10 +296,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8074dc491ddc34f4e83332d9eae76980, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Position: {x: 0, y: 0}
   Name: Corridor
   IndividualRoomTemplates: []
   RoomTemplateSets: []
-  Position: {x: 0, y: 0}
 --- !u!1 &175072759
 GameObject:
   m_ObjectHideFlags: 0
@@ -943,10 +943,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8074dc491ddc34f4e83332d9eae76980, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Position: {x: 0, y: 0}
   Name: Corridor
   IndividualRoomTemplates: []
   RoomTemplateSets: []
-  Position: {x: 0, y: 0}
 --- !u!1 &862117434
 GameObject:
   m_ObjectHideFlags: 0
@@ -1777,10 +1777,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8074dc491ddc34f4e83332d9eae76980, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Position: {x: 0, y: 0}
   Name: Corridor
   IndividualRoomTemplates: []
   RoomTemplateSets: []
-  Position: {x: 0, y: 0}
 --- !u!224 &1301545869 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 4257054356033542398, guid: 92d1d4624282f4745afdaf4856770037,
@@ -2257,10 +2257,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8074dc491ddc34f4e83332d9eae76980, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Position: {x: 0, y: 0}
   Name: Corridor
   IndividualRoomTemplates: []
   RoomTemplateSets: []
-  Position: {x: 0, y: 0}
 --- !u!114 &1551906824
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2273,10 +2273,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8074dc491ddc34f4e83332d9eae76980, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Position: {x: 0, y: 0}
   Name: Corridor
   IndividualRoomTemplates: []
   RoomTemplateSets: []
-  Position: {x: 0, y: 0}
 --- !u!114 &1557748905 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4167463370413487188, guid: 2c701e9fa35761542bec5d94a044637e,
@@ -2301,10 +2301,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8074dc491ddc34f4e83332d9eae76980, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Position: {x: 0, y: 0}
   Name: Corridor
   IndividualRoomTemplates: []
   RoomTemplateSets: []
-  Position: {x: 0, y: 0}
 --- !u!1 &1618717870
 GameObject:
   m_ObjectHideFlags: 0
@@ -2536,10 +2536,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8074dc491ddc34f4e83332d9eae76980, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Position: {x: 0, y: 0}
   Name: Corridor
   IndividualRoomTemplates: []
   RoomTemplateSets: []
-  Position: {x: 0, y: 0}
 --- !u!1 &1827352196
 GameObject:
   m_ObjectHideFlags: 0
@@ -3165,6 +3165,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 11725bdbb93631241b38951f78cae60c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  version: 2
   FixedLevelGraphConfig:
     LevelGraph: {fileID: 11400000, guid: a61d12830d323c54d8960e192c7cecfa, type: 2}
     UseCorridors: 1
@@ -3172,23 +3173,27 @@ MonoBehaviour:
     RootGameObject: {fileID: 1827352196}
     Timeout: 120000
     RepeatModeOverride: 0
-  OtherConfig:
-    UseRandomSeed: 1
-    RandomGeneratorSeed: 518401794
-    GenerateOnStart: 0
   PostProcessConfig:
     InitializeSharedTilemaps: 1
     TilemapLayersHandler: {fileID: 11400000, guid: 914771b389be8764da64984c7005c8dc,
       type: 2}
     CopyTilesToSharedTilemaps: 1
-    CenterGrid: 1
+    CenterGrid: 0
     DisableRoomTemplatesRenderers: 1
     DisableRoomTemplatesColliders: 1
   CustomPostProcessTasks:
   - {fileID: 11400000, guid: 1a16152c52bb5c54bb426ce102bb46b1, type: 2}
   - {fileID: 11400000, guid: d3b488872045ef049a568346a864ee58, type: 2}
+  OtherConfig:
+    UseRandomSeed: 1
+    RandomGeneratorSeed: 518401794
+    GenerateOnStart: 0
   AdvancedConfig:
     ThrowExceptionsImmediately: 0
+  UseRandomSeed: 1
+  RandomGeneratorSeed: 518401794
+  GenerateOnStart: 0
+  ThrowExceptionsImmediately: 0
 --- !u!4 &1827352199
 Transform:
   m_ObjectHideFlags: 0
@@ -3215,10 +3220,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8074dc491ddc34f4e83332d9eae76980, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Position: {x: 0, y: 0}
   Name: Corridor
   IndividualRoomTemplates: []
   RoomTemplateSets: []
-  Position: {x: 0, y: 0}
 --- !u!1 &1935149629 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4167463369890117670, guid: 2c701e9fa35761542bec5d94a044637e,

@@ -12,3 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c6575f0fea756ea419077ec7b20d6867, type: 3}
   m_Name: CustomTilemapLayersHandler
   m_EditorClassIdentifier: 
+  material: {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}

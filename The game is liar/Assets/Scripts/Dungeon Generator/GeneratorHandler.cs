@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
-using Assets.ProceduralLevelGenerator.Scripts.Generators.DungeonGenerator;
+using ProceduralLevelGenerator.Unity.Generators.DungeonGenerator;
+using UnityEngine.Tilemaps;
 
 public class GeneratorHandler : MonoBehaviour
 {
@@ -32,11 +33,7 @@ public class GeneratorHandler : MonoBehaviour
                 Debug.Log("Timeout encountered");
             }
         }
-    }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+        Debug.Log(generator.transform.GetChild(1).GetChild(0).GetComponent<TilemapRenderer>().material);
     }
 }

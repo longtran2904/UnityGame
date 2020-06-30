@@ -64,3 +64,7 @@ MonoBehaviour:
     prefab: {fileID: 6920052880215728311, guid: 56678d641be11834eb20f7a3551e7bc9,
       type: 3}
     size: 150
+  - tag: DamagePopup
+    prefab: {fileID: 5462112772473570131, guid: 9e3f4569a383a1b4b81f9ec8497f6833,
+      type: 3}
+    size: 50

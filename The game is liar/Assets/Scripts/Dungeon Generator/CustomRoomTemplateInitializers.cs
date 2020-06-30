@@ -1,6 +1,6 @@
 ﻿using System.IO;
-using Assets.ProceduralLevelGenerator.Scripts.Generators.Common.RoomTemplates.RoomTemplateInitializers;
 using UnityEngine;
+using ProceduralLevelGenerator.Unity.Generators.Common.RoomTemplates.RoomTemplateInitializers;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -8,7 +8,7 @@ using UnityEditor;
 
 namespace Assets.Scripts
 {
-    public class CustomRoomTemplateInitializer : BaseRoomTemplateInitializer
+    public class CustomRoomTemplateInitializer : RoomTemplateInitializerBase
     {
         public override void Initialize()
         {

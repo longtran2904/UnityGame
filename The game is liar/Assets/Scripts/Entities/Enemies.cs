@@ -204,8 +204,7 @@ public class Enemies : MonoBehaviour
         {
             AudioManager.instance.Play(_soundToPlay);
 
-            //projectile = Instantiate(_bullet, shootPos.transform.position, _rotation) as Projectile;
-            projectile = ObjectPooler.instance.SpawnFromPool<Projectile>(_bullet, shootPos.transform.position, transform.rotation);
+            projectile = ObjectPooler.instance.SpawnFromPool<Projectile>(_bullet, shootPos.transform.position, _rotation);
 
             projectile.isEnemy = true;
 

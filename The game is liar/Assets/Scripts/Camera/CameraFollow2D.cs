@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Assets.ProceduralLevelGenerator.Scripts.Generators.DungeonGenerator;
 using System;
 
 public class CameraFollow2D : MonoBehaviour
