@@ -9,6 +9,9 @@ TagManager:
   - Hook
   - Enemy
   - CameraHolder
+  - SellWeapon
+  - Weapon
+  - NPC
   layers:
   - Default
   - TransparentFX
@@ -21,7 +24,7 @@ TagManager:
   - Ground
   - Player
   - Enemy
-  - 
+  - HasTextbox
   - 
   - 
   - 
@@ -48,7 +51,4 @@ TagManager:
     locked: 0
   - name: Player
     uniqueID: 338600657
-    locked: 0
-  - name: Ground
-    uniqueID: 3993761579
     locked: 0

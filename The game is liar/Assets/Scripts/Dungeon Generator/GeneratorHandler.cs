@@ -26,6 +26,7 @@ public class GeneratorHandler : MonoBehaviour
                 // If we get here, that means that there was no timeout
                 Debug.Log("Level generated");
                 levelGenerated = true;
+                //GameObject.Find("RoomManager").SetActive(true);
             }
             catch (InvalidOperationException)
             {
@@ -33,7 +34,5 @@ public class GeneratorHandler : MonoBehaviour
                 Debug.Log("Timeout encountered");
             }
         }
-
-        Debug.Log(generator.transform.GetChild(1).GetChild(0).GetComponent<TilemapRenderer>().material);
     }
 }

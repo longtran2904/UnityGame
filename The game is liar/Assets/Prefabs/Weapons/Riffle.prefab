@@ -42,9 +42,9 @@ GameObject:
   - component: {fileID: 9063664553917413875}
   - component: {fileID: 1243408987950801092}
   - component: {fileID: 8444539055536166379}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Riffle
-  m_TagString: Untagged
+  m_TagString: Weapon
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -58,7 +58,7 @@ Transform:
   m_GameObject: {fileID: 7667507863186698648}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 10.255, y: -22.093, z: 0}
-  m_LocalScale: {x: 3, y: 3, z: 1}
+  m_LocalScale: {x: 3.125, y: 3.125, z: 0}
   m_Children:
   - {fileID: 8218987454117325006}
   - {fileID: 6779240964384666824}
@@ -128,26 +128,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9352abad67cf09148a81a4cea8ff852b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fireMode: 0
+  stat: {fileID: 11400000, guid: cba7fa0c48879ff47bd6fb5671562f51, type: 2}
   offset: 0
   projectilePrefab: {fileID: 1499001105755548140, guid: f93931237b1100d4f8ff9518401af730,
     type: 3}
   shotPos: {fileID: 8218987454117325006}
-  startTimeBtwShots: 0.15
-  damage: 20
   muzzleFlash: {fileID: 2569665848930654450}
   muzzelFlashTime: 0.03
   burstCount: 0
-  maxAmmo: 0
-  reloadTime: 0
-  knockback: 100
   hitEffect: {fileID: 3092298337086151100, guid: b464239d2df71e34a813cc57e7c2a3e1,
     type: 3}
-  standardReload: 3
-  activeReload: 2.25
-  perfectReload: 1.8
-  failedReload: 4.1
   ammoText: {fileID: 0}
+  canSwitch: 1
 --- !u!114 &8444539055536166379
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -186,8 +178,8 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  perfectRange: {x: 150, y: 170}
-  activeRange: {x: 170, y: 230}
+  perfectRange: 30
+  activeRange: 60
 --- !u!1001 &610223924336014380
 PrefabInstance:
   m_ObjectHideFlags: 0

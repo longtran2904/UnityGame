@@ -26,7 +26,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8074dc491ddc34f4e83332d9eae76980, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Position: {x: 257, y: 384.5}
+  Position: {x: 256, y: 384.5}
   Name: Hub
   IndividualRoomTemplates: []
   RoomTemplateSets:
@@ -199,8 +199,14 @@ MonoBehaviour:
   - {fileID: 8548639015736137304}
   - {fileID: -5317925871945243147}
   - {fileID: 4822827389336746950}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   EditorData:
-    PanOffset: {x: 0, y: 0}
+    PanOffset: {x: -1, y: 0}
     Zoom: 1
   RoomType: Assets.ProceduralLevelGenerator.Scripts.Generators.Common.LevelGraph.Room
   ConnectionType: Assets.ProceduralLevelGenerator.Scripts.Generators.Common.LevelGraph.Connection

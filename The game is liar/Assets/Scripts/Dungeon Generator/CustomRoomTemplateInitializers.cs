@@ -15,18 +15,16 @@ namespace Assets.Scripts
             base.Initialize();
 
             // Here is where i place my custom gameobject
-            var cameraInfoObject = CreateCustomGameObject<CameraInfo>("Camera Info", gameObject);
             var lightsObject = CreateCustomGameObject("Lights", gameObject);
-            var enemiesObject = CreateCustomGameObject<EnemySpawner>("Enemies", gameObject);
+            var enemiesObject = CreateCustomGameObject("Enemies", gameObject, typeof(EnemySpawner));
+            enemiesObject.GetComponent<EnemySpawner>().enabled = false;
         }
 
         // Here is a function i made to create custom gameobject with different components
-        protected GameObject CreateCustomGameObject<T>(string name, GameObject parentObject) where T : Component
+        protected GameObject CreateCustomGameObject(string name, GameObject parentObject, params System.Type[] components)
         {
-            var customObject = new GameObject(name);
+            var customObject = new GameObject(name, components);
             customObject.transform.SetParent(parentObject.transform);
-            var customComponent = customObject.AddComponent<T>();
-
             return customObject;
         }
 
@@ -34,7 +32,6 @@ namespace Assets.Scripts
         {
             var tilemapObject = new GameObject(name);
             tilemapObject.transform.SetParent(parentObject.transform);
-
             return tilemapObject;
         }
 

@@ -5,6 +5,7 @@ using UnityEngine;
 public class PlayerCombat : MonoBehaviour
 {
     private Animator anim;
+    private GameObject weaponHolder;
 
     public Transform attackPoint;
     public LayerMask enemyLayers;
@@ -18,6 +19,7 @@ public class PlayerCombat : MonoBehaviour
     void Start()
     {
         anim = GetComponent<Animator>();
+        weaponHolder = transform.GetChild(0).gameObject;
     }
 
     // Update is called once per frame
@@ -25,7 +27,8 @@ public class PlayerCombat : MonoBehaviour
     {
         if (Time.time > nextAttackTime)
         {
-            if (Input.GetKeyDown(KeyCode.V))
+            weaponHolder.SetActive(true);
+            if (Input.GetKeyDown(KeyCode.V) && Player.player.currentWeapon.canSwitch) // Can't attack when player is reloading
             {
                 Attack();
                 nextAttackTime = Time.time + 1 / attackRate;
@@ -37,7 +40,7 @@ public class PlayerCombat : MonoBehaviour
     {
         // Play animation
         anim.SetTrigger("Attack");
-
+        weaponHolder.SetActive(false);
         // Detect enemies in attack range
         Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, enemyLayers);
 

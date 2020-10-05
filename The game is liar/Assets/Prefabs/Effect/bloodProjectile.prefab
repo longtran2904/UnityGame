@@ -101,6 +101,7 @@ MonoBehaviour:
   damage: 0
   knockbackForce: {x: 0, y: 0}
   isEnemy: 1
+  canTouchGround: 0
   hitEffect: {fileID: 0}
 --- !u!50 &8507593736587019091
 Rigidbody2D:

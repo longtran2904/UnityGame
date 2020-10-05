@@ -14,9 +14,7 @@ public class WeaponSwitching : MonoBehaviour
     void Update()
     {
         int previousSelectedWeapon = selectedWeapon;
-
         float scrollInput = Input.GetAxis("Mouse ScrollWheel");
-
         if (!transform.GetChild(selectedWeapon).GetComponent<Weapon>().canSwitch)
         {
             return;
@@ -47,11 +45,13 @@ public class WeaponSwitching : MonoBehaviour
     void SelectWeapon()
     {
         int i = 0;
-
         foreach (Transform weapon in transform)
         {
             if (i == selectedWeapon)
+            {
                 weapon.gameObject.SetActive(true);
+                Player.player.currentWeapon = weapon.GetComponent<Weapon>();
+            }
             else
                 weapon.gameObject.SetActive(false);
             i++;

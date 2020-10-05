@@ -128,3 +128,17 @@ MonoBehaviour:
     loop: 0
     playOnAwake: 0
     source: {fileID: 0}
+  - name: Buy
+    clip: {fileID: 8300000, guid: 6320295b90a2f1046abb93c53858b5d5, type: 3}
+    volume: 1
+    pitch: 1
+    loop: 0
+    playOnAwake: 0
+    source: {fileID: 0}
+  - name: PickupCoin
+    clip: {fileID: 8300000, guid: 57cc25e0fd9097e4cbcc1164f56bd028, type: 3}
+    volume: 1
+    pitch: 1
+    loop: 0
+    playOnAwake: 0
+    source: {fileID: 0}

@@ -26,33 +26,20 @@ public class Map : MonoBehaviour
         {
             if (image.enabled == false)
             {
-                /*rect.sizeDelta = (Vector3)Minimap.instance.bounds.size * Minimap.instance.pixelSize;
-                image.enabled = true;
-                image.texture = Minimap.instance.texture;*/
-                rect.sizeDelta = new Vector3(mapWidth, mapHeight);
-
+                rect.sizeDelta = new Vector3(mapWidth * Minimap.instance.pixelSize, mapHeight * Minimap.instance.pixelSize);
                 image.enabled = true;
 
-                Vector2Int offset = new Vector2Int(mapWidth / Minimap.instance.pixelSize, mapHeight / Minimap.instance.pixelSize);
-                Vector2Int mapPos = MathUtils.Clamp(Minimap.instance.playerPosition - offset / 2, Vector2Int.zero, 
-                    new Vector2Int(Minimap.instance.texture.width - Minimap.instance.minimapWidth, Minimap.instance.texture.height - Minimap.instance.minimapHeight));
+                Vector2Int mapPos = Minimap.instance.playerPosition - new Vector2Int(mapWidth/2, mapHeight/2) + new Vector2Int(Minimap.instance.textureX, Minimap.instance.textureY);
 
-                Texture2D cropTexture = new Texture2D(mapWidth / Minimap.instance.pixelSize, mapHeight / Minimap.instance.pixelSize);
+                Texture2D cropTexture = new Texture2D(mapWidth, mapHeight);
+                
+                Graphics.CopyTexture(Minimap.instance.fullTexture, 0, 0, mapPos.x, mapPos.y, mapWidth, mapHeight, cropTexture, 0, 0, 0, 0);
 
-                Debug.Log("Map position: " + mapPos);
-                Debug.Log("source's bounds: " + Minimap.instance.bounds);
-
-                Graphics.CopyTexture(Minimap.instance.texture, 0, 0, mapPos.x, mapPos.y, mapWidth / Minimap.instance.pixelSize, mapHeight / Minimap.instance.pixelSize, 
-                    cropTexture, 0, 0, 0, 0);
-
-                //cropTexture.SetPixel(Minimap.instance.playerPosition.x, Minimap.instance.playerPosition.y, Minimap.instance.playerColor);
-
-                cropTexture.wrapMode = TextureWrapMode.Clamp;
-
-                cropTexture.filterMode = FilterMode.Point;
-
+                cropTexture.SetPixel(mapWidth/2, mapHeight/2, Minimap.instance.playerColor);
                 cropTexture.Apply();
 
+                cropTexture.wrapMode = TextureWrapMode.Clamp;
+                cropTexture.filterMode = FilterMode.Point;
                 image.texture = cropTexture;
             }
             else

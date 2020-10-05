@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 173ad8e0789d44d40b3a4ba736e38c75, type: 3}
+  m_Name: Bong
+  m_EditorClassIdentifier: 
+  damage: 50
+  critDamage: 65
+  critChance: 0.25
+  fireRate: 2.5
+  mode: 2
+  ammo: 5
+  knockback: 0
+  price: 28
+  icon: {fileID: 0}
+  weaponName: Bong
+  description: Shotgun
+  standardReload: 3.3
+  activeReload: 2.5
+  perfectReload: 2
+  failedReload: 4.4

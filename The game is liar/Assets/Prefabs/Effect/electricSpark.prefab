@@ -155,7 +155,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 10
-  timer: 1
+  timer: 5
   damage: 0
   knockbackForce: {x: 0, y: 0}
   isEnemy: 1
+  canTouchGround: 0
+  hitEffect: {fileID: 0}

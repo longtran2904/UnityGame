@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using System;
 
 public class CameraFollow2D : MonoBehaviour
@@ -12,13 +10,17 @@ public class CameraFollow2D : MonoBehaviour
     public Vector2 leftAndBottomLimit;
     public Vector2 rightAndUpLimit;
 
-    [HideInInspector] public CameraInfo[] cameraInfos;
     [HideInInspector] public Bounds[] roomsBounds;
-    [HideInInspector] public Transform[] roomsPos;
+    private Bounds lastRoomBounds;
+    Camera main;
 
     public event Action<Bounds> hasPlayer;
 
-    // Update is called once per frame
+    private void Start()
+    {
+        main = Camera.main;
+    }
+
     void LateUpdate()
     {
         if (player == null)
@@ -45,34 +47,24 @@ public class CameraFollow2D : MonoBehaviour
         transform.position.z
         );
 
-        ToNextRoom(cameraInfos, roomsBounds, roomsPos);
+        ToNextRoom(roomsBounds);
     }
 
-    public void ToNextRoom(CameraInfo[] _infos, Bounds[] _roomsBounds, Transform[] _roomsPos)
+    public void ToNextRoom(Bounds[] _roomsBounds)
     {
-        if (_infos == null)
-        {
-            return;
-        }
-
         int x = 0;
-
         foreach (Bounds bounds in _roomsBounds)
         {
             ExtDebug.DrawBox(bounds.center, bounds.extents, Quaternion.identity, Color.cyan);
-            if (bounds.Contains(player.transform.position))
+            if (bounds.Contains(player.transform.position) && bounds != lastRoomBounds)
             {
-                leftAndBottomLimit = _infos[x].leftAndBottomLimit + (Vector2)_roomsPos[x].position;
-
-                rightAndUpLimit = _infos[x].rightAndUpLimit + (Vector2)_roomsPos[x].position;
-
-                _roomsPos[x].Find("Enemies").GetComponent<EnemySpawner>().active = true;
-
+                Vector3 cameraOffset = new Vector3(main.orthographicSize * main.aspect, main.orthographicSize);
+                leftAndBottomLimit = bounds.min + cameraOffset;
+                rightAndUpLimit = bounds.max - cameraOffset;
+                lastRoomBounds = bounds;
                 hasPlayer?.Invoke(bounds);
-
                 break;
             }
-
             x++;
         }
     }

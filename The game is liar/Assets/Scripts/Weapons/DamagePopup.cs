@@ -27,32 +27,6 @@ public class DamagePopup : MonoBehaviour, IPooledObject
         Reset();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        transform.position += moveVector * Time.deltaTime;
-
-        if (timer > lifeTime / 2)
-        {
-            transform.localScale += new Vector3(increaseAmount, increaseAmount) * Time.deltaTime;
-        }
-        else
-        {
-            transform.localScale -= new Vector3(decreaseAmount, decreaseAmount) * Time.deltaTime;
-        }
-
-        timer -= Time.deltaTime;
-        if (timer < 0)
-        {
-            float disappearSpeed = 3f;
-            text.alpha -= disappearSpeed * Time.deltaTime;
-            if (text.alpha < 0)
-            {
-                gameObject.SetActive(false);
-            }
-        }
-    }
-
     public static DamagePopup Create(Vector3 pos, int damageAmount, bool isCrittical)
     {
         DamagePopup damagePopup = ObjectPooler.instance.SpawnFromPool<DamagePopup>("DamagePopup", pos, Quaternion.identity);
@@ -66,6 +40,7 @@ public class DamagePopup : MonoBehaviour, IPooledObject
         if (isCritical)
         {
             text.color = criticalColor;
+            text.alpha = 1;
             text.fontSize = 8;
         }
         sortingOrder++;
@@ -83,5 +58,39 @@ public class DamagePopup : MonoBehaviour, IPooledObject
         text.alpha = 1;
         timer = lifeTime;
         transform.localScale = Vector3.one;
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        MoveAndScaleText();
+        if (timer < 0)
+        {
+            FadeAndDestroyText();
+        }
+        timer -= Time.deltaTime;
+    }
+
+    private void MoveAndScaleText()
+    {
+        transform.position += moveVector * Time.deltaTime;
+        if (timer > lifeTime / 2)
+        {
+            transform.localScale += new Vector3(increaseAmount, increaseAmount) * Time.deltaTime;
+        }
+        else
+        {
+            transform.localScale -= new Vector3(decreaseAmount, decreaseAmount) * Time.deltaTime;
+        }
+    }
+
+    private void FadeAndDestroyText()
+    {
+        float disappearSpeed = 3f;
+        text.alpha -= disappearSpeed * Time.deltaTime;
+        if (text.alpha < 0)
+        {
+            gameObject.SetActive(false);
+        }
     }
 }

@@ -1,56 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &327189203902394606
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 6814306008588106849}
-  - component: {fileID: 7124482083266245403}
-  m_Layer: 0
-  m_Name: Turret
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &6814306008588106849
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 327189203902394606}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -7.9153585, y: 11.220947, z: -2.5613477}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children:
-  - {fileID: 5627162165038989704}
-  - {fileID: 6956923805697916734}
-  m_Father: {fileID: 8714097135555310565}
-  m_RootOrder: 4
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7124482083266245403
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 327189203902394606}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cbf692451b12ce347b84e73f105e1e28, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  numberOfWaves: 1
-  minEnemiesToSpawn: 0
-  maxEnemiesToSpawn: 2
-  spawnPoints: []
-  enemies: []
-  active: 0
 --- !u!1 &744110378949724783
 GameObject:
   m_ObjectHideFlags: 0
@@ -473,9 +422,8 @@ Transform:
   - {fileID: 263338606317718095}
   - {fileID: 4970464219235336105}
   - {fileID: 2578246235723659629}
-  - {fileID: 6814306008588106849}
   m_Father: {fileID: 4337211490877856011}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &7896702048291053288
 MonoBehaviour:
@@ -484,7 +432,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4754545403801904988}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cbf692451b12ce347b84e73f105e1e28, type: 3}
   m_Name: 
@@ -510,7 +458,7 @@ MonoBehaviour:
   - enemyPrefab: {fileID: 6353579188007680597, guid: 07825e828631d524e80e857c22828824,
       type: 3}
     prob: 0.2
-  active: 0
+  teleportToNextScene: 0
 --- !u!1 &4897081685565136394
 GameObject:
   m_ObjectHideFlags: 0
@@ -541,7 +489,7 @@ Transform:
   - {fileID: 4170521093107403964}
   - {fileID: 2474611456902164761}
   m_Father: {fileID: 4337211490877856011}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5616791553632873228
 GameObject:
@@ -6422,105 +6370,6 @@ TilemapRenderer:
   m_Mode: 0
   m_DetectChunkCullingBounds: 0
   m_MaskInteraction: 0
---- !u!1 &5921822564575149325
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 6956923805697916734}
-  - component: {fileID: 3336080395865632544}
-  m_Layer: 0
-  m_Name: Turret 2
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &6956923805697916734
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5921822564575149325}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -1.0846415, y: -5.7209473, z: 2.5613477}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 6814306008588106849}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3336080395865632544
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5921822564575149325}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cbf692451b12ce347b84e73f105e1e28, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  numberOfWaves: 0
-  minEnemiesToSpawn: 0
-  maxEnemiesToSpawn: 0
-  spawnPoints:
-  - {fileID: 5627162165038989704}
-  - {fileID: 6956923805697916734}
-  enemies:
-  - enemyPrefab: {fileID: 6691860176887862441, guid: 6e2f6dffe7877bc4dbb767a2f0725d86,
-      type: 3}
-    prob: 1
-  active: 0
---- !u!1 &6585485054309366309
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 6134420667743629103}
-  - component: {fileID: 8795506802305152608}
-  m_Layer: 0
-  m_Name: Camera Info
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &6134420667743629103
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6585485054309366309}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 4337211490877856011}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8795506802305152608
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6585485054309366309}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e669dd3a780ec874492f309907ac7d7b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  leftAndBottomLimit: {x: -18.8, y: 4}
-  rightAndUpLimit: {x: 0.8, y: 14}
 --- !u!1 &6808163176744104030
 GameObject:
   m_ObjectHideFlags: 0
@@ -19161,7 +19010,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 5807975406526537855}
-  - {fileID: 6134420667743629103}
   - {fileID: 3124167710172880797}
   - {fileID: 8714097135555310565}
   m_Father: {fileID: 0}
@@ -19217,60 +19065,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   PaddingTop: 0
---- !u!1 &8201737856233853521
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 5627162165038989704}
-  - component: {fileID: 7702156479151399411}
-  m_Layer: 0
-  m_Name: Turret 1
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &5627162165038989704
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8201737856233853521}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -1.0846415, y: 1.2790527, z: 2.5613477}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 6814306008588106849}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7702156479151399411
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8201737856233853521}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cbf692451b12ce347b84e73f105e1e28, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  numberOfWaves: 0
-  minEnemiesToSpawn: 0
-  maxEnemiesToSpawn: 0
-  spawnPoints:
-  - {fileID: 5627162165038989704}
-  - {fileID: 6956923805697916734}
-  enemies:
-  - enemyPrefab: {fileID: 6691860176887862441, guid: 6e2f6dffe7877bc4dbb767a2f0725d86,
-      type: 3}
-    prob: 1
-  active: 0
 --- !u!1001 &5294262568221843178
 PrefabInstance:
   m_ObjectHideFlags: 0

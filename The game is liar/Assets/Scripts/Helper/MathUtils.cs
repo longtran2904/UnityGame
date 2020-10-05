@@ -18,7 +18,7 @@ public static class MathUtils
 
     public static BoundsInt CreateBoundsInt(Vector2Int conner, Vector2Int oppositeCorner)
     {
-        Vector2Int size = Abs(oppositeCorner - conner);
+        Vector2Int size = oppositeCorner - conner;
 
         return new BoundsInt((Vector3Int)conner, (Vector3Int)size);
     }
@@ -27,6 +27,12 @@ public static class MathUtils
     public static bool RandomBool()
     {
         return Random.value > 0.5f;
+    }
+
+    public static bool RandomBool(float prob)
+    {
+        prob = Mathf.Clamp(prob, 0, 1);
+        return Random.value < prob;
     }
 
     public static int UnSigned(int num)
@@ -89,6 +95,20 @@ public static class MathUtils
         return (a * b) > 0;
     }
 
+    public static int Signed(int a)
+    {
+        if (a < 0) return -1;
+        if (a > 0) return 1;
+        return 0;
+    }
+
+    public static float Signed(float a)
+    {
+        if (a < 0) return -1;
+        if (a > 0) return 1;
+        return 0;
+    }
+
     #region Vector2Int
     public static Vector2Int ToVector2Int(Vector2 v, bool rounded = false)
     {
@@ -125,6 +145,11 @@ public static class MathUtils
         value.y = Mathf.Clamp(value.y, min.y, max.y);
         return value;
     }
+
+    public static Vector2Int Average(Vector2Int a, Vector2Int b)
+    {
+        return (a + b) / 2;
+    }
     #endregion
 
     #region Vector2
@@ -148,6 +173,11 @@ public static class MathUtils
         value.y = Mathf.Clamp(value.y, min.y, max.y);
         return value;
     }
+
+    public static Vector2 Average(Vector2 a, Vector2 b)
+    {
+        return (a + b) / 2;
+    }
     #endregion
 
     public static bool InRange(int min, int max, int value)
@@ -168,13 +198,43 @@ public static class MathUtils
         return false;
     }
 
-    public static float Square(float a)
+    public static float Sqr(float a)
     {
         return a * a;
     }
 
-    public static int Square(int a)
+    public static int Sqr(int a)
     {
         return a * a;
     }
+
+    public static int Average(int a, int b)
+    {
+        return (a + b) / 2;
+    }
+
+    public static float Average(float a, float b)
+    {
+        return (a + b) / 2;
+    }
+
+    public static Vector2 GetBQCPoint(float t, Vector2 p0, Vector2 p1, Vector2 p2)
+    {
+        float u = 1 - t;
+        float tt = t * t;
+        float uu = u * u;
+        Vector2 p = (uu * p0) + (2 * u * t * p1) + (tt * p2);
+        return p;
+    }
+
+    #region Drag Caculation
+    public static float GetDrag(float aVelocityChange, float aFinalVelocity)
+    {
+        return aVelocityChange / ((aFinalVelocity + aVelocityChange) * Time.fixedDeltaTime);
+    }
+    public static float GetDragFromAcceleration(float aAcceleration, float aFinalVelocity)
+    {
+        return GetDrag(aAcceleration * Time.fixedDeltaTime, aFinalVelocity);
+    }
+    #endregion
 }

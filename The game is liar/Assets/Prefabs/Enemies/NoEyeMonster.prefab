@@ -12,9 +12,9 @@ GameObject:
   - component: {fileID: 7850950392155626650}
   - component: {fileID: 7850950392155626649}
   - component: {fileID: 7850950392155626647}
-  - component: {fileID: 7850950392155626646}
   - component: {fileID: 7850950392155626645}
   - component: {fileID: 7850950392155626644}
+  - component: {fileID: 1237137046}
   m_Layer: 10
   m_Name: NoEyeMonster
   m_TagString: Enemy
@@ -120,51 +120,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   health: 30
   damage: 40
-  touchingWall: 0
+  dropRate: 0.5
+  moneyDropRange: {x: 2, y: 5}
   enemyType: 5
   matWhite: {fileID: 2100000, guid: a52db8d2e3bb7c84f9a724b122d7baa7, type: 2}
   explosionParitcle: {fileID: 8704956847754461958, guid: 3181c8d874d60414f9701b433c293e7d,
     type: 3}
   spawnEffect: {fileID: 6779077847636645100, guid: 36d7ac47e5d4fa94a978f44e53c8b68a,
     type: 3}
-  hitEffect: {fileID: 0}
-  bullet: 
-  shootRange: 0
-  timeBtwShots: 0
-  shootPos: {fileID: 0}
-  rotOffset: 0
-  knockbackForce: {x: 0, y: 0}
---- !u!114 &7850950392155626646
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7850950392155626648}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bf76e4f8d4987af458b5a2c74045092a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  speed: 300
-  enemyType: 5
-  attackRange: 3
-  radius: 0
-  whatIsGround:
-    serializedVersion: 2
-    m_Bits: 0
-  triggerMaterial: {fileID: 2100000, guid: d5792750c9f5bf240a7b854ab8aa3870, type: 2}
-  distanceToExplode: 0
-  explodeRange: 0
-  timeToExplode: 0
-  distanceToChase: 0
-  rayLength: 0.5
-  dashSpeed: 800
-  dashTime: 0.5
-  chargeTime: 1
-  knockbackTime: 0.2
-  timeBtwFlash: 0.2
-  flashTime: 0.1
+  hasSpawnVFX: 1
 --- !u!50 &7850950392155626645
 Rigidbody2D:
   serializedVersion: 4
@@ -202,3 +166,25 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0.01}
   serializedVersion: 2
   m_Radius: 0.09
+--- !u!114 &1237137046
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7850950392155626648}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c1060098538aa94e9c6295e7327d46b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  speed: 600
+  enemyType: 0
+  attackRange: 5
+  knockbackTime: 0.2
+  dashSpeed: 1200
+  dashTime: 0.3
+  chargeTime: 0.8
+  timeBtwFlash: 0.2
+  flashTime: 0.1
+  triggerMaterial: {fileID: 2100000, guid: d5792750c9f5bf240a7b854ab8aa3870, type: 2}

@@ -31,40 +31,34 @@ public class GameManager : MonoBehaviour
             Destroy(this);
         }
 
-        QualitySettings.pixelLightCount = 20;
-
-        SceneManager.LoadSceneAsync((int)SceneIndexes.START_MENU, LoadSceneMode.Additive);
+        //SceneManager.LoadSceneAsync((int)SceneIndexes.START_MENU, LoadSceneMode.Additive);
+        LoadGame((int)SceneIndexes.START_MENU, true, false);
     }
 
     #region Scene Handler
     List<AsyncOperation> scenesLoading = new List<AsyncOperation>();
 
-    public void LoadGame(int sceneIndex, bool isAdditive = false)
+    public void LoadGame(int sceneIndex, bool isAdditive = false, bool unloadCurrentScene = true)
     {
         loadingScreen.gameObject.SetActive(true);
-
-        scenesLoading.Add(SceneManager.UnloadSceneAsync(SceneManager.GetActiveScene().buildIndex));
-
+        Debug.Log((SceneIndexes)SceneManager.GetActiveScene().buildIndex);
+        if (unloadCurrentScene)
+            scenesLoading.Add(SceneManager.UnloadSceneAsync(SceneManager.GetActiveScene().buildIndex));
+        LoadSceneMode mode = LoadSceneMode.Single;
         if (isAdditive)
-        {
-            scenesLoading.Add(SceneManager.LoadSceneAsync(sceneIndex, LoadSceneMode.Additive));
-        }
-        else
-        {
-            scenesLoading.Add(SceneManager.LoadSceneAsync(sceneIndex, LoadSceneMode.Single));
-        }        
-
+            mode = LoadSceneMode.Additive;
+        scenesLoading.Add(SceneManager.LoadSceneAsync(sceneIndex, mode));
         StartCoroutine(GetSceneLoadProgress(sceneIndex));
     }
 
-    public void LoadGame()
-    {
-        loadingScreen.gameObject.SetActive(true);
-        scenesLoading.Add(SceneManager.UnloadSceneAsync((int)SceneIndexes.START_MENU));
-        scenesLoading.Add(SceneManager.LoadSceneAsync((int)SceneIndexes.ROOM, LoadSceneMode.Additive));
+    //public void LoadGame()
+    //{
+    //    loadingScreen.gameObject.SetActive(true);
+    //    scenesLoading.Add(SceneManager.UnloadSceneAsync((int)SceneIndexes.START_MENU));
+    //    scenesLoading.Add(SceneManager.LoadSceneAsync((int)SceneIndexes.ROOM, LoadSceneMode.Additive));
 
-        StartCoroutine(GetSceneLoadProgress());
-    }
+    //    StartCoroutine(GetSceneLoadProgress());
+    //}
 
     float totalSceneProgress;
 

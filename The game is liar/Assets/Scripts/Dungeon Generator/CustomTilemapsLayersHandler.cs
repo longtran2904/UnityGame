@@ -21,7 +21,7 @@ namespace Assets.Scripts
 
             var background2TilemapObject = CreateTilemapGameObject("Background 2", gameObject, 1);
 
-            var wallsTilemapObject = CreateTilemapGameObject("Walls", gameObject, 2, "Ground");
+            var wallsTilemapObject = CreateTilemapGameObject("Walls", gameObject, 2);
             AddCollider(wallsTilemapObject);
             wallsTilemapObject.tag = "Ground";
             wallsTilemapObject.layer = LayerMask.NameToLayer("Ground");
@@ -42,8 +42,10 @@ namespace Assets.Scripts
             var tilemapRenderer = tilemapObject.AddComponent<TilemapRenderer>();
             tilemapRenderer.sortingOrder = sortingOrder;
             tilemapRenderer.sortingLayerName = sortingLayerName;
-            tilemapRenderer.material = material;
-
+            if (material)
+            {
+                tilemapRenderer.sharedMaterial = material;
+            }
             return tilemapObject;
         }
 

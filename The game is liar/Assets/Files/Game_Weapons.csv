@@ -1,0 +1,26 @@
+Name,Damage,Crit Damage,Crit Chance,Fire Rate,Mode,Ammo,Knockback,Price,Standard,Active,Perfect,Failed,Description
+Shougy,40,60,0.4,2,Single,6,0,20,3.4,2.8,2.2,4.5,This is a shotgun! It's very powerful
+Tekt,100,120,0.18,0.7,Single,10,0,85,3.8,3.2,2.9,4.7,AWP
+Bong,50,65,0.25,2.5,Single,5,0,28,3.3,2.5,2,4.4,Shotgun
+Justys,55,80,0.2,3.6,Auto,10,0,45,3,2.2,1.8,4.2,Better Shotgun
+Vite,18,32,0.32,12.5,Auto,25,0,30,3.2,2.3,1.75,4,Smg
+Liem,25,40,0.36,11.2,Auto,30,0,42,3,2.6,2.2,3.8,Better and accurate smg
+Newbye,36,50,0.23,8.4,Auto,25,0,42,3.2,2.5,2,3.8,Riffles
+Glavel,72,100,0.26,3.2,Single,20,0,50,3.2,2.2,1.8,4,Semi-riffles or burst
+Ghost,42,65,0.32,11,Auto,30,0,72,3.2,2,1.7,3.86,M4
+Devas,48,72,0.3,10,Auto,25,0,72,3.5,2.95,2.15,4.56,AK
+Mink,75,100,0.22,1.6,Single,15,0,65,3.6,3,2.76,4.6,Scout
+Long,40,70,0.17,4,Auto,25,0,95,3.1,2.4,1.9,4.1,Gay gun
+Gozedra,45,65,0.34,13,Auto,60,0,120,4.6,4,3.6,6,Heavy
+Nami,56,75,0.37,13.4,Auto,80,0,140,5,4.3,3.8,6.5,Heavy
+GoBoom,,,,,,,,,,,,,Rocket launcher
+Glassick,12,22,0.5,5,Single,20,0,10,2.8,2.4,2,3.6,Glock
+Freezen,16,28,0.45,10.2,Auto,16,0,18,2.7,2.3,2,3.5,Smg pistal
+Shrood,22,34,0.3,3,Single,12,0,22,2.5,2,1.6,3.3,powerful usp
+DCM,35,70,0.23,4,Single,8,0,35,2.7,2.3,2,3.4,eagle
+Valo,40,75,0.25,1,Auto,10,0,35,2.7,2.4,2.2,3,revolver
+LazerBoom,,,,,,,,,,,,,laser gun
+Vorxal,,,,,,,,,,,,,??n ?u?i (b? cong)
+Bamble Blaster,,,,,,,,,,,,,bong bóng
+Medusa,,,,,,,,,,,,,??c
+Void cannon,,,,,,,,,,,,,l? ?en

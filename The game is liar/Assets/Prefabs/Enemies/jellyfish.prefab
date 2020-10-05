@@ -44,7 +44,7 @@ GameObject:
   - component: {fileID: 6353579188007680604}
   - component: {fileID: 6353579188007680603}
   - component: {fileID: 6353579188007680602}
-  - component: {fileID: 6353579188007680601}
+  - component: {fileID: 1306638962}
   m_Layer: 10
   m_Name: jellyfish
   m_TagString: Enemy
@@ -188,22 +188,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   health: 50
   damage: 40
-  touchingWall: 0
+  dropRate: 0.4
+  moneyDropRange: {x: 2, y: 3}
   enemyType: 4
   matWhite: {fileID: 2100000, guid: a52db8d2e3bb7c84f9a724b122d7baa7, type: 2}
   explosionParitcle: {fileID: 8704956847754461958, guid: 3181c8d874d60414f9701b433c293e7d,
     type: 3}
   spawnEffect: {fileID: 6779077847636645100, guid: 36d7ac47e5d4fa94a978f44e53c8b68a,
     type: 3}
-  hitEffect: {fileID: 3092298337086151100, guid: b464239d2df71e34a813cc57e7c2a3e1,
-    type: 3}
-  bullet: JellyBullet
-  shootRange: 0
-  timeBtwShots: 0.5
-  shootPos: {fileID: 6353579187994963945}
-  rotOffset: 0
-  knockbackForce: {x: 0, y: 0}
---- !u!114 &6353579188007680601
+  hasSpawnVFX: 1
+--- !u!114 &1306638962
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -212,27 +206,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 6353579188007680597}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bf76e4f8d4987af458b5a2c74045092a, type: 3}
+  m_Script: {fileID: 11500000, guid: 672ee57a686f4704ca8023979594befa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 100
-  enemyType: 4
-  attackRange: 5
-  radius: 0
-  whatIsGround:
-    serializedVersion: 2
-    m_Bits: 0
-  triggerMaterial: {fileID: 0}
-  distanceToExplode: 0
-  explodeRange: 0
-  timeToExplode: 0
-  distanceToChase: 0
-  timeBtwFlash: 0
-  flashTime: 0
-  rayLength: 0.5
-  dashSpeed: 0
-  attackTime: 0
-  dashTime: 0
-  chargeTime: 0
-  chargeMat: {fileID: 0}
+  speed: 300
+  enemyType: 0
+  attackRange: 15
   knockbackTime: 0.4
+  hitEffect: {fileID: 2583980454224756823, guid: 7476d22f9e4460845be55019e11f9858,
+    type: 3}
+  bullet: JellyBullet
+  timeBtwShots: 0.5
+  shootPos: {fileID: 6353579187994963945}
+  rotOffset: 0

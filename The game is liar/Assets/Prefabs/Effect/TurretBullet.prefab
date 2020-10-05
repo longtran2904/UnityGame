@@ -139,3 +139,5 @@ MonoBehaviour:
   damage: 2
   knockbackForce: {x: 0, y: 0}
   isEnemy: 1
+  canTouchGround: 0
+  hitEffect: {fileID: 0}

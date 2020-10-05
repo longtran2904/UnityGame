@@ -4,9 +4,8 @@ using UnityEngine;
 using EZCameraShake;
 using System;
 
-public class GiantEyeBoss : MonoBehaviour
+public class GiantEyeBoss : Boss
 {
-    public int health;
     public int damage;
     public int enragedHealth;
     public bool isInvulnerable;
@@ -15,24 +14,15 @@ public class GiantEyeBoss : MonoBehaviour
 
     public Material whiteMat;
     private Material defMat;
-    private SpriteRenderer sr;
     public GameObject explosion;
 
     private Animator anim;
-
-    private Rigidbody2D rb;
-
-    private Player player;
-
-    private AudioManager audioManager;
     private bool playSound = true;
-
     public GameObject endScreen;
 
     // Start is called before the first frame update
-    void Start()
+    protected override void Start()
     {
-        audioManager = FindObjectOfType<AudioManager>();
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponentInChildren<Animator>();
         sr = GetComponentInChildren<SpriteRenderer>();
@@ -40,11 +30,11 @@ public class GiantEyeBoss : MonoBehaviour
         player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
     }
 
-    private void Update()
+    protected override void Update()
     {
         if (anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1 && anim.GetBool("isDied"))
         {
-            Death();
+            Die();
         }
     }
 
@@ -56,13 +46,13 @@ public class GiantEyeBoss : MonoBehaviour
         }
     }
 
-    public void GetHurt(int _damage)
+    public override void GetHurt(int _damage)
     {
         if (health <= 0)
         {
             if (playSound == true)
             {
-                audioManager.Play("DefeatBoss");
+                AudioManager.instance.Play("DefeatBoss");
                 playSound = false;
             }
         }
@@ -78,7 +68,7 @@ public class GiantEyeBoss : MonoBehaviour
 
         Invoke("ResetMaterial", .1f);
 
-        audioManager.Play("GetHit");
+        AudioManager.instance.Play("GetHit");
     }
 
     void ResetMaterial()
@@ -86,9 +76,9 @@ public class GiantEyeBoss : MonoBehaviour
         sr.material = defMat;
     }
 
-    public void Death()
+    protected override void Die()
     {
-        audioManager.Play("BossExplosion");
+        AudioManager.instance.Play("BossExplosion");
 
         CameraShaker.Instance.ShakeOnce(8, 5, 0.1f, 0.5f);
 
