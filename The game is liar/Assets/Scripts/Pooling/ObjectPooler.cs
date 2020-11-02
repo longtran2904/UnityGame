@@ -21,7 +21,7 @@ public class ObjectPooler : MonoBehaviour
     {
         if (instance != null)
         {
-            Debug.Log("Instance already exists, Destroying object!");
+            InternalDebug.Log("Instance already exists, Destroying object!");
             Destroy(this);
         }
         else
@@ -54,7 +54,7 @@ public class ObjectPooler : MonoBehaviour
     {
         if (!poolDictionary.ContainsKey(tag))
         {
-            Debug.LogWarning("Pool with tag: " + tag + " doesn't exists.");
+            InternalDebug.LogWarning("Pool with tag: " + tag + " doesn't exists.");
             return null;
         }
 
@@ -79,7 +79,7 @@ public class ObjectPooler : MonoBehaviour
     {
         if (!poolDictionary.ContainsKey(tag))
         {
-            Debug.LogWarning("Pool with tag: " + tag + " doesn't exists.");
+            InternalDebug.LogWarning("Pool with tag: " + tag + " doesn't exists.");
             return default(T);
         }
 

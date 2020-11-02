@@ -1,37 +1,62 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class Projectile : MonoBehaviour, IPooledObject
 {
     public float speed;
-
-    private Rigidbody2D rb;
-
-    private Enemies enemy;
-
     public float timer;
-
-    [HideInInspector]
-    public int damage;
-    [HideInInspector]
-    public Vector2 knockbackForce;
-
-    [HideInInspector]
-    public bool isCritical;
-    public bool isEnemy;
-    public bool canTouchGround;
-    public bool canTouchPlayer;
-
+    private Rigidbody2D rb;
     private Player player;
 
-    [HideInInspector] public GameObject hitEffect;
+    private int damage;
+    private Vector2 knockbackForce;
+    private bool isCritical;
+    private bool isEnemy;
+    private GameObject hitEffect;
 
+    // State for enemy
+    private State state;
+    private Material hurtMat;
+
+    public bool canTouchGround; // can go through wall and grounds
+    public bool canTouchPlayer; // go through player and still damage him
+    
     public void OnObjectSpawn()
     {
         rb = GetComponent<Rigidbody2D>();
         rb.velocity = transform.right * speed;
         StartCoroutine(GameUtils.Deactive(gameObject, timer));
+    }
+
+    public void Init(int damage, Vector2 knockback, GameObject hitEffect, bool isEnemy, bool isCritical)
+    {
+        this.damage = damage;
+        knockbackForce = knockback;
+        this.hitEffect = hitEffect;
+        this.isEnemy = isEnemy;
+        this.isCritical = isCritical;
+    }
+
+    public void Init(int damage, Vector2 knockback, GameObject hitEffect, State state, Material hurtMat = null)
+    {
+        this.damage = damage;
+        knockbackForce = knockback;
+        this.hitEffect = hitEffect;
+        this.state = state;
+        this.hurtMat = hurtMat;
+    }
+
+    public void SetVelocity(float speed)
+    {
+        rb.velocity = speed * transform.right;
+    }
+
+    public void SetVelocity(float speed, float angle)
+    {
+        transform.rotation = Quaternion.Euler(0, 0, angle);
+        SetVelocity(speed);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -91,10 +116,12 @@ public class Projectile : MonoBehaviour, IPooledObject
 
     private void HitEnemy(Collider2D collision)
     {
-        enemy = collision.GetComponent<Enemies>();
+        Enemies enemy = collision.GetComponent<Enemies>();
         Vector2 knockbackForce = (-transform.position + enemy.transform.position).normalized * this.knockbackForce;
-        enemy.Hurt(damage, knockbackForce);
+        enemy.Hurt(damage, knockbackForce, hurtMat);
         DamagePopup.Create(collision.transform.position, damage, isCritical);
         gameObject.SetActive(false);
+        if (state != null)
+            StateManager.AddStateToEnemy(enemy, state);
     }
 }

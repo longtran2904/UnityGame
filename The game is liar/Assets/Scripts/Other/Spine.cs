@@ -26,7 +26,7 @@ public class Spine : MonoBehaviour
         }
         else if (collision.tag.Equals("Ground"))
         {
-            Debug.Log("c");
+            InternalDebug.Log("c");
             speed = 0;
             Destroy(gameObject, 2);
         }

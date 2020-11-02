@@ -30,10 +30,10 @@ public class JumpBehaviour : StateMachineBehaviour
         if (spikeCanFalling)
         {            
             timeValue = 2.1f;
-            Debug.Log(timeValue);
+            InternalDebug.Log(timeValue);
             spikeFalling = true;
             spikeCanFalling = false;
-            Debug.Log(spikeCanFalling);
+            InternalDebug.Log(spikeCanFalling);
         }
         else
         {
@@ -50,7 +50,7 @@ public class JumpBehaviour : StateMachineBehaviour
         {
             animator.ResetTrigger("Jump");
             animator.SetTrigger("Idle");
-            Debug.Log("Set trigger idle");
+            InternalDebug.Log("Set trigger idle");
         }
         else
         {

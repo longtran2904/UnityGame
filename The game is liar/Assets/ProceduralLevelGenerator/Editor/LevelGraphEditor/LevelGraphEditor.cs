@@ -91,7 +91,7 @@ namespace ProceduralLevelGenerator.Unity.Editor.LevelGraphEditor
                 }
                 else
                 {
-                    Debug.LogError($"There is a null room in the level graph {levelGraph.name}. This should not happen.");
+                    InternalDebug.LogError($"There is a null room in the level graph {levelGraph.name}. This should not happen.");
                 }
             }
 
@@ -105,7 +105,7 @@ namespace ProceduralLevelGenerator.Unity.Editor.LevelGraphEditor
                 }
                 else
                 {
-                    Debug.LogError($"There is a null connection in the level graph {levelGraph.name}. This should not happen.");
+                    InternalDebug.LogError($"There is a null connection in the level graph {levelGraph.name}. This should not happen.");
                 }
             }
         }

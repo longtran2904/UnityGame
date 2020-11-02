@@ -17,7 +17,7 @@ public class SpikeFallingManager : MonoBehaviour
         foreach (GameObject flyingSpike in flyingSpikes)
         {
             spikes[i] = flyingSpike.GetComponentInChildren<Spine>();
-            Debug.Log(spikes[i]);
+            InternalDebug.Log(spikes[i]);
             i++;
         }
         StartCoroutine(FallingSpikes());

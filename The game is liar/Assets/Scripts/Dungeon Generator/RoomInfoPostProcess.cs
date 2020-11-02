@@ -23,7 +23,7 @@ public class RoomInfoPostProcess : DungeonGeneratorPostProcessBase
                 for (int y = 0; y < bounds.size.y; y++)
                 {
                     Vector2Int pos = new Vector2Int(x + bounds.position.x - tilemap.cellBounds.position.x, y + bounds.position.y - tilemap.cellBounds.position.y);
-                    if (pos.x < 0 || pos.y < 0) Debug.LogError(pos);
+                    if (pos.x < 0 || pos.y < 0) InternalDebug.LogError(pos);
                     bool isWall = false;
                     bool canShow = false;
                     bool isBossRoom = false;

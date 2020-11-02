@@ -3,16 +3,19 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
+// BoxCast and RayCast -> LayerMask.NameToLayer
+// OverLapBox -> LayerMask.GetMask
+
 public class PlayerController : MonoBehaviour
 {    
     public float speed;
     public float fallSpeed;
     private Rigidbody2D rb;
     private float moveInput;
-    private bool isGrounded;
+    public bool isGrounded { get; private set; }
     private SpriteRenderer sprite;
     private Animator anim;
-    public bool top; // True if the player is upside down
+    public bool top { get; private set; } // True if the player is upside down
     Camera mainCamera;
     Vector3 mousePos;
     public ParticleSystem dust;
@@ -24,7 +27,6 @@ public class PlayerController : MonoBehaviour
     private float groundRemember;
 
     // BoxCast
-    Vector2 boxSize;
     Vector3 boxOffset;
     RaycastHit2D groundCheck;
 
@@ -52,25 +54,9 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        GetMouseAndMoveInput();
-        SetAnimation();
-        SetBoxSizeAndOffset();
-        FlipBoxOffset();
-        CastGroundCheckBox();
-        CheckForGround();
-        CheckForJumpInput();
-        FlipPlayer();
-    }
-
-    void GetMouseAndMoveInput()
-    {
         mousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
         moveInput = Input.GetAxisRaw("Horizontal");
-    }
-
-    void SetAnimation()
-    {
-        if (Input.GetAxisRaw("Horizontal") != 0)
+        if (moveInput != 0)
         {
             anim.SetBool("isRunning", true);
         }
@@ -78,43 +64,37 @@ public class PlayerController : MonoBehaviour
         {
             anim.SetBool("isRunning", false);
         }
+        GroundCheck();
+        FlipPlayer();
+        Jump();
     }
 
-    void CheckForGround()
+    void GroundCheck()
     {
+        // Cast box
+        Vector2 boxSize = new Vector2(0.25f, 0.01f);
+        boxOffset = new Vector3(0, sprite.bounds.extents.y + boxSize.y + 0.01f, 0);
+        if (top)
+        {
+            boxOffset = -boxOffset;
+        }
+        groundCheck = Physics2D.BoxCast(transform.position - boxOffset, boxSize, 0, -transform.up, boxSize.y);
+        ExtDebug.DrawBoxCastBox(transform.position - boxOffset, boxSize, Quaternion.identity, -transform.up, boxSize.y, Color.red);
+        groundRemember -= Time.deltaTime;
+
+        // Check ground
         if (groundCheck && groundCheck.transform.tag == "Ground")
         {
             groundRemember = groundRememberTime;
             if (isGrounded == false)
             {
-                CreateDust();
+                dust.Play();
                 isGrounded = true;
             }
         }
         else
         {
             isGrounded = false;
-        }
-    }
-
-    void CastGroundCheckBox()
-    {
-        groundCheck = Physics2D.BoxCast(transform.position - boxOffset, boxSize, 0, -transform.up, boxSize.y);
-        ExtDebug.DrawBoxCastBox(transform.position - boxOffset, boxSize, Quaternion.identity, -transform.up, boxSize.y, Color.red);
-        groundRemember -= Time.deltaTime;
-    }
-
-    void SetBoxSizeAndOffset()
-    {
-        boxSize = new Vector2(0.25f, 0.01f);
-        boxOffset = new Vector3(0, sprite.bounds.extents.y + boxSize.y + 0.01f, 0);
-    }
-
-    void FlipBoxOffset()
-    {
-        if (top)
-        {
-            boxOffset = -boxOffset;
         }
     }
 
@@ -126,79 +106,52 @@ public class PlayerController : MonoBehaviour
         }
         if (top)
         {
-            FlipWhenUpsideDown();
+            // Upside down
+            if (mousePos.x - transform.position.x > 0)
+            {
+                transform.eulerAngles = new Vector3(0, 180, 180);
+            }
+            else if (mousePos.x - transform.position.x < 0)
+            {
+                transform.eulerAngles = new Vector3(0, 0, 180);
+            }
         }
         else
         {
-            FlipWhenNormal();
+            // Normal
+            if (mousePos.x - transform.position.x > 0)
+            {
+                transform.eulerAngles = new Vector3(0, 0, 0);
+            }
+            else if (mousePos.x - transform.position.x < 0)
+            {
+                transform.eulerAngles = new Vector3(0, 180, 0);
+            }
         }        
     }
 
-    void FlipWhenUpsideDown()
-    {
-        if (mousePos.x - transform.position.x > 0)
-        {
-            transform.eulerAngles = new Vector3(0, 180, 180);
-        }
-        else if (mousePos.x - transform.position.x < 0)
-        {
-            transform.eulerAngles = new Vector3(0, 0, 180);
-        }
-    }
-
-    void FlipWhenNormal()
-    {
-        if (mousePos.x - transform.position.x > 0)
-        {
-            transform.eulerAngles = new Vector3(0, 0, 0);
-        }
-        else if (mousePos.x - transform.position.x < 0)
-        {
-            transform.eulerAngles = new Vector3(0, 180, 0);
-        }
-    }
-
-    void CheckForJumpInput()
-    {
-        DecreaseAndRememberJumpPressedTime();
-        if (jumpPressedRememberValue > 0 && groundRemember > 0)
-        {
-            FlipGravity();
-        }
-    }
-
-    void DecreaseAndRememberJumpPressedTime()
+    void Jump()
     {
         jumpPressedRememberValue -= Time.deltaTime;
         if (Input.GetButtonDown("Jump"))
         {
             jumpPressedRememberValue = jumpPressedRemember;
         }
+        if (jumpPressedRememberValue > 0 && groundRemember > 0)
+        {
+            jumpPressedRememberValue = 0;
+            rb.velocity = Vector2.zero;
+            rb.gravityScale *= -1;
+            dust.Play();
+            Invoke("SwitchTop", .1f);
+            AudioManager.instance.Play("PlayerJump");
+        }
     }
 
-    void FlipGravity()
-    {
-        ResetVelocityAndJumpInput();
-        CreateDust();
-        Invoke("SwitchTop", .1f);
-        AudioManager.instance.Play("PlayerJump");
-    }
-
-    void ResetVelocityAndJumpInput()
-    {
-        jumpPressedRememberValue = 0;
-        rb.velocity = Vector2.zero;
-        rb.gravityScale *= -1;
-    }
-
+    // Invoke by Jump()
     void SwitchTop()
     {
         top = !top;
-    }
-
-    void CreateDust()
-    {
-        dust.Play();
     }
 
     private void FixedUpdate()
@@ -221,17 +174,11 @@ public class PlayerController : MonoBehaviour
         }
         else if (knockbackCounter > 0)
         {
-            rb.velocity = new Vector2(knockbackForce.x, SetGravityWhenKnockback()) * Time.deltaTime;
+            rb.velocity = new Vector2(knockbackForce.x, rb.velocity.y + transform.up.y * Physics2D.gravity.y * (500 - 1) * Time.deltaTime) * Time.deltaTime;
             knockbackCounter -= Time.deltaTime;
             return;
         }
-        MovePlayer();
-    }
-
-    float SetGravityWhenKnockback()
-    {
-        float velocityY = rb.velocity.y + transform.up.y * Physics2D.gravity.y * (500 - 1) * Time.deltaTime;
-        return velocityY;
+        rb.velocity = new Vector2(moveInput * speed, rb.velocity.y);
     }
 
     public void KnockBack(Vector2 _knockbackForce)
@@ -243,10 +190,5 @@ public class PlayerController : MonoBehaviour
         knockbackCounter = knockbackTime;
         knockbackForce = _knockbackForce;
         rb.velocity = _knockbackForce;
-    }
-
-    void MovePlayer()
-    {
-        rb.velocity = new Vector2(moveInput * speed, rb.velocity.y);
     }
 }

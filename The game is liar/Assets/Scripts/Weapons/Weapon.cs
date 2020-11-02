@@ -207,11 +207,7 @@ public class Weapon : MonoBehaviour
     {
         projectile = ObjectPooler.instance.SpawnFromPool<Projectile>(poolName, shotPos.transform.position, transform.rotation);
         bool isCritical = UnityEngine.Random.value < stat.critChance;
-        projectile.damage = isCritical ? stat.critDamage : stat.damage;
-        projectile.knockbackForce = new Vector2(stat.knockback, stat.knockback);
-        projectile.hitEffect = hitEffect;
-        projectile.isEnemy = isEnemy;
-        projectile.isCritical = isCritical;
+        projectile.Init(isCritical ? stat.critDamage : stat.damage, new Vector2(stat.knockback, stat.knockback), hitEffect, isEnemy, isCritical);
     }
 
     public void OnTriggerHold()

@@ -24,9 +24,28 @@ public static class MathUtils
     }
     #endregion
 
+    public static Vector2 RandomVector2(Vector2 min, Vector2 max)
+    {
+        return new Vector2(Random.Range(min.x, max.x), Random.Range(min.y, max.y));
+    }
+
+
+    // If offset == 0 then the first point is on the most right
+    public static Vector2[] GeneratePointsOnCircle(Vector2 center, int numberOfPoints, float radius = 1, float offset = 0)
+    {
+        Vector2[] points = new Vector2[numberOfPoints];
+        float deltaAngle = 360f / numberOfPoints * Mathf.Deg2Rad + offset;
+        for (int i = 0; i < numberOfPoints; i++)
+        {
+            float angle = i * deltaAngle;
+            points[i] = center + new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * radius;
+        }
+        return points;
+    }
+
     public static bool RandomBool()
     {
-        return Random.value > 0.5f;
+        return Random.value <= 0.5f;
     }
 
     public static bool RandomBool(float prob)
@@ -109,6 +128,15 @@ public static class MathUtils
         return 0;
     }
 
+    public static Vector2 Signed(Vector2 a)
+    {
+        if (a.x < 0f) a.x = -1;
+        if (a.x > 0f) a.x =  1;
+        if (a.y < 0f) a.y = -1;
+        if (a.y > 0f) a.y =  1;
+        return a;
+    }
+
     #region Vector2Int
     public static Vector2Int ToVector2Int(Vector2 v, bool rounded = false)
     {
@@ -139,7 +167,7 @@ public static class MathUtils
     {
         if (min.x > max.x || min.y > max.y)
         {
-            Debug.LogError("min value is larger then max value!");
+            InternalDebug.LogError("min value is larger then max value!");
         }
         value.x = Mathf.Clamp(value.x, min.x, max.x);
         value.y = Mathf.Clamp(value.y, min.y, max.y);
@@ -167,7 +195,7 @@ public static class MathUtils
     {
         if (min.x > max.x || min.y > max.y)
         {
-            Debug.LogError("min value is larger then max value!");
+            InternalDebug.LogError("min value is larger then max value!");
         }
         value.x = Mathf.Clamp(value.x, min.x, max.x);
         value.y = Mathf.Clamp(value.y, min.y, max.y);

@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using EZCameraShake;
-using UnityEngine.SceneManagement;
 using System;
 using System.Collections;
 using TMPro;
@@ -9,7 +8,7 @@ public class Player : MonoBehaviour
 {
     public int health;
     public HealthBar healthBar;
-    public PlayerController controller;
+    public PlayerController controller { get; private set; }
     public TextMeshProUGUI moneyText;
     public int money;
     Animator anim;

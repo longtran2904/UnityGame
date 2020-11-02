@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System;
+using ProceduralLevelGenerator.Unity.Generators.Common.Rooms;
 
 public class CameraFollow2D : MonoBehaviour
 {
@@ -10,15 +11,13 @@ public class CameraFollow2D : MonoBehaviour
     public Vector2 leftAndBottomLimit;
     public Vector2 rightAndUpLimit;
 
-    [HideInInspector] public Bounds[] roomsBounds;
-    private Bounds lastRoomBounds;
     Camera main;
 
-    public event Action<Bounds> hasPlayer;
 
     private void Start()
     {
         main = Camera.main;
+        RoomManager.instance.hasPlayer += ToNextRoom;
     }
 
     void LateUpdate()
@@ -46,26 +45,13 @@ public class CameraFollow2D : MonoBehaviour
         Mathf.Clamp(transform.position.y, leftAndBottomLimit.y, rightAndUpLimit.y),
         transform.position.z
         );
-
-        ToNextRoom(roomsBounds);
     }
 
-    public void ToNextRoom(Bounds[] _roomsBounds)
+    public void ToNextRoom(RoomInstance room)
     {
-        int x = 0;
-        foreach (Bounds bounds in _roomsBounds)
-        {
-            ExtDebug.DrawBox(bounds.center, bounds.extents, Quaternion.identity, Color.cyan);
-            if (bounds.Contains(player.transform.position) && bounds != lastRoomBounds)
-            {
-                Vector3 cameraOffset = new Vector3(main.orthographicSize * main.aspect, main.orthographicSize);
-                leftAndBottomLimit = bounds.min + cameraOffset;
-                rightAndUpLimit = bounds.max - cameraOffset;
-                lastRoomBounds = bounds;
-                hasPlayer?.Invoke(bounds);
-                break;
-            }
-            x++;
-        }
+        Bounds roomBounds = RoomManager.instance.rooms[room];
+        Vector3 cameraOffset = new Vector3(main.orthographicSize * main.aspect, main.orthographicSize);
+        leftAndBottomLimit = roomBounds.min + cameraOffset;
+        rightAndUpLimit = roomBounds.max - cameraOffset;
     }
 }

@@ -39,7 +39,7 @@ public class BossManager : MonoBehaviour
         
         if (jumpBehaviour && jumpBehaviour.spikeFalling)
         {
-            Debug.Log("b");
+            InternalDebug.Log("b");
             StartCoroutine(SpawnSpikes());
             spikeFallCounts += 1;
             jumpBehaviour.spikeFalling = false;

@@ -19,7 +19,7 @@ public static class SaveSystem
 
         if (!File.Exists(_path))
         {
-            Debug.LogError("File not found at: " + _path);
+            InternalDebug.LogError("File not found at: " + _path);
             return null;
         }
 
@@ -35,7 +35,7 @@ public static class SaveSystem
         using (FileStream stream = new FileStream(_path, FileMode.Create))
         {
             formatter.Serialize(stream, _data);
-            Debug.Log("Save");
+            InternalDebug.Log("Save");
         }
     }
 
@@ -55,7 +55,7 @@ public static class SaveSystem
         }
         else
         {
-            Debug.LogError("File not found in: " + _path);
+            InternalDebug.LogError("File not found in: " + _path);
             return default(T);
         }        
     }

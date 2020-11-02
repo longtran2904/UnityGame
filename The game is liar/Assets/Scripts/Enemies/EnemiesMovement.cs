@@ -3,15 +3,15 @@ using UnityEngine;
 
 public class EnemiesMovement : MonoBehaviour
 {
+    public float speed;
+    public float attackRange;
+
     protected Rigidbody2D rb;
     protected Enemies enemy;
-    public float speed;
     protected Player player;
-    [HideInInspector] public EnemyType enemyType;
-    private Animator anim;
-    public float attackRange;
+    protected Animator anim;
     protected SpriteRenderer sr;
-    protected Material defaultMaterial;
+    [HideInInspector] public Material defaultMaterial; // public for Enemies.Hurt()
 
     #region Knockback
     public float knockbackTime;

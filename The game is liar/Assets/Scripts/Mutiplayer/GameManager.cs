@@ -27,7 +27,7 @@ public class GameManager : MonoBehaviour
         }
         else if (instance != this)
         {
-            Debug.Log("Instance already exists, Destroying object!");
+            InternalDebug.Log("Instance already exists, Destroying object!");
             Destroy(this);
         }
 
@@ -41,7 +41,7 @@ public class GameManager : MonoBehaviour
     public void LoadGame(int sceneIndex, bool isAdditive = false, bool unloadCurrentScene = true)
     {
         loadingScreen.gameObject.SetActive(true);
-        Debug.Log((SceneIndexes)SceneManager.GetActiveScene().buildIndex);
+        InternalDebug.Log((SceneIndexes)SceneManager.GetActiveScene().buildIndex);
         if (unloadCurrentScene)
             scenesLoading.Add(SceneManager.UnloadSceneAsync(SceneManager.GetActiveScene().buildIndex));
         LoadSceneMode mode = LoadSceneMode.Single;

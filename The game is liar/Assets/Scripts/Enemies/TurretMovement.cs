@@ -37,7 +37,7 @@ public class TurretMovement : EnemiesMovement
     {
         LayerMask ignoreLayermask = LayerMask.GetMask("Player");
         RaycastHit2D hitInfo = Physics2D.Raycast(transform.position, (player.transform.position - transform.position), attackRange, ignoreLayermask);
-        Debug.DrawRay(transform.position, (player.transform.position - transform.position).normalized * attackRange, Color.blue);
+        InternalDebug.DrawRay(transform.position, (player.transform.position - transform.position).normalized * attackRange, Color.blue);
         if (Vector3.Distance(player.transform.position, transform.position) <= attackRange)
         {
             transform.rotation = Quaternion.Euler(0, 0, rotZ);
@@ -61,9 +61,7 @@ public class TurretMovement : EnemiesMovement
         {
             AudioManager.instance.Play(_soundToPlay);
             projectile = ObjectPooler.instance.SpawnFromPool<Projectile>(_bullet, shootPos.transform.position, _rotation);
-            projectile.isEnemy = true;
-            projectile.hitEffect = hitEffect;
-            projectile.damage = enemy.damage;
+            projectile.Init(enemy.damage, Vector2.zero, hitEffect, true, false);
             timeBtwShotsValue = timeBtwShots + Time.time;
         }
     }

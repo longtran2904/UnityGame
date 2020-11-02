@@ -9,7 +9,7 @@ public class AlienMovement : EnemiesMovement
     Vector2 groundRayPos;
     RaycastHit2D groundCheck, wallCheck, playerCheck;
     bool _canChase = false;
-    private Weapon weapon;
+    public Weapon weapon;
     int groundMask, playerMask;
     bool isPlayerDied;
 
@@ -17,7 +17,6 @@ public class AlienMovement : EnemiesMovement
     protected override void Start()
     {
         base.Start();
-        weapon = transform.Find("AlienPistol").GetComponent<Weapon>();
         rayLength = .5f; // The length of the wall and ground raycast
         groundMask = LayerMask.GetMask("Ground");
         playerMask = LayerMask.GetMask("Player");
@@ -54,7 +53,7 @@ public class AlienMovement : EnemiesMovement
         if (playerCheck && groundCheck)
         {
             rb.velocity = new Vector2(0, rb.velocity.y);
-            AlienAttack();
+            weapon.ShootProjectileForEnemy("FlyingAlienBullet", "PlayerShoot");
             lastSeenPos = player.transform.position;
             _canChase = true;
         }
@@ -78,12 +77,5 @@ public class AlienMovement : EnemiesMovement
             transform.eulerAngles = new Vector3(0, offsetY, 0);
             offsetY += 180;
         }
-    }
-
-    void AlienAttack()
-    {
-        weapon.projectilePrefab.isEnemy = true;
-        weapon.ShootProjectileForEnemy("FlyingAlienBullet", "PlayerShoot");
-        return;
     }
 }

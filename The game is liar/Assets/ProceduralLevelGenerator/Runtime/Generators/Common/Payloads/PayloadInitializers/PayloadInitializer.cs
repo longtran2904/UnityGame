@@ -104,7 +104,7 @@ namespace ProceduralLevelGenerator.Unity.Generators.Common.Payloads.PayloadIniti
 
             if (PrintUsedSeed)
             {
-                Debug.Log($"Random generator seed: {seed}");
+                InternalDebug.Log($"Random generator seed: {seed}");
             }
 
             return new Random(seed);

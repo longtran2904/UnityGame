@@ -136,6 +136,9 @@ public class NoEyeMonster : EnemiesMovement
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        enemy.DamagePlayerWhenCollide(collision);
+        if (collision.CompareTag("Player"))
+        {
+            player.Hurt(enemy.damage);
+        }
     }
 }

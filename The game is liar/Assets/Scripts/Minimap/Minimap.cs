@@ -1,7 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using ProceduralLevelGenerator.Unity.Generators.Common.Rooms;
 
 public class Minimap : MonoBehaviour
 {
@@ -36,7 +36,7 @@ public class Minimap : MonoBehaviour
         cropTexture = new Texture2D(minimapWidth, minimapHeight);
         cropTexture.wrapMode = TextureWrapMode.Clamp;
         cropTexture.filterMode = FilterMode.Point;
-        GameObject.FindGameObjectWithTag("CameraHolder").GetComponent<CameraFollow2D>().hasPlayer += AddRoomTexture;
+        RoomManager.instance.hasPlayer += AddRoomTexture;
     }
 
     private void LateUpdate()
@@ -120,11 +120,11 @@ public class Minimap : MonoBehaviour
         rawImage.texture = cropTexture;
     }
 
-    void AddRoomTexture(Bounds _bounds)
+    void AddRoomTexture(RoomInstance room)
     {
         foreach (var tile in tilesDictionary.Keys)
         {
-            if (_bounds.Contains(tile + (Vector2)(Vector3)bounds.position))
+            if (RoomManager.instance.rooms[room].Contains(tile + (Vector2)(Vector3)bounds.position))
             {
                 tilesDictionary[tile][1] = true;
             }

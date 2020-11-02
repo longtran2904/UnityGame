@@ -36,7 +36,7 @@ public class DialogueImporter : AssetPostprocessor
                             // Ex: ID,Speaker,"bla bla bla, senteces.;Hello","Yes:12;No:15"   --->   ID,Speaker, - bla bla bla, sentences.;Hello - Yes:12;No:15
                             foreach (var data in lineData.Split('*'))
                             {
-                                Debug.Log(data + " " + i);
+                                InternalDebug.Log(data + " " + i);
                                 if (data == "," || data == "")
                                 {
                                     continue;
@@ -52,7 +52,7 @@ public class DialogueImporter : AssetPostprocessor
                                     dialogue.dialogues = data.Split(';'); // bla bla bla, sentences.;Hello ---> bla bla bla, sentences. - Hello
                                     foreach (var item in data.Split(';'))
                                     {
-                                        Debug.Log(item);
+                                        InternalDebug.Log(item);
                                     }
                                 }
                                 else
@@ -77,7 +77,7 @@ public class DialogueImporter : AssetPostprocessor
                 AssetDatabase.SaveAssets();
                 AssetDatabase.Refresh();
                 EditorUtility.FocusProjectWindow();
-                Debug.Log("Done creating at Assets/Dialogues!");
+                InternalDebug.Log("Done creating at Assets/Dialogues!");
             }
         }
     }

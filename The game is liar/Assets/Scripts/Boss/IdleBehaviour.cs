@@ -24,16 +24,16 @@ public class IdleBehaviour : StateMachineBehaviour
         {
             animator.ResetTrigger("Idle");
             animator.SetTrigger("Jump");
-            Debug.Log("SetTriggerJump");
-            Debug.Log("Jump counts: " + jumpBehaviour.jumpCounts);
+            InternalDebug.Log("SetTriggerJump");
+            InternalDebug.Log("Jump counts: " + jumpBehaviour.jumpCounts);
         }
         else if (timeValue <= 0 && jumpBehaviour.jumpCounts >= jumpBehaviour.maxJumps)
         {
             animator.ResetTrigger("Idle");
             animator.ResetTrigger("Jump");
             animator.SetTrigger("Dash");
-            Debug.Log("Set Trigger Dash");
-            Debug.Log("Jump counts: " + jumpBehaviour.jumpCounts);
+            InternalDebug.Log("Set Trigger Dash");
+            InternalDebug.Log("Jump counts: " + jumpBehaviour.jumpCounts);
         }
         else
         {

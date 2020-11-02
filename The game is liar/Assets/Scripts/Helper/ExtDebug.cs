@@ -18,14 +18,14 @@ public static class ExtDebug
         Box bottomBox = new Box(origin, halfExtents, orientation);
         Box topBox = new Box(origin + (direction * distance), halfExtents, orientation);
 
-        Debug.DrawLine(bottomBox.backBottomLeft, topBox.backBottomLeft, color);
-        Debug.DrawLine(bottomBox.backBottomRight, topBox.backBottomRight, color);
-        Debug.DrawLine(bottomBox.backTopLeft, topBox.backTopLeft, color);
-        Debug.DrawLine(bottomBox.backTopRight, topBox.backTopRight, color);
-        Debug.DrawLine(bottomBox.frontTopLeft, topBox.frontTopLeft, color);
-        Debug.DrawLine(bottomBox.frontTopRight, topBox.frontTopRight, color);
-        Debug.DrawLine(bottomBox.frontBottomLeft, topBox.frontBottomLeft, color);
-        Debug.DrawLine(bottomBox.frontBottomRight, topBox.frontBottomRight, color);
+        InternalDebug.DrawLine(bottomBox.backBottomLeft, topBox.backBottomLeft, color);
+        InternalDebug.DrawLine(bottomBox.backBottomRight, topBox.backBottomRight, color);
+        InternalDebug.DrawLine(bottomBox.backTopLeft, topBox.backTopLeft, color);
+        InternalDebug.DrawLine(bottomBox.backTopRight, topBox.backTopRight, color);
+        InternalDebug.DrawLine(bottomBox.frontTopLeft, topBox.frontTopLeft, color);
+        InternalDebug.DrawLine(bottomBox.frontTopRight, topBox.frontTopRight, color);
+        InternalDebug.DrawLine(bottomBox.frontBottomLeft, topBox.frontBottomLeft, color);
+        InternalDebug.DrawLine(bottomBox.frontBottomRight, topBox.frontBottomRight, color);
 
         DrawBox(bottomBox, color);
         DrawBox(topBox, color);
@@ -37,20 +37,20 @@ public static class ExtDebug
     }
     public static void DrawBox(Box box, Color color)
     {
-        Debug.DrawLine(box.frontTopLeft, box.frontTopRight, color);
-        Debug.DrawLine(box.frontTopRight, box.frontBottomRight, color);
-        Debug.DrawLine(box.frontBottomRight, box.frontBottomLeft, color);
-        Debug.DrawLine(box.frontBottomLeft, box.frontTopLeft, color);
+        InternalDebug.DrawLine(box.frontTopLeft, box.frontTopRight, color);
+        InternalDebug.DrawLine(box.frontTopRight, box.frontBottomRight, color);
+        InternalDebug.DrawLine(box.frontBottomRight, box.frontBottomLeft, color);
+        InternalDebug.DrawLine(box.frontBottomLeft, box.frontTopLeft, color);
 
-        Debug.DrawLine(box.backTopLeft, box.backTopRight, color);
-        Debug.DrawLine(box.backTopRight, box.backBottomRight, color);
-        Debug.DrawLine(box.backBottomRight, box.backBottomLeft, color);
-        Debug.DrawLine(box.backBottomLeft, box.backTopLeft, color);
+        InternalDebug.DrawLine(box.backTopLeft, box.backTopRight, color);
+        InternalDebug.DrawLine(box.backTopRight, box.backBottomRight, color);
+        InternalDebug.DrawLine(box.backBottomRight, box.backBottomLeft, color);
+        InternalDebug.DrawLine(box.backBottomLeft, box.backTopLeft, color);
 
-        Debug.DrawLine(box.frontTopLeft, box.backTopLeft, color);
-        Debug.DrawLine(box.frontTopRight, box.backTopRight, color);
-        Debug.DrawLine(box.frontBottomRight, box.backBottomRight, color);
-        Debug.DrawLine(box.frontBottomLeft, box.backBottomLeft, color);
+        InternalDebug.DrawLine(box.frontTopLeft, box.backTopLeft, color);
+        InternalDebug.DrawLine(box.frontTopRight, box.backTopRight, color);
+        InternalDebug.DrawLine(box.frontBottomRight, box.backBottomRight, color);
+        InternalDebug.DrawLine(box.frontBottomLeft, box.backBottomLeft, color);
     }
 
     public struct Box

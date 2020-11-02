@@ -65,6 +65,6 @@ public class SettingsMenu : MonoBehaviour
     public void SetFullScreen(bool isFullScreen)
     {
         Screen.fullScreen = isFullScreen;
-        Debug.Log(isFullScreen);
+        InternalDebug.Log(isFullScreen);
     }
 }

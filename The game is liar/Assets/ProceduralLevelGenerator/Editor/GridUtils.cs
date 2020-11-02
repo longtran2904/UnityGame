@@ -24,7 +24,7 @@ namespace ProceduralLevelGenerator.Unity.Editor
             {
                 if (DateTime.Now.Subtract(TimeSpan.FromSeconds(30)) > lastIsometricErrorShown)
                 {
-                    Debug.LogError("Isometric levels are only supported in the PRO version");
+                    InternalDebug.LogError("Isometric levels are only supported in the PRO version");
                     lastIsometricErrorShown = DateTime.Now;
                 }
 

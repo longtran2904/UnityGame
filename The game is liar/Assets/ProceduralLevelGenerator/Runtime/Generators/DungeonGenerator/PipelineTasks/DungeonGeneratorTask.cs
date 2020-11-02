@@ -80,8 +80,8 @@ namespace ProceduralLevelGenerator.Unity.Generators.DungeonGenerator.PipelineTas
                 TimeTotal = generator.TimeTotal,
             };
 
-            Debug.Log($"Layout generated in {stats.TimeTotal / 1000f:F} seconds");
-            Debug.Log($"{stats.Iterations} iterations needed, {stats.Iterations / (stats.TimeTotal / 1000d):0} iterations per second");
+            InternalDebug.Log($"Layout generated in {stats.TimeTotal / 1000f:F} seconds");
+            InternalDebug.Log($"{stats.Iterations} iterations needed, {stats.Iterations / (stats.TimeTotal / 1000d):0} iterations per second");
 
             ((IGraphBasedGeneratorPayload) Payload).GeneratedLevel = generatedLevel;
             Payload.GeneratorStats = stats;

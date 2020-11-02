@@ -29,8 +29,8 @@ public class Dialogue : ScriptableObject
         }
         catch (System.Exception e)
         {
-            Debug.LogError($"Couldn't find dialogue by ID: {ID}!");
-            Debug.LogError(e);
+            InternalDebug.LogError($"Couldn't find dialogue by ID: {ID}!");
+            InternalDebug.LogError(e);
             throw;
         }
     }

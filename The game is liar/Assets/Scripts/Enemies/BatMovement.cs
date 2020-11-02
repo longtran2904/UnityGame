@@ -90,8 +90,8 @@ public class BatMovement : EnemiesMovement
     [System.Diagnostics.Conditional("Debug")]
     void DrawDebug(Vector2 _point)
     {
-        Debug.DrawRay(transform.position, rb.velocity, Color.blue, .01f);
-        Debug.DrawLine(_point, point, Color.red, 3600);
+        InternalDebug.DrawRay(transform.position, rb.velocity, Color.blue, .01f);
+        InternalDebug.DrawLine(_point, point, Color.red, 3600);
     }
 
     void BatExplode(float _distanceToPlayer)
@@ -108,7 +108,7 @@ public class BatMovement : EnemiesMovement
             {
                 player.Hurt(enemy.damage);
             }
-            enemy.Death();
+            enemy.Die();
         }
         else
         {

@@ -28,14 +28,14 @@ namespace ProceduralLevelGenerator.Unity.Generators.Common
                 seed = seedsGenerator.Next();
             }
 
-            Debug.Log($"Random generator seed: {seed}");
+            InternalDebug.Log($"Random generator seed: {seed}");
 
             return new Random(seed);
         }
 
         public virtual object Generate()
         {
-            Debug.Log("--- Generator started ---");
+            InternalDebug.Log("--- Generator started ---");
              
             var stopwatch = new Stopwatch();
             stopwatch.Start();
@@ -44,7 +44,7 @@ namespace ProceduralLevelGenerator.Unity.Generators.Common
 
             PipelineRunner.Run(pipelineItems, payload);
 
-            Debug.Log($"--- Level generated in {stopwatch.ElapsedMilliseconds / 1000f:F}s ---");
+            InternalDebug.Log($"--- Level generated in {stopwatch.ElapsedMilliseconds / 1000f:F}s ---");
 
             return payload;
         }

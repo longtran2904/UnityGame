@@ -34,9 +34,10 @@ public class ItemDisplay : MonoBehaviour
     {
         for (int i = 0; i < icon.Length; i++)
         {
-            if (!item[i].icon)
+            if (item == null || !item[i].icon)
             {
                 icon[i].gameObject.SetActive(false);
+                continue;
             }
             icon[i].sprite = item[i].icon;
         }

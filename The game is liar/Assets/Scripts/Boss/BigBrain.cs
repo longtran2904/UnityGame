@@ -251,11 +251,9 @@ public class BigBrain : Boss
         }
         Vector3 position = new Vector3(transform.position.x, shootPos.position.y + offsetY, 0);
         Projectile projectile1 = ObjectPooler.instance.SpawnFromPool<Projectile>("Shockwave", position, Quaternion.Euler(rotationX, 0, 0));
-        projectile1.isEnemy = true;
-        projectile1.damage = damage;
+        projectile1.Init(damage, Vector2.zero, null, true, false);
         Projectile projectile2 = ObjectPooler.instance.SpawnFromPool<Projectile>("Shockwave", position, Quaternion.Euler(rotationX, 180, 0));
-        projectile2.isEnemy = true;
-        projectile2.damage = damage;
+        projectile2.Init(damage, Vector2.zero, null, true, false);
     }
 
     void TeleportToRestPos()
@@ -367,13 +365,10 @@ public class BigBrain : Boss
             {
                 pos.right = pos.position - eyePos.position;
                 Projectile bullet = ObjectPooler.instance.SpawnFromPool<Projectile>("TurretBullet", pos.position, pos.rotation);
-                bullet.isEnemy = true;
-                bullet.damage = projectileDamage;
+                bullet.Init(damage, Vector2.zero, null, true, false);
             }
             AudioManager.instance.Play("Shoot");
-
             yield return new WaitForSeconds(timeBtwBullets);
-
             eyePos.Rotate(new Vector3(0, 0, 10));
         }
     }

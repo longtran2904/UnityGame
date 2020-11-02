@@ -69,12 +69,6 @@ public class EnragedBehaviour : StateMachineBehaviour
         }
     }
 
-    // OnStateExit is called when a transition ends and the state machine finishes evaluating this state
-    override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
-    {
-        
-    }
-
     void FinalExplode()
     {
         if (flashTimeValue <= 0)
@@ -82,12 +76,10 @@ public class EnragedBehaviour : StateMachineBehaviour
             sr.material = defMat;
             flashTimeValue = flashTime;
         }
-
         if (sr.material.color == explodeMat.color)
         {
             flashTimeValue -= Time.deltaTime;
         }
-
         if (Time.time > timeBtwFlashValue)
         {
             sr.material = explodeMat;
@@ -100,16 +92,9 @@ public class EnragedBehaviour : StateMachineBehaviour
         for (int i = 0; i < boss.shootPos.Length; i++)
         {
             Vector2 difference = boss.shootPos[i].position - boss.enragedPos.position;
-
             float rotationZ = Mathf.Atan2(difference.y, difference.x) * Mathf.Rad2Deg;
-
-            /*Projectile projectile = Instantiate(projectilePrefab, boss.shootPos[i].position,
-                Quaternion.Euler(0, 0, rotationZ)) as Projectile;*/
-
             Projectile projectile = ObjectPooler.instance.SpawnFromPool<Projectile>("BloodProjectile", boss.shootPos[i].position, Quaternion.Euler(0, 0, rotationZ));
-
-            projectile.damage = projectileDamage;
-
+            projectile.Init(projectileDamage, Vector2.zero, null, true, false);
             boss.shootPos[i].RotateAround(_anim.transform.position, Vector3.forward, rotateSpeed);
         }        
     }

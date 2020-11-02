@@ -4,16 +4,9 @@ using UnityEngine;
 
 public class ItemManager : MonoBehaviour
 {
-    public Item[] items = new Item[2];
-    private Camera main;
+    public GameObject[] items = new GameObject[2];
     private bool[] isUsing = new bool[2];
     private float[] timer = new float[2];
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        main = Camera.main;
-    }
 
     // Update is called once per frame
     void Update()
@@ -51,40 +44,17 @@ public class ItemManager : MonoBehaviour
         {
             return;
         }
-        if (items[slot] is Grenade)
-        {
-            if (items[slot] is FragGrenade)
-            {
-                ThrowGrenade<FragGrenade>(slot);
-            }
-            else if (items[slot] is FireGrenade)
-            {
-                ThrowGrenade<FireGrenade>(slot);
-            }
-        }
-    }
-
-    private void ThrowGrenade<T>(int slot) where T : Grenade
-    {
-        T item = (T)items[slot];
-        StartCooldown(slot, item);
-        Vector2 dir = main.ScreenToWorldPoint(Input.mousePosition) - transform.position;
-        Vector3 offset = new Vector2(0.1f, 0) * transform.right;
-        item.Throw(transform.position + offset, dir.normalized);
-        item.Explode();
-    }
-
-    void StartCooldown(int slot, Item item)
-    {
+        Item item = Instantiate(items[slot], transform.position + new Vector3(1 * transform.right.x, 1 * transform.up.y, 0), Quaternion.identity).GetComponent<Item>();
+        item.Init();
         isUsing[slot] = true;
         timer[slot] = item.cooldownTime;
     }
 
-    public void AddItem(Item item, int slot)
+    public void AddItem(GameObject item, int slot)
     {
         if (item == items[0] || item == items[1])
         {
-            Debug.LogWarning("Can't assign the same item!");
+            InternalDebug.LogWarning("Can't assign the same item!");
             return;
         }
         items[slot] = item;

@@ -80,9 +80,7 @@ public class JellyMovement : EnemiesMovement
         {
             AudioManager.instance.Play(_soundToPlay);
             projectile = ObjectPooler.instance.SpawnFromPool<Projectile>(_bullet, shootPos.transform.position, _rotation);
-            projectile.isEnemy = true;
-            projectile.hitEffect = hitEffect;
-            projectile.damage = enemy.damage;
+            projectile.Init(enemy.damage, Vector2.zero, hitEffect, true, false);
             timeBtwShotsValue = timeBtwShots + Time.time;
         }
     }

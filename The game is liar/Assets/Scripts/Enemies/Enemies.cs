@@ -1,16 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using System.Collections;
 
-public enum EnemyType
-{
-    Maggot,
-    Bat,
-    Turret,
-    Alien,
-    Jelly,
-    NoEye
-}
 
 public class Enemies : MonoBehaviour
 {
@@ -18,175 +8,99 @@ public class Enemies : MonoBehaviour
 
     public int health;
     public int damage;
-    public float dropRate;
-    public Vector2Int moneyDropRange;
-    protected EnemiesMovement movement;
-    [HideInInspector] public EnemyType enemyType;
-    protected Player player;
-
+    public DropRange moneyDropRange;
     public Material matWhite;
-    private Material matDefault;
-    private SpriteRenderer sr;
 
+    protected bool hasSpawnVFX;
     public GameObject explosionParitcle;
     public GameObject spawnEffect;
-    private GameObject spawnObject;
-    public bool hasSpawnVFX = true;
-    private bool componentEnable = true;
     
-    protected virtual void Start()
+    void Start()
     {
-        Setup();
-        SpawnEnemy();
-        Destroy(spawnObject, 1);
+        StartCoroutine(SpawnEnemy());
     }
 
-    void Setup()
-    {
-        movement = GetComponent<EnemiesMovement>();
-        sr = GetComponentInChildren<SpriteRenderer>() ?? GetComponent<SpriteRenderer>();
-        player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
-        matDefault = sr.material;
-        EnemySpawner.numberOfEnemiesAlive++;
-    }
-
-    void SpawnEnemy()
+    IEnumerator SpawnEnemy()
     {
         numberOfEnemiesAlive += 1;
+
         if (hasSpawnVFX)
         {
-            spawnObject = Instantiate(spawnEffect, transform.position, Quaternion.identity);
-            DisableAllOtherBehaviours();
-            DisableAllChildObjects();
-        }
-    }
-
-    void DisableAllOtherBehaviours()
-    {
-        sr.enabled = false;
-        GetComponent<Rigidbody2D>().gravityScale = 0;
-        foreach (var component in GetComponents<Behaviour>())
-        {
-            if (component == this)
+            // Disable behaviours and child objects
+            SpriteRenderer sr = GetComponent<SpriteRenderer>();
+            sr.enabled = false;
+            float startGravityScale = GetComponent<Rigidbody2D>().gravityScale;
+            GetComponent<Rigidbody2D>().gravityScale = 0;
+            foreach (var component in GetComponents<Behaviour>())
             {
-                continue;
+                if (component == this)
+                {
+                    continue;
+                }
+                component.enabled = false;
             }
-            component.enabled = false;
-        }
-    }
-
-    void DisableAllChildObjects()
-    {
-        foreach (Transform child in transform)
-        {
-            child.gameObject.SetActive(false);
-        }
-    }
-
-    // Update is called once per frame
-    protected virtual void Update()
-    {
-        if (isSpawnEffectDone() && hasSpawnVFX)
-        {
-            EnableAllOtherBehaviours();
-            if (player == null)
+            foreach (Transform child in transform)
             {
-                player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
+                child.gameObject.SetActive(false);
             }
-            if (health <= 0)
-            {
-                Death();
-            }
-        }
-    }
 
-    bool isSpawnEffectDone()
-    {
-        if (spawnObject == null)
-        {
-            return true;
-        }
-        return false;
-    }
+            Destroy(Instantiate(spawnEffect, transform.position, Quaternion.identity), 1);
+            yield return new WaitForSeconds(1);
 
-    void EnableAllOtherBehaviours()
-    {
-        if (componentEnable)
-        {
+            // Enable components and child objects
+            sr.enabled = true;
+            GetComponent<Rigidbody2D>().gravityScale = startGravityScale;
             foreach (var component in GetComponents<Behaviour>())
             {
                 component.enabled = true;
             }
-
             foreach (Transform child in transform)
             {
                 child.gameObject.SetActive(true);
-            }
-
-            sr.enabled = true;
-
-            GetComponent<Rigidbody2D>().gravityScale = 1;
-
-            componentEnable = false;
+            } 
         }
     }
 
-    public void Death()
+    // Update is called once per frame
+    void Update()
+    {
+        if (health <= 0)
+        {
+            Die();
+        }
+    }
+
+    public virtual void Die()
     {
         GameObject explosion = explosionParitcle;
         Instantiate(explosion, transform.position, Quaternion.identity);
-        numberOfEnemiesAlive -= 1;
-        DropMoney(CalculateDropMoney());
-        EnemySpawner.numberOfEnemiesAlive--;
+        DropMoney(moneyDropRange.GetRandom());
+        numberOfEnemiesAlive--;
         Destroy(gameObject);
     }
 
-    int CalculateDropMoney()
+    protected void DropMoney(int dropMoney)
     {
-        bool canDrop = MathUtils.RandomBool(dropRate);
-        if (canDrop)
-        {
-            return Random.Range(moneyDropRange.x, moneyDropRange.y + 1);
-        }
-        return 0;
-    }
-
-    void DropMoney(int dropMoney)
-    {
-        Vector3 offset = new Vector2(0, 1f);
         for (int i = 0; i < dropMoney; i++)
         {
-            ObjectPooler.instance.SpawnFromPool("Money", transform.position + offset, Quaternion.identity);
+            ObjectPooler.instance.SpawnFromPool("Money", transform.position, UnityEngine.Random.rotation);
         }
     }
 
-    public void Hurt(int _damage, Vector2 _knockbackForce = new Vector2())
+    public void Hurt(int _damage, Vector2 _knockbackForce = new Vector2(), Material hurtMat = null)
     {
         health -= _damage;
-        sr.material = matWhite;
-        Invoke("ResetMaterial", .1f);
         AudioManager.instance.Play("GetHit");
+        EnemiesMovement movement = GetComponent<EnemiesMovement>();
         movement.KnockBack(_knockbackForce);
-    }
+        StartCoroutine(ResetMaterial());
 
-    public void ResetMaterial()
-    {
-        sr.material = matDefault;
-    }
-
-    public void DamagePlayerWhenCollide(Collider2D collision)
-    {
-        if (collision.CompareTag("Player"))
+        IEnumerator ResetMaterial()
         {
-            player.Hurt(damage);
-        }
-    }
-
-    public void DamagePlayerWhenCollide(Collision2D collision)
-    {
-        if (collision.collider.CompareTag("Player"))
-        {
-            player.Hurt(damage);
+            SpriteRenderer sr = GetComponent<SpriteRenderer>();
+            sr.material = hurtMat ? hurtMat : matWhite;
+            yield return new WaitForSeconds(.1f);
+            sr.material = movement.defaultMaterial;
         }
     }
 }

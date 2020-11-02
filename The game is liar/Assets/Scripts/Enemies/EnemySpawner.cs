@@ -12,7 +12,6 @@ public class EnemySpawner : MonoBehaviour
     public Transform[] spawnPoints;
     public EnemiesProb[] enemies;
     public bool teleportToNextScene = false;
-    public static int numberOfEnemiesAlive;
 
     Player player;
     bool hasPlay = false;
@@ -30,16 +29,16 @@ public class EnemySpawner : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (numberOfEnemiesAlive <= 0 && numberOfWaves > 0)
+        if (Enemies.numberOfEnemiesAlive <= 0 && numberOfWaves > 0)
         {
-            numberOfEnemiesAlive = 0;
+            Enemies.numberOfEnemiesAlive = 0;
             numberOfEnemiesToSpawn = Random.Range(minEnemiesToSpawn, maxEnemiesToSpawn + 1);
             SpawnEnemy(numberOfEnemiesToSpawn);
             numberOfWaves--;
         }
 
         // For cart scene
-        if (teleportToNextScene && numberOfWaves <= 0 && numberOfEnemiesAlive <= 0)
+        if (teleportToNextScene && numberOfWaves <= 0 && Enemies.numberOfEnemiesAlive <= 0)
         {
             if (hasPlay)
             {
@@ -65,7 +64,7 @@ public class EnemySpawner : MonoBehaviour
         }
         if (_numberOfEnemiesToSpawn > spawnPoints.Length)
         {
-            Debug.LogError("Number of enemies to spawn is greater than spawn points: " + transform.parent.gameObject.name + " InstanceID: " + transform.GetInstanceID());
+            InternalDebug.LogError("Number of enemies to spawn is greater than spawn points: " + transform.parent.gameObject.name + " InstanceID: " + transform.GetInstanceID());
             return;
         }
         float[] probs = new float[enemies.Length];

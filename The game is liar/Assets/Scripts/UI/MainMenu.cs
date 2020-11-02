@@ -1,7 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.SceneManagement;
+﻿using UnityEngine;
 
 public class MainMenu : MonoBehaviour
 {
@@ -13,8 +10,8 @@ public class MainMenu : MonoBehaviour
 
     public void PlayGame()
     {
-        GameManager.instance.LoadGame((int)SceneIndexes.ROOM, true);
         AudioManager.instance.Play("Select");
+        GameManager.instance.LoadGame((int)SceneIndexes.ROOM, true);
     }
 
     public void QuitGame()

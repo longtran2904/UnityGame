@@ -24,14 +24,14 @@ public class GeneratorHandler : MonoBehaviour
                 generator.Generate();
 
                 // If we get here, that means that there was no timeout
-                Debug.Log("Level generated");
+                InternalDebug.Log("Level generated");
                 levelGenerated = true;
                 //GameObject.Find("RoomManager").SetActive(true);
             }
             catch (InvalidOperationException)
             {
                 // If we get here, there was a timeout
-                Debug.Log("Timeout encountered");
+                InternalDebug.Log("Timeout encountered");
             }
         }
     }

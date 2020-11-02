@@ -2,19 +2,21 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "Items/Grenade/Frag Grenade")]
-public class FragGrenade : Grenade
+public class FragGrenade : Item
 {
-    public float explodeTime;
+    [SerializeField] protected GameObject explodeEffect;
 
-    public override void Explode()
+    protected override void Use()
     {
-        AudioManager.instance.StartCoroutine(FragExplode());
+        Throw();
+        StartCoroutine(Explode());
     }
 
-    public IEnumerator FragExplode()
+    IEnumerator Explode()
     {
-        yield return new WaitForSeconds(explodeTime);
-        base.Explode();        
+        yield return new WaitForSeconds(duration);
+        DamageEnemiesInRange();
+        SpawnVFX(explodeEffect, .25f);
+        Destroy(gameObject);
     }
 }

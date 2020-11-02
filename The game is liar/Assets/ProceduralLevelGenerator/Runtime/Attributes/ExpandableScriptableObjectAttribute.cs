@@ -153,7 +153,7 @@ namespace ProceduralLevelGenerator.Unity.Attributes
                 catch (StackOverflowException)
                 {
                     field.objectReferenceValue = null;
-                    Debug.LogError("Detected self-nesting cauisng a StackOverflowException, avoid using the same " +
+                    InternalDebug.LogError("Detected self-nesting cauisng a StackOverflowException, avoid using the same " +
                                    "object iside a nested structure.");
                 }
 

@@ -112,7 +112,7 @@ namespace ProceduralLevelGenerator.Unity.Generators.DungeonGenerator
 
             var filename = "exportedMapDescription.json";
             File.WriteAllText(filename, json);
-            Debug.Log($"Map description exported to {filename}");
+            InternalDebug.Log($"Map description exported to {filename}");
         }
 
         private MapDescription<int> GetIntMapDescription(MapDescription<RoomBase> mapDescription)

@@ -18,7 +18,13 @@ public class MoneyObject : MonoBehaviour, IPooledObject
     void Update()
     {
         if (!player)
+        {
             player = Physics2D.OverlapCircle(transform.position, 5f, LayerMask.GetMask("Player"));
+            if (Enemies.numberOfEnemiesAlive <= 0)
+            {
+                player = Player.player.GetComponent<Collider2D>();
+            }
+        }
         else
         {
             Vector2 dir = player.transform.position - transform.position;

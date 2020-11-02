@@ -36,7 +36,7 @@ public class DashBehaviour : StateMachineBehaviour
             animator.ResetTrigger("Dash");            
             animator.SetTrigger("Jump");
             dashCounts = 0;
-            Debug.Log("d");
+            InternalDebug.Log("d");
         }
         else if (timeValue <= 0 && dashCounts < maxDash)
         {

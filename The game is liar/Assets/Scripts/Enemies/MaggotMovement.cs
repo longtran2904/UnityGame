@@ -2,107 +2,64 @@
 
 public class MaggotMovement : EnemiesMovement
 {
-    private RaycastHit2D hitInfo;
-    int groundMask;
-    Vector2 wallRayPos;
-    Vector2 groundRayPos;
-    RaycastHit2D groundCheck, wallCheck;
+    public float jumpForce;
+    bool isAttacking;
+    public float distanceToChase;
+    public float timeBtwJumps;
+    private float timeBtwJumpsValue;
+    public float timeBtwTeleports;
+    private float timeBtwTeleportsValue;
 
-    // Start is called before the first frame update
     protected override void Start()
     {
         base.Start();
-        groundMask = LayerMask.GetMask("Ground");
+        timeBtwJumpsValue = timeBtwJumps;
     }
 
-    // Update is called once per frame
     void Update()
     {
-        CheckForGround();
-        CheckForWall();
-        Rotate();
-        DebugCollision();
-        rb.velocity = transform.right * speed * Time.deltaTime;
-    }
+        Vector2 pos = (Vector2)transform.position - new Vector2(0, sr.bounds.extents.y * transform.up.y);
+        Vector2 size = new Vector2(sr.bounds.size.x, 0.1f);
+        RaycastHit2D groundCheck = Physics2D.BoxCast(pos, size, 0, -transform.up, 0, LayerMask.GetMask("Ground"));
+        ExtDebug.DrawBoxCastBox(pos, size / 2, Quaternion.identity, -transform.up, 0, Color.cyan);
+        InternalDebug.Log((bool)groundCheck);
 
-    void Rotate()
-    {
-        if (wallCheck)
-        {
-            RotateUp();
-        }
-        else if (!groundCheck)
-        {
-            RotateDown();
-        }
-    }
+        float dirX = Mathf.Sign(player.transform.position.x - transform.position.x);
+        float distanceToPlayer = (player.transform.position - transform.position).sqrMagnitude;
+        InternalDebug.Log(distanceToPlayer);
 
-    void RotateUp()
-    {
-        if ((transform.eulerAngles.z / 90) % 2 != 0)
+        if (groundCheck)
         {
-            transform.position += new Vector3(0, sr.bounds.extents.y - sr.bounds.extents.x, 0) * transform.right.y;
+            if (distanceToPlayer <= attackRange * attackRange && !isAttacking && Time.time >= timeBtwJumpsValue)
+            {
+                //InternalDebug.Log("Jump!");
+                rb.velocity = new Vector2(dirX, 1) * jumpForce;
+                isAttacking = true;
+                timeBtwJumpsValue = Time.time + timeBtwJumps;
+            }
+            else if (((Mathf.Abs(player.transform.position.y - transform.position.y) > 2) || distanceToPlayer > distanceToChase * distanceToChase) && 
+                player.controller.isGrounded && Time.time > timeBtwTeleportsValue)
+            {
+                //InternalDebug.Log("Teleport!");
+                Vector3 offset = new Vector2(-dirX * 1.5f, (sr.bounds.extents.y - player.GetComponent<SpriteRenderer>().bounds.extents.y) * transform.up.y);
+                transform.position = player.transform.position + offset;
+                timeBtwTeleportsValue = Time.time + timeBtwTeleports;
+            }
+            else
+            {
+                //InternalDebug.Log("Move: " + dirX);
+                isAttacking = false;
+                rb.velocity = new Vector2(dirX, 0) * speed * Time.deltaTime;
+            }
         }
-        else
-        {
-            transform.position += new Vector3(sr.bounds.extents.x - sr.bounds.extents.y, 0, 0) * transform.right.x;
-        }
-        transform.rotation *= Quaternion.Euler(0, 0, 90);
-    }
 
-    void RotateDown()
-    {
-        if ((transform.eulerAngles.z / 90) % 2 != 0)
+        if (dirX > 0)
         {
-            transform.position += new Vector3(0, sr.bounds.extents.y + sr.bounds.extents.x, 0) * transform.right.y;
+            transform.eulerAngles = Vector3.zero;
         }
-        else
+        else if (dirX < 0)
         {
-            transform.position += new Vector3(sr.bounds.extents.x + sr.bounds.extents.y, 0, 0) * transform.right.x;
+            transform.eulerAngles = new Vector3(0, 180, 0);
         }
-        float z = transform.eulerAngles.z - 90;
-        transform.rotation *= Quaternion.Euler(0, 0, -90);
-    }
-
-    void CheckForWall()
-    {
-        float rayLength = .01f;
-        if ((transform.eulerAngles.z / 90) % 2 != 0)
-        {
-            wallRayPos = transform.position + new Vector3(0, sr.bounds.extents.y, 0) * transform.right.y;
-            wallCheck = Physics2D.Raycast(wallRayPos, transform.right, rayLength, groundMask);
-        }
-        else
-        {
-            wallRayPos = transform.position + new Vector3((sr.bounds.extents.x) * transform.right.x, 0, 0);
-            wallCheck = Physics2D.Raycast(wallRayPos, transform.right, rayLength, groundMask);
-        }
-    }
-
-    void CheckForGround()
-    {
-        float rayLength = 1;
-        if ((transform.eulerAngles.z / 90) % 2 != 0)
-        {
-            groundRayPos = transform.position + new Vector3(sr.bounds.extents.x * -transform.up.x, sr.bounds.extents.y * transform.right.y, 0);
-            groundCheck = Physics2D.Raycast(groundRayPos, -transform.up, rayLength, groundMask);
-        }
-        else
-        {
-            groundRayPos = transform.position + new Vector3(sr.bounds.extents.x * transform.right.x, sr.bounds.extents.y * -transform.up.y, 0);
-            groundCheck = Physics2D.Raycast(groundRayPos, -transform.up, rayLength, groundMask);
-        }
-    }
-
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        enemy.DamagePlayerWhenCollide(collision);
-    }
-
-    [System.Diagnostics.Conditional("DEBUG_MAGGOT")]
-    void DebugCollision()
-    {
-        Debug.DrawRay(wallRayPos, transform.right, Color.blue);
-        Debug.DrawRay(groundRayPos, -transform.up, Color.green);
     }
 }

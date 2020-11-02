@@ -1,17 +1,21 @@
 ﻿using ProceduralLevelGenerator.Unity.Generators.Common.Rooms;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
 public class RoomManager : MonoBehaviour
 {
-    public List<RoomInstance> rooms;
+    public Dictionary<RoomInstance, Bounds> rooms = new Dictionary<RoomInstance, Bounds>();
+    public List<Vector2Int> allGroundTiles = new List<Vector2Int>();
     [HideInInspector] public Tilemap tilemap; // the tilemap of the current level
     private RoomInstance currentRoom;
+    private RoomInstance lastRoom;
     bool canLock = true;
 
     public static RoomManager instance;
     public const string startingRoom = "Starting Room";
+    public event Action<RoomInstance> hasPlayer;
 
     private void Awake()
     {
@@ -21,8 +25,8 @@ public class RoomManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Camera.main.GetComponentInParent<CameraFollow2D>().hasPlayer += UpdateCurrentRoom;
-        foreach (var room in rooms)
+        //Camera.main.GetComponentInParent<CameraFollow2D>().hasPlayer += UpdateCurrentRoom;
+        foreach (var room in rooms.Keys)
         {
             if (room.RoomTemplatePrefab.name == startingRoom)
             {
@@ -36,37 +40,43 @@ public class RoomManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        UpdateCurrentRoom();
         try
         {
-            if (EnemySpawner.numberOfEnemiesAlive > 0 && currentRoom.RoomTemplatePrefab.name != startingRoom && canLock)
+            if (Enemies.numberOfEnemiesAlive > 0 && currentRoom.RoomTemplatePrefab.name != startingRoom && canLock)
             {
                 LockRoom();
                 canLock = false;
             }
-            else if (EnemySpawner.numberOfEnemiesAlive == 0 && currentRoom.RoomTemplatePrefab.name != startingRoom && !canLock)
+            else if (Enemies.numberOfEnemiesAlive == 0 && currentRoom.RoomTemplatePrefab.name != startingRoom && !canLock)
             {
                 UnLockRoom();
                 canLock = true;
             }
         }
-        catch (System.Exception e)
+        catch (Exception e)
         {
-            Debug.Log(currentRoom);
-            Debug.LogError(e);
+            InternalDebug.Log(currentRoom);
+            InternalDebug.LogError(e);
             throw;
         }
     }
 
-    void UpdateCurrentRoom(Bounds bounds)
+    void UpdateCurrentRoom()
     {
-        foreach (var room in rooms)
+        foreach (var bounds in rooms.Values)
         {
-            if (MathUtils.CreateBounds(room.OutlinePolygon.GetOutlinePoints()[0], room.OutlinePolygon.GetOutlinePoints()[2]) == bounds)
+            ExtDebug.DrawBox(bounds.center, bounds.extents, Quaternion.identity, Color.cyan);
+        }
+        foreach (var room in rooms.Keys)
+        {
+            if (rooms[room].Contains(Player.player.transform.position) && room != lastRoom)
             {
                 currentRoom = room;
-                currentRoom.RoomTemplateInstance.transform.Find("Enemies").GetComponent<EnemySpawner>().enabled = true;
-                if (currentRoom.RoomTemplatePrefab.name != startingRoom) WavesUI.instance.UpdateCurrentSpawner(currentRoom); // Update the waves of enemies UI
-                return;
+                EnemySpawner currentSpawner = currentRoom.RoomTemplateInstance.transform.Find("Enemies").GetComponent<EnemySpawner>();
+                currentSpawner.enabled = true;
+                hasPlayer?.Invoke(room);
+                lastRoom = room;
             }
         }
     }
@@ -81,10 +91,11 @@ public class RoomManager : MonoBehaviour
                 if (doors.Length == 1)
                 {
                     doors[0].gameObject.SetActive(true);
-                    return;
+                    continue;
                 }
                 int furthest = 0; // We active the furthest door because the player had already moved over it
-                if (Mathf.Abs(currentRoom.Position.x - doors[0].transform.position.x) < Mathf.Abs(currentRoom.Position.x - doors[1].transform.position.x))
+                Vector3 roomCenter = rooms[currentRoom].center;
+                if (Mathf.Abs(roomCenter.x - doors[0].transform.position.x) < Mathf.Abs(roomCenter.x - doors[1].transform.position.x))
                 {
                     furthest = 1;
                 }

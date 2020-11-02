@@ -71,7 +71,7 @@ public class WeaponImporter : AssetPostprocessor
                         string path = "Assets/Weapon Stats/" + weaponStat.weaponName + ".asset";
                         AssetDatabase.CreateAsset(weaponStat, path);
                         Selection.activeObject = weaponStat;
-                        Debug.Log($"Done creating at {path}!");
+                        InternalDebug.Log($"Done creating at {path}!");
                     }
                     AssetDatabase.SaveAssets();
                     AssetDatabase.Refresh();
@@ -84,15 +84,15 @@ public class WeaponImporter : AssetPostprocessor
                         {
                             if (!stats.Value[i])
                             {
-                                Debug.LogWarning($"Can't convert at element {i} of {stats.Key}");
+                                InternalDebug.LogWarning($"Can't convert at element {i} of {stats.Key}");
                             }
                         }
                     }
                 }
                 catch (Exception e)
                 {
-                    Debug.LogWarning($"The file {asset} could not be read!");
-                    Debug.LogError(e);
+                    InternalDebug.LogWarning($"The file {asset} could not be read!");
+                    InternalDebug.LogError(e);
                     throw;
                 }
             }

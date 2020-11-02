@@ -9,7 +9,7 @@ public class ClientHandle : MonoBehaviour
         string _msg = _packet.ReadString();
         int _myId = _packet.ReadInt();
 
-        Debug.Log($"Message frome server: {_msg}");
+        InternalDebug.Log($"Message frome server: {_msg}");
         Client.instance.myId = _myId;
         ClientSend.WelcomeReceived();
     }

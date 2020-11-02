@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using UnityEngine;
 using TMPro;
+using ProceduralLevelGenerator.Unity.Generators.Common.Rooms;
 
 public class WavesUI : MonoBehaviour
 {
@@ -14,28 +15,29 @@ public class WavesUI : MonoBehaviour
     {
         instance = this;
         gameObject.SetActive(false);
+        RoomManager.instance.hasPlayer += UpdateCurrentSpawner;
     }
 
     // Update is called once per frame
-    void Update()
+    void LateUpdate()
     {
-        if (currentEnemies == EnemySpawner.numberOfEnemiesAlive)
+        if (currentEnemies == Enemies.numberOfEnemiesAlive)
             return;
         StringBuilder builder = new StringBuilder();
         int numberOfWaves = startWaves - currentSpawner.numberOfWaves;
         builder.Append("Waves: ").Append(numberOfWaves).Append("/").Append(startWaves);
         numberOfWavesText.text = builder.ToString();
         builder.Clear();
-        builder.Append("Number of enemies left: ").Append(EnemySpawner.numberOfEnemiesAlive);
+        builder.Append("Number of enemies left: ").Append(Enemies.numberOfEnemiesAlive);
         numberOfEnemiesText.text = builder.ToString();
-        currentEnemies = EnemySpawner.numberOfEnemiesAlive;
+        currentEnemies = Enemies.numberOfEnemiesAlive;
         if (currentEnemies == 0 && currentSpawner.numberOfWaves <= 0)
         {
             gameObject.SetActive(false);
         }
     }
 
-    public void UpdateCurrentSpawner(ProceduralLevelGenerator.Unity.Generators.Common.Rooms.RoomInstance currentRoom)
+    public void UpdateCurrentSpawner(RoomInstance currentRoom)
     {
         currentSpawner = currentRoom.RoomTemplateInstance.transform.Find("Enemies").GetComponent<EnemySpawner>();
         if (currentSpawner.numberOfWaves == 0)
@@ -43,7 +45,7 @@ public class WavesUI : MonoBehaviour
             return;
         }
         startWaves = currentSpawner.numberOfWaves;
-        currentEnemies = EnemySpawner.numberOfEnemiesAlive;
+        currentEnemies = Enemies.numberOfEnemiesAlive;
         gameObject.SetActive(true);
     }
 }

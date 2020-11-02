@@ -18,19 +18,24 @@ public class ActiveReload : MonoBehaviour
     {
         weapon = GetComponent<Weapon>();
         weapon.reloadingDelegate += BeginReload;
-    }
-
-    public void BeginReload()
-    {
-        if (reloadBar == null)
+        if (!reloadBar)
         {
-            reloadBar = GameObject.Find("Canvas").transform.Find("ReloadBar").gameObject;
+            reloadBar = transform.parent.parent.Find("Canvas").Find("ReloadBar").gameObject;
             slider = reloadBar.transform.Find("Slider").GetComponent<Image>();
             grey = reloadBar.transform.GetChild(0).GetComponent<RectTransform>();
             white = reloadBar.transform.GetChild(1).GetComponent<RectTransform>();
             grey.sizeDelta = new Vector2(activeRange, grey.sizeDelta.y);
             white.sizeDelta = new Vector2(perfectRange, white.sizeDelta.y);
         }
+    }
+
+    private void LateUpdate()
+    {
+        if (reloadBar) reloadBar.transform.rotation = Quaternion.identity;
+    }
+
+    public void BeginReload()
+    {
         slider.color = Color.white;
         reloadBar.SetActive(true);
         StartCoroutine(Reloading());
@@ -39,7 +44,7 @@ public class ActiveReload : MonoBehaviour
     private IEnumerator Reloading()
     {
         float reloadRange = reloadBar.GetComponent<RectTransform>().sizeDelta.x;
-        float activePos = Random.Range(reloadRange * .15f, reloadRange - activeRange - reloadRange * .75f);
+        float activePos = Random.Range(reloadRange * .15f, reloadRange - activeRange - reloadRange * .25f);
         float perfectPos = Random.Range(activePos, activePos + activeRange); // The perfect bar has to be inside the active bar
         white.anchoredPosition = new Vector2(perfectPos, 0);
         grey.anchoredPosition = new Vector2(activePos, 0);

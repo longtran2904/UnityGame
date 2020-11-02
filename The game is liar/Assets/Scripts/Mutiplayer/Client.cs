@@ -26,7 +26,7 @@ public class Client : MonoBehaviour
         }
         else if (instance != this)
         {
-            Debug.Log("Instance already exists, Destroying object!");
+            InternalDebug.Log("Instance already exists, Destroying object!");
             Destroy(this);
         }
     }
@@ -91,7 +91,7 @@ public class Client : MonoBehaviour
             }
             catch (Exception _ex)
             {
-                Debug.Log($"Error sending data to server via TCP: {_ex}");
+                InternalDebug.Log($"Error sending data to server via TCP: {_ex}");
             }
         }
 
@@ -172,6 +172,6 @@ public class Client : MonoBehaviour
                 { (int)ServerPackets.welcome, ClientHandle.Welcome },
                 { (int)ServerPackets.spawnPlayer, ClientHandle.SpawnPlayer }
             };
-        Debug.Log("Initialized packets.");
+        InternalDebug.Log("Initialized packets.");
     }
 }
