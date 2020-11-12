@@ -36,7 +36,7 @@ public class Trap : ElementalItem
         if (collision.CompareTag("Enemy") && Time.time >= timeBtwDamageValue)
         {
             Enemies enemy = collision.GetComponent<Enemies>();
-            enemy.Hurt(damage);
+            enemy.Hurt(damage, Vector2.zero, 0);
             timeBtwDamageValue = Time.time + timeBtwDamage;
         }
     }

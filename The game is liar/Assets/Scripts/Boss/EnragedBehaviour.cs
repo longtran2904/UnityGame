@@ -94,7 +94,7 @@ public class EnragedBehaviour : StateMachineBehaviour
             Vector2 difference = boss.shootPos[i].position - boss.enragedPos.position;
             float rotationZ = Mathf.Atan2(difference.y, difference.x) * Mathf.Rad2Deg;
             Projectile projectile = ObjectPooler.instance.SpawnFromPool<Projectile>("BloodProjectile", boss.shootPos[i].position, Quaternion.Euler(0, 0, rotationZ));
-            projectile.Init(projectileDamage, Vector2.zero, null, true, false);
+            projectile.Init(projectileDamage, 0, 0, true, false);
             boss.shootPos[i].RotateAround(_anim.transform.position, Vector3.forward, rotateSpeed);
         }        
     }

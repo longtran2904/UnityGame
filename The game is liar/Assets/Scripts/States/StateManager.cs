@@ -7,10 +7,11 @@ public class StateManager : MonoBehaviour
 {
     public static void AddStateToEnemy(Enemies enemy, State state)
     {
+        // TODO: add statePartciles
         //Destroy(Instantiate(GameAssets.instance.stateParticles[(int)state.type], enemy.transform.position, Quaternion.identity, enemy.transform));
         if (state.type == StatusType.Freeze || state.type == StatusType.Slow)
         {
-            enemy.StartCoroutine(EnemyStatModify(state.duration, enemy.GetComponent<EnemiesMovement>().speed, state.percent, x => { enemy.GetComponent<EnemiesMovement>().speed = x; }));
+            enemy.StartCoroutine(EnemyStatModify(state.duration, enemy.speed, state.percent, x => { enemy.speed = x; }));
         }
         else if (state.type == StatusType.Injured)
         {
@@ -18,7 +19,7 @@ public class StateManager : MonoBehaviour
         }
         else if (state.type == StatusType.Blind)
         {
-            enemy.StartCoroutine(EnemyStatModify(state.duration, enemy.GetComponent<EnemiesMovement>().attackRange, state.percent, x => { enemy.GetComponent<EnemiesMovement>().attackRange = x; }));
+            enemy.StartCoroutine(EnemyStatModify(state.duration, enemy.attackRange, state.percent, x => { enemy.attackRange = x; }));
         }
         else
         {
@@ -30,7 +31,7 @@ public class StateManager : MonoBehaviour
     {
         while (duration > 0)
         {
-            enemy.Hurt(damage);
+            enemy.Hurt(damage, Vector2.zero, 0);
             duration -= timeBtwHits;
             yield return new WaitForSeconds(timeBtwHits);
         }

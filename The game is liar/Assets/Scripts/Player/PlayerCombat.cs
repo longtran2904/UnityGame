@@ -12,6 +12,7 @@ public class PlayerCombat : MonoBehaviour
 
     public float attackRange;
     public int damage;
+    public float knockbackForce;
     public float attackRate;
     private float nextAttackTime;
 
@@ -47,7 +48,7 @@ public class PlayerCombat : MonoBehaviour
         // Damage each enemies
         foreach (var hitEnemy in hitEnemies)
         {
-            hitEnemy.gameObject.GetComponent<Enemies>().Hurt(damage);
+            hitEnemy.gameObject.GetComponent<Enemies>().Hurt(damage, (hitEnemy.transform.position - transform.position).normalized * knockbackForce, 0);
         }
     }
 

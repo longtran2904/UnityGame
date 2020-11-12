@@ -9,6 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 216f8d07236d5254198196487a3d809b, type: 3}
-  m_Name: New Fire Effect
+  m_Script: {fileID: 11500000, guid: 4bc7d10aeb7583740a6d818d52fee6ae, type: 3}
+  m_Name: MaggotAttack
   m_EditorClassIdentifier: 
+  nextState: {fileID: 11400000, guid: d9e214afffa6f3945acd64cbab4f491d, type: 2}
+  moveType: 1
+  moveWhenInRange: 1
+  jumpForce: 8
+  timeBtwJumps: 1

@@ -8,17 +8,16 @@ public class Projectile : MonoBehaviour, IPooledObject
     public float speed;
     public float timer;
     private Rigidbody2D rb;
-    private Player player;
 
     private int damage;
-    private Vector2 knockbackForce;
+    private float knockbackForce;
+    private float knockbackTime;
     private bool isCritical;
     private bool isEnemy;
-    private GameObject hitEffect;
+    public GameObject hitEffect;
 
     // State for enemy
     private State state;
-    private Material hurtMat;
 
     public bool canTouchGround; // can go through wall and grounds
     public bool canTouchPlayer; // go through player and still damage him
@@ -30,22 +29,21 @@ public class Projectile : MonoBehaviour, IPooledObject
         StartCoroutine(GameUtils.Deactive(gameObject, timer));
     }
 
-    public void Init(int damage, Vector2 knockback, GameObject hitEffect, bool isEnemy, bool isCritical)
+    public void Init(int damage, float knockbackForce, float knockbackTime, bool isEnemy, bool isCritical)
     {
         this.damage = damage;
-        knockbackForce = knockback;
-        this.hitEffect = hitEffect;
+        this.knockbackForce = knockbackForce;
+        this.knockbackTime = knockbackTime;
         this.isEnemy = isEnemy;
         this.isCritical = isCritical;
     }
 
-    public void Init(int damage, Vector2 knockback, GameObject hitEffect, State state, Material hurtMat = null)
+    public void Init(int damage, float knockbackForce, float knockbackTime, State state)
     {
         this.damage = damage;
-        knockbackForce = knockback;
-        this.hitEffect = hitEffect;
+        this.knockbackForce = knockbackForce;
+        this.knockbackTime = knockbackTime;
         this.state = state;
-        this.hurtMat = hurtMat;
     }
 
     public void SetVelocity(float speed)
@@ -99,15 +97,7 @@ public class Projectile : MonoBehaviour, IPooledObject
 
     private void HitPlayer(Collider2D collision)
     {
-        player = collision.GetComponent<Player>();
-        if (transform.position.x <= player.transform.position.x)
-        {
-            player.Hurt(damage, knockbackForce);
-        }
-        else
-        {
-            player.Hurt(damage, new Vector2(-knockbackForce.x, knockbackForce.y));
-        }
+        collision.GetComponent<Player>().Hurt(damage, knockbackForce * (collision.transform.position - transform.position).normalized);
         if (!canTouchPlayer)
         {
             gameObject.SetActive(false);
@@ -118,7 +108,7 @@ public class Projectile : MonoBehaviour, IPooledObject
     {
         Enemies enemy = collision.GetComponent<Enemies>();
         Vector2 knockbackForce = (-transform.position + enemy.transform.position).normalized * this.knockbackForce;
-        enemy.Hurt(damage, knockbackForce, hurtMat);
+        enemy.Hurt(damage, knockbackForce, knockbackTime);
         DamagePopup.Create(collision.transform.position, damage, isCritical);
         gameObject.SetActive(false);
         if (state != null)

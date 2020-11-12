@@ -43,7 +43,7 @@ public class Turret : ElementalItem
             if (canShoot)
             {
                 Projectile bullet = ObjectPooler.instance.SpawnFromPool<Projectile>("TurretBullet", shootPos.position, Quaternion.identity);
-                bullet.Init(damage, Vector2.zero, null, new State(StatusType.Bleed, duration, damage, state.timeBtwHits));
+                bullet.Init(damage, 0, 0, new State(StatusType.Bleed, duration, damage, state.timeBtwHits));
             }
             timeBtwShotsValue = Time.time + timeBtwShots;
         }

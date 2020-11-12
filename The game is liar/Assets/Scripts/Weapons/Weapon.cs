@@ -37,7 +37,6 @@ public class Weapon : MonoBehaviour
     private int currentAmmo;
     private bool isReloading;
 
-    public GameObject hitEffect;
     public TextMeshProUGUI ammoText;
     public event Action reloadingDelegate;
     [HideInInspector] public bool canSwitch = true;
@@ -207,7 +206,7 @@ public class Weapon : MonoBehaviour
     {
         projectile = ObjectPooler.instance.SpawnFromPool<Projectile>(poolName, shotPos.transform.position, transform.rotation);
         bool isCritical = UnityEngine.Random.value < stat.critChance;
-        projectile.Init(isCritical ? stat.critDamage : stat.damage, new Vector2(stat.knockback, stat.knockback), hitEffect, isEnemy, isCritical);
+        projectile.Init(isCritical ? stat.critDamage : stat.damage, stat.knockback, 0, isEnemy, isCritical);
     }
 
     public void OnTriggerHold()
