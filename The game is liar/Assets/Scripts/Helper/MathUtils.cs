@@ -208,6 +208,16 @@ public static class MathUtils
     }
     #endregion
 
+    public static Vector3Int ToVector3Int(Vector3 v)
+    {
+        return new Vector3Int((int)v.x, (int)v.y, (int)v.z);
+    }
+
+    public static Vector3Int ToVector3Int(Vector2Int v)
+    {
+        return new Vector3Int(v.x, v.y, 0);
+    }
+
     public static bool InRange(int min, int max, int value)
     {
         if ((value >= min) && (value <= max))

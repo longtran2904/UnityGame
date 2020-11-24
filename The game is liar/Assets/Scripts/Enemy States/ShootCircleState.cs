@@ -41,7 +41,7 @@ public class ShootCircleState : EnemyState
 
         yield return new WaitForSeconds(delayBulletTime);
 
-        Vector2 dir = Player.player.transform.position - enemy.transform.position;
+        Vector2 dir = enemy.player.transform.position - enemy.transform.position;
         float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
         foreach (var bullet in bullets)
         {

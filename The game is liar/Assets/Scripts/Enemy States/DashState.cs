@@ -9,7 +9,7 @@ public class DashState : EnemyState
     public override void Init(Enemies enemy)
     {
         dashTimeValue = dashTime;
-        enemy.rb.velocity = (Player.player.transform.position - enemy.transform.position).normalized * enemy.dashSpeed;
+        enemy.rb.velocity = (enemy.player.transform.position - enemy.transform.position).normalized * enemy.dashSpeed;
     }
 
     public override EnemyState UpdateState(Enemies enemy)

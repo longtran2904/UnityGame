@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using UnityEngine.Events;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -12,6 +11,7 @@ public class EnemySpawner : MonoBehaviour
     public Transform[] spawnPoints;
     public EnemiesProb[] enemies;
     public bool teleportToNextScene = false;
+    public UnityEvent endWaves;
 
     Player player;
     bool hasPlay = false;
@@ -35,6 +35,11 @@ public class EnemySpawner : MonoBehaviour
             numberOfEnemiesToSpawn = Random.Range(minEnemiesToSpawn, maxEnemiesToSpawn + 1);
             SpawnEnemy(numberOfEnemiesToSpawn);
             numberOfWaves--;
+        }
+        else if (Enemies.numberOfEnemiesAlive == 0)
+        {
+            endWaves.Invoke();
+            Destroy(gameObject);
         }
 
         // For cart scene

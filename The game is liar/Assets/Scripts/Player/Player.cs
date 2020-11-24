@@ -6,8 +6,8 @@ using TMPro;
 
 public class Player : MonoBehaviour
 {
-    public int health;
-    public HealthBar healthBar;
+    public IntReference health;
+    public Vector3Variable position;
     public PlayerController controller { get; private set; }
     public TextMeshProUGUI moneyText;
     public int money;
@@ -24,52 +24,29 @@ public class Player : MonoBehaviour
     public GameObject deathEffect;
     public GameObject deathParticle;
     public Weapon currentWeapon; // Only change by switching or buying new weapon (WeaponSwitching and WeaponManager)
-    public static Player player;
-
-    void Awake()
-    {
-        player = this;
-    }
 
     private void Start()
-    {
-        SetupComponent();
-        FindAndSetUI();
-    }
-
-    void FindAndSetUI()
-    {
-        if (!healthBar)
-        {
-            healthBar = FindObjectOfType<HealthBar>();
-        }
-        healthBar.SetMaxHealth(health);
-
-        if (!moneyText)
-        {
-            moneyText = GameObject.Find("Money").GetComponent<TextMeshProUGUI>();
-        }
-    }
-
-    void SetupComponent()
     {
         anim = GetComponent<Animator>();
         controller = GetComponent<PlayerController>();
         sr = GetComponent<SpriteRenderer>();
         defMat = sr.material;
+
+        if (!moneyText)
+        {
+            moneyText = GameObject.Find("Money")?.GetComponent<TextMeshProUGUI>();
+        }
     }
 
-
-    bool hasNotBeenDeath = true;
     // Update is called once per frame
     void Update()
     {
-        if (health <= 0 && hasNotBeenDeath)
+        if (health.value <= 0)
         {
             StartCoroutine(Die());
-            hasNotBeenDeath = false;
+            Destroy(this);
         }
-        moneyText.text = money.ToString();
+        moneyText?.SetText(money.ToString());
     }
 
     IEnumerator Die()
@@ -98,10 +75,9 @@ public class Player : MonoBehaviour
     {
         if (!isInvincible)
         {
-            health -= _damage;
+            health.value -= _damage;
             AudioManager.instance.Play("GetHit");
             CameraShaker.Instance.ShakeOnce(5, 4, .1f, .1f);
-            healthBar.SetHealth(health);
             controller.KnockBack(_knockbackForce);
             isInvincible = true;
             StartCoroutine(Flashing());

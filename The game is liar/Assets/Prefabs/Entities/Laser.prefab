@@ -66,7 +66,7 @@ GameObject:
   - component: {fileID: 2062389265103644204}
   - component: {fileID: 2062389265103644205}
   - component: {fileID: 572107803}
-  - component: {fileID: 572107802}
+  - component: {fileID: 3510005864030528304}
   m_Layer: 0
   m_Name: laser_0
   m_TagString: Untagged
@@ -184,7 +184,7 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.16, y: 0.16}
   m_EdgeRadius: 0
---- !u!114 &572107802
+--- !u!114 &3510005864030528304
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -193,9 +193,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 2062389265103644195}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 424792daf01521f46a0eccbe50d0dc5d, type: 3}
+  m_Script: {fileID: 11500000, guid: 36c01897c4ef7394b9a4e15f51a2ee6e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  damage: 20
+  willTurnOff: 1
+  timeOn: 1
+  timeOff: 1
+  offsetTimer: 0
+  laserBeam: {fileID: 2062389265103644195}
+  from: {fileID: 2062389266968869942}
+  to: {fileID: 2062389266219708625}
 --- !u!1 &2062389266219708630
 GameObject:
   m_ObjectHideFlags: 0

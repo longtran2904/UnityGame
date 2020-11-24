@@ -12,10 +12,10 @@ public class PlayerController : MonoBehaviour
     public float fallSpeed;
     private Rigidbody2D rb;
     private float moveInput;
-    public bool isGrounded { get; private set; }
+    bool isGrounded;
     private SpriteRenderer sprite;
-    private Animator anim;
-    public bool top { get; private set; } // True if the player is upside down
+    private Animator anim;    
+    public BoolReference onGround; // false if the player is upside down
     Camera mainCamera;
     Vector3 mousePos;
     public ParticleSystem dust;
@@ -74,7 +74,7 @@ public class PlayerController : MonoBehaviour
         // Cast box
         Vector2 boxSize = new Vector2(0.25f, 0.01f);
         boxOffset = new Vector3(0, sprite.bounds.extents.y + boxSize.y + 0.01f, 0);
-        if (top)
+        if (!onGround.value)
         {
             boxOffset = -boxOffset;
         }
@@ -104,19 +104,7 @@ public class PlayerController : MonoBehaviour
         {
             return;
         }
-        if (top)
-        {
-            // Upside down
-            if (mousePos.x - transform.position.x > 0)
-            {
-                transform.eulerAngles = new Vector3(0, 180, 180);
-            }
-            else if (mousePos.x - transform.position.x < 0)
-            {
-                transform.eulerAngles = new Vector3(0, 0, 180);
-            }
-        }
-        else
+        if (onGround.value)
         {
             // Normal
             if (mousePos.x - transform.position.x > 0)
@@ -126,6 +114,18 @@ public class PlayerController : MonoBehaviour
             else if (mousePos.x - transform.position.x < 0)
             {
                 transform.eulerAngles = new Vector3(0, 180, 0);
+            }
+        }
+        else
+        {
+            // Upside down
+            if (mousePos.x - transform.position.x > 0)
+            {
+                transform.eulerAngles = new Vector3(0, 180, 180);
+            }
+            else if (mousePos.x - transform.position.x < 0)
+            {
+                transform.eulerAngles = new Vector3(0, 0, 180);
             }
         }        
     }
@@ -151,7 +151,7 @@ public class PlayerController : MonoBehaviour
     // Invoke by Jump()
     void SwitchTop()
     {
-        top = !top;
+        onGround.value = !onGround.value;
     }
 
     private void FixedUpdate()

@@ -20,9 +20,16 @@ public class DialogueManager : MonoBehaviour
     public static DialogueManager instance;
     public event Action endDialogue;
 
+    private Player player;
+
     private void Awake()
     {
         instance = this;
+    }
+
+    void Start()
+    {
+        player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
     }
 
     public void StartDialogue(Dialogue dialogue)
@@ -128,9 +135,9 @@ public class DialogueManager : MonoBehaviour
     // Make sure the player don't shoot when in dialouge mode
     void DisablePlayerInput()
     {
-        Player.player.currentWeapon.canSwitch = false;
-        Player.player.currentWeapon.enabled = false;
-        foreach (var monobehaviour in Player.player.GetComponents<MonoBehaviour>())
+        player.currentWeapon.canSwitch = false;
+        player.currentWeapon.enabled = false;
+        foreach (var monobehaviour in player.GetComponents<MonoBehaviour>())
         {
             monobehaviour.enabled = false;
         }
@@ -139,9 +146,9 @@ public class DialogueManager : MonoBehaviour
     // Invoke in EndDialogue()
     void EnableCurrentWeaponInput()
     {
-        Player.player.currentWeapon.canSwitch = true;
-        Player.player.currentWeapon.enabled = true;
-        foreach (var monobehaviour in Player.player.GetComponents<MonoBehaviour>())
+        player.currentWeapon.canSwitch = true;
+        player.currentWeapon.enabled = true;
+        foreach (var monobehaviour in player.GetComponents<MonoBehaviour>())
         {
             monobehaviour.enabled = true;
         }

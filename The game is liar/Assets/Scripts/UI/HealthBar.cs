@@ -7,31 +7,21 @@ using TMPro;
 public class HealthBar : MonoBehaviour
 {
     public Slider slider;
-
     public TextMeshProUGUI healthText;
+    public IntReference playerHealth;
 
-    public void SetMaxHealth(int health)
+    void Start()
     {
-        slider.maxValue = health;
-        slider.value = health;
-        healthText.text = health.ToString();
+        slider.maxValue = playerHealth.value;
+        slider.value = playerHealth.value;
+        healthText.text = playerHealth.value.ToString();
     }
 
-    public void SetHealth(int health)
+    void Update()
     {
-        slider.value = health;
-        healthText.text = health.ToString();
-        if (health < 0)
-        {
-            healthText.text = "0";
-        }
-    }
-
-    public void SetHealth(int health, bool canNegative)
-    {
-        slider.value = health;
-        healthText.text = health.ToString();
-        if (canNegative == false && health < 0)
+        slider.value = playerHealth.value;
+        healthText.text = playerHealth.value.ToString();
+        if (playerHealth.value < 0)
         {
             healthText.text = "0";
         }

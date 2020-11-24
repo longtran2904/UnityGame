@@ -1,7 +1,6 @@
 ﻿using System.Text;
 using UnityEngine;
 using TMPro;
-using ProceduralLevelGenerator.Unity.Generators.Common.Rooms;
 
 public class WavesUI : MonoBehaviour
 {
@@ -9,13 +8,10 @@ public class WavesUI : MonoBehaviour
     public TextMeshProUGUI numberOfEnemiesText;
     private int startWaves, currentEnemies;
     private EnemySpawner currentSpawner;
-    public static WavesUI instance;
 
     void Awake()
     {
-        instance = this;
         gameObject.SetActive(false);
-        RoomManager.instance.hasPlayer += UpdateCurrentSpawner;
     }
 
     // Update is called once per frame
@@ -23,6 +19,11 @@ public class WavesUI : MonoBehaviour
     {
         if (currentEnemies == Enemies.numberOfEnemiesAlive)
             return;
+        if (!currentSpawner)
+        {
+            gameObject.SetActive(false);
+            return;
+        }
         StringBuilder builder = new StringBuilder();
         int numberOfWaves = startWaves - currentSpawner.numberOfWaves;
         builder.Append("Waves: ").Append(numberOfWaves).Append("/").Append(startWaves);
@@ -37,14 +38,10 @@ public class WavesUI : MonoBehaviour
         }
     }
 
-    public void UpdateCurrentSpawner(RoomInstance currentRoom)
+    public void UpdateCurrentSpawner(RoomInstanceVariable currentRoom)
     {
-        currentSpawner = currentRoom.RoomTemplateInstance.transform.Find("Enemies").GetComponent<EnemySpawner>();
-        if (currentSpawner.numberOfWaves == 0)
-        {
-            return;
-        }
-        startWaves = currentSpawner.numberOfWaves;
+        currentSpawner = currentRoom.value.RoomTemplateInstance.transform.Find("Enemies")?.GetComponent<EnemySpawner>();
+        if (currentSpawner) startWaves = currentSpawner.numberOfWaves;
         currentEnemies = Enemies.numberOfEnemiesAlive;
         gameObject.SetActive(true);
     }

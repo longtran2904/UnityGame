@@ -1,90 +1,43 @@
 ﻿using ProceduralLevelGenerator.Unity.Generators.Common.Rooms;
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using UnityEngine.Events;
 
 public class RoomManager : MonoBehaviour
 {
-    public Dictionary<RoomInstance, Bounds> rooms = new Dictionary<RoomInstance, Bounds>();
-    public List<Vector2Int> allGroundTiles = new List<Vector2Int>();
-    [HideInInspector] public Tilemap tilemap; // the tilemap of the current level
-    private RoomInstance currentRoom;
-    private RoomInstance lastRoom;
-    bool canLock = true;
+    public static List<RoomInstance> rooms = new List<RoomInstance>();
+    public static List<Vector2Int> allGroundTiles = new List<Vector2Int>();
+    public static Tilemap tilemap; // the tilemap of the current level
 
-    public static RoomManager instance;
+    public GameEvent updateCurrentRoom;
+    public RoomInstanceVariable currentRoom;
+
     public const string startingRoom = "Starting Room";
-    public event Action<RoomInstance> hasPlayer;
-
-    private void Awake()
-    {
-        instance = this;
-    }
 
     // Start is called before the first frame update
     void Start()
     {
-        //Camera.main.GetComponentInParent<CameraFollow2D>().hasPlayer += UpdateCurrentRoom;
-        foreach (var room in rooms.Keys)
+        // Find starting room and remove all door blocks
+        foreach (var room in rooms)
         {
             if (room.RoomTemplatePrefab.name == startingRoom)
             {
-                currentRoom = room;
+                currentRoom.value = room;
             }
             RemoveBlockTile(room);
         }
         tilemap.RefreshAllTiles();
     }
 
-    // Update is called once per frame
-    void Update()
+    public void LockRoom()
     {
-        UpdateCurrentRoom();
-        try
-        {
-            if (Enemies.numberOfEnemiesAlive > 0 && currentRoom.RoomTemplatePrefab.name != startingRoom && canLock)
-            {
-                LockRoom();
-                canLock = false;
-            }
-            else if (Enemies.numberOfEnemiesAlive == 0 && currentRoom.RoomTemplatePrefab.name != startingRoom && !canLock)
-            {
-                UnLockRoom();
-                canLock = true;
-            }
-        }
-        catch (Exception e)
-        {
-            InternalDebug.Log(currentRoom);
-            InternalDebug.LogError(e);
-            throw;
-        }
-    }
+        EnemySpawner currentSpawner = currentRoom.value.RoomTemplateInstance.transform.Find("Enemies")?.GetComponent<EnemySpawner>();
+        if (currentSpawner) currentSpawner.enabled = true;
 
-    void UpdateCurrentRoom()
-    {
-        foreach (var bounds in rooms.Values)
+        foreach (var doorInstance in currentRoom.value.Doors)
         {
-            ExtDebug.DrawBox(bounds.center, bounds.extents, Quaternion.identity, Color.cyan);
-        }
-        foreach (var room in rooms.Keys)
-        {
-            if (rooms[room].Contains(Player.player.transform.position) && room != lastRoom)
-            {
-                currentRoom = room;
-                EnemySpawner currentSpawner = currentRoom.RoomTemplateInstance.transform.Find("Enemies").GetComponent<EnemySpawner>();
-                currentSpawner.enabled = true;
-                hasPlayer?.Invoke(room);
-                lastRoom = room;
-            }
-        }
-    }
-
-    void LockRoom()
-    {
-        foreach (var doorInstance in currentRoom.Doors)
-        {
+            InternalDebug.Log(doorInstance.ConnectedRoomInstance.RoomTemplateInstance.name);
             Door[] doors = doorInstance.ConnectedRoomInstance.RoomTemplateInstance.transform.Find("Doors").GetComponentsInChildren<Door>(true);
             if (doors.Length > 0)
             {
@@ -93,20 +46,20 @@ public class RoomManager : MonoBehaviour
                     doors[0].gameObject.SetActive(true);
                     continue;
                 }
-                int furthest = 0; // We active the furthest door because the player had already moved over it
-                Vector3 roomCenter = rooms[currentRoom].center;
-                if (Mathf.Abs(roomCenter.x - doors[0].transform.position.x) < Mathf.Abs(roomCenter.x - doors[1].transform.position.x))
+                int nearest = 0;
+                Vector3 roomCenter = GetRoomBounds(currentRoom.value).center;
+                if (Mathf.Abs(roomCenter.x - doors[0].transform.position.x) > Mathf.Abs(roomCenter.x - doors[1].transform.position.x))
                 {
-                    furthest = 1;
+                    nearest = 1;
                 }
-                doors[furthest].gameObject.SetActive(true);
+                doors[nearest].gameObject.SetActive(true);
             }
         }
     }
 
-    void UnLockRoom()
+    public void UnLockRoom()
     {
-        foreach (var doorInstance in currentRoom.Doors)
+        foreach (var doorInstance in currentRoom.value.Doors)
         {
             Door door = doorInstance.ConnectedRoomInstance.RoomTemplateInstance.transform.Find("Doors")?.GetComponentInChildren<Door>();
             if (door)
@@ -141,5 +94,31 @@ public class RoomManager : MonoBehaviour
                 RemoveTile(pos + removeDir);
             }
         }
+    }
+
+    public static BoundsInt GetRoomBounds(RoomInstance room)
+    {
+        // The points' order are clockwide but the starting point's position is random
+        Vector2Int[] points = room.OutlinePolygon.GetOutlinePoints().ToArray();
+
+        // Bottom left
+        int startIndex = 0;
+
+        if (points[0].x - points[1].x > 0) // Bottom right
+        {
+            startIndex = 1;
+        }
+        else if (points[0].x - points[1].x < 0) // Upper left
+        {
+            startIndex = 3;
+        }
+        else if (points[0].y - points[1].y > 0) // Upper right
+        {
+            startIndex = 2;
+        }
+
+        int opositeIndex = (int)Mathf.Repeat(startIndex + 2, 4);
+
+        return MathUtils.CreateBoundsInt(points[startIndex], points[opositeIndex] + Vector2Int.one);
     }
 }

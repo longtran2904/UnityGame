@@ -10,6 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 8484263503420184073}
   - component: {fileID: 8484263503420184072}
+  - component: {fileID: 8689803038939835655}
+  - component: {fileID: 8610803347595002186}
   m_Layer: 0
   m_Name: RoomManager
   m_TagString: Untagged
@@ -43,5 +45,59 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 67d1e5526d214dd478654ee98d28dd37, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rooms: []
-  tilemap: {fileID: 0}
+  updateCurrentRoom: {fileID: 11400000, guid: 7484fc3ac67b8da45b0f6fbb708c0e02, type: 2}
+  currentRoom: {fileID: 11400000, guid: c16780bbd065465449aa96a3fb65dcb9, type: 2}
+--- !u!114 &8689803038939835655
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8484263503420184075}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7f044b61b0d5a504fa99f51ca94eaa25, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Event: {fileID: 11400000, guid: 7484fc3ac67b8da45b0f6fbb708c0e02, type: 2}
+  Response:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 8484263503420184072}
+        m_MethodName: LockRoom
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &8610803347595002186
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8484263503420184075}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7f044b61b0d5a504fa99f51ca94eaa25, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Event: {fileID: 11400000, guid: 7a34d503cc652a74c9a0455f5d058de4, type: 2}
+  Response:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 8484263503420184072}
+        m_MethodName: UnLockRoom
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2

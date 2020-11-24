@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using ProceduralLevelGenerator.Unity.Generators.Common.Rooms;
 
 public class Minimap : MonoBehaviour
 {
@@ -36,7 +35,6 @@ public class Minimap : MonoBehaviour
         cropTexture = new Texture2D(minimapWidth, minimapHeight);
         cropTexture.wrapMode = TextureWrapMode.Clamp;
         cropTexture.filterMode = FilterMode.Point;
-        RoomManager.instance.hasPlayer += AddRoomTexture;
     }
 
     private void LateUpdate()
@@ -120,11 +118,11 @@ public class Minimap : MonoBehaviour
         rawImage.texture = cropTexture;
     }
 
-    void AddRoomTexture(RoomInstance room)
+    public void AddRoomTexture(BoundsIntVariable currentRoom)
     {
         foreach (var tile in tilesDictionary.Keys)
         {
-            if (RoomManager.instance.rooms[room].Contains(tile + (Vector2)(Vector3)bounds.position))
+            if (currentRoom.value.Contains(MathUtils.ToVector3Int(tile + (Vector2)(Vector3)bounds.position)))
             {
                 tilesDictionary[tile][1] = true;
             }

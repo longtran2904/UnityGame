@@ -251,7 +251,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 8
   fallSpeed: 20
-  top: 0
+  onGround:
+    useConstant: 0
+    constantValue: 0
+    variable: {fileID: 11400000, guid: d73b181d6a27f6b4e9fa3c531b010816, type: 2}
   dust: {fileID: 7374823657885153856}
   jumpPressedRemember: 0.15
   groundRememberTime: 0.08
@@ -268,9 +271,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec8e5b37fd6c1184b97d7eb89d0f6847, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  health: 200
-  healthBar: {fileID: 0}
-  controller: {fileID: 0}
+  health:
+    useConstant: 0
+    constantValue: 0
+    variable: {fileID: 11400000, guid: 92b4194a07ed137448f5e864ffc83a34, type: 2}
+  position: {fileID: 11400000, guid: de549abf0dae22842898ee569e51421b, type: 2}
   moneyText: {fileID: 0}
   money: 50
   invincibleTime: 1
@@ -299,6 +304,7 @@ MonoBehaviour:
     m_Bits: 1024
   attackRange: 0.7
   damage: 20
+  knockbackForce: 0
   attackRate: 2
 --- !u!70 &318225054
 CapsuleCollider2D:
@@ -329,8 +335,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   items:
-  - {fileID: 11400000, guid: f2d3735114da58a449f7e3211fa038e7, type: 2}
-  - {fileID: 0}
+  - {fileID: 6085573047303311116, guid: a982f88525698404bb3ef9d9fb568f63, type: 3}
+  - {fileID: 4837207579286135008, guid: 76c0c6307470b0643bb5f4e5816d7b25, type: 3}
 --- !u!1 &3851505803776587462
 GameObject:
   m_ObjectHideFlags: 0
@@ -5125,7 +5131,6 @@ GameObject:
   m_Component:
   - component: {fileID: 3011585080514793363}
   - component: {fileID: 1142839732991680439}
-  - component: {fileID: 6014074833641741080}
   - component: {fileID: 1230295318688059616}
   m_Layer: 5
   m_Name: Canvas
@@ -5175,28 +5180,6 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
---- !u!114 &6014074833641741080
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7681576921227782362}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_UiScaleMode: 0
-  m_ReferencePixelsPerUnit: 100
-  m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 800, y: 600}
-  m_ScreenMatchMode: 0
-  m_MatchWidthOrHeight: 0
-  m_PhysicalUnit: 3
-  m_FallbackScreenDPI: 96
-  m_DefaultSpriteDPI: 96
-  m_DynamicPixelsPerUnit: 1
 --- !u!114 &1230295318688059616
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -1,6 +1,4 @@
 ﻿using UnityEngine;
-using System;
-using ProceduralLevelGenerator.Unity.Generators.Common.Rooms;
 
 public class CameraFollow2D : MonoBehaviour
 {
@@ -8,16 +6,16 @@ public class CameraFollow2D : MonoBehaviour
     public float timeOffset;
     public Vector2 posOffset;
 
-    public Vector2 leftAndBottomLimit;
-    public Vector2 rightAndUpLimit;
+    private Vector2 leftAndBottomLimit;
+    private Vector2 rightAndUpLimit;
 
     Camera main;
-
+    public BoundsIntReference bounds;
 
     private void Start()
     {
         main = Camera.main;
-        RoomManager.instance.hasPlayer += ToNextRoom;
+        ToNextRoom();
     }
 
     void LateUpdate()
@@ -41,17 +39,16 @@ public class CameraFollow2D : MonoBehaviour
 
         transform.position = new Vector3
         (
-        Mathf.Clamp(transform.position.x, leftAndBottomLimit.x, rightAndUpLimit.x),
-        Mathf.Clamp(transform.position.y, leftAndBottomLimit.y, rightAndUpLimit.y),
-        transform.position.z
+            Mathf.Clamp(transform.position.x, leftAndBottomLimit.x, rightAndUpLimit.x),
+            Mathf.Clamp(transform.position.y, leftAndBottomLimit.y, rightAndUpLimit.y),
+            transform.position.z
         );
     }
 
-    public void ToNextRoom(RoomInstance room)
+    public void ToNextRoom()
     {
-        Bounds roomBounds = RoomManager.instance.rooms[room];
         Vector3 cameraOffset = new Vector3(main.orthographicSize * main.aspect, main.orthographicSize);
-        leftAndBottomLimit = roomBounds.min + cameraOffset;
-        rightAndUpLimit = roomBounds.max - cameraOffset;
+        leftAndBottomLimit = bounds.value.min + cameraOffset;
+        rightAndUpLimit = bounds.value.max - cameraOffset;
     }
 }

@@ -1,10 +1,11 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Diagnostics;
 using UnityEngine;
 
 public static class ExtDebug
 {
     //Draws just the box at where it is currently hitting.
+    [Conditional("DEVELOPMENT_BUILD")]
+    [Conditional("UNITY_EDITOR")]
     public static void DrawBoxCastOnHit(Vector3 origin, Vector3 halfExtents, Quaternion orientation, Vector3 direction, float hitInfoDistance, Color color)
     {
         origin = CastCenterOnCollision(origin, direction, hitInfoDistance);
@@ -12,6 +13,8 @@ public static class ExtDebug
     }
 
     //Draws the full box from start of cast to its end distance. Can also pass in hitInfoDistance instead of full distance
+    [Conditional("DEVELOPMENT_BUILD")]
+    [Conditional("UNITY_EDITOR")]
     public static void DrawBoxCastBox(Vector3 origin, Vector3 halfExtents, Quaternion orientation, Vector3 direction, float distance, Color color)
     {
         direction.Normalize();
@@ -31,10 +34,15 @@ public static class ExtDebug
         DrawBox(topBox, color);
     }
 
+    [Conditional("DEVELOPMENT_BUILD")]
+    [Conditional("UNITY_EDITOR")]
     public static void DrawBox(Vector3 origin, Vector3 halfExtents, Quaternion orientation, Color color)
     {
         DrawBox(new Box(origin, halfExtents, orientation), color);
     }
+
+    [Conditional("DEVELOPMENT_BUILD")]
+    [Conditional("UNITY_EDITOR")]
     public static void DrawBox(Box box, Color color)
     {
         InternalDebug.DrawLine(box.frontTopLeft, box.frontTopRight, color);
@@ -79,6 +87,7 @@ public static class ExtDebug
         {
             Rotate(orientation);
         }
+
         public Box(Vector3 origin, Vector3 halfExtents)
         {
             this.localFrontTopLeft = new Vector3(-halfExtents.x, halfExtents.y, -halfExtents.z);
@@ -88,7 +97,6 @@ public static class ExtDebug
 
             this.origin = origin;
         }
-
 
         public void Rotate(Quaternion orientation)
         {

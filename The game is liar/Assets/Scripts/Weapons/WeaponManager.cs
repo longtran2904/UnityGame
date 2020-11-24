@@ -11,6 +11,12 @@ public class WeaponManager : MonoBehaviour
     private GameObject textboxObj;
     Vector3 offset;
     float delay;
+    Player player;
+
+    void Start()
+    {
+        player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
+    }
 
     // Update is called once per frame
     void LateUpdate()
@@ -90,7 +96,7 @@ public class WeaponManager : MonoBehaviour
         {
             component.enabled = true;
         }
-        Player.player.currentWeapon = weapon;
+        player.currentWeapon = weapon;
         delay = .5f;
     }
 

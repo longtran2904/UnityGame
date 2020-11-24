@@ -14,7 +14,7 @@ public class ShootState : EnemyState
 
     public override EnemyState UpdateState(Enemies enemy)
     {
-        if ((Player.player.transform.position - enemy.transform.position).sqrMagnitude <= enemy.attackRange * enemy.attackRange)
+        if ((enemy.player.transform.position - enemy.transform.position).sqrMagnitude <= enemy.attackRange * enemy.attackRange)
         {
             if (Time.time >= timeBtwShotsValue)
             {

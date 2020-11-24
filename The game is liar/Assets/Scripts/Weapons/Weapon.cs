@@ -23,7 +23,7 @@ public class Weapon : MonoBehaviour
     private float timeBtwShots;
     float startTimeBtwShots;
 
-    PlayerController player;
+    public BoolReference onGround;
     private Projectile projectile;
 
     public GameObject muzzleFlash;
@@ -45,16 +45,12 @@ public class Weapon : MonoBehaviour
     void Start()
     {
         mainCamera = Camera.main;
-        player = GetComponentInParent<PlayerController>();
         muzzelFlashTimeValue = muzzelFlashTime;
         shotsRemainingInBurst = burstCount;
         currentAmmo = stat.ammo;
         startTimeBtwShots = 1 / stat.fireRate;
         ammoText = GameObject.Find("AmmoText") ? GameObject.Find("AmmoText").GetComponent<TextMeshProUGUI>() : null;
-        if (ammoText)
-        {
-            ammoText.SetText("{0}/{1}", (float)currentAmmo, (float)stat.ammo);
-        }
+        ammoText?.SetText("{0}/{1}", currentAmmo, stat.ammo);
     }
 
     private void OnEnable()
@@ -72,12 +68,12 @@ public class Weapon : MonoBehaviour
 
         MuzzleFlash();
 
-        if (!player)
+        if (onGround == null)
         {
             return; // This gun is for an enemy so we don't need the code below
         }
 
-        ammoText.SetText("{0}/{1}", currentAmmo, stat.ammo);
+        ammoText?.SetText("{0}/{1}", currentAmmo, stat.ammo);
 
         if (isReloading)
         {
@@ -123,7 +119,8 @@ public class Weapon : MonoBehaviour
     // flip the weapon correctly toward the mouse position
     void FlipWeapon(float rotZ)
     {
-        if (player.top)
+        // Normal
+        if (onGround.value)
         {
             if (rotZ <= 90 && rotZ >= -90)
             {

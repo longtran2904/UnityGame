@@ -19,6 +19,7 @@ public abstract class Item : MonoBehaviour
     protected SpriteRenderer sr;
     protected Animator anim;
     protected Collider2D cd;
+    protected Player player;
 
     protected abstract void Use(); // Only call this in ItemManager
 
@@ -28,6 +29,7 @@ public abstract class Item : MonoBehaviour
         sr = GetComponent<SpriteRenderer>();
         anim = GetComponent<Animator>();
         cd = GetComponent<Collider2D>();
+        player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
 
         Use();
     }
@@ -35,7 +37,7 @@ public abstract class Item : MonoBehaviour
     protected void Throw(float gravityScale = 6)
     {
         rb.gravityScale = gravityScale;
-        rb.velocity = (Input.mousePosition - Player.player.transform.position).normalized * throwForce;
+        rb.velocity = (Input.mousePosition - player.transform.position).normalized * throwForce;
     }
 
     // Check only the bottom part of the object

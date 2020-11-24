@@ -6,6 +6,7 @@ public class PlayerCombat : MonoBehaviour
 {
     private Animator anim;
     private GameObject weaponHolder;
+    private Player player;
 
     public Transform attackPoint;
     public LayerMask enemyLayers;
@@ -21,6 +22,7 @@ public class PlayerCombat : MonoBehaviour
     {
         anim = GetComponent<Animator>();
         weaponHolder = transform.GetChild(0).gameObject;
+        player = GetComponent<Player>();
     }
 
     // Update is called once per frame
@@ -29,7 +31,7 @@ public class PlayerCombat : MonoBehaviour
         if (Time.time > nextAttackTime)
         {
             weaponHolder.SetActive(true);
-            if (Input.GetKeyDown(KeyCode.V) && Player.player.currentWeapon.canSwitch) // Can't attack when player is reloading
+            if (Input.GetKeyDown(KeyCode.V) && player.currentWeapon.canSwitch) // Can't attack when player is reloading
             {
                 Attack();
                 nextAttackTime = Time.time + 1 / attackRate;

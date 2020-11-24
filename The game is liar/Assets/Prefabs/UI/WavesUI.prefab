@@ -167,6 +167,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3052025435801075139}
   - component: {fileID: 3052025435801075138}
+  - component: {fileID: 5834512186674137679}
   m_Layer: 5
   m_Name: WavesUI
   m_TagString: Untagged
@@ -209,6 +210,34 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   numberOfWavesText: {fileID: 3052025435518018198}
   numberOfEnemiesText: {fileID: 3052025435900122858}
+--- !u!114 &5834512186674137679
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3052025435801075136}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7f044b61b0d5a504fa99f51ca94eaa25, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Event: {fileID: 11400000, guid: 7484fc3ac67b8da45b0f6fbb708c0e02, type: 2}
+  Response:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 3052025435801075138}
+        m_MethodName: UpdateCurrentSpawner
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 11400000, guid: c16780bbd065465449aa96a3fb65dcb9,
+            type: 2}
+          m_ObjectArgumentAssemblyTypeName: RoomInstanceVariable, Assembly-CSharp
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &3052025435900122856
 GameObject:
   m_ObjectHideFlags: 0

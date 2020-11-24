@@ -143,7 +143,7 @@ public class Enemies : MonoBehaviour
 
         if (!hasSpawnVFX)
         {
-            Debug.Log(allStates.Peek());
+            InternalDebug.Log(allStates.Peek());
             if (nextState != null)
             {
                 allStates.Push(nextState);
@@ -209,9 +209,9 @@ public class Enemies : MonoBehaviour
         GameObject explodeVFX = Instantiate(explodeParticle, transform.position, Quaternion.identity);
         explodeVFX.transform.localScale = new Vector3(6.25f, 6.25f, 0) * explodeRange;
         Destroy(explodeVFX, .3f);
-        if ((Player.player.transform.position - transform.position).sqrMagnitude < explodeRange * explodeRange)
+        if ((player.transform.position - transform.position).sqrMagnitude < explodeRange * explodeRange)
         {
-            Player.player.Hurt(damage);
+            player.Hurt(damage);
         }
     }
 
@@ -233,12 +233,12 @@ public class Enemies : MonoBehaviour
     {
         int numberOfTryLeft = maxTry;
         Vector2Int newPos = GetRandomPosition();
-        while (RoomManager.instance.allGroundTiles.Contains(newPos) && numberOfTryLeft > 0)
+        while (RoomManager.allGroundTiles.Contains(newPos) && numberOfTryLeft > 0)
         {
             newPos = GetRandomPosition();
             numberOfTryLeft--;
         }
-        if (RoomManager.instance.allGroundTiles.Contains(newPos)) // We need this to check if newPos is actually valid or the number of tries left is zero
+        if (RoomManager.allGroundTiles.Contains(newPos)) // We need this to check if newPos is actually valid or the number of tries left is zero
             transform.position = (Vector2)newPos;
 
 

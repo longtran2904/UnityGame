@@ -7,7 +7,7 @@ public class MoneyObject : MonoBehaviour, IPooledObject
     public float speed;
 
     private Rigidbody2D rb;
-    private Collider2D player;
+    public Vector3 playerPos;
 
     public void OnObjectSpawn()
     {
@@ -17,19 +17,9 @@ public class MoneyObject : MonoBehaviour, IPooledObject
 
     void Update()
     {
-        if (!player)
-        {
-            player = Physics2D.OverlapCircle(transform.position, 5f, LayerMask.GetMask("Player"));
-            if (Enemies.numberOfEnemiesAlive <= 0)
-            {
-                player = Player.player.GetComponent<Collider2D>();
-            }
-        }
-        else
-        {
-            Vector2 dir = player.transform.position - transform.position;
-            rb.velocity = dir * speed;
-        }
+        playerPos = (Vector3)Physics2D.OverlapCircle(transform.position, 5f, LayerMask.GetMask("Player"))?.transform.position;
+        Vector2 dir = playerPos - transform.position;
+        rb.velocity = dir * speed;
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
