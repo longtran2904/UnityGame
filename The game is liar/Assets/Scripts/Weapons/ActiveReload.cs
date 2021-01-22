@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+[RequireComponent(typeof(Weapon))]
 public class ActiveReload : MonoBehaviour
 {
-    public Image slider;
-    public GameObject reloadBar;
+    private Image slider;
+    private GameObject reloadBar;
     public AnimationCurve curve;
     public float perfectRange = 20;
     public float activeRange = 60;
@@ -18,15 +19,12 @@ public class ActiveReload : MonoBehaviour
     {
         weapon = GetComponent<Weapon>();
         weapon.reloadingDelegate += BeginReload;
-        if (!reloadBar)
-        {
-            reloadBar = transform.parent.parent.Find("Canvas").Find("ReloadBar").gameObject;
-            slider = reloadBar.transform.Find("Slider").GetComponent<Image>();
-            grey = reloadBar.transform.GetChild(0).GetComponent<RectTransform>();
-            white = reloadBar.transform.GetChild(1).GetComponent<RectTransform>();
-            grey.sizeDelta = new Vector2(activeRange, grey.sizeDelta.y);
-            white.sizeDelta = new Vector2(perfectRange, white.sizeDelta.y);
-        }
+        reloadBar = transform.parent.parent.Find("Canvas").Find("ReloadBar").gameObject;
+        slider = reloadBar.transform.Find("Slider").GetComponent<Image>();
+        grey = reloadBar.transform.GetChild(0).GetComponent<RectTransform>();
+        white = reloadBar.transform.GetChild(1).GetComponent<RectTransform>();
+        grey.sizeDelta = new Vector2(activeRange, grey.sizeDelta.y);
+        white.sizeDelta = new Vector2(perfectRange, white.sizeDelta.y);
     }
 
     private void LateUpdate()

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "Weapon Stat")]
+[CreateAssetMenu(menuName = "Data/Weapon Stat")]
 public class WeaponStat : ScriptableObject
 {
     public int damage;
@@ -13,6 +13,10 @@ public class WeaponStat : ScriptableObject
     public int ammo;
     public float knockback;
     public int price;
+
+    [Header("Dependencies Info")]
+    public string sfx = "PlayerShoot";
+    public string projectile = "PlayerBullet";
 
     [Header("UI Info")]
     public Sprite icon;

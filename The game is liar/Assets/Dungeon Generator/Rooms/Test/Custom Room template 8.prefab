@@ -49,6 +49,7 @@ MonoBehaviour:
   spawnPoints: []
   enemies: []
   teleportToNextScene: 0
+  endWaves: {fileID: 11400000, guid: 7a34d503cc652a74c9a0455f5d058de4, type: 2}
 --- !u!1 &909594414124277590
 GameObject:
   m_ObjectHideFlags: 0

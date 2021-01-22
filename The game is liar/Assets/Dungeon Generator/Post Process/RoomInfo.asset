@@ -12,3 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8deb30dd4d2448845bc4ac8624404308, type: 3}
   m_Name: RoomInfo
   m_EditorClassIdentifier: 
+  backgroundTile: {fileID: 11400000, guid: 5e7144324905f914fb4acb6c237be815, type: 2}
+  wallTile: {fileID: 11400000, guid: 12c3091828c27504991c5b37d0e582fc, type: 2}
+  collideableTile: {fileID: 0}
+  corridorTile: {fileID: 0}

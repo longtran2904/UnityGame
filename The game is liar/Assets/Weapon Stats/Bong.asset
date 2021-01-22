@@ -20,7 +20,9 @@ MonoBehaviour:
   ammo: 5
   knockback: 0
   price: 28
-  icon: {fileID: 0}
+  sfx: PlayerShoot
+  projectile: PlayerBullet
+  icon: {fileID: 21300000, guid: c0da0ab8ddee138429ff675768f22d56, type: 3}
   weaponName: Bong
   description: Shotgun
   standardReload: 3.3

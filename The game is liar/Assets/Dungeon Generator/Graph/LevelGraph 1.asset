@@ -193,8 +193,8 @@ MonoBehaviour:
   - {fileID: 4855277072560490829}
   - {fileID: 7524212268655892804}
   CorridorIndividualRoomTemplates:
-  - {fileID: 380282352941545119, guid: e00a808483f52fd42a6cc36d08b86824, type: 3}
-  - {fileID: 3744608252939407266, guid: 3d65a135921a9d0418aeec86fb50c6cb, type: 3}
+  - {fileID: 8075985022701995058, guid: 61c012f6e4d420643a4315fdf1ae84b7, type: 3}
+  - {fileID: 4575682137666247602, guid: 49775fce879e8e8428d424595726fb1f, type: 3}
   CorridorRoomTemplateSets: []
   DefaultIndividualRoomTemplates:
   - {fileID: 5984460456271743455, guid: dad427a1dcd25384a988a4aa1f1fed72, type: 3}
@@ -221,8 +221,8 @@ MonoBehaviour:
   - {fileID: 2541761107958534561}
   - {fileID: 260722789866622703}
   EditorData:
-    PanOffset: {x: -48.667923, y: 52.559673}
-    Zoom: 0.9320653
+    PanOffset: {x: 45.689625, y: 317.99442}
+    Zoom: 0.61152804
   RoomType: ProceduralLevelGenerator.Unity.Generators.Common.LevelGraph.Room
   ConnectionType: ProceduralLevelGenerator.Unity.Generators.Common.LevelGraph.Connection
 --- !u!114 &260722789866622703

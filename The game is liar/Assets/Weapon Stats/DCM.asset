@@ -20,7 +20,9 @@ MonoBehaviour:
   ammo: 8
   knockback: 0
   price: 35
-  icon: {fileID: 0}
+  sfx: PlayerShoot
+  projectile: PlayerBullet
+  icon: {fileID: 21300000, guid: 4e85bc5d171724c4282bedde6fe617a1, type: 3}
   weaponName: DCM
   description: eagle
   standardReload: 2.7

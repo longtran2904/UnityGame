@@ -449,6 +449,7 @@ MonoBehaviour:
   spawnPoints: []
   enemies: []
   teleportToNextScene: 0
+  endWaves: {fileID: 11400000, guid: 7a34d503cc652a74c9a0455f5d058de4, type: 2}
 --- !u!1 &5352662806965899707
 GameObject:
   m_ObjectHideFlags: 0
@@ -17389,6 +17390,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1134448005968735790, guid: 03fb70d173135644bb05a1e1fd40fccd,
         type: 3}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1134448005968735790, guid: 03fb70d173135644bb05a1e1fd40fccd,
+        type: 3}
       propertyPath: m_LocalPosition.x
       value: 15.417572
       objectReference: {fileID: 0}
@@ -17404,6 +17410,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1134448005968735790, guid: 03fb70d173135644bb05a1e1fd40fccd,
         type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1134448005968735790, guid: 03fb70d173135644bb05a1e1fd40fccd,
+        type: 3}
       propertyPath: m_LocalRotation.x
       value: -0
       objectReference: {fileID: 0}
@@ -17416,16 +17427,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalRotation.z
       value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1134448005968735790, guid: 03fb70d173135644bb05a1e1fd40fccd,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1134448005968735790, guid: 03fb70d173135644bb05a1e1fd40fccd,
-        type: 3}
-      propertyPath: m_RootOrder
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1134448005968735790, guid: 03fb70d173135644bb05a1e1fd40fccd,
         type: 3}
@@ -17449,13 +17450,8 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1134448006233841468, guid: 03fb70d173135644bb05a1e1fd40fccd,
         type: 3}
-      propertyPath: m_ShapePath.Array.data[1].x
-      value: 7.9700527
-      objectReference: {fileID: 0}
-    - target: {fileID: 1134448006233841468, guid: 03fb70d173135644bb05a1e1fd40fccd,
-        type: 3}
-      propertyPath: m_ShapePath.Array.data[1].y
-      value: -22.045654
+      propertyPath: m_ShapePath.Array.data[0].x
+      value: -8.225331
       objectReference: {fileID: 0}
     - target: {fileID: 1134448006233841468, guid: 03fb70d173135644bb05a1e1fd40fccd,
         type: 3}
@@ -17464,8 +17460,13 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1134448006233841468, guid: 03fb70d173135644bb05a1e1fd40fccd,
         type: 3}
-      propertyPath: m_ShapePath.Array.data[0].x
-      value: -8.225331
+      propertyPath: m_ShapePath.Array.data[1].x
+      value: 7.9700527
+      objectReference: {fileID: 0}
+    - target: {fileID: 1134448006233841468, guid: 03fb70d173135644bb05a1e1fd40fccd,
+        type: 3}
+      propertyPath: m_ShapePath.Array.data[1].y
+      value: -22.045654
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 03fb70d173135644bb05a1e1fd40fccd, type: 3}

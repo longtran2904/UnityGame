@@ -5,7 +5,8 @@ using UnityEngine;
 public class MoneyObject : MonoBehaviour, IPooledObject
 {
     public float speed;
-
+    public IntReference addMoney;
+    public IntReference playerMoney;
     private Rigidbody2D rb;
     public Vector3 playerPos;
 
@@ -27,7 +28,7 @@ public class MoneyObject : MonoBehaviour, IPooledObject
         if (collision.collider.CompareTag("Player"))
         {
             AudioManager.instance.Play("PickupCoin");
-            collision.gameObject.GetComponent<Player>().money += 5;
+            playerMoney.value += addMoney.value;
             gameObject.SetActive(false);
         }
     }

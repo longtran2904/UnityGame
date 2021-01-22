@@ -20,7 +20,9 @@ MonoBehaviour:
   ammo: 16
   knockback: 0
   price: 18
-  icon: {fileID: 0}
+  sfx: PlayerShoot
+  projectile: PlayerBullet
+  icon: {fileID: 21300000, guid: 50a41779278f20b48bd76508b9726021, type: 3}
   weaponName: Freezen
   description: Smg pistal
   standardReload: 2.7

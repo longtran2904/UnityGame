@@ -1,9 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using System;
-using ProceduralLevelGenerator.Unity.Generators.DungeonGenerator;
-using UnityEngine.Tilemaps;
+using Edgar.Unity;
 
 public class GeneratorHandler : MonoBehaviour
 {
@@ -11,7 +8,7 @@ public class GeneratorHandler : MonoBehaviour
     private void Start()
     {
         // Find the generator (MAKE SURE THAT THE GAME OBJECT NAME IS CORRECT)
-        var generator = GameObject.Find("Dungeon Generator").GetComponent<DungeonGenerator>();
+        var generator = GameObject.Find("Dungeon Generator").GetComponentInParent<DungeonGenerator>();
 
         var levelGenerated = false;
 

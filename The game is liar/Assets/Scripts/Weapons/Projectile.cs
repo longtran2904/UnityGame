@@ -59,7 +59,21 @@ public class Projectile : MonoBehaviour, IPooledObject
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        SpawnHitEffect();
+        HitCollider(collision);
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        HitCollider(collision.collider);
+    }
+
+    void HitCollider(Collider2D collision)
+    {
+        if (hitEffect)
+        {
+            hitEffect = Instantiate(hitEffect, transform.position, transform.rotation);
+            Destroy(hitEffect, hitEffect.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).length);
+        }
 
         if (collision.tag == "Enemy" && !isEnemy)
         {
@@ -76,15 +90,6 @@ public class Projectile : MonoBehaviour, IPooledObject
         if (collision.tag == "Ground" && !canTouchGround)
         {
             gameObject.SetActive(false);
-        }
-    }
-
-    private void SpawnHitEffect()
-    {
-        if (hitEffect)
-        {
-            hitEffect = Instantiate(hitEffect, transform.position, transform.rotation);
-            Destroy(hitEffect, hitEffect.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).length);
         }
     }
 

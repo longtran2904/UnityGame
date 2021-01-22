@@ -20072,6 +20072,7 @@ MonoBehaviour:
       type: 3}
     prob: 1
   teleportToNextScene: 0
+  endWaves: {fileID: 11400000, guid: 7a34d503cc652a74c9a0455f5d058de4, type: 2}
 --- !u!1 &5214759038871592563
 GameObject:
   m_ObjectHideFlags: 0
@@ -30457,6 +30458,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6498225462723021662, guid: dea1685a300b63244b5cdeff1319668b,
         type: 3}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6498225462723021662, guid: dea1685a300b63244b5cdeff1319668b,
+        type: 3}
       propertyPath: m_LocalPosition.x
       value: 25.223217
       objectReference: {fileID: 0}
@@ -30469,6 +30475,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalPosition.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6498225462723021662, guid: dea1685a300b63244b5cdeff1319668b,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6498225462723021662, guid: dea1685a300b63244b5cdeff1319668b,
         type: 3}
@@ -30487,16 +30498,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6498225462723021662, guid: dea1685a300b63244b5cdeff1319668b,
         type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6498225462723021662, guid: dea1685a300b63244b5cdeff1319668b,
-        type: 3}
-      propertyPath: m_RootOrder
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6498225462723021662, guid: dea1685a300b63244b5cdeff1319668b,
-        type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
       value: 0
       objectReference: {fileID: 0}
@@ -30512,13 +30513,13 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6498225463865242683, guid: dea1685a300b63244b5cdeff1319668b,
         type: 3}
-      propertyPath: m_ShapePath.Array.data[0].y
-      value: -15.152028
+      propertyPath: m_ShapePath.Array.data[0].x
+      value: -4.1373634
       objectReference: {fileID: 0}
     - target: {fileID: 6498225463865242683, guid: dea1685a300b63244b5cdeff1319668b,
         type: 3}
-      propertyPath: m_ShapePath.Array.data[0].x
-      value: -4.1373634
+      propertyPath: m_ShapePath.Array.data[0].y
+      value: -15.152028
       objectReference: {fileID: 0}
     - target: {fileID: 6498225463865242683, guid: dea1685a300b63244b5cdeff1319668b,
         type: 3}
@@ -30547,6 +30548,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 7515839980256046093, guid: c91d72a5d5195974d8c5e74dfd5667fe,
         type: 3}
+      propertyPath: m_RootOrder
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7515839980256046093, guid: c91d72a5d5195974d8c5e74dfd5667fe,
+        type: 3}
       propertyPath: m_LocalPosition.x
       value: 14
       objectReference: {fileID: 0}
@@ -30562,6 +30568,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7515839980256046093, guid: c91d72a5d5195974d8c5e74dfd5667fe,
         type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7515839980256046093, guid: c91d72a5d5195974d8c5e74dfd5667fe,
+        type: 3}
       propertyPath: m_LocalRotation.x
       value: -0
       objectReference: {fileID: 0}
@@ -30574,16 +30585,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalRotation.z
       value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7515839980256046093, guid: c91d72a5d5195974d8c5e74dfd5667fe,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7515839980256046093, guid: c91d72a5d5195974d8c5e74dfd5667fe,
-        type: 3}
-      propertyPath: m_RootOrder
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7515839980256046093, guid: c91d72a5d5195974d8c5e74dfd5667fe,
         type: 3}

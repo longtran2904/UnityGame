@@ -103,7 +103,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8074dc491ddc34f4e83332d9eae76980, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Position: {x: 256, y: 486.5}
+  Position: {x: 258, y: 486.5}
   Name: Room
   IndividualRoomTemplates: []
   RoomTemplateSets: []
@@ -173,8 +173,8 @@ MonoBehaviour:
   - {fileID: 2183517192871382854}
   - {fileID: -5045544837979196849}
   CorridorIndividualRoomTemplates:
-  - {fileID: 380282352941545119, guid: e00a808483f52fd42a6cc36d08b86824, type: 3}
-  - {fileID: 3744608252939407266, guid: 3d65a135921a9d0418aeec86fb50c6cb, type: 3}
+  - {fileID: 8075985022701995058, guid: 61c012f6e4d420643a4315fdf1ae84b7, type: 3}
+  - {fileID: 4575682137666247602, guid: 49775fce879e8e8428d424595726fb1f, type: 3}
   CorridorRoomTemplateSets: []
   DefaultIndividualRoomTemplates:
   - {fileID: 5984460456271743455, guid: dad427a1dcd25384a988a4aa1f1fed72, type: 3}

@@ -20,7 +20,9 @@ MonoBehaviour:
   ammo: 30
   knockback: 0
   price: 42
-  icon: {fileID: 0}
+  sfx: PlayerShoot
+  projectile: PlayerBullet
+  icon: {fileID: 21300000, guid: 6cd8ec98214223e4d99f4006727aefda, type: 3}
   weaponName: Liem
   description: Better and accurate smg
   standardReload: 3

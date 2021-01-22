@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-// BoxCast and RayCast -> LayerMask.NameToLayer
-// OverLapBox -> LayerMask.GetMask
+// Physics2D cast -> GetMask
 
 public class PlayerController : MonoBehaviour
 {    

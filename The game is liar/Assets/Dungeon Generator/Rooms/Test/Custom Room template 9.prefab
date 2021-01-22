@@ -16696,6 +16696,7 @@ MonoBehaviour:
       type: 3}
     prob: 1
   teleportToNextScene: 0
+  endWaves: {fileID: 11400000, guid: 7a34d503cc652a74c9a0455f5d058de4, type: 2}
 --- !u!1 &8865687421666080885
 GameObject:
   m_ObjectHideFlags: 0
@@ -26037,6 +26038,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 7595921112766767284, guid: 4b04ec11538e14a44a9e3d0cbfc36d59,
         type: 3}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7595921112766767284, guid: 4b04ec11538e14a44a9e3d0cbfc36d59,
+        type: 3}
       propertyPath: m_LocalPosition.x
       value: 23
       objectReference: {fileID: 0}
@@ -26052,6 +26058,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7595921112766767284, guid: 4b04ec11538e14a44a9e3d0cbfc36d59,
         type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7595921112766767284, guid: 4b04ec11538e14a44a9e3d0cbfc36d59,
+        type: 3}
       propertyPath: m_LocalRotation.x
       value: -0
       objectReference: {fileID: 0}
@@ -26064,16 +26075,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalRotation.z
       value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7595921112766767284, guid: 4b04ec11538e14a44a9e3d0cbfc36d59,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7595921112766767284, guid: 4b04ec11538e14a44a9e3d0cbfc36d59,
-        type: 3}
-      propertyPath: m_RootOrder
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7595921112766767284, guid: 4b04ec11538e14a44a9e3d0cbfc36d59,
         type: 3}

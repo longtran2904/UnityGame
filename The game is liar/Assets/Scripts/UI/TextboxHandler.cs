@@ -2,15 +2,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// There is only one TextboxHandler and is on the player
 public class TextboxHandler : MonoBehaviour
 {
-    WeaponManager weaponManager;
-    GameObject closestObj;
-    GameObject lastObj;
+    public UnityEngine.Events.UnityEvent resetEvent;
+    public UnityEngine.Events.UnityEvent updateEvent;
+
+    public static GameObject closestObj;
+    public static GameObject lastObj;
 
     private void Start()
     {
-        weaponManager = GetComponent<WeaponManager>();
         Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("Player"), LayerMask.NameToLayer("HasTextbox"));
     }
 
@@ -21,22 +23,12 @@ public class TextboxHandler : MonoBehaviour
         ExtDebug.DrawBox(transform.position, size / 2, Quaternion.identity, Color.green);
         if (lastObj != closestObj)
         {
-            if (lastObj && lastObj.CompareTag("NPC"))
+            resetEvent.Invoke();
+            if (closestObj)
             {
-                lastObj.GetComponent<NPC>().ResetUI(); // Set the textbox.active of npc to false. We need this when the closest obj change or when it null.
+                updateEvent.Invoke();
+                lastObj = closestObj;
             }
-        }
-        if (closestObj)
-        {
-            if (closestObj.CompareTag("Weapon") || closestObj.CompareTag("SellWeapon"))
-            {
-                weaponManager.UpdateWeapon(closestObj.GetComponent<Weapon>());
-            }
-            else if (closestObj.CompareTag("NPC"))
-            {
-                closestObj.GetComponent<NPC>().DisplayUI();
-            }
-            lastObj = closestObj;
         }
     }
 
@@ -49,7 +41,7 @@ public class TextboxHandler : MonoBehaviour
         int closest = 0;
         for (int i = 0; i < colliders.Length; i++)
         {
-            bool closer = MathUtils.sqrDistance(transform.position, colliders[i].transform.position) < MathUtils.sqrDistance(transform.position, colliders[closest].transform.position);
+            bool closer = (transform.position + colliders[i].transform.position).sqrMagnitude < (transform.position + colliders[closest].transform.position).sqrMagnitude;
             if (closer)
             {
                 closest = i;

@@ -1,6 +1,4 @@
-﻿using ProceduralLevelGenerator.Unity.Generators.Common;
-using ProceduralLevelGenerator.Unity.Generators.Common.Rooms;
-using ProceduralLevelGenerator.Unity.Generators.DungeonGenerator.PipelineTasks;
+﻿using Edgar.Unity;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 

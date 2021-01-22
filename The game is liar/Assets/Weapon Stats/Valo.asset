@@ -20,7 +20,9 @@ MonoBehaviour:
   ammo: 10
   knockback: 0
   price: 35
-  icon: {fileID: 0}
+  sfx: PlayerShoot
+  projectile: PlayerBullet
+  icon: {fileID: -2299854438439939197, guid: 73a953e4af87b944baca12b64abaa1d0, type: 3}
   weaponName: Valo
   description: revolver
   standardReload: 2.7

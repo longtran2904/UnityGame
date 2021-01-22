@@ -13810,6 +13810,7 @@ MonoBehaviour:
       type: 3}
     prob: 1
   teleportToNextScene: 0
+  endWaves: {fileID: 11400000, guid: 7a34d503cc652a74c9a0455f5d058de4, type: 2}
 --- !u!1 &8984368731506606304
 GameObject:
   m_ObjectHideFlags: 0

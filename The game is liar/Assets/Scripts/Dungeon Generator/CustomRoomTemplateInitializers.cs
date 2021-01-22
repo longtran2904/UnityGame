@@ -1,6 +1,6 @@
 ﻿using System.IO;
 using UnityEngine;
-using ProceduralLevelGenerator.Unity.Generators.Common.RoomTemplates.RoomTemplateInitializers;
+using Edgar.Unity;
 
 #if UNITY_EDITOR
 using UnityEditor;

@@ -11,7 +11,7 @@ public class EnemySpawner : MonoBehaviour
     public Transform[] spawnPoints;
     public EnemiesProb[] enemies;
     public bool teleportToNextScene = false;
-    public UnityEvent endWaves;
+    public GameEvent endWaves;
 
     Player player;
     bool hasPlay = false;
@@ -38,7 +38,7 @@ public class EnemySpawner : MonoBehaviour
         }
         else if (Enemies.numberOfEnemiesAlive == 0)
         {
-            endWaves.Invoke();
+            endWaves.Raise();
             Destroy(gameObject);
         }
 

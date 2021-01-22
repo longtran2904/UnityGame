@@ -37,7 +37,7 @@ public class NPC : MonoBehaviour
 
     public void DisplayUI()
     {
-        if (!inRange)
+        if (TextboxHandler.closestObj.GetComponent<NPC>() == this && !inRange)
         {
             inRange = true;
             textbox.SetActive(true);
@@ -61,7 +61,10 @@ public class NPC : MonoBehaviour
 
     public void ResetUI()
     {
-        inRange = false;
-        textbox.SetActive(false);
+        if (TextboxHandler.lastObj.GetComponent<NPC>() == this)
+        {
+            inRange = false;
+            textbox.SetActive(false);
+        }
     }
 }

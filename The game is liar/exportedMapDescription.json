@@ -1,0 +1,1474 @@
+{
+  "roomDescriptionsList": [
+    {
+      "Key": {
+        "Id": 0,
+        "Name": "Room"
+      },
+      "Value": {
+        "IsCorridor": false,
+        "RoomTemplates": [
+          {
+            "$id": "4",
+            "Name": "Custom Room template 1",
+            "Outline": {
+              "points": [
+                {
+                  "X": 0,
+                  "Y": 0
+                },
+                {
+                  "X": 0,
+                  "Y": 29
+                },
+                {
+                  "X": 41,
+                  "Y": 29
+                },
+                {
+                  "X": 41,
+                  "Y": 0
+                }
+              ]
+            },
+            "Doors": {
+              "$type": "Edgar.GraphBasedGenerator.Grid2D.ManualDoorModeGrid2D, EdgarSingleFile",
+              "Doors": [
+                {
+                  "From": {
+                    "X": 41,
+                    "Y": 2
+                  },
+                  "To": {
+                    "X": 41,
+                    "Y": 3
+                  },
+                  "Socket": null
+                },
+                {
+                  "From": {
+                    "X": 37,
+                    "Y": 29
+                  },
+                  "To": {
+                    "X": 36,
+                    "Y": 29
+                  },
+                  "Socket": null
+                }
+              ]
+            },
+            "RepeatMode": 2,
+            "AllowedTransformations": [
+              0
+            ]
+          },
+          {
+            "$id": "17",
+            "Name": "Custom Room template 2",
+            "Outline": {
+              "points": [
+                {
+                  "X": 0,
+                  "Y": 0
+                },
+                {
+                  "X": 0,
+                  "Y": 42
+                },
+                {
+                  "X": 42,
+                  "Y": 42
+                },
+                {
+                  "X": 42,
+                  "Y": 0
+                }
+              ]
+            },
+            "Doors": {
+              "$type": "Edgar.GraphBasedGenerator.Grid2D.ManualDoorModeGrid2D, EdgarSingleFile",
+              "Doors": [
+                {
+                  "From": {
+                    "X": 0,
+                    "Y": 2
+                  },
+                  "To": {
+                    "X": 0,
+                    "Y": 3
+                  },
+                  "Socket": null
+                },
+                {
+                  "From": {
+                    "X": 0,
+                    "Y": 31
+                  },
+                  "To": {
+                    "X": 0,
+                    "Y": 32
+                  },
+                  "Socket": null
+                },
+                {
+                  "From": {
+                    "X": 42,
+                    "Y": 33
+                  },
+                  "To": {
+                    "X": 42,
+                    "Y": 34
+                  },
+                  "Socket": null
+                },
+                {
+                  "From": {
+                    "X": 42,
+                    "Y": 19
+                  },
+                  "To": {
+                    "X": 42,
+                    "Y": 18
+                  },
+                  "Socket": null
+                },
+                {
+                  "From": {
+                    "X": 42,
+                    "Y": 3
+                  },
+                  "To": {
+                    "X": 42,
+                    "Y": 2
+                  },
+                  "Socket": null
+                }
+              ]
+            },
+            "RepeatMode": 2,
+            "AllowedTransformations": [
+              0
+            ]
+          },
+          {
+            "$id": "39",
+            "Name": "Custom Room template 3",
+            "Outline": {
+              "points": [
+                {
+                  "X": -1,
+                  "Y": 24
+                },
+                {
+                  "X": 28,
+                  "Y": 24
+                },
+                {
+                  "X": 28,
+                  "Y": -1
+                },
+                {
+                  "X": -1,
+                  "Y": -1
+                }
+              ]
+            },
+            "Doors": {
+              "$type": "Edgar.GraphBasedGenerator.Grid2D.ManualDoorModeGrid2D, EdgarSingleFile",
+              "Doors": [
+                {
+                  "From": {
+                    "X": -1,
+                    "Y": 1
+                  },
+                  "To": {
+                    "X": -1,
+                    "Y": 2
+                  },
+                  "Socket": null
+                },
+                {
+                  "From": {
+                    "X": -1,
+                    "Y": 19
+                  },
+                  "To": {
+                    "X": -1,
+                    "Y": 20
+                  },
+                  "Socket": null
+                },
+                {
+                  "From": {
+                    "X": 19,
+                    "Y": 24
+                  },
+                  "To": {
+                    "X": 18,
+                    "Y": 24
+                  },
+                  "Socket": null
+                },
+                {
+                  "From": {
+                    "X": 28,
+                    "Y": 1
+                  },
+                  "To": {
+                    "X": 28,
+                    "Y": 2
+                  },
+                  "Socket": null
+                },
+                {
+                  "From": {
+                    "X": 28,
+                    "Y": 13
+                  },
+                  "To": {
+                    "X": 28,
+                    "Y": 14
+                  },
+                  "Socket": null
+                }
+              ]
+            },
+            "RepeatMode": 2,
+            "AllowedTransformations": [
+              0
+            ]
+          },
+          {
+            "$id": "61",
+            "Name": "Custom Room template 6",
+            "Outline": {
+              "points": [
+                {
+                  "X": 0,
+                  "Y": 19
+                },
+                {
+                  "X": 33,
+                  "Y": 19
+                },
+                {
+                  "X": 33,
+                  "Y": 0
+                },
+                {
+                  "X": 0,
+                  "Y": 0
+                }
+              ]
+            },
+            "Doors": {
+              "$type": "Edgar.GraphBasedGenerator.Grid2D.ManualDoorModeGrid2D, EdgarSingleFile",
+              "Doors": [
+                {
+                  "From": {
+                    "X": 16,
+                    "Y": 0
+                  },
+                  "To": {
+                    "X": 17,
+                    "Y": 0
+                  },
+                  "Socket": null
+                },
+                {
+                  "From": {
+                    "X": 0,
+                    "Y": 8
+                  },
+                  "To": {
+                    "X": 0,
+                    "Y": 9
+                  },
+                  "Socket": null
+                },
+                {
+                  "From": {
+                    "X": 33,
+                    "Y": 8
+                  },
+                  "To": {
+                    "X": 33,
+                    "Y": 9
+                  },
+                  "Socket": null
+                }
+              ]
+            },
+            "RepeatMode": 0,
+            "AllowedTransformations": [
+              0
+            ]
+          },
+          {
+            "$id": "77",
+            "Name": "Custom Room template 7",
+            "Outline": {
+              "points": [
+                {
+                  "X": 0,
+                  "Y": 19
+                },
+                {
+                  "X": 34,
+                  "Y": 19
+                },
+                {
+                  "X": 34,
+                  "Y": 0
+                },
+                {
+                  "X": 0,
+                  "Y": 0
+                }
+              ]
+            },
+            "Doors": {
+              "$type": "Edgar.GraphBasedGenerator.Grid2D.ManualDoorModeGrid2D, EdgarSingleFile",
+              "Doors": [
+                {
+                  "From": {
+                    "X": 0,
+                    "Y": 2
+                  },
+                  "To": {
+                    "X": 0,
+                    "Y": 3
+                  },
+                  "Socket": null
+                },
+                {
+                  "From": {
+                    "X": 34,
+                    "Y": 9
+                  },
+                  "To": {
+                    "X": 34,
+                    "Y": 10
+                  },
+                  "Socket": null
+                }
+              ]
+            },
+            "RepeatMode": 0,
+            "AllowedTransformations": [
+              0
+            ]
+          },
+          {
+            "$id": "90",
+            "Name": "Custom Room template 8",
+            "Outline": {
+              "points": [
+                {
+                  "X": 0,
+                  "Y": 33
+                },
+                {
+                  "X": 32,
+                  "Y": 33
+                },
+                {
+                  "X": 32,
+                  "Y": 0
+                },
+                {
+                  "X": 0,
+                  "Y": 0
+                }
+              ]
+            },
+            "Doors": {
+              "$type": "Edgar.GraphBasedGenerator.Grid2D.ManualDoorModeGrid2D, EdgarSingleFile",
+              "Doors": [
+                {
+                  "From": {
+                    "X": 0,
+                    "Y": 2
+                  },
+                  "To": {
+                    "X": 0,
+                    "Y": 3
+                  },
+                  "Socket": null
+                },
+                {
+                  "From": {
+                    "X": 0,
+                    "Y": 18
+                  },
+                  "To": {
+                    "X": 0,
+                    "Y": 19
+                  },
+                  "Socket": null
+                },
+                {
+                  "From": {
+                    "X": 0,
+                    "Y": 29
+                  },
+                  "To": {
+                    "X": 0,
+                    "Y": 30
+                  },
+                  "Socket": null
+                },
+                {
+                  "From": {
+                    "X": 32,
+                    "Y": 13
+                  },
+                  "To": {
+                    "X": 32,
+                    "Y": 14
+                  },
+                  "Socket": null
+                },
+                {
+                  "From": {
+                    "X": 32,
+                    "Y": 29
+                  },
+                  "To": {
+                    "X": 32,
+                    "Y": 30
+                  },
+                  "Socket": null
+                }
+              ]
+            },
+            "RepeatMode": 0,
+            "AllowedTransformations": [
+              0
+            ]
+          },
+          {
+            "$id": "112",
+            "Name": "Custom Room template 10",
+            "Outline": {
+              "points": [
+                {
+                  "X": 0,
+                  "Y": 47
+                },
+                {
+                  "X": 44,
+                  "Y": 47
+                },
+                {
+                  "X": 44,
+                  "Y": 0
+                },
+                {
+                  "X": 0,
+                  "Y": 0
+                }
+              ]
+            },
+            "Doors": {
+              "$type": "Edgar.GraphBasedGenerator.Grid2D.ManualDoorModeGrid2D, EdgarSingleFile",
+              "Doors": [
+                {
+                  "From": {
+                    "X": 0,
+                    "Y": 6
+                  },
+                  "To": {
+                    "X": 0,
+                    "Y": 7
+                  },
+                  "Socket": null
+                },
+                {
+                  "From": {
+                    "X": 0,
+                    "Y": 37
+                  },
+                  "To": {
+                    "X": 0,
+                    "Y": 38
+                  },
+                  "Socket": null
+                },
+                {
+                  "From": {
+                    "X": 44,
+                    "Y": 38
+                  },
+                  "To": {
+                    "X": 44,
+                    "Y": 39
+                  },
+                  "Socket": null
+                }
+              ]
+            },
+            "RepeatMode": 0,
+            "AllowedTransformations": [
+              0
+            ]
+          },
+          {
+            "$id": "128",
+            "Name": "Custom Room template 11",
+            "Outline": {
+              "points": [
+                {
+                  "X": 0,
+                  "Y": 26
+                },
+                {
+                  "X": 83,
+                  "Y": 26
+                },
+                {
+                  "X": 83,
+                  "Y": 0
+                },
+                {
+                  "X": 0,
+                  "Y": 0
+                }
+              ]
+            },
+            "Doors": {
+              "$type": "Edgar.GraphBasedGenerator.Grid2D.ManualDoorModeGrid2D, EdgarSingleFile",
+              "Doors": [
+                {
+                  "From": {
+                    "X": 0,
+                    "Y": 3
+                  },
+                  "To": {
+                    "X": 0,
+                    "Y": 4
+                  },
+                  "Socket": null
+                },
+                {
+                  "From": {
+                    "X": 83,
+                    "Y": 3
+                  },
+                  "To": {
+                    "X": 83,
+                    "Y": 4
+                  },
+                  "Socket": null
+                }
+              ]
+            },
+            "RepeatMode": 0,
+            "AllowedTransformations": [
+              0
+            ]
+          },
+          {
+            "$id": "141",
+            "Name": "Custom Room template",
+            "Outline": {
+              "points": [
+                {
+                  "X": 0,
+                  "Y": 0
+                },
+                {
+                  "X": 0,
+                  "Y": 33
+                },
+                {
+                  "X": 49,
+                  "Y": 33
+                },
+                {
+                  "X": 49,
+                  "Y": 0
+                }
+              ]
+            },
+            "Doors": {
+              "$type": "Edgar.GraphBasedGenerator.Grid2D.ManualDoorModeGrid2D, EdgarSingleFile",
+              "Doors": [
+                {
+                  "From": {
+                    "X": 0,
+                    "Y": 13
+                  },
+                  "To": {
+                    "X": 0,
+                    "Y": 14
+                  },
+                  "Socket": null
+                },
+                {
+                  "From": {
+                    "X": 24,
+                    "Y": 33
+                  },
+                  "To": {
+                    "X": 25,
+                    "Y": 33
+                  },
+                  "Socket": null
+                },
+                {
+                  "From": {
+                    "X": 49,
+                    "Y": 2
+                  },
+                  "To": {
+                    "X": 49,
+                    "Y": 3
+                  },
+                  "Socket": null
+                }
+              ]
+            },
+            "RepeatMode": 0,
+            "AllowedTransformations": [
+              0
+            ]
+          },
+          {
+            "$id": "157",
+            "Name": "Room 5",
+            "Outline": {
+              "points": [
+                {
+                  "X": -38,
+                  "Y": 1
+                },
+                {
+                  "X": -38,
+                  "Y": 24
+                },
+                {
+                  "X": -3,
+                  "Y": 24
+                },
+                {
+                  "X": -3,
+                  "Y": 1
+                }
+              ]
+            },
+            "Doors": {
+              "$type": "Edgar.GraphBasedGenerator.Grid2D.ManualDoorModeGrid2D, EdgarSingleFile",
+              "Doors": [
+                {
+                  "From": {
+                    "X": -21,
+                    "Y": 24
+                  },
+                  "To": {
+                    "X": -20,
+                    "Y": 24
+                  },
+                  "Socket": null
+                },
+                {
+                  "From": {
+                    "X": -21,
+                    "Y": 1
+                  },
+                  "To": {
+                    "X": -20,
+                    "Y": 1
+                  },
+                  "Socket": null
+                }
+              ]
+            },
+            "RepeatMode": 1,
+            "AllowedTransformations": [
+              0
+            ]
+          },
+          {
+            "$id": "170",
+            "Name": "Room 6",
+            "Outline": {
+              "points": [
+                {
+                  "X": -10,
+                  "Y": -1
+                },
+                {
+                  "X": -10,
+                  "Y": 21
+                },
+                {
+                  "X": 25,
+                  "Y": 21
+                },
+                {
+                  "X": 25,
+                  "Y": -1
+                }
+              ]
+            },
+            "Doors": {
+              "$type": "Edgar.GraphBasedGenerator.Grid2D.ManualDoorModeGrid2D, EdgarSingleFile",
+              "Doors": [
+                {
+                  "From": {
+                    "X": 25,
+                    "Y": 9
+                  },
+                  "To": {
+                    "X": 25,
+                    "Y": 8
+                  },
+                  "Socket": null
+                },
+                {
+                  "From": {
+                    "X": -10,
+                    "Y": 8
+                  },
+                  "To": {
+                    "X": -10,
+                    "Y": 7
+                  },
+                  "Socket": null
+                }
+              ]
+            },
+            "RepeatMode": 0,
+            "AllowedTransformations": [
+              0
+            ]
+          },
+          {
+            "$id": "183",
+            "Name": "Room 8",
+            "Outline": {
+              "points": [
+                {
+                  "X": 0,
+                  "Y": -1
+                },
+                {
+                  "X": 0,
+                  "Y": 22
+                },
+                {
+                  "X": 35,
+                  "Y": 22
+                },
+                {
+                  "X": 35,
+                  "Y": -1
+                }
+              ]
+            },
+            "Doors": {
+              "$type": "Edgar.GraphBasedGenerator.Grid2D.ManualDoorModeGrid2D, EdgarSingleFile",
+              "Doors": [
+                {
+                  "From": {
+                    "X": 35,
+                    "Y": 2
+                  },
+                  "To": {
+                    "X": 35,
+                    "Y": 1
+                  },
+                  "Socket": null
+                },
+                {
+                  "From": {
+                    "X": 17,
+                    "Y": 22
+                  },
+                  "To": {
+                    "X": 18,
+                    "Y": 22
+                  },
+                  "Socket": null
+                },
+                {
+                  "From": {
+                    "X": 0,
+                    "Y": 2
+                  },
+                  "To": {
+                    "X": 0,
+                    "Y": 1
+                  },
+                  "Socket": null
+                }
+              ]
+            },
+            "RepeatMode": 0,
+            "AllowedTransformations": [
+              0
+            ]
+          },
+          {
+            "$id": "199",
+            "Name": "Room",
+            "Outline": {
+              "points": [
+                {
+                  "X": 0,
+                  "Y": 24
+                },
+                {
+                  "X": 44,
+                  "Y": 24
+                },
+                {
+                  "X": 44,
+                  "Y": 0
+                },
+                {
+                  "X": 0,
+                  "Y": 0
+                }
+              ]
+            },
+            "Doors": {
+              "$type": "Edgar.GraphBasedGenerator.Grid2D.ManualDoorModeGrid2D, EdgarSingleFile",
+              "Doors": [
+                {
+                  "From": {
+                    "X": 0,
+                    "Y": 2
+                  },
+                  "To": {
+                    "X": 0,
+                    "Y": 3
+                  },
+                  "Socket": null
+                },
+                {
+                  "From": {
+                    "X": 44,
+                    "Y": 18
+                  },
+                  "To": {
+                    "X": 44,
+                    "Y": 19
+                  },
+                  "Socket": null
+                }
+              ]
+            },
+            "RepeatMode": 0,
+            "AllowedTransformations": [
+              0
+            ]
+          },
+          {
+            "$id": "212",
+            "Name": "Custom Room template 9",
+            "Outline": {
+              "points": [
+                {
+                  "X": 1,
+                  "Y": 3
+                },
+                {
+                  "X": 1,
+                  "Y": 38
+                },
+                {
+                  "X": 51,
+                  "Y": 38
+                },
+                {
+                  "X": 51,
+                  "Y": 3
+                }
+              ]
+            },
+            "Doors": {
+              "$type": "Edgar.GraphBasedGenerator.Grid2D.ManualDoorModeGrid2D, EdgarSingleFile",
+              "Doors": [
+                {
+                  "From": {
+                    "X": 1,
+                    "Y": 6
+                  },
+                  "To": {
+                    "X": 1,
+                    "Y": 7
+                  },
+                  "Socket": null
+                },
+                {
+                  "From": {
+                    "X": 51,
+                    "Y": 27
+                  },
+                  "To": {
+                    "X": 51,
+                    "Y": 28
+                  },
+                  "Socket": null
+                },
+                {
+                  "From": {
+                    "X": 51,
+                    "Y": 10
+                  },
+                  "To": {
+                    "X": 51,
+                    "Y": 11
+                  },
+                  "Socket": null
+                }
+              ]
+            },
+            "RepeatMode": 2,
+            "AllowedTransformations": [
+              0
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Id": 1,
+        "Name": "Room"
+      },
+      "Value": {
+        "IsCorridor": false,
+        "RoomTemplates": [
+          {
+            "$ref": "4"
+          },
+          {
+            "$ref": "17"
+          },
+          {
+            "$ref": "39"
+          },
+          {
+            "$ref": "61"
+          },
+          {
+            "$ref": "77"
+          },
+          {
+            "$ref": "90"
+          },
+          {
+            "$ref": "112"
+          },
+          {
+            "$ref": "128"
+          },
+          {
+            "$ref": "141"
+          },
+          {
+            "$ref": "157"
+          },
+          {
+            "$ref": "170"
+          },
+          {
+            "$ref": "183"
+          },
+          {
+            "$ref": "199"
+          },
+          {
+            "$ref": "212"
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Id": 2,
+        "Name": "Room"
+      },
+      "Value": {
+        "IsCorridor": false,
+        "RoomTemplates": [
+          {
+            "$ref": "4"
+          },
+          {
+            "$ref": "17"
+          },
+          {
+            "$ref": "39"
+          },
+          {
+            "$ref": "61"
+          },
+          {
+            "$ref": "77"
+          },
+          {
+            "$ref": "90"
+          },
+          {
+            "$ref": "112"
+          },
+          {
+            "$ref": "128"
+          },
+          {
+            "$ref": "141"
+          },
+          {
+            "$ref": "157"
+          },
+          {
+            "$ref": "170"
+          },
+          {
+            "$ref": "183"
+          },
+          {
+            "$ref": "199"
+          },
+          {
+            "$ref": "212"
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Id": 3,
+        "Name": "Starting Room"
+      },
+      "Value": {
+        "IsCorridor": false,
+        "RoomTemplates": [
+          {
+            "Name": "Starting Room",
+            "Outline": {
+              "points": [
+                {
+                  "X": 0,
+                  "Y": 0
+                },
+                {
+                  "X": 0,
+                  "Y": 17
+                },
+                {
+                  "X": 31,
+                  "Y": 17
+                },
+                {
+                  "X": 31,
+                  "Y": 0
+                }
+              ]
+            },
+            "Doors": {
+              "$type": "Edgar.GraphBasedGenerator.Grid2D.ManualDoorModeGrid2D, EdgarSingleFile",
+              "Doors": [
+                {
+                  "From": {
+                    "X": 31,
+                    "Y": 3
+                  },
+                  "To": {
+                    "X": 31,
+                    "Y": 2
+                  },
+                  "Socket": null
+                }
+              ]
+            },
+            "RepeatMode": 0,
+            "AllowedTransformations": [
+              0
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Id": 4,
+        "Name": "Room"
+      },
+      "Value": {
+        "IsCorridor": false,
+        "RoomTemplates": [
+          {
+            "$ref": "4"
+          },
+          {
+            "$ref": "17"
+          },
+          {
+            "$ref": "39"
+          },
+          {
+            "$ref": "61"
+          },
+          {
+            "$ref": "77"
+          },
+          {
+            "$ref": "90"
+          },
+          {
+            "$ref": "112"
+          },
+          {
+            "$ref": "128"
+          },
+          {
+            "$ref": "141"
+          },
+          {
+            "$ref": "157"
+          },
+          {
+            "$ref": "170"
+          },
+          {
+            "$ref": "183"
+          },
+          {
+            "$ref": "199"
+          },
+          {
+            "$ref": "212"
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Id": 5,
+        "Name": "Shop"
+      },
+      "Value": {
+        "IsCorridor": false,
+        "RoomTemplates": [
+          {
+            "Name": "Shop",
+            "Outline": {
+              "points": [
+                {
+                  "X": -14,
+                  "Y": -10
+                },
+                {
+                  "X": -14,
+                  "Y": 13
+                },
+                {
+                  "X": 23,
+                  "Y": 13
+                },
+                {
+                  "X": 23,
+                  "Y": -10
+                }
+              ]
+            },
+            "Doors": {
+              "$type": "Edgar.GraphBasedGenerator.Grid2D.ManualDoorModeGrid2D, EdgarSingleFile",
+              "Doors": [
+                {
+                  "From": {
+                    "X": 23,
+                    "Y": 4
+                  },
+                  "To": {
+                    "X": 23,
+                    "Y": 5
+                  },
+                  "Socket": null
+                }
+              ]
+            },
+            "RepeatMode": 0,
+            "AllowedTransformations": [
+              0
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Id": 6,
+        "Name": "Room"
+      },
+      "Value": {
+        "IsCorridor": false,
+        "RoomTemplates": [
+          {
+            "$ref": "4"
+          },
+          {
+            "$ref": "17"
+          },
+          {
+            "$ref": "39"
+          },
+          {
+            "$ref": "61"
+          },
+          {
+            "$ref": "77"
+          },
+          {
+            "$ref": "90"
+          },
+          {
+            "$ref": "112"
+          },
+          {
+            "$ref": "128"
+          },
+          {
+            "$ref": "141"
+          },
+          {
+            "$ref": "157"
+          },
+          {
+            "$ref": "170"
+          },
+          {
+            "$ref": "183"
+          },
+          {
+            "$ref": "199"
+          },
+          {
+            "$ref": "212"
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Id": 7,
+        "Name": "Room"
+      },
+      "Value": {
+        "IsCorridor": false,
+        "RoomTemplates": [
+          {
+            "$ref": "4"
+          },
+          {
+            "$ref": "17"
+          },
+          {
+            "$ref": "39"
+          },
+          {
+            "$ref": "61"
+          },
+          {
+            "$ref": "77"
+          },
+          {
+            "$ref": "90"
+          },
+          {
+            "$ref": "112"
+          },
+          {
+            "$ref": "128"
+          },
+          {
+            "$ref": "141"
+          },
+          {
+            "$ref": "157"
+          },
+          {
+            "$ref": "170"
+          },
+          {
+            "$ref": "183"
+          },
+          {
+            "$ref": "199"
+          },
+          {
+            "$ref": "212"
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Id": 8,
+        "Name": "Boss"
+      },
+      "Value": {
+        "IsCorridor": false,
+        "RoomTemplates": [
+          {
+            "Name": "Boss Room",
+            "Outline": {
+              "points": [
+                {
+                  "X": 0,
+                  "Y": 0
+                },
+                {
+                  "X": 0,
+                  "Y": 22
+                },
+                {
+                  "X": 44,
+                  "Y": 22
+                },
+                {
+                  "X": 44,
+                  "Y": 0
+                }
+              ]
+            },
+            "Doors": {
+              "$type": "Edgar.GraphBasedGenerator.Grid2D.ManualDoorModeGrid2D, EdgarSingleFile",
+              "Doors": [
+                {
+                  "From": {
+                    "X": 44,
+                    "Y": 9
+                  },
+                  "To": {
+                    "X": 44,
+                    "Y": 10
+                  },
+                  "Socket": null
+                },
+                {
+                  "From": {
+                    "X": 0,
+                    "Y": 10
+                  },
+                  "To": {
+                    "X": 0,
+                    "Y": 9
+                  },
+                  "Socket": null
+                },
+                {
+                  "From": {
+                    "X": 21,
+                    "Y": 22
+                  },
+                  "To": {
+                    "X": 22,
+                    "Y": 22
+                  },
+                  "Socket": null
+                }
+              ]
+            },
+            "RepeatMode": 2,
+            "AllowedTransformations": [
+              0
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "passages": [
+    {
+      "Room1": {
+        "Id": 0,
+        "Name": "Room"
+      },
+      "Room2": {
+        "Id": 1,
+        "Name": "Room"
+      }
+    },
+    {
+      "Room1": {
+        "Id": 0,
+        "Name": "Room"
+      },
+      "Room2": {
+        "Id": 3,
+        "Name": "Starting Room"
+      }
+    },
+    {
+      "Room1": {
+        "Id": 1,
+        "Name": "Room"
+      },
+      "Room2": {
+        "Id": 2,
+        "Name": "Room"
+      }
+    },
+    {
+      "Room1": {
+        "Id": 1,
+        "Name": "Room"
+      },
+      "Room2": {
+        "Id": 4,
+        "Name": "Room"
+      }
+    },
+    {
+      "Room1": {
+        "Id": 2,
+        "Name": "Room"
+      },
+      "Room2": {
+        "Id": 5,
+        "Name": "Shop"
+      }
+    },
+    {
+      "Room1": {
+        "Id": 2,
+        "Name": "Room"
+      },
+      "Room2": {
+        "Id": 6,
+        "Name": "Room"
+      }
+    },
+    {
+      "Room1": {
+        "Id": 2,
+        "Name": "Room"
+      },
+      "Room2": {
+        "Id": 7,
+        "Name": "Room"
+      }
+    },
+    {
+      "Room1": {
+        "Id": 6,
+        "Name": "Room"
+      },
+      "Room2": {
+        "Id": 8,
+        "Name": "Boss"
+      }
+    }
+  ],
+  "Name": "Test",
+  "MinimumRoomDistance": 0,
+  "RoomTemplateRepeatModeDefault": 2,
+  "RoomTemplateRepeatModeOverride": null
+}

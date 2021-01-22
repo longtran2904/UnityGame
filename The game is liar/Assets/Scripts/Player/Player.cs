@@ -10,7 +10,7 @@ public class Player : MonoBehaviour
     public Vector3Variable position;
     public PlayerController controller { get; private set; }
     public TextMeshProUGUI moneyText;
-    public int money;
+    public IntReference money;
     Animator anim;
     public event Action teleportEvent;
     bool isInvincible;
@@ -23,7 +23,8 @@ public class Player : MonoBehaviour
     public event Action deathEvent;
     public GameObject deathEffect;
     public GameObject deathParticle;
-    public Weapon currentWeapon; // Only change by switching or buying new weapon (WeaponSwitching and WeaponManager)
+    //public WeaponVariable currentWeapon; // Only change by switching or buying new weapon (WeaponSwitching and WeaponManager)
+    public WeaponInventory inventory;
 
     private void Start()
     {
@@ -47,6 +48,7 @@ public class Player : MonoBehaviour
             Destroy(this);
         }
         moneyText?.SetText(money.ToString());
+        position.value = transform.position;
     }
 
     IEnumerator Die()
@@ -89,24 +91,27 @@ public class Player : MonoBehaviour
         sr.material = hurtMat;
         yield return new WaitForSeconds(.1f);
         sr.material = defMat;
-        ChangeSpriteRendererAlpha();
-        yield return new WaitForSeconds(invincibleTime);
-        ResetSpriteRendererAlpha();
-        isInvincible = false;
-    }
 
-    void ChangeSpriteRendererAlpha()
-    {
         Color temp = sr.color;
         temp.a = invincibleOpacity;
         sr.color = temp;
-    }
 
-    void ResetSpriteRendererAlpha()
-    {
-        Color temp = sr.color;
+        yield return new WaitForSeconds(invincibleTime);
+
         temp.a = 1;
         sr.color = temp;
+        isInvincible = false;
+    }
+
+    public void ActivePlayerInput(bool active)
+    {
+        // Weapon
+        inventory.GetCurrent().enabled = active;
+        inventory.GetCurrent().canSwitch = active;
+
+        //Movement
+        controller.enabled = active;
+        GetComponent<PlayerCombat>().enabled = active;
     }
 
     // Call this to teleport (Play tp animation -> Animation event get called -> tpDelegate)

@@ -21,19 +21,14 @@ public class ShopKeeper : MonoBehaviour
             }
             usedItems.Add(shopItems[random]);
             GameObject currentItem = Instantiate(shopItems[random], sellPos[i].position, Quaternion.identity);
-            DisableAllBehaviour(currentItem);
+            foreach (var behaviour in currentItem.GetComponents<MonoBehaviour>())
+            {
+                behaviour.enabled = false;
+            }
             currentItem.AddComponent<BoxCollider2D>();
             currentItem.tag = "SellWeapon";
             currentItem.layer = LayerMask.NameToLayer("HasTextbox");
             currentItem.transform.localScale *= scaleMutiplier;
-        }
-    }
-
-    void DisableAllBehaviour(GameObject obj)
-    {
-        foreach (var behaviour in obj.GetComponents<MonoBehaviour>())
-        {
-            behaviour.enabled = false;
         }
     }
 }

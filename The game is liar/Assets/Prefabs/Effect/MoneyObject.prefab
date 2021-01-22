@@ -136,6 +136,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 5
+  addMoney:
+    useConstant: 1
+    constantValue: 5
+    variable: {fileID: 0}
+  playerMoney:
+    useConstant: 0
+    constantValue: 0
+    variable: {fileID: 11400000, guid: 18f7894f0d00c974e9002c94fb008838, type: 2}
+  playerPos: {x: 0, y: 0, z: 0}
 --- !u!114 &1865458717
 MonoBehaviour:
   m_ObjectHideFlags: 0

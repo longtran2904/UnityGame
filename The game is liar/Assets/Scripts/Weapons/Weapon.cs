@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using UnityEngine;
+﻿using UnityEngine;
 using EZCameraShake;
 using System;
 using TMPro;
@@ -10,7 +9,12 @@ public enum FireMode
     Burst,
     Single
 }
-
+/*
+ * Reload: WeaponStat, slider, reload bar, perfect and active size
+ * Shoot: WeaponStat, ShootPos, muzzleFlash
+ * UI: ammo, sprite
+ * Rotate: onGround
+ */
 public class Weapon : MonoBehaviour
 {
     public WeaponStat stat;
@@ -18,15 +22,13 @@ public class Weapon : MonoBehaviour
     Camera mainCamera;
     public float offset;
 
-    public Projectile projectilePrefab;
-    public Transform shotPos;
+    private Transform shootPos;
     private float timeBtwShots;
-    float startTimeBtwShots;
+    private float startTimeBtwShots;
 
     public BoolReference onGround;
-    private Projectile projectile;
 
-    public GameObject muzzleFlash;
+    private GameObject muzzleFlash;
     public float muzzelFlashTime;
     private float muzzelFlashTimeValue;
 
@@ -37,9 +39,10 @@ public class Weapon : MonoBehaviour
     private int currentAmmo;
     private bool isReloading;
 
-    public TextMeshProUGUI ammoText;
+    [HideInInspector] public TextMeshProUGUI ammoText;
     public event Action reloadingDelegate;
     [HideInInspector] public bool canSwitch = true;
+    public bool canReload = true;
 
     // Start is called before the first frame update
     void Start()
@@ -49,7 +52,9 @@ public class Weapon : MonoBehaviour
         shotsRemainingInBurst = burstCount;
         currentAmmo = stat.ammo;
         startTimeBtwShots = 1 / stat.fireRate;
-        ammoText = GameObject.Find("AmmoText") ? GameObject.Find("AmmoText").GetComponent<TextMeshProUGUI>() : null;
+        shootPos = transform.Find("ShootPos");
+        muzzleFlash = transform.Find("MuzzleFlash").gameObject;
+        ammoText = GameObject.Find("AmmoText")?.GetComponent<TextMeshProUGUI>();
         ammoText?.SetText("{0}/{1}", currentAmmo, stat.ammo);
     }
 
@@ -79,20 +84,21 @@ public class Weapon : MonoBehaviour
         {
             return;
         }
-        if (currentAmmo <= 0 && Input.GetMouseButton(0))
-        {
-            Reload();
-            return;
-        }
-        else if (Input.GetKeyDown(KeyCode.R) && currentAmmo < stat.ammo)
-        {
-            Reload();
-            return;
-        }
 
-        FlipWeapon(RotationToMousePosition());
-        OnTriggerHold();
-        OnTriggerReleased();
+        if (currentAmmo <= 0 && Input.GetMouseButton(0) && canReload)
+        {
+            Reload();
+        }
+        else if (Input.GetKeyDown(KeyCode.R) && currentAmmo < stat.ammo && canReload)
+        {
+            Reload();
+        }
+        else
+        {
+            FlipWeapon(RotationToMousePosition());
+            OnTriggerHold();
+            OnTriggerReleased();
+        }
     }
 
     void Reload()
@@ -158,7 +164,7 @@ public class Weapon : MonoBehaviour
     }
 
     // shoot projectile toward the mouse position
-    public void ShootProjectile(string poolName, string sfx)
+    void ShootProjectile()
     {
         if (Time.time > timeBtwShots)
         {
@@ -178,45 +184,22 @@ public class Weapon : MonoBehaviour
                 }
             }
             currentAmmo--;
-            SpawnAndSetupProjectiles(poolName);
+            bool isCritical = UnityEngine.Random.value < stat.critChance;
+            ObjectPooler.instance.SpawnFromPool<Projectile>(stat.projectile, shootPos.transform.position, transform.rotation).Init(
+                isCritical ? stat.critDamage : stat.damage, stat.knockback, 0, false, isCritical);
             timeBtwShots = Time.time + startTimeBtwShots;
             muzzleFlash.SetActive(true);
             muzzelFlashTimeValue = muzzelFlashTime;
+            AudioManager.instance.Play(stat.sfx);
             CameraShaker.Instance.ShakeOnce(4, 1, 0.1f, .1f);
-            AudioManager.instance.Play(sfx);
         }
-    }
-
-    public void ShootProjectileForEnemy(string poolName, string sfx)
-    {
-        if (Time.time > timeBtwShots)
-        {
-            SpawnAndSetupProjectiles(poolName, true);
-            timeBtwShots = Time.time + startTimeBtwShots;
-            muzzleFlash.SetActive(true);
-            muzzelFlashTimeValue = muzzelFlashTime;
-            AudioManager.instance.Play(sfx);
-        }
-    }
-
-    private void SpawnAndSetupProjectiles(string poolName, bool isEnemy = false)
-    {
-        projectile = ObjectPooler.instance.SpawnFromPool<Projectile>(poolName, shotPos.transform.position, transform.rotation);
-        bool isCritical = UnityEngine.Random.value < stat.critChance;
-        projectile.Init(isCritical ? stat.critDamage : stat.damage, stat.knockback, 0, isEnemy, isCritical);
     }
 
     public void OnTriggerHold()
     {
         if (Input.GetMouseButton(0))
         {
-            string bullet = "PlayerBullet";
-            string sound = "PlayerShoot";
-            if (stat.mode == FireMode.Single)
-            {
-                sound = "Shotgun";
-            }
-            ShootProjectile(bullet, sound);
+            ShootProjectile();
             triggerReleasedSinceLastShot = false;
         }
     }

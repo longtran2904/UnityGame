@@ -58,7 +58,7 @@ public class MoveState : EnemyState
     {
         if (Time.time > timeBtwJumpsValue && enemy.GroundCheck())
         {
-            enemy.rb.velocity = new Vector2(MathUtils.Signed(enemy.player.transform.position.x - enemy.transform.position.x), 1).normalized * jumpForce;
+            enemy.rb.velocity = new Vector2(Mathf.Sign(enemy.player.transform.position.x - enemy.transform.position.x), 1).normalized * jumpForce;
             timeBtwJumpsValue = Time.time + timeBtwJumps;
         }
     }

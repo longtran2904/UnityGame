@@ -10,13 +10,9 @@ public class WeaponManager : MonoBehaviour
     public GameObject textBox;
     private GameObject textboxObj;
     Vector3 offset;
-    float delay;
-    Player player;
-
-    void Start()
-    {
-        player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
-    }
+    float delay = .5f;
+    public WeaponInventory inventory;
+    public IntReference playerMoney;
 
     // Update is called once per frame
     void LateUpdate()
@@ -33,10 +29,8 @@ public class WeaponManager : MonoBehaviour
             {
                 delay -= Time.deltaTime;
                 textboxObj.SetActive(false);
-                return;
             }
-
-            if (weapon != lastWeapon)
+            else if (weapon != lastWeapon)
             {
                 Destroy(textboxObj);
                 DisplayUI();
@@ -49,12 +43,15 @@ public class WeaponManager : MonoBehaviour
         }
         else if (textboxObj)
             textboxObj.SetActive(false);
-        weapon = null;
     }
 
-    public void UpdateWeapon(Weapon weapon)
+    // Listen to the TextboxHandler event
+    public void UpdateWeapon()
     {
-        this.weapon = weapon;
+        if (TextboxHandler.closestObj.CompareTag("Weapon") || TextboxHandler.closestObj.CompareTag("SellWeapon"))
+            weapon = TextboxHandler.closestObj.GetComponent<Weapon>();
+        else
+            weapon = null;
     }
 
     void DisplayUI()
@@ -72,14 +69,14 @@ public class WeaponManager : MonoBehaviour
     {
         if (weapon.CompareTag("SellWeapon"))
         {
-            if (weapon.stat.price > GetComponentInParent<Player>().money)
+            if (weapon.stat.price > playerMoney.value)
             {
                 return;
             }
             else
             {
                 AudioManager.instance.Play("Buy");
-                GetComponentInParent<Player>().money -= weapon.stat.price;
+                playerMoney.value -= weapon.stat.price;
             }
         }
         int current = GetComponent<WeaponSwitching>().selectedWeapon;
@@ -96,7 +93,7 @@ public class WeaponManager : MonoBehaviour
         {
             component.enabled = true;
         }
-        player.currentWeapon = weapon;
+        inventory.AddAndSetCurrent(weapon);
         delay = .5f;
     }
 
@@ -104,15 +101,15 @@ public class WeaponManager : MonoBehaviour
     {
         GameObject dropWeapon = transform.GetChild(index).gameObject;
         dropWeapon.transform.parent = null;
+
         dropWeapon.AddComponent<BoxCollider2D>();
         Rigidbody2D rb = dropWeapon.AddComponent<Rigidbody2D>();
+
         rb.gravityScale = 5;
         rb.transform.rotation = transform.rotation;
         rb.constraints = RigidbodyConstraints2D.FreezeRotation;
         rb.velocity = new Vector2(transform.right.x, 1) * Vector2.one.normalized * 10;
-        foreach (var behaviour in dropWeapon.GetComponents<MonoBehaviour>())
-        {
-            behaviour.enabled = false;
-        }
+
+        dropWeapon.GetComponent<Weapon>().enabled = false;
     }
 }

@@ -20,7 +20,9 @@ MonoBehaviour:
   ammo: 10
   knockback: 0
   price: 45
-  icon: {fileID: 0}
+  sfx: PlayerShoot
+  projectile: PlayerBullet
+  icon: {fileID: 21300000, guid: 34ff1dfa203f0b24b95a47db5f928d90, type: 3}
   weaponName: Justys
   description: Better Shotgun
   standardReload: 3

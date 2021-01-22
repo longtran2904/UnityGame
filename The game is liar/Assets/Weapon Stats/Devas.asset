@@ -20,7 +20,9 @@ MonoBehaviour:
   ammo: 25
   knockback: 0
   price: 72
-  icon: {fileID: 0}
+  sfx: PlayerShoot
+  projectile: PlayerBullet
+  icon: {fileID: 21300000, guid: 5ba391a0a230e6846934a0c3e6fd17f0, type: 3}
   weaponName: Devas
   description: AK
   standardReload: 3.5

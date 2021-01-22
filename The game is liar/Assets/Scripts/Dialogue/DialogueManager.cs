@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -53,7 +54,7 @@ public class DialogueManager : MonoBehaviour
             sentences.Enqueue(sentence);
         }
         dialogueBox.SetActive(true);
-        DisablePlayerInput();
+        player.ActivePlayerInput(false);
         DisplayNextSentence();
     }
 
@@ -129,28 +130,12 @@ public class DialogueManager : MonoBehaviour
     {
         dialogueBox.SetActive(false);
         endDialogue?.Invoke();
-        Invoke("EnableCurrentWeaponInput", .1f);
-    }
+        StartCoroutine(EnablePlayerInput());
 
-    // Make sure the player don't shoot when in dialouge mode
-    void DisablePlayerInput()
-    {
-        player.currentWeapon.canSwitch = false;
-        player.currentWeapon.enabled = false;
-        foreach (var monobehaviour in player.GetComponents<MonoBehaviour>())
+        IEnumerator EnablePlayerInput()
         {
-            monobehaviour.enabled = false;
-        }
-    }
-
-    // Invoke in EndDialogue()
-    void EnableCurrentWeaponInput()
-    {
-        player.currentWeapon.canSwitch = true;
-        player.currentWeapon.enabled = true;
-        foreach (var monobehaviour in player.GetComponents<MonoBehaviour>())
-        {
-            monobehaviour.enabled = true;
+            yield return new WaitForEndOfFrame();
+            player.ActivePlayerInput(true);
         }
     }
 }

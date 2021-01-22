@@ -20,7 +20,9 @@ MonoBehaviour:
   ammo: 25
   knockback: 0
   price: 42
-  icon: {fileID: 0}
+  sfx: PlayerShoot
+  projectile: PlayerBullet
+  icon: {fileID: 21300000, guid: d8e3f78938a0e7647a61155ac9b63dc7, type: 3}
   weaponName: Newbye
   description: Riffles
   standardReload: 3.2

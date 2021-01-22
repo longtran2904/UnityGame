@@ -699,7 +699,7 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
   currentRoom: {fileID: 11400000, guid: c16780bbd065465449aa96a3fb65dcb9, type: 2}
-  playerPos: {fileID: 11400000, guid: de549abf0dae22842898ee569e51421b, type: 2}
+  currentBounds: {fileID: 11400000, guid: 766edb4cce1be7d49b8ae0457fb0e355, type: 2}
 --- !u!1 &5731884600107935743
 GameObject:
   m_ObjectHideFlags: 0
@@ -1160,7 +1160,7 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
   currentRoom: {fileID: 11400000, guid: c16780bbd065465449aa96a3fb65dcb9, type: 2}
-  playerPos: {fileID: 11400000, guid: de549abf0dae22842898ee569e51421b, type: 2}
+  currentBounds: {fileID: 11400000, guid: 766edb4cce1be7d49b8ae0457fb0e355, type: 2}
 --- !u!1 &7961639287409132396
 GameObject:
   m_ObjectHideFlags: 0

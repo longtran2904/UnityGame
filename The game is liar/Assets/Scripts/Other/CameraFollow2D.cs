@@ -2,7 +2,9 @@
 
 public class CameraFollow2D : MonoBehaviour
 {
-    public GameObject player;
+    public BoundsIntReference bounds;
+    public Vector3Reference playerPos;
+
     public float timeOffset;
     public Vector2 posOffset;
 
@@ -10,7 +12,6 @@ public class CameraFollow2D : MonoBehaviour
     private Vector2 rightAndUpLimit;
 
     Camera main;
-    public BoundsIntReference bounds;
 
     private void Start()
     {
@@ -20,16 +21,11 @@ public class CameraFollow2D : MonoBehaviour
 
     void LateUpdate()
     {
-        if (player == null)
-        {
-            player = GameObject.FindGameObjectWithTag("Player");
-        }
-
         // Camera current position
         Vector3 starPos = transform.position;
 
         // Player current position with offset
-        Vector3 endPos = player.transform.position;
+        Vector3 endPos = playerPos.value;
         endPos.x += posOffset.x;
         endPos.y += posOffset.y;
         endPos.z = -10;

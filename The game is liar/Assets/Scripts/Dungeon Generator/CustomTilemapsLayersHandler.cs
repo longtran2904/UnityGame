@@ -1,4 +1,4 @@
-﻿using ProceduralLevelGenerator.Unity.Generators.Common.RoomTemplates.TilemapLayers;
+﻿using Edgar.Unity;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
