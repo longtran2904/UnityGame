@@ -1,78 +1,102 @@
-﻿using UnityEngine.Audio;
-using System;
+﻿using System;
 using UnityEngine;
 
-public class AudioManager : MonoBehaviour
+// NOTE: Because OnEnable was called before Application.isPlaying got updated so I had to call the init logic in AudioObject.cs
+//       Hopefully, It will get fixed in the next update
+[CreateAssetMenu(menuName = "Audio/AudioManager")]
+public class AudioManager : ScriptableObject
 {
     public Sound[] sounds;
+    private AudioSource musicSource;
+    private AudioSource sfxSource;
 
     public static AudioManager instance;
 
-    // Start is called before the first frame update
-    void Awake()
+    public void Init()
     {
-        if (instance == null)
+        if (!instance)
         {
             instance = this;
-        }
-        else
-        {
-            Destroy(gameObject);
-            return;
-        }
-
-        DontDestroyOnLoad(gameObject);
-
-        foreach (Sound s in sounds)
-        {
-            s.source = gameObject.AddComponent<AudioSource>();
-
-            s.source.clip = s.clip;
-
-            s.source.volume = s.volume;
-
-            s.source.pitch = s.pitch;
-
-            s.source.loop = s.loop;
-
-            if (s.playOnAwake)
+            GameObject audioObject = new GameObject("AudioManager");
+            audioObject.hideFlags = HideFlags.HideAndDontSave;
+            instance.musicSource = audioObject.AddComponent<AudioSource>();
+            instance.sfxSource = audioObject.AddComponent<AudioSource>();
+            foreach (Sound s in AudioManager.instance.sounds)
             {
-                Play(s.name);
+                if (s.playOnAwake)
+                {
+                    PlayMusic(s.name);
+                }
             }
         }
     }
 
-    public void Play(string name)
+    public void PlaySfx(SoundCue cue)
+    {
+        if (Time.time >= cue.timeBtwSoundsValue)
+        {
+            PlaySfx(cue.sounds[UnityEngine.Random.Range(0, cue.sounds.Length)], UnityEngine.Random.Range(cue.volumeScaleMin, cue.volumeScaleMax), UnityEngine.Random.Range(cue.pitchMin, cue.pitchMax));
+            cue.timeBtwSoundsValue = Time.time + cue.timeBtwSounds;
+        }
+    }
+
+    /// <summary>Play sound effect using the PlayOneShot method from a separate AudioSource</summary>
+    public void PlaySfx(string name)
+    {
+        Sound sound = GetSound(name);
+        if (sound != null)
+        {
+            sfxSource.pitch = sound.pitch;
+            sfxSource.PlayOneShot(sound.clip, sound.volume); 
+        }
+    }
+
+    /// <summary>Play sound effect using the PlayOneShot method from a separate AudioSource</summary>
+    /// <param name="volumeScale">percent of the current volume (0-1)</param>
+    public void PlaySfx(string name, float volumeScale = 1, float pitch = 1)
+    {
+        Sound sound = GetSound(name);
+        if (sound != null)
+        {
+            sfxSource.pitch = pitch;
+            sfxSource.PlayOneShot(GetSound(name).clip, volumeScale); 
+        }
+    }
+
+    /// <summary>
+    /// Play the music using the Play method from a separate AudioSource.
+    /// </summary>
+    public void PlayMusic(string name)
+    {
+        Sound s = GetSound(name);
+        musicSource.clip = s.clip;
+        musicSource.volume = s.volume;
+        musicSource.pitch = s.pitch;
+        musicSource.Play();
+    }
+
+    public void StopMusic()
+    {
+        musicSource.Stop();
+    }
+
+    public Sound GetSound(string name)
     {
         Sound s = Array.Find(sounds, sound => sound.name == name);
-
         if (s == null)
         {
             InternalDebug.LogWarning("Sound: " + name + " not found!");
-            return;
         }
-
-        s.source.Play();
+        return s;
     }
 
-    public void Stop(string name)
+    public void PauseAllSounds()
     {
-        Sound s = Array.Find(sounds, sound => sound.name == name);
-
-        if (s == null)
-        {
-            InternalDebug.LogWarning("Sound: " + name + " not found!");
-            return;
-        }
-
-        s.source.Stop();
+        AudioListener.pause = true;
     }
 
-    public void StopAll()
+    public void ResumeAllSounds()
     {
-        foreach (Sound sound in sounds)
-        {
-            sound.source.Stop();
-        }
+        AudioListener.pause = false;
     }
 }

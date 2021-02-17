@@ -1,15 +1,19 @@
-﻿using System;
+﻿using UnityEngine.Events;
 using UnityEngine;
-using UnityEngine.Events;
+using System;
 
 public class CollisionCheck : MonoBehaviour
 {
+    public bool useTag;
+    [ShowWhen("useTag")] public string compareTag;
+
     public UnityEvent collisionEvent;
     public Action<Collider2D> onTriggerEnterFunc;
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    private void OnCollisionEnter2D(Collision2D collision)
     {
-        onTriggerEnterFunc?.Invoke(collision);
+        if (useTag && !collision.collider.CompareTag(compareTag)) return;
+        onTriggerEnterFunc?.Invoke(collision.collider);
         collisionEvent?.Invoke();
     }
 }

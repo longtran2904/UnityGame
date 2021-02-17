@@ -3,11 +3,12 @@
 public class WeaponSwitching : MonoBehaviour
 {
     public int selectedWeapon;
-    public WeaponInventory inventory;
+    WeaponInventory inventory;
 
     // Start is called before the first frame update
     void Start()
     {
+        inventory = GetComponentInParent<Player>().inventory;
         SelectWeapon();
     }
 
@@ -16,10 +17,6 @@ public class WeaponSwitching : MonoBehaviour
     {
         int previousSelectedWeapon = selectedWeapon;
         float scrollInput = Input.GetAxis("Mouse ScrollWheel");
-        if (!transform.GetChild(selectedWeapon).GetComponent<Weapon>().canSwitch)
-        {
-            return;
-        }
 
         if (scrollInput > 0)
         {

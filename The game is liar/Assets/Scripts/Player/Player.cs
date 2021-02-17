@@ -8,23 +8,29 @@ public class Player : MonoBehaviour
 {
     public IntReference health;
     public Vector3Variable position;
-    public PlayerController controller { get; private set; }
     public TextMeshProUGUI moneyText;
     public IntReference money;
-    Animator anim;
+
+    private PlayerController controller;
+    private Animator anim;
     public event Action teleportEvent;
+
     bool isInvincible;
     public float invincibleTime;
-    [Range(0, 1)]
-    public float invincibleOpacity;
+    [Range(0, 1)] public float invincibleOpacity;
+
     public Material hurtMat;
     private Material defMat;
     private SpriteRenderer sr;
+
     public event Action deathEvent;
     public GameObject deathEffect;
     public GameObject deathParticle;
-    //public WeaponVariable currentWeapon; // Only change by switching or buying new weapon (WeaponSwitching and WeaponManager)
+
     public WeaponInventory inventory;
+    private ShootAndRotateGun shootAndRotateBehaviour;
+    private WeaponSwitching weaponSwitching;
+    private PlayerCombat combat;
 
     private void Start()
     {
@@ -32,11 +38,12 @@ public class Player : MonoBehaviour
         controller = GetComponent<PlayerController>();
         sr = GetComponent<SpriteRenderer>();
         defMat = sr.material;
+        moneyText = GameObject.Find("Money")?.GetComponent<TextMeshProUGUI>();
 
-        if (!moneyText)
-        {
-            moneyText = GameObject.Find("Money")?.GetComponent<TextMeshProUGUI>();
-        }
+        // For ActivePlayerInput
+        shootAndRotateBehaviour = GetComponentInChildren<ShootAndRotateGun>();
+        weaponSwitching = GetComponentInChildren<WeaponSwitching>();
+        combat = GetComponent<PlayerCombat>();
     }
 
     // Update is called once per frame
@@ -53,7 +60,7 @@ public class Player : MonoBehaviour
 
     IEnumerator Die()
     {
-        AudioManager.instance.Play("PlayerDeath");
+        AudioManager.instance.PlaySfx("PlayerDeath");
         anim.SetTrigger("Death");
         foreach (Transform child in transform)
         {
@@ -78,9 +85,9 @@ public class Player : MonoBehaviour
         if (!isInvincible)
         {
             health.value -= _damage;
-            AudioManager.instance.Play("GetHit");
+            AudioManager.instance.PlaySfx("GetHit");
             CameraShaker.Instance.ShakeOnce(5, 4, .1f, .1f);
-            controller.KnockBack(_knockbackForce);
+            controller.KnockBack();
             isInvincible = true;
             StartCoroutine(Flashing());
         }
@@ -106,12 +113,12 @@ public class Player : MonoBehaviour
     public void ActivePlayerInput(bool active)
     {
         // Weapon
-        inventory.GetCurrent().enabled = active;
-        inventory.GetCurrent().canSwitch = active;
+        shootAndRotateBehaviour.enabled = active;
+        weaponSwitching.enabled = false;
 
         //Movement
         controller.enabled = active;
-        GetComponent<PlayerCombat>().enabled = active;
+        combat.enabled = active;
     }
 
     // Call this to teleport (Play tp animation -> Animation event get called -> tpDelegate)

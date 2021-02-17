@@ -27,7 +27,7 @@ public class Trap : ElementalItem
     {
         if (collision.CompareTag("Enemy"))
         {
-            AddStateToEnemy(collision.GetComponent<Enemies>(), state);
+            AddStateToEnemy(collision.GetComponent<Enemy>(), state);
         }
     }
 
@@ -35,7 +35,7 @@ public class Trap : ElementalItem
     {
         if (collision.CompareTag("Enemy") && Time.time >= timeBtwDamageValue)
         {
-            Enemies enemy = collision.GetComponent<Enemies>();
+            Enemy enemy = collision.GetComponent<Enemy>();
             enemy.Hurt(damage, Vector2.zero, 0);
             timeBtwDamageValue = Time.time + timeBtwDamage;
         }

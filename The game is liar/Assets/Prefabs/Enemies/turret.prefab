@@ -42,7 +42,6 @@ GameObject:
   - component: {fileID: 6691860176887862450}
   - component: {fileID: 6691860176887862453}
   - component: {fileID: 4491743802085791087}
-  - component: {fileID: 646520954}
   m_Layer: 10
   m_Name: turret
   m_TagString: Enemy
@@ -96,15 +95,42 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   health: 30
   damage: 50
-  dropRate: 0.2
-  moneyDropRange: {x: 1, y: 2}
-  enemyType: 2
+  speed: 0
+  attackRange: 0
+  distanceToChase: 0
+  moneyDropRange:
+    probability: 0
+    min: 0
+    max: 0
   matWhite: {fileID: 2100000, guid: a52db8d2e3bb7c84f9a724b122d7baa7, type: 2}
+  hasSpawnVFX: 1
   explosionParitcle: {fileID: 8704956847754461958, guid: 3181c8d874d60414f9701b433c293e7d,
     type: 3}
   spawnEffect: {fileID: 6779077847636645100, guid: 36d7ac47e5d4fa94a978f44e53c8b68a,
     type: 3}
-  hasSpawnVFX: 1
+  startState: {fileID: 0}
+  optionalState: {fileID: 0}
+  canDash: 0
+  canShoot: 0
+  canFlash: 0
+  curveMove: 0
+  canSplit: 0
+  canExplode: 0
+  damageWhenCollide: 0
+  dashSpeed: 0
+  shootPos: {x: 0, y: 0, z: 0}
+  triggerMat: {fileID: 0}
+  flashTime: 0
+  timeBtwFlashes: 0
+  curvePoint: {fileID: 0}
+  numberOfSplits: 2
+  splitEnemy: {fileID: 0}
+  explodeWhenDie: 0
+  explodeWhenInRange: 0
+  explodeParticle: {fileID: 0}
+  explodeRange: 0
+  explodeTime: 0
+  explodeSound: 
 --- !u!50 &4491743802085791087
 Rigidbody2D:
   serializedVersion: 4
@@ -126,28 +152,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!114 &646520954
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6691860176887862441}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5a692137e0bd90749a23d647a229941a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  speed: 0
-  enemyType: 0
-  attackRange: 15
-  knockbackTime: 0
-  hitEffect: {fileID: 2583980454224756823, guid: 7476d22f9e4460845be55019e11f9858,
-    type: 3}
-  bullet: TurretBullet
-  timeBtwShots: 1
-  shootPos: {fileID: 6691860176307009593}
-  rotOffset: 0
 --- !u!1 &6691860177568762144
 GameObject:
   m_ObjectHideFlags: 0

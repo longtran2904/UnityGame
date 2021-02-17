@@ -44,7 +44,6 @@ GameObject:
   - component: {fileID: 6353579188007680604}
   - component: {fileID: 6353579188007680603}
   - component: {fileID: 6353579188007680602}
-  - component: {fileID: 1306638962}
   m_Layer: 10
   m_Name: jellyfish
   m_TagString: Enemy
@@ -188,34 +187,39 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   health: 50
   damage: 40
-  dropRate: 0.4
-  moneyDropRange: {x: 2, y: 3}
-  enemyType: 4
+  speed: 0
+  attackRange: 0
+  distanceToChase: 0
+  moneyDropRange:
+    probability: 0
+    min: 0
+    max: 0
   matWhite: {fileID: 2100000, guid: a52db8d2e3bb7c84f9a724b122d7baa7, type: 2}
+  hasSpawnVFX: 1
   explosionParitcle: {fileID: 8704956847754461958, guid: 3181c8d874d60414f9701b433c293e7d,
     type: 3}
   spawnEffect: {fileID: 6779077847636645100, guid: 36d7ac47e5d4fa94a978f44e53c8b68a,
     type: 3}
-  hasSpawnVFX: 1
---- !u!114 &1306638962
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6353579188007680597}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 672ee57a686f4704ca8023979594befa, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  speed: 300
-  enemyType: 0
-  attackRange: 15
-  knockbackTime: 0.4
-  hitEffect: {fileID: 2583980454224756823, guid: 7476d22f9e4460845be55019e11f9858,
-    type: 3}
-  bullet: JellyBullet
-  timeBtwShots: 0.5
-  shootPos: {fileID: 6353579187994963945}
-  rotOffset: 0
+  startState: {fileID: 0}
+  optionalState: {fileID: 0}
+  canDash: 0
+  canShoot: 0
+  canFlash: 0
+  curveMove: 0
+  canSplit: 0
+  canExplode: 0
+  damageWhenCollide: 0
+  dashSpeed: 0
+  shootPos: {x: 0, y: 0, z: 0}
+  triggerMat: {fileID: 0}
+  flashTime: 0
+  timeBtwFlashes: 0
+  curvePoint: {fileID: 0}
+  numberOfSplits: 2
+  splitEnemy: {fileID: 0}
+  explodeWhenDie: 0
+  explodeWhenInRange: 0
+  explodeParticle: {fileID: 0}
+  explodeRange: 0
+  explodeTime: 0
+  explodeSound: 

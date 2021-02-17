@@ -9,15 +9,20 @@ public class PlayerController : MonoBehaviour
 {    
     public float speed;
     public float fallSpeed;
-    private Rigidbody2D rb;
+    public BoolReference onGround; // false if the player is upside down
+    public ParticleSystem dust;
+
+    public SoundCue footStep;
+    public SoundCue touchGround;
+
     private float moveInput;
-    bool isGrounded;
+    private float lastMoveInput;
+    private bool isGrounded;
+    private Rigidbody2D rb;
     private SpriteRenderer sprite;
     private Animator anim;    
-    public BoolReference onGround; // false if the player is upside down
-    Camera mainCamera;
-    Vector3 mousePos;
-    public ParticleSystem dust;
+    private Camera mainCamera;
+    private Vector3 mousePos;
 
     // Jump and ground pressed remember
     public float jumpPressedRemember;
@@ -32,8 +37,6 @@ public class PlayerController : MonoBehaviour
     // Knock back
     public float knockbackTime;
     private float knockbackCounter;
-    private Vector2 knockbackForce;
-    private bool knockback;
 
     // Start is called before the first frame update
     void Start()
@@ -55,17 +58,25 @@ public class PlayerController : MonoBehaviour
     {
         mousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
         moveInput = Input.GetAxisRaw("Horizontal");
-        if (moveInput != 0)
+
+        if (moveInput != lastMoveInput)
         {
-            anim.SetBool("isRunning", true);
+            if (moveInput != 0)
+                anim.SetBool("isRunning", true);
+            else
+                anim.SetBool("isRunning", false);
         }
-        else
-        {
-            anim.SetBool("isRunning", false);
-        }
+
+        if (moveInput != 0 && isGrounded)
+            AudioManager.instance.PlaySfx(footStep);
+
+        if (PauseMenu.isGamePaused) return;
+        transform.eulerAngles = new Vector3(onGround.value ? 0 : 180, mousePos.x - transform.position.x > 0 ? 0 : 180, 0);
+
         GroundCheck();
-        FlipPlayer();
         Jump();
+
+        lastMoveInput = moveInput;
     }
 
     void GroundCheck()
@@ -85,57 +96,23 @@ public class PlayerController : MonoBehaviour
         if (groundCheck && groundCheck.transform.tag == "Ground")
         {
             groundRemember = groundRememberTime;
-            if (isGrounded == false)
+            if (isGrounded == false) // When fall and touch ground
             {
                 dust.Play();
+                AudioManager.instance.PlaySfx(touchGround);
                 isGrounded = true;
             }
         }
         else
-        {
             isGrounded = false;
-        }
-    }
-
-    void FlipPlayer()
-    {
-        if (PauseMenu.isGamePaused)
-        {
-            return;
-        }
-        if (onGround.value)
-        {
-            // Normal
-            if (mousePos.x - transform.position.x > 0)
-            {
-                transform.eulerAngles = new Vector3(0, 0, 0);
-            }
-            else if (mousePos.x - transform.position.x < 0)
-            {
-                transform.eulerAngles = new Vector3(0, 180, 0);
-            }
-        }
-        else
-        {
-            // Upside down
-            if (mousePos.x - transform.position.x > 0)
-            {
-                transform.eulerAngles = new Vector3(0, 180, 180);
-            }
-            else if (mousePos.x - transform.position.x < 0)
-            {
-                transform.eulerAngles = new Vector3(0, 0, 180);
-            }
-        }        
     }
 
     void Jump()
     {
         jumpPressedRememberValue -= Time.deltaTime;
         if (Input.GetButtonDown("Jump"))
-        {
             jumpPressedRememberValue = jumpPressedRemember;
-        }
+
         if (jumpPressedRememberValue > 0 && groundRemember > 0)
         {
             jumpPressedRememberValue = 0;
@@ -143,7 +120,7 @@ public class PlayerController : MonoBehaviour
             rb.gravityScale *= -1;
             dust.Play();
             Invoke("SwitchTop", .1f);
-            AudioManager.instance.Play("PlayerJump");
+            AudioManager.instance.PlaySfx("PlayerJump");
         }
     }
 
@@ -155,39 +132,16 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        // Knock the player back
-        if (knockbackCounter < 0)
-        {
-            knockback = false;
-        }
-        if (knockback == false)
-        {
-            rb.velocity = new Vector2(0, rb.velocity.y);
-            knockback = true;
-        }
-        if (knockbackCounter > 0.5 * knockbackTime)
-        {
-            rb.velocity = new Vector2(knockbackForce.x, knockbackForce.y) * Time.deltaTime;
+        if (knockbackCounter > 0)
+            moveInput = 0;
+        else
             knockbackCounter -= Time.deltaTime;
-            return;
-        }
-        else if (knockbackCounter > 0)
-        {
-            rb.velocity = new Vector2(knockbackForce.x, rb.velocity.y + transform.up.y * Physics2D.gravity.y * (500 - 1) * Time.deltaTime) * Time.deltaTime;
-            knockbackCounter -= Time.deltaTime;
-            return;
-        }
         rb.velocity = new Vector2(moveInput * speed, rb.velocity.y);
     }
 
-    public void KnockBack(Vector2 _knockbackForce)
+    public void KnockBack()
     {
-        if (!groundCheck)
-        {
-            return;
-        }
         knockbackCounter = knockbackTime;
-        knockbackForce = _knockbackForce;
-        rb.velocity = _knockbackForce;
+        rb.velocity = Vector2.zero;
     }
 }

@@ -63,18 +63,18 @@ public abstract class Item : MonoBehaviour
         Destroy(explodeObj, lifeTime);
     }
 
-    protected Enemies[] GetAllNearbyEnemies()
+    protected Enemy[] GetAllNearbyEnemies()
     {
         Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, range, LayerMask.GetMask("Enemy"));
-        Enemies[] enemies = new Enemies[colliders.Length];
+        Enemy[] enemies = new Enemy[colliders.Length];
         for (int i = 0; i < colliders.Length; i++)
         {
-            enemies[i] = colliders[i].GetComponent<Enemies>();
+            enemies[i] = colliders[i].GetComponent<Enemy>();
         }
         return enemies;
     }
 
-    protected Enemies GetNearestEnemy(Enemies[] enemies)
+    protected Enemy GetNearestEnemy(Enemy[] enemies)
     {
         int best = 0;
         float closestRange = Vector2.SqrMagnitude(enemies[0].transform.position - transform.position);
@@ -90,7 +90,7 @@ public abstract class Item : MonoBehaviour
         return enemies[best];
     }
 
-    protected (Enemies enemy, float range) GetNearestEnemyAndRange(Enemies[] enemies)
+    protected (Enemy enemy, float range) GetNearestEnemyAndRange(Enemy[] enemies)
     {
         int best = 0;
         float closestRange = Vector2.SqrMagnitude(enemies[0].transform.position - transform.position);
@@ -108,7 +108,7 @@ public abstract class Item : MonoBehaviour
 
     protected void DamageEnemiesInRange()
     {
-        foreach (Enemies enemy in GetAllNearbyEnemies())
+        foreach (Enemy enemy in GetAllNearbyEnemies())
         {
             enemy.Hurt(damage, Vector2.zero, 0);
         }

@@ -13,8 +13,6 @@ GameObject:
   - component: {fileID: 1454653871250035396}
   - component: {fileID: 1454653871250035406}
   - component: {fileID: 1454653871250035407}
-  - component: {fileID: 1454653871250035392}
-  - component: {fileID: 1454653871250035393}
   - component: {fileID: 317309692}
   m_Layer: 10
   m_Name: BigSlime
@@ -153,48 +151,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
---- !u!114 &1454653871250035392
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1454653871250035397}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aff511cd378e6e9409dbecbfbff3bb47, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  health: 5
-  damage: 30
-  moneyDropRange:
-    probability: 0.5
-    min: 1
-    max: 2
-  matWhite: {fileID: 2100000, guid: a52db8d2e3bb7c84f9a724b122d7baa7, type: 2}
-  explosionParitcle: {fileID: 8704956847754461958, guid: 3181c8d874d60414f9701b433c293e7d,
-    type: 3}
-  spawnEffect: {fileID: 6779077847636645100, guid: 36d7ac47e5d4fa94a978f44e53c8b68a,
-    type: 3}
-  splitSlime: {fileID: 3481247680417984624, guid: 8786a304cf3a9e844a4eaec56b4a6379,
-    type: 3}
---- !u!114 &1454653871250035393
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1454653871250035397}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3572c76a1ac2b1d4e8b62ceed8bc16d5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  speed: 20
-  attackRange: 10
-  defaultMaterial: {fileID: 0}
-  knockbackTime: 0
-  timeBtwJumps: 2
 --- !u!114 &317309692
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -7,13 +7,13 @@ public class Projectile : MonoBehaviour, IPooledObject
 {
     public float speed;
     public float timer;
-    private Rigidbody2D rb;
+    protected Rigidbody2D rb;
 
-    private int damage;
-    private float knockbackForce;
-    private float knockbackTime;
-    private bool isCritical;
-    private bool isEnemy;
+    protected int damage;
+    protected float knockbackForce;
+    protected float knockbackTime;
+    protected bool isCritical;
+    protected bool isEnemy;
     public GameObject hitEffect;
 
     // State for enemy
@@ -22,7 +22,7 @@ public class Projectile : MonoBehaviour, IPooledObject
     public bool canTouchGround; // can go through wall and grounds
     public bool canTouchPlayer; // go through player and still damage him
     
-    public void OnObjectSpawn()
+    public virtual void OnObjectSpawn()
     {
         rb = GetComponent<Rigidbody2D>();
         rb.velocity = transform.right * speed;
@@ -67,56 +67,39 @@ public class Projectile : MonoBehaviour, IPooledObject
         HitCollider(collision.collider);
     }
 
-    void HitCollider(Collider2D collision)
+    protected virtual void HitCollider(Collider2D collision)
     {
-        if (hitEffect)
-        {
-            hitEffect = Instantiate(hitEffect, transform.position, transform.rotation);
-            Destroy(hitEffect, hitEffect.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).length);
-        }
+        if (hitEffect) Instantiate(hitEffect, transform.position, transform.rotation);
 
-        if (collision.tag == "Enemy" && !isEnemy)
+        if (collision.CompareTag("Enemy") && !isEnemy)
         {
-            HitEnemy(collision);
+            Hit(collision, x => {
+                Enemy enemy = x.GetComponent<Enemy>();
+                Vector2 knockbackForce = (-transform.position + enemy.transform.position).normalized * this.knockbackForce;
+                enemy.Hurt(damage, knockbackForce, knockbackTime);
+                if (state != null)
+                    StateManager.AddStateToEnemy(enemy, state);
+            }, true);
         }
-        else if (collision.tag == "Player" && isEnemy)
+        else if (collision.CompareTag("Player") && isEnemy)
         {
-            HitPlayer(collision);
+            Hit(collision, x => x.GetComponent<Player>().Hurt(damage, knockbackForce * (collision.transform.position - transform.position).normalized), false, canTouchPlayer);
         }
-        else if (collision.tag == "Boss" && !isEnemy)
+        else if (collision.CompareTag("Boss") && !isEnemy)
         {
-            HitBoss(collision);
+            Hit(collision, x => x.GetComponent<Boss>().Hurt(damage), true);
         }
-        if (collision.tag == "Ground" && !canTouchGround)
+        if (collision.CompareTag("Ground") && !canTouchGround)
         {
+            AudioManager.instance.PlaySfx("HitWall");
             gameObject.SetActive(false);
         }
     }
 
-    private void HitBoss(Collider2D collision)
+    void Hit(Collider2D collision, Action<Collider2D> hurtDelegate, bool spawnPopup, bool setActive = false)
     {
-        collision.GetComponent<Boss>().GetHurt(damage);
-        DamagePopup.Create(collision.transform.position, damage, isCritical);
-        gameObject.SetActive(false);
-    }
-
-    private void HitPlayer(Collider2D collision)
-    {
-        collision.GetComponent<Player>().Hurt(damage, knockbackForce * (collision.transform.position - transform.position).normalized);
-        if (!canTouchPlayer)
-        {
-            gameObject.SetActive(false);
-        }
-    }
-
-    private void HitEnemy(Collider2D collision)
-    {
-        Enemies enemy = collision.GetComponent<Enemies>();
-        Vector2 knockbackForce = (-transform.position + enemy.transform.position).normalized * this.knockbackForce;
-        enemy.Hurt(damage, knockbackForce, knockbackTime);
-        DamagePopup.Create(collision.transform.position, damage, isCritical);
-        gameObject.SetActive(false);
-        if (state != null)
-            StateManager.AddStateToEnemy(enemy, state);
+        if (spawnPopup) DamagePopup.Create(collision.transform.position, damage, isCritical);
+        hurtDelegate?.Invoke(collision);
+        gameObject.SetActive(setActive);
     }
 }

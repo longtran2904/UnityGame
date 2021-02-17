@@ -13,9 +13,9 @@ GameObject:
   - component: {fileID: 8883796787604040116}
   - component: {fileID: 1903307575871816147}
   - component: {fileID: 4749275045796047229}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Shockwave
-  m_TagString: Untagged
+  m_TagString: Bullet
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -145,9 +145,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 20
   timer: 5
-  damage: 0
-  knockbackForce: {x: 0, y: 0}
-  isEnemy: 1
+  hitEffect: {fileID: 0}
   canTouchGround: 1
   canTouchPlayer: 1
-  hitEffect: {fileID: 0}

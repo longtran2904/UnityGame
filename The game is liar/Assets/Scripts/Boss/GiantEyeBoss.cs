@@ -46,29 +46,24 @@ public class GiantEyeBoss : Boss
         }
     }
 
-    public override void GetHurt(int _damage)
+    public override void Hurt(int _damage)
     {
         if (health <= 0)
         {
             if (playSound == true)
             {
-                AudioManager.instance.Play("DefeatBoss");
+                AudioManager.instance.PlaySfx("DefeatBoss");
                 playSound = false;
             }
         }
-
         if (isInvulnerable == true || health <= 0)
         {
             return;
         }
-
         health -= _damage;
-
         sr.material = whiteMat;
-
         Invoke("ResetMaterial", .1f);
-
-        AudioManager.instance.Play("GetHit");
+        AudioManager.instance.PlaySfx("GetHit");
     }
 
     void ResetMaterial()
@@ -78,25 +73,18 @@ public class GiantEyeBoss : Boss
 
     protected override void Die()
     {
-        AudioManager.instance.Play("BossExplosion");
-
+        AudioManager.instance.PlaySfx("BossExplosion");
         CameraShaker.Instance.ShakeOnce(8, 5, 0.1f, 0.5f);
-
         Instantiate(explosion, transform.position, Quaternion.identity);
-
-        AudioManager.instance.Stop("BossFight");
-
+        AudioManager.instance.StopMusic();
         Invoke("EndDemo", 1);
-
         gameObject.SetActive(false);
-
         Destroy(gameObject, 1);
     }
 
     void EndDemo()
     {
         endScreen.SetActive(true);
-
         Time.timeScale = 0;
     }
 

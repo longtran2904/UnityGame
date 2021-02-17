@@ -5,14 +5,30 @@ using System.Text;
 
 public class WeaponManager : MonoBehaviour
 {
-    Weapon weapon;
-    Weapon lastWeapon;
     public GameObject textBox;
     private GameObject textboxObj;
-    Vector3 offset;
-    float delay = .5f;
-    public WeaponInventory inventory;
+
+    private Weapon weapon;
+    private Weapon lastWeapon;
+
+    public float delay = .5f;
     public IntReference playerMoney;
+    public WeaponInventory startInventory;
+
+    private Player player;
+    private Vector3 offset;
+
+    private void Awake()
+    {
+        player = GetComponentInParent<Player>();
+        foreach (Weapon item in startInventory.items)
+        {
+            Weapon gun = Instantiate(item, transform.position, Quaternion.identity);
+            gun.transform.parent = transform;
+            gun.transform.localPosition = item.posOffset;
+            player.inventory.items.Add(gun);
+        }
+    }
 
     // Update is called once per frame
     void LateUpdate()
@@ -75,7 +91,7 @@ public class WeaponManager : MonoBehaviour
             }
             else
             {
-                AudioManager.instance.Play("Buy");
+                AudioManager.instance.PlaySfx("Buy");
                 playerMoney.value -= weapon.stat.price;
             }
         }
@@ -93,7 +109,7 @@ public class WeaponManager : MonoBehaviour
         {
             component.enabled = true;
         }
-        inventory.AddAndSetCurrent(weapon);
+        player.inventory.AddAndSetCurrent(weapon);
         delay = .5f;
     }
 
@@ -104,12 +120,13 @@ public class WeaponManager : MonoBehaviour
 
         dropWeapon.AddComponent<BoxCollider2D>();
         Rigidbody2D rb = dropWeapon.AddComponent<Rigidbody2D>();
-
         rb.gravityScale = 5;
         rb.transform.rotation = transform.rotation;
         rb.constraints = RigidbodyConstraints2D.FreezeRotation;
         rb.velocity = new Vector2(transform.right.x, 1) * Vector2.one.normalized * 10;
 
-        dropWeapon.GetComponent<Weapon>().enabled = false;
+        Weapon drop = dropWeapon.GetComponent<Weapon>();
+        drop.enabled = false;
+        player.inventory.Remove(drop);
     }
 }

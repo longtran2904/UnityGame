@@ -19,7 +19,7 @@ public class Chest : MonoBehaviour
         {
             GameObject dropItem = Instantiate(spawnItem, transform.position, Quaternion.identity);
             dropItem.GetComponent<Rigidbody2D>().velocity = MathUtils.RandomVector2().normalized * 10;
-            AudioManager.instance.Play("");
+            AudioManager.instance.PlaySfx("");
             anim.Play("");
         }
     }

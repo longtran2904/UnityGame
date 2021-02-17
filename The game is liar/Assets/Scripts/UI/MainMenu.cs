@@ -4,13 +4,13 @@ public class MainMenu : MonoBehaviour
 {
     void Awake()
     {
-        AudioManager.instance.StopAll();
-        AudioManager.instance.Play("8bit");
+        AudioManager.instance.StopMusic();
+        AudioManager.instance.PlaySfx("8bit");
     }
 
     public void PlayGame()
     {
-        AudioManager.instance.Play("Select");
+        AudioManager.instance.PlaySfx("Select");
         GameManager.instance.LoadGame((int)SceneIndexes.ROOM, true);
     }
 

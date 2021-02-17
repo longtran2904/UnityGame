@@ -29,21 +29,21 @@ public class EnemySpawner : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Enemies.numberOfEnemiesAlive <= 0 && numberOfWaves > 0)
+        if (Enemy.numberOfEnemiesAlive <= 0 && numberOfWaves > 0)
         {
-            Enemies.numberOfEnemiesAlive = 0;
+            Enemy.numberOfEnemiesAlive = 0;
             numberOfEnemiesToSpawn = Random.Range(minEnemiesToSpawn, maxEnemiesToSpawn + 1);
             SpawnEnemy(numberOfEnemiesToSpawn);
             numberOfWaves--;
         }
-        else if (Enemies.numberOfEnemiesAlive == 0)
+        else if (Enemy.numberOfEnemiesAlive == 0)
         {
             endWaves.Raise();
             Destroy(gameObject);
         }
 
         // For cart scene
-        if (teleportToNextScene && numberOfWaves <= 0 && Enemies.numberOfEnemiesAlive <= 0)
+        if (teleportToNextScene && numberOfWaves <= 0 && Enemy.numberOfEnemiesAlive <= 0)
         {
             if (hasPlay)
             {

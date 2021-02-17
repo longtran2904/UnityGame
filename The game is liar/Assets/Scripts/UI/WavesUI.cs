@@ -17,7 +17,7 @@ public class WavesUI : MonoBehaviour
     // Update is called once per frame
     void LateUpdate()
     {
-        if (currentEnemies == Enemies.numberOfEnemiesAlive)
+        if (currentEnemies == Enemy.numberOfEnemiesAlive)
             return;
         if (!currentSpawner)
         {
@@ -29,9 +29,9 @@ public class WavesUI : MonoBehaviour
         builder.Append("Waves: ").Append(numberOfWaves).Append("/").Append(startWaves);
         numberOfWavesText.text = builder.ToString();
         builder.Clear();
-        builder.Append("Number of enemies left: ").Append(Enemies.numberOfEnemiesAlive);
+        builder.Append("Number of enemies left: ").Append(Enemy.numberOfEnemiesAlive);
         numberOfEnemiesText.text = builder.ToString();
-        currentEnemies = Enemies.numberOfEnemiesAlive;
+        currentEnemies = Enemy.numberOfEnemiesAlive;
         if (currentEnemies == 0 && currentSpawner.numberOfWaves <= 0)
         {
             gameObject.SetActive(false);
@@ -42,7 +42,7 @@ public class WavesUI : MonoBehaviour
     {
         currentSpawner = currentRoom.value.RoomTemplateInstance.transform.Find("Enemies")?.GetComponent<EnemySpawner>();
         if (currentSpawner) startWaves = currentSpawner.numberOfWaves;
-        currentEnemies = Enemies.numberOfEnemiesAlive;
+        currentEnemies = Enemy.numberOfEnemiesAlive;
         gameObject.SetActive(true);
     }
 }

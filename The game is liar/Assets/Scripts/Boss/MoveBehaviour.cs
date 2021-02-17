@@ -45,8 +45,8 @@ public class MoveBehaviour : StateMachineBehaviour
         dashTimeValue = dashTime;
         attackTimeValue = attackTime;
         chargeTimeValue = chargeTime;
-        AudioManager.instance.Stop("8bit");
-        AudioManager.instance.Play("BossFight");
+        AudioManager.instance.StopMusic();
+        AudioManager.instance.PlayMusic("BossFight");
         boss.isInvulnerable = false;
     }
 
@@ -71,20 +71,14 @@ public class MoveBehaviour : StateMachineBehaviour
             {
                 isAttack = false;
             }
-
             dashTimeValue -= Time.deltaTime;
-
             ClampPosition();
-
             return;
         }
 
         boss.LookAtPlayer();
-
         Vector2 newPos = Vector2.MoveTowards(animator.transform.position, player.position, speed * Time.fixedDeltaTime);
-
         rb.MovePosition(newPos);
-
         ClampPosition();
     }
 
@@ -98,7 +92,6 @@ public class MoveBehaviour : StateMachineBehaviour
         }
 
         chargeTimeValue -= Time.deltaTime;
-
         rb.velocity = Vector2.zero;
 
         if (sr.material.color == chargeMat.color)
@@ -122,19 +115,12 @@ public class MoveBehaviour : StateMachineBehaviour
     void Attack()
     {
         Vector2 target = player.transform.position - rb.transform.position;
-
         rb.velocity = target.normalized * dashSpeed;
-
         attackTimeValue = attackTime + Time.time;
-
         isAttack = true;
-
         dashTimeValue = dashTime;
-
         chargeTimeValue = chargeTime;
-
         boss.damage = chargeDamage;
-
         ClampPosition();
     }
 
@@ -145,9 +131,7 @@ public class MoveBehaviour : StateMachineBehaviour
             boss.isInvulnerable = false;
             _anim.SetBool("isEnraged", true);
         }
-
         rb.MovePosition(Vector2.MoveTowards(_anim.transform.position, boss.enragedPos.position, speed * Time.fixedDeltaTime));
-
         boss.isInvulnerable = true;
     }
 

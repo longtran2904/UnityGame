@@ -85,19 +85,6 @@ public static class MathUtils
     }
     #endregion
 
-    #region Bool
-    public static bool RandomBool()
-    {
-        return Random.value <= 0.5f;
-    }
-
-    public static bool RandomBool(float prob)
-    {
-        prob = Mathf.Clamp(prob, 0, 1);
-        return Random.value < prob;
-    }
-    #endregion
-
     #region Vector2Int
     public static Vector2Int ToVector2Int(this Vector2 v, bool rounded = false)
     {
@@ -233,8 +220,8 @@ public static class MathUtils
         return p;
     }
 
-    // If offset == 0 then the first point is on the most right
-    public static Vector2[] GeneratePointsOnCircle(Vector2 center, int numberOfPoints, float radius = 1, float offset = 0)
+    // If offset == 0 then the first point is on the most right and it's anti-clockwise
+    public static Vector2[] GenerateCircleOutline(Vector2 center, int numberOfPoints, float radius = 1, float offset = 0)
     {
         Vector2[] points = new Vector2[numberOfPoints];
         float deltaAngle = 360f / numberOfPoints * Mathf.Deg2Rad + offset;
@@ -255,6 +242,137 @@ public static class MathUtils
     public static float GetDragFromAcceleration(float aAcceleration, float aFinalVelocity)
     {
         return GetDrag(aAcceleration * Time.fixedDeltaTime, aFinalVelocity);
+    }
+    #endregion
+
+    #region Random
+    public static bool RandomBool()
+    {
+        return Random.value <= 0.5f;
+    }
+
+    /// <param name="prob">The probability of return true. Clamp between 0-1</param>
+    public static bool RandomBool(float prob)
+    {
+        prob = Mathf.Clamp(prob, 0, 1);
+        return Random.value < prob;
+    }
+
+    /// <summary>
+    /// Choose random elements of an array. This will create and return a new array which can has memory allocation.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="numRequired">The number of elements to choose. If this is greater than the array's length then all the array will be choose.</param>
+    /// <param name="array">The input array to copy from.</param>
+    /// <returns>Return a new array that contain all the chosen elements.</returns>
+    public static T[] ChooseSet<T>(int numRequired, T[] array)
+    {
+        if (numRequired >= array.Length)
+            return (T[])array.Clone();
+
+        T[] result = new T[numRequired];
+        int numToChoose = numRequired;
+        for (int numLeft = array.Length; numLeft > 0; numLeft--)
+        {
+            if (numLeft <= numToChoose)
+            {
+                System.Array.Copy(array, 0, result, 0, numLeft);
+            }
+
+            float prob = (float)numToChoose / numLeft;
+            if (Random.value <= prob)
+            {
+                numToChoose--;
+                result[numToChoose] = array[numLeft - 1];
+                if (numToChoose == 0)
+                    break;
+            }
+        }
+        return result;
+    }
+
+    /// <summary>
+    /// Choose random elements of an array and copy it to the results array. This is more efficient than ChooseSet because it doesn't has any memory allocation.
+    /// Note that it doesn't resize the results array so when it filled up the results array it will return.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="numRequired">The number of elements to choose. If this is greater than the array's length then all the array will be choose.</param>
+    /// <param name="array">The array to copy from.</param>
+    /// <param name="results">The array to copy the results to.</param>
+    /// <returns>The number of chosen elements. This will be the input array's length if numRequired is greater than the array's length.</returns>
+    public static int ChooseSetNonAlloc<T>(int numRequired, T[] array, T[] results)
+    {
+        // When numRequired >= array.length
+        if (numRequired >= array.Length)
+        {
+            for (int i = 0; i < results.Length; i++)
+            {
+                if (i == array.Length)
+                    return i;
+                results[i] = array[i];
+            }
+            return results.Length;
+        }
+
+        int numToChoose = numRequired;
+        int numHas = 0; // The number of chosen elements. This is the return value
+        int offset = Mathf.Clamp(numToChoose - results.Length, 0, numToChoose); // offset of the index if numToChooose is greater than results.Length
+
+        for (int numLeft = array.Length; numLeft > 0; numLeft--)
+        {
+            // When numLeft <= numToChoose just copy all the remaining elements and return
+            if (numLeft <= numToChoose)
+            {
+                for (int i = numLeft - 1; i >= 0; i--)
+                {
+                    // This is when the results array has been filled up
+                    if (i - offset <= 0)
+                        return numHas + numLeft - i;
+                    results[i - offset] = array[i];
+                }
+                return numHas + numLeft;
+            }
+
+            float prob = (float)numToChoose / numLeft;
+            if (Random.value <= prob)
+            {
+                numToChoose--;
+                int resultsIndex = numToChoose - offset;
+
+                if (resultsIndex == 0) // This is when the results array has been filled up
+                {
+                    results[resultsIndex] = array[numLeft - 1];
+                    return numHas++;
+                }
+
+                results[resultsIndex] = array[numLeft - 1];
+                if (numToChoose == 0)
+                    break;
+                numHas++;
+            }
+        }
+        return numHas;
+    }
+
+    /// <summary>
+    /// Return a random index to the array
+    /// </summary>
+    public static int Choose(float[] probs)
+    {
+        float total = 0;
+        foreach (float elem in probs)
+        {
+            total += elem;
+        }
+        float randomPoint = Random.value * total;
+        for (int i = 0; i < probs.Length; i++)
+        {
+            if (randomPoint < probs[i])
+                return i;
+            else
+                randomPoint -= probs[i];
+        }
+        return probs.Length - 1;
     }
     #endregion
 

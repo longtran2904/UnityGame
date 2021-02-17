@@ -12,6 +12,8 @@ TagManager:
   - SellWeapon
   - Weapon
   - NPC
+  - BounceMat
+  - Bullet
   layers:
   - Default
   - TransparentFX

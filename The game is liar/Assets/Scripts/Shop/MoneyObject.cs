@@ -27,7 +27,7 @@ public class MoneyObject : MonoBehaviour, IPooledObject
     {
         if (collision.collider.CompareTag("Player"))
         {
-            AudioManager.instance.Play("PickupCoin");
+            AudioManager.instance.PlaySfx("PickupCoin");
             playerMoney.value += addMoney.value;
             gameObject.SetActive(false);
         }

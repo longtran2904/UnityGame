@@ -98,17 +98,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stat: {fileID: 11400000, guid: 8b8889a376d2818478757ab37556daeb, type: 2}
-  offset: 0
-  projectilePrefab: {fileID: 2418961360220588656, guid: eaeaa087048d7f545be3cd97d91fee0f,
-    type: 3}
-  shotPos: {fileID: 4537409656322948301}
+  shootPos: {fileID: 0}
   muzzleFlash: {fileID: 7286280645786952597}
   muzzelFlashTime: 1
-  burstCount: 0
-  hitEffect: {fileID: 2583980454224756823, guid: 7476d22f9e4460845be55019e11f9858,
-    type: 3}
-  ammoText: {fileID: 0}
-  canSwitch: 1
+  currentAmmo: 0
+  posOffset: {x: 0, y: 0}
 --- !u!1 &4537409656322948300
 GameObject:
   m_ObjectHideFlags: 0
@@ -153,7 +147,6 @@ GameObject:
   - component: {fileID: 4537409656775638671}
   - component: {fileID: 4537409656775638666}
   - component: {fileID: 4537409656775638669}
-  - component: {fileID: 2354978203600053249}
   m_Layer: 10
   m_Name: ShotgunAlien
   m_TagString: Enemy
@@ -307,32 +300,42 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   health: 50
   damage: 30
+  speed: 0
+  attackRange: 0
+  distanceToChase: 0
   moneyDropRange:
     probability: 0
     min: 0
     max: 0
   matWhite: {fileID: 2100000, guid: a52db8d2e3bb7c84f9a724b122d7baa7, type: 2}
+  hasSpawnVFX: 0
   explosionParitcle: {fileID: 8704956847754461958, guid: 3181c8d874d60414f9701b433c293e7d,
     type: 3}
   spawnEffect: {fileID: 6779077847636645100, guid: 36d7ac47e5d4fa94a978f44e53c8b68a,
     type: 3}
---- !u!114 &2354978203600053249
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4537409656775638707}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 223c8467cee547b4d8c5c6147f5b9497, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  speed: 5
-  attackRange: 15
-  defaultMaterial: {fileID: 0}
-  knockbackTime: 0.1
-  weapon: {fileID: 4537409655335211812}
+  startState: {fileID: 0}
+  optionalState: {fileID: 0}
+  canDash: 0
+  canShoot: 0
+  canFlash: 0
+  curveMove: 0
+  canSplit: 0
+  canExplode: 0
+  damageWhenCollide: 0
+  dashSpeed: 0
+  shootPos: {x: 0, y: 0, z: 0}
+  triggerMat: {fileID: 0}
+  flashTime: 0
+  timeBtwFlashes: 0
+  curvePoint: {fileID: 0}
+  numberOfSplits: 2
+  splitEnemy: {fileID: 0}
+  explodeWhenDie: 0
+  explodeWhenInRange: 0
+  explodeParticle: {fileID: 0}
+  explodeRange: 0
+  explodeTime: 0
+  explodeSound: 
 --- !u!1001 &3006636772035941037
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -352,6 +355,26 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6437524722174862673, guid: ca77e67723e7ada4695d5381333d2f84,
         type: 3}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6437524722174862673, guid: ca77e67723e7ada4695d5381333d2f84,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.75
+      objectReference: {fileID: 0}
+    - target: {fileID: 6437524722174862673, guid: ca77e67723e7ada4695d5381333d2f84,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.75
+      objectReference: {fileID: 0}
+    - target: {fileID: 6437524722174862673, guid: ca77e67723e7ada4695d5381333d2f84,
+        type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6437524722174862673, guid: ca77e67723e7ada4695d5381333d2f84,
+        type: 3}
       propertyPath: m_LocalPosition.x
       value: 0.1
       objectReference: {fileID: 0}
@@ -364,6 +387,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalPosition.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6437524722174862673, guid: ca77e67723e7ada4695d5381333d2f84,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6437524722174862673, guid: ca77e67723e7ada4695d5381333d2f84,
         type: 3}
@@ -382,16 +410,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6437524722174862673, guid: ca77e67723e7ada4695d5381333d2f84,
         type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6437524722174862673, guid: ca77e67723e7ada4695d5381333d2f84,
-        type: 3}
-      propertyPath: m_RootOrder
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6437524722174862673, guid: ca77e67723e7ada4695d5381333d2f84,
-        type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
       value: 0
       objectReference: {fileID: 0}
@@ -403,21 +421,6 @@ PrefabInstance:
     - target: {fileID: 6437524722174862673, guid: ca77e67723e7ada4695d5381333d2f84,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6437524722174862673, guid: ca77e67723e7ada4695d5381333d2f84,
-        type: 3}
-      propertyPath: m_LocalScale.x
-      value: 0.75
-      objectReference: {fileID: 0}
-    - target: {fileID: 6437524722174862673, guid: ca77e67723e7ada4695d5381333d2f84,
-        type: 3}
-      propertyPath: m_LocalScale.y
-      value: 0.75
-      objectReference: {fileID: 0}
-    - target: {fileID: 6437524722174862673, guid: ca77e67723e7ada4695d5381333d2f84,
-        type: 3}
-      propertyPath: m_LocalScale.z
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []

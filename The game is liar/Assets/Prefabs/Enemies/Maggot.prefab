@@ -14,7 +14,6 @@ GameObject:
   - component: {fileID: 5709645794468026839}
   - component: {fileID: 5709645794468026836}
   - component: {fileID: 5709645794468026837}
-  - component: {fileID: 5709645794468026834}
   m_Layer: 10
   m_Name: Maggot
   m_TagString: Enemy
@@ -167,28 +166,39 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   health: 10
   damage: 1
-  dropRate: 0.6
-  moneyDropRange: {x: 2, y: 3}
-  enemyType: 0
+  speed: 0
+  attackRange: 0
+  distanceToChase: 0
+  moneyDropRange:
+    probability: 0
+    min: 0
+    max: 0
   matWhite: {fileID: 2100000, guid: a52db8d2e3bb7c84f9a724b122d7baa7, type: 2}
+  hasSpawnVFX: 1
   explosionParitcle: {fileID: 8704956847754461958, guid: 3181c8d874d60414f9701b433c293e7d,
     type: 3}
   spawnEffect: {fileID: 6779077847636645100, guid: 36d7ac47e5d4fa94a978f44e53c8b68a,
     type: 3}
-  hasSpawnVFX: 1
---- !u!114 &5709645794468026834
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5709645794468026846}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 87308de8a8056b84088d04b1ed07cfe0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  speed: 150
-  enemyType: 0
-  attackRange: 0
-  knockbackTime: 0
+  startState: {fileID: 0}
+  optionalState: {fileID: 0}
+  canDash: 0
+  canShoot: 0
+  canFlash: 0
+  curveMove: 0
+  canSplit: 0
+  canExplode: 0
+  damageWhenCollide: 0
+  dashSpeed: 0
+  shootPos: {x: 0, y: 0, z: 0}
+  triggerMat: {fileID: 0}
+  flashTime: 0
+  timeBtwFlashes: 0
+  curvePoint: {fileID: 0}
+  numberOfSplits: 2
+  splitEnemy: {fileID: 0}
+  explodeWhenDie: 0
+  explodeWhenInRange: 0
+  explodeParticle: {fileID: 0}
+  explodeRange: 0
+  explodeTime: 0
+  explodeSound: 

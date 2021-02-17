@@ -3,7 +3,14 @@
 [CreateAssetMenu(menuName = "RuntimeSet/Weapon")]
 public class WeaponInventory : RuntimeSet<Weapon>
 {
-    public int currentWeapon;
+    [HideInInspector] public int currentWeapon;
+    [SerializeField] private int startWeaponIndex;
+
+    protected override void OnEnable()
+    {
+        base.OnEnable();
+        currentWeapon = startWeaponIndex;
+    }
 
     public void AddAndSetCurrent(Weapon weapon)
     {

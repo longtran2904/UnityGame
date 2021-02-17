@@ -74,6 +74,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 310902724418139098, guid: 5c94a61b4cfdce141b132fa7cdb697bc,
         type: 3}
+      propertyPath: stat
+      value: 
+      objectReference: {fileID: 11400000, guid: 2b9194fa2b2ee5c4b996385da5671d41,
+        type: 2}
+    - target: {fileID: 310902724418139098, guid: 5c94a61b4cfdce141b132fa7cdb697bc,
+        type: 3}
       propertyPath: canReload
       value: 0
       objectReference: {fileID: 0}
@@ -101,7 +107,22 @@ PrefabInstance:
     - target: {fileID: 310902724418139100, guid: 5c94a61b4cfdce141b132fa7cdb697bc,
         type: 3}
       propertyPath: m_Name
-      value: TrickshotGun
+      value: TrickshotGun Variant
+      objectReference: {fileID: 0}
+    - target: {fileID: 310902724418139101, guid: 5c94a61b4cfdce141b132fa7cdb697bc,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 310902724552470230, guid: 5c94a61b4cfdce141b132fa7cdb697bc,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 310902724552470230, guid: 5c94a61b4cfdce141b132fa7cdb697bc,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.25
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5c94a61b4cfdce141b132fa7cdb697bc, type: 3}

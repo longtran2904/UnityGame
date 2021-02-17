@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 7372077807521796568}
   m_Layer: 2
   m_Name: GunEffect_0
-  m_TagString: Untagged
+  m_TagString: Bullet
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -99,11 +99,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 20
   timer: 10
-  damage: 1
-  knockbackForce: {x: 0, y: 0}
-  isEnemy: 0
+  hitEffect: {fileID: 3092298337086151100, guid: b464239d2df71e34a813cc57e7c2a3e1,
+    type: 3}
   canTouchGround: 0
-  hitEffect: {fileID: 0}
+  canTouchPlayer: 0
 --- !u!50 &1800032435771479787
 Rigidbody2D:
   serializedVersion: 4

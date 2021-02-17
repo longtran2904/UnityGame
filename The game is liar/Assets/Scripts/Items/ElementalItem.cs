@@ -8,15 +8,15 @@ public class ElementalItem : Item
 
     protected override void Use() { }
 
-    protected void AddStateToEnemies(Enemies[] enemies, State state)
+    protected void AddStateToEnemies(Enemy[] enemies, State state)
     {
-        foreach (Enemies enemy in enemies)
+        foreach (Enemy enemy in enemies)
         {
             AddStateToEnemy(enemy, state);
         }
     }
 
-    protected void AddStateToEnemy(Enemies enemy, State state)
+    protected void AddStateToEnemy(Enemy enemy, State state)
     {
         StateManager.AddStateToEnemy(enemy, state);
     }

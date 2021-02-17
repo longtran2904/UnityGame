@@ -98,17 +98,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stat: {fileID: 0}
-  offset: 0
-  projectilePrefab: {fileID: 1499001105755548140, guid: f93931237b1100d4f8ff9518401af730,
-    type: 3}
-  onGround:
-    useConstant: 0
-    constantValue: 0
-    variable: {fileID: 11400000, guid: d73b181d6a27f6b4e9fa3c531b010816, type: 2}
+  shootPos: {fileID: 310902724552470230}
+  muzzleFlash: {fileID: 3426736245321656768}
   muzzelFlashTime: 0.03
-  burstCount: 0
-  ammoText: {fileID: 0}
-  canSwitch: 1
+  currentAmmo: 0
+  posOffset: {x: 0, y: 0}
 --- !u!114 &310902724418139101
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -145,8 +139,8 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  perfectRange: 20
-  activeRange: 60
+  perfectSize: 20
+  activeSize: 60
 --- !u!1 &310902724552470217
 GameObject:
   m_ObjectHideFlags: 0
@@ -246,6 +240,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6fbd7c4d790e60a4e8436c0635bf376a, type: 3}
+--- !u!1 &3426736245321656768 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3161168585796676830, guid: 6fbd7c4d790e60a4e8436c0635bf376a,
+    type: 3}
+  m_PrefabInstance: {fileID: 310902723179611422}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &5923302995725911546 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6224890372784554212, guid: 6fbd7c4d790e60a4e8436c0635bf376a,

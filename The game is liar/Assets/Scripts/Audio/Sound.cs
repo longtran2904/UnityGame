@@ -5,19 +5,11 @@ using UnityEngine;
 public class Sound
 {
     public string name;
-
     public AudioClip clip;
-
     [Range(0f, 1f)]
-    public float volume;
-
+    public float volume = 1;
     [Range(-3f, 3f)]
-    public float pitch;
-
+    public float pitch = 1;
     public bool loop;
-
     public bool playOnAwake;
-
-    [HideInInspector]
-    public AudioSource source;
 }

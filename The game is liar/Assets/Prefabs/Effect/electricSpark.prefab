@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 7993573382134315027}
   m_Layer: 2
   m_Name: electricSpark
-  m_TagString: Untagged
+  m_TagString: Bullet
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -156,8 +156,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 10
   timer: 5
-  damage: 0
-  knockbackForce: {x: 0, y: 0}
-  isEnemy: 1
-  canTouchGround: 0
   hitEffect: {fileID: 0}
+  canTouchGround: 0
+  canTouchPlayer: 0

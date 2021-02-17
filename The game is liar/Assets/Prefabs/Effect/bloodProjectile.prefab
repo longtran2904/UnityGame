@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 5412608831209097530}
   m_Layer: 2
   m_Name: bloodProjectile
-  m_TagString: Untagged
+  m_TagString: Bullet
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -98,11 +98,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 10
   timer: 5
-  damage: 0
-  knockbackForce: {x: 0, y: 0}
-  isEnemy: 1
-  canTouchGround: 0
   hitEffect: {fileID: 0}
+  canTouchGround: 0
+  canTouchPlayer: 0
 --- !u!50 &8507593736587019091
 Rigidbody2D:
   serializedVersion: 4

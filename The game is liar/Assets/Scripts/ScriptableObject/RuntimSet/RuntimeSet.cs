@@ -4,7 +4,13 @@ using UnityEngine;
 
 public abstract class RuntimeSet<T> : ScriptableObject
 {
-    public List<T> items = new List<T>();
+    [HideInInspector] public List<T> items;
+    [SerializeField] private List<T> defaultItems;
+
+    protected virtual void OnEnable()
+    {
+        items = new List<T>(defaultItems);
+    }
 
     public void Add(T t)
     {

@@ -5,5 +5,5 @@ using UnityEngine;
 
 public class EnemyController : MonoBehaviour
 {
-    private Action<Enemies> enemyState;
+    private Action<Enemy> enemyState;
 }

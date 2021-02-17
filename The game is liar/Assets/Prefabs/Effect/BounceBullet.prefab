@@ -10,12 +10,14 @@ GameObject:
   m_Component:
   - component: {fileID: 1900939577130987841}
   - component: {fileID: 2206091611283211268}
+  - component: {fileID: -1960821277896570910}
   - component: {fileID: 4684441645421170179}
-  - component: {fileID: 318327285894686999}
   - component: {fileID: 871240560498787131}
-  m_Layer: 0
+  - component: {fileID: 8732876763324346572}
+  - component: {fileID: 7813875803515302870}
+  m_Layer: 2
   m_Name: BounceBullet
-  m_TagString: Untagged
+  m_TagString: Bullet
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -29,7 +31,7 @@ Transform:
   m_GameObject: {fileID: 4882740483767263727}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 6.25, y: 6.25, z: 1}
+  m_LocalScale: {x: 3.125, y: 3.125, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -84,6 +86,27 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!50 &-1960821277896570910
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4882740483767263727}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 0
+  m_Material: {fileID: 0}
+  m_Interpolate: 1
+  m_SleepingMode: 1
+  m_CollisionDetection: 1
+  m_Constraints: 4
 --- !u!61 &4684441645421170179
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -110,23 +133,6 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.32, y: 0.16}
   m_EdgeRadius: 0
---- !u!114 &318327285894686999
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4882740483767263727}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1cf41cb090b23a84f8c584abaa4a6ed3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  speed: 0
-  timer: 0
-  hitEffect: {fileID: 0}
-  canTouchGround: 0
-  canTouchPlayer: 0
 --- !u!114 &871240560498787131
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -139,17 +145,66 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f7ffae49a57b87c40b65a43d8717f296, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  useTag: 0
+  compareTag: 
   collisionEvent:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 11400000, guid: a67a3eb8a2029ea43b5b8e3c5f23c090, type: 2}
-        m_MethodName: Change
-        m_Mode: 2
+      - m_Target: {fileID: 11400000, guid: 01443e5a6bdc47b4387217618b65db47, type: 2}
+        m_MethodName: Play
+        m_Mode: 5
         m_Arguments:
-          m_ObjectArgument: {fileID: 2206091611283211268}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.SpriteRenderer, UnityEngine
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: 
+          m_StringArgument: PickupCoin
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &8732876763324346572
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4882740483767263727}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 92d1fe2055a991240ab476d27b937a8e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  useTag: 1
+  compareTag: BounceMat
+  collisionEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 11400000, guid: 01443e5a6bdc47b4387217618b65db47, type: 2}
+        m_MethodName: Play
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: Bounce
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &7813875803515302870
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4882740483767263727}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 604ac96d6590f7547b4fad1838ef8252, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  speed: 20
+  timer: 10
+  hitEffect: {fileID: 2449402723055000423, guid: 3572f30d79f57c54e9b0c2c45c508557,
+    type: 3}
+  canTouchGround: 0
+  canTouchPlayer: 0
+  colorWhenHit: {fileID: 11400000, guid: a67a3eb8a2029ea43b5b8e3c5f23c090, type: 2}

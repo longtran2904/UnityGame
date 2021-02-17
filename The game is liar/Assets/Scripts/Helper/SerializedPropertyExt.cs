@@ -16,6 +16,6 @@ public static class SerializedPropertyExt
         var parent = aProperty.GetParent();
         if (parent == null)
             return aProperty.serializedObject.FindProperty(aPath);
-        return parent.FindPropertyRelative(aPath);
+        return parent.FindPropertyRelative(aPath) ?? aProperty.serializedObject.FindProperty(aPath);
     }
 }

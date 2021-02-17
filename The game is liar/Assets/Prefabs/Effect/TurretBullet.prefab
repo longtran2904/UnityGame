@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: -8673791678216433891}
   m_Layer: 2
   m_Name: TurretBullet
-  m_TagString: Untagged
+  m_TagString: Bullet
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -136,8 +136,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 10
   timer: 10
-  damage: 2
-  knockbackForce: {x: 0, y: 0}
-  isEnemy: 1
-  canTouchGround: 0
   hitEffect: {fileID: 0}
+  canTouchGround: 0
+  canTouchPlayer: 0

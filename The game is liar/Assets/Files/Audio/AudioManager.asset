@@ -1,0 +1,159 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a51c9106a90459642b2f6b42e427d49c, type: 3}
+  m_Name: AudioManager
+  m_EditorClassIdentifier: 
+  sounds:
+  - name: PlayerJump
+    clip: {fileID: 8300000, guid: d95f3af1fe872324eaa743f0dd98c07e, type: 3}
+    volume: 0.1
+    pitch: 1
+    loop: 0
+    playOnAwake: 0
+  - name: PlayerShoot
+    clip: {fileID: 8300000, guid: 6748319220a026247b477256ba304326, type: 3}
+    volume: 0.2
+    pitch: 1
+    loop: 0
+    playOnAwake: 0
+  - name: TurretShoot
+    clip: {fileID: 8300000, guid: 2b2b779217c14504ba442a690e0c9fef, type: 3}
+    volume: 1
+    pitch: 1
+    loop: 0
+    playOnAwake: 0
+  - name: GetHit
+    clip: {fileID: 8300000, guid: fc9ff7f79f7c03f40a8fe7b16e2b4c1e, type: 3}
+    volume: 0.1
+    pitch: 1
+    loop: 0
+    playOnAwake: 0
+  - name: BatExplosion
+    clip: {fileID: 8300000, guid: 99b5706e52d33c64a9331a74964004c5, type: 3}
+    volume: 1
+    pitch: 1
+    loop: 0
+    playOnAwake: 0
+  - name: PlayerDeath
+    clip: {fileID: 8300000, guid: 99b5706e52d33c64a9331a74964004c5, type: 3}
+    volume: 1
+    pitch: 1
+    loop: 0
+    playOnAwake: 0
+  - name: Select
+    clip: {fileID: 8300000, guid: cfa8ba85a3d30fa468ce12d1a0258c64, type: 3}
+    volume: 1
+    pitch: 1
+    loop: 0
+    playOnAwake: 0
+  - name: DefeatBoss
+    clip: {fileID: 8300000, guid: a88fa52f68285824496d8457c4a0a054, type: 3}
+    volume: 1
+    pitch: 1
+    loop: 0
+    playOnAwake: 0
+  - name: BossExplosion
+    clip: {fileID: 8300000, guid: 1ada27f583cdda74fb5acad6ea037214, type: 3}
+    volume: 1
+    pitch: 1
+    loop: 0
+    playOnAwake: 0
+  - name: 8bit
+    clip: {fileID: 8300000, guid: 46f548df1e3539e49867f22327492a31, type: 3}
+    volume: 1
+    pitch: 1
+    loop: 1
+    playOnAwake: 1
+  - name: BossFight
+    clip: {fileID: 8300000, guid: 2fc7d2fa8cae24b47ad17fedc5bc5f8b, type: 3}
+    volume: 1
+    pitch: 1
+    loop: 1
+    playOnAwake: 0
+  - name: Shotgun
+    clip: {fileID: 8300000, guid: 2f2b07580e6c71b488b697130f5cff23, type: 3}
+    volume: 1
+    pitch: 1
+    loop: 0
+    playOnAwake: 0
+  - name: Buy
+    clip: {fileID: 8300000, guid: 6320295b90a2f1046abb93c53858b5d5, type: 3}
+    volume: 1
+    pitch: 1
+    loop: 0
+    playOnAwake: 0
+  - name: PickupCoin
+    clip: {fileID: 8300000, guid: 57cc25e0fd9097e4cbcc1164f56bd028, type: 3}
+    volume: 1
+    pitch: 1
+    loop: 0
+    playOnAwake: 0
+  - name: Bounce
+    clip: {fileID: 8300000, guid: b34f091cbeeb08f4984fa6fa63ca420d, type: 3}
+    volume: 1
+    pitch: 1
+    loop: 0
+    playOnAwake: 0
+  - name: Trickshot
+    clip: {fileID: 8300000, guid: f2854084d09ec0c48b8474631bb5f05f, type: 3}
+    volume: 1
+    pitch: 1
+    loop: 0
+    playOnAwake: 0
+  - name: HitWall
+    clip: {fileID: 8300000, guid: fd03f3a76bb7a664f9ff60751c5d9925, type: 3}
+    volume: 1
+    pitch: 1
+    loop: 0
+    playOnAwake: 0
+  - name: Footstep_1
+    clip: {fileID: 8300000, guid: 1f2d086eaa724814cbb5847258be7e47, type: 3}
+    volume: 0.3
+    pitch: 1
+    loop: 0
+    playOnAwake: 0
+  - name: Footstep_2
+    clip: {fileID: 8300000, guid: fa586b8c5ecbdb0498e35fe502f3104b, type: 3}
+    volume: 0.3
+    pitch: 1
+    loop: 0
+    playOnAwake: 0
+  - name: Footstep_3
+    clip: {fileID: 8300000, guid: 7ea9c53b57e4be74abd756c7bd5c10fc, type: 3}
+    volume: 0.3
+    pitch: 1
+    loop: 0
+    playOnAwake: 0
+  - name: TouchGround_1
+    clip: {fileID: 8300000, guid: b8f0791fea0407a4db0579e14e778e49, type: 3}
+    volume: 0.3
+    pitch: 1
+    loop: 0
+    playOnAwake: 0
+  - name: TouchGround_2
+    clip: {fileID: 8300000, guid: 750efc80b3ce7d14f9764f78786e0cd9, type: 3}
+    volume: 0.3
+    pitch: 1
+    loop: 0
+    playOnAwake: 0
+  - name: TouchGround_3
+    clip: {fileID: 8300000, guid: 624115b132909754c8e2debac06a3719, type: 3}
+    volume: 0.3
+    pitch: 1
+    loop: 0
+    playOnAwake: 0
+  - name: TouchGround_4
+    clip: {fileID: 8300000, guid: d68b22ab5c678724b9bd3c727531400f, type: 3}
+    volume: 0.3
+    pitch: 1
+    loop: 0
+    playOnAwake: 0

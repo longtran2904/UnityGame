@@ -2,55 +2,38 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ObjectPooler : MonoBehaviour
+// NOTE: Has the same problem with Application.isPlaying like the AudioManager
+//       Hopefully it will be fixed in next update
+[CreateAssetMenu(menuName = "Scriptable/ObjectPooler")]
+public class ObjectPooler : ScriptableObject
 {
-    [System.Serializable]
-    public class Pool
-    {
-        public string tag;
-        public GameObject prefab;
-        public int size;
-    }
-
     public List<Pool> pools;
     public Dictionary<string, Queue<GameObject>> poolDictionary;
 
     public static ObjectPooler instance;
 
-    private void Awake()
+    public void Init()
     {
-        if (instance != null)
-        {
-            InternalDebug.Log("Instance already exists, Destroying object!");
-            Destroy(this);
-        }
-        else
+        if (!instance)
         {
             instance = this;
-        }
-    }
+            instance.poolDictionary = new Dictionary<string, Queue<GameObject>>();
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        poolDictionary = new Dictionary<string, Queue<GameObject>>();
-
-        foreach (Pool pool in pools)
-        {
-            Queue<GameObject> objectToPool = new Queue<GameObject>();
-
-            for (int i = 0; i < pool.size; i++)
+            foreach (Pool pool in instance.pools)
             {
-                GameObject gameObject = Instantiate(pool.prefab);
-                gameObject.SetActive(false);
-                objectToPool.Enqueue(gameObject);
+                Queue<GameObject> objectToPool = new Queue<GameObject>();
+                for (int i = 0; i < pool.size; i++)
+                {
+                    GameObject gameObject = Instantiate(pool.prefab);
+                    gameObject.SetActive(false);
+                    objectToPool.Enqueue(gameObject);
+                }
+                instance.poolDictionary.Add(pool.tag, objectToPool);
             }
-
-            poolDictionary.Add(pool.tag, objectToPool);
         }
     }
 
-    public GameObject SpawnFromPool(string tag, Vector3 position, Quaternion rotation)
+    public GameObject SpawnFromPool(string tag, Vector3 position, Quaternion rotation, Transform parent = null)
     {
         if (!poolDictionary.ContainsKey(tag))
         {
@@ -58,24 +41,10 @@ public class ObjectPooler : MonoBehaviour
             return null;
         }
 
-        GameObject objToSpawn = poolDictionary[tag].Dequeue();
-
-        objToSpawn.SetActive(true);
-        objToSpawn.transform.position = position;
-        objToSpawn.transform.rotation = rotation;
-
-        IPooledObject pooledObj = objToSpawn.GetComponent<IPooledObject>();
-        if (pooledObj != null)
-        {
-            pooledObj.OnObjectSpawn();
-        }
-
-        poolDictionary[tag].Enqueue(objToSpawn);
-
-        return objToSpawn;
+        return SpawnAndDequeue(tag, position, rotation, parent);
     }
 
-    public T SpawnFromPool<T>(string tag, Vector3 position, Quaternion rotation) where T : Component
+    public T SpawnFromPool<T>(string tag, Vector3 position, Quaternion rotation, Transform parent = null) where T : Component
     {
         if (!poolDictionary.ContainsKey(tag))
         {
@@ -83,20 +52,22 @@ public class ObjectPooler : MonoBehaviour
             return default(T);
         }
 
+        return SpawnAndDequeue(tag, position, rotation, parent).GetComponent<T>();
+    }
+
+    private GameObject SpawnAndDequeue(string tag, Vector3 position, Quaternion rotation, Transform parent)
+    {
         GameObject objToSpawn = poolDictionary[tag].Dequeue();
 
         objToSpawn.SetActive(true);
         objToSpawn.transform.position = position;
         objToSpawn.transform.rotation = rotation;
+        objToSpawn.transform.SetParent(parent);
 
         IPooledObject pooledObj = objToSpawn.GetComponent<IPooledObject>();
-        if (pooledObj != null)
-        {
-            pooledObj.OnObjectSpawn();
-        }
+        pooledObj?.OnObjectSpawn();
 
         poolDictionary[tag].Enqueue(objToSpawn);
-
-        return objToSpawn.GetComponent<T>();
+        return objToSpawn;
     }
 }

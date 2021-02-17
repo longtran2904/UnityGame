@@ -17,5 +17,5 @@ public abstract class Boss : MonoBehaviour
 
     protected abstract void Die();
 
-    public abstract void GetHurt(int _damage);
+    public abstract void Hurt(int _damage);
 }

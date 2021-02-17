@@ -83,3 +83,12 @@ The following packages were updated:
   com.unity.ext.nunit from version 1.0.0 to 1.0.5
   com.unity.ide.vscode from version 1.2.2 to 1.2.3
   com.unity.test-framework from version 1.1.18 to 1.1.19
+
+=== Fri Feb  5 12:15:34 2021
+
+Packages were changed.
+Update Mode: updateDependencies
+
+The following packages were updated:
+  com.unity.ext.nunit from version 1.0.5 to 1.0.6
+  com.unity.test-framework from version 1.1.19 to 1.1.20

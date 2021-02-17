@@ -31,7 +31,7 @@ public class PlayerCombat : MonoBehaviour
         if (Time.time > nextAttackTime)
         {
             weaponHolder.SetActive(true);
-            if (Input.GetKeyDown(KeyCode.V) && player.inventory.GetCurrent().canSwitch) // Can't attack when player is reloading
+            if (Input.GetKeyDown(KeyCode.V) && (player.inventory.GetCurrent().GetComponent<ActiveReload>()?.isReloading ?? true)) // Can't attack when player is reloading
             {
                 Attack();
                 nextAttackTime = Time.time + 1 / attackRate;
@@ -48,7 +48,7 @@ public class PlayerCombat : MonoBehaviour
         Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, enemyLayers);
         foreach (var hitEnemy in hitEnemies)
         {
-            hitEnemy.gameObject.GetComponent<Enemies>().Hurt(damage, (hitEnemy.transform.position - transform.position).normalized * knockbackForce, 0);
+            hitEnemy.gameObject.GetComponent<Enemy>().Hurt(damage, (hitEnemy.transform.position - transform.position).normalized * knockbackForce, 0);
         }
     }
 
