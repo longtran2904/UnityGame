@@ -8,7 +8,7 @@ public class StateManager : MonoBehaviour
     {
         // TODO: add statePartciles
         //Destroy(Instantiate(GameAssets.instance.stateParticles[(int)state.type], enemy.transform.position, Quaternion.identity, enemy.transform));
-        if (state.type == StatusType.Freeze || state.type == StatusType.Slow)
+        /*if (state.type == StatusType.Freeze || state.type == StatusType.Slow)
         {
             enemy.StartCoroutine(EnemyStatModify(state.duration, enemy.speed, state.percent, x => { enemy.speed = x; }));
         }
@@ -19,14 +19,14 @@ public class StateManager : MonoBehaviour
         else
         {
             enemy.StartCoroutine(DamageOverTime(enemy, state.damage, state.duration, state.timeBtwHits));
-        }
+        }*/
     }
 
     private static IEnumerator DamageOverTime(Enemy enemy, int damage, float duration, float timeBtwHits)
     {
         while (duration > 0)
         {
-            enemy.Hurt(damage, Vector2.zero, 0);
+            enemy.Hurt(damage);
             duration -= timeBtwHits;
             yield return new WaitForSeconds(timeBtwHits);
         }

@@ -110,7 +110,7 @@ public abstract class Item : MonoBehaviour
     {
         foreach (Enemy enemy in GetAllNearbyEnemies())
         {
-            enemy.Hurt(damage, Vector2.zero, 0);
+            enemy.Hurt(damage);
         }
     }
 

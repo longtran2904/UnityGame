@@ -340,7 +340,7 @@ public class BigBrain : Boss
     {
         if (collision.CompareTag("Player"))
         {
-            player.Hurt(damage, (player.transform.position - transform.position).normalized * knockbackForce);
+            player.Hurt(damage);
         }
 
         if (collision.CompareTag("Ground"))

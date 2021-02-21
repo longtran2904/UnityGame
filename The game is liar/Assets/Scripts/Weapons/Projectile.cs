@@ -76,14 +76,14 @@ public class Projectile : MonoBehaviour, IPooledObject
             Hit(collision, x => {
                 Enemy enemy = x.GetComponent<Enemy>();
                 Vector2 knockbackForce = (-transform.position + enemy.transform.position).normalized * this.knockbackForce;
-                enemy.Hurt(damage, knockbackForce, knockbackTime);
+                enemy.Hurt(damage);
                 if (state != null)
                     StateManager.AddStateToEnemy(enemy, state);
             }, true);
         }
         else if (collision.CompareTag("Player") && isEnemy)
         {
-            Hit(collision, x => x.GetComponent<Player>().Hurt(damage, knockbackForce * (collision.transform.position - transform.position).normalized), false, canTouchPlayer);
+            Hit(collision, x => x.GetComponent<Player>().Hurt(damage), false, canTouchPlayer);
         }
         else if (collision.CompareTag("Boss") && !isEnemy)
         {

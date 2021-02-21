@@ -191,6 +191,20 @@ public static class MathUtils
     {
         return System.Array.ConvertAll(v, x => (Vector2)x);
     }
+
+    // NOTE: I looked at this here https://forum.unity.com/threads/how-to-check-a-vector3-position-is-between-two-other-vector3-along-a-line.461474/, still try to figure it out.
+    public static float DistanceLineSegmentPoint(Vector2 point, Vector2 startLine, Vector2 endLine)
+    {
+        // If startLine == endLine line segment is a point and will cause a divide by zero in the line segment test.
+        // Instead return distance from a
+        if (startLine == endLine)
+            return Vector2.Distance(startLine, point);
+
+        // Line segment to point distance equation
+        Vector2 line = endLine - startLine;
+        Vector2 pointToStart = startLine - point;
+        return (pointToStart - line * (Vector2.Dot(pointToStart, line) / Vector2.Dot(line, line))).magnitude;
+    }
     #endregion
 
     #region Vector3Int
@@ -389,5 +403,12 @@ public static class MathUtils
     {
         while (enumerator.MoveNext())
             yield return enumerator.Current;
+    }
+
+    public static void Swap<T>(ref T a, ref T b)
+    {
+        T temp = a;
+        a = b;
+        b = temp;
     }
 }

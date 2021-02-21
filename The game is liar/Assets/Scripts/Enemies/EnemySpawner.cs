@@ -9,7 +9,7 @@ public class EnemySpawner : MonoBehaviour
     public int maxEnemiesToSpawn;
     private int numberOfEnemiesToSpawn;
     public Transform[] spawnPoints;
-    public EnemiesProb[] enemies;
+    public EnemyProb[] enemies;
     public bool teleportToNextScene = false;
     public GameEvent endWaves;
 

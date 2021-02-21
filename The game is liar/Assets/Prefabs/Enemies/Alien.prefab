@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 2186091042047168453}
   - component: {fileID: 2186091042047168506}
   - component: {fileID: 2186091042047168511}
-  - component: {fileID: 2186091042047168504}
+  - component: {fileID: 3601242920738922468}
   m_Layer: 10
   m_Name: Alien
   m_TagString: Enemy
@@ -30,11 +30,11 @@ Transform:
   m_GameObject: {fileID: 2186091042047168454}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 5.46, y: -1.48, z: 0}
-  m_LocalScale: {x: 7, y: 7, z: 1}
+  m_LocalScale: {x: 6.25, y: 6.25, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &2186091042047168452
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -114,7 +114,7 @@ BoxCollider2D:
   m_GameObject: {fileID: 2186091042047168454}
   m_Enabled: 1
   m_Density: 1
-  m_Material: {fileID: 6200000, guid: 9c08918b83cc0ae4ba936d1cd302949d, type: 2}
+  m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
@@ -152,7 +152,7 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
---- !u!114 &2186091042047168504
+--- !u!114 &3601242920738922468
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -161,12 +161,26 @@ MonoBehaviour:
   m_GameObject: {fileID: 2186091042047168454}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: af720d773eb959d42aa6a593093a5628, type: 3}
+  m_Script: {fileID: 11500000, guid: 1f833eb0d584ca54eb047bd79179d644, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  health: 50
-  damage: 30
-  speed: 0
+  health:
+    type: 0
+    constantValue: 5
+    variable: {fileID: 0}
+    valueRange: {x: 0, y: 0}
+  damage:
+    type: 0
+    constantValue: 5
+    variable: {fileID: 0}
+    valueRange: {x: 0, y: 0}
+  speed:
+    fieldType: 0
+    constantValue: 5
+    variable: {fileID: 0}
+    valueRange:
+      min: 0
+      max: 0
   moneyDropRange:
     probability: 0
     min: 0
@@ -177,14 +191,17 @@ MonoBehaviour:
     type: 3}
   spawnEffect: {fileID: 6779077847636645100, guid: 36d7ac47e5d4fa94a978f44e53c8b68a,
     type: 3}
-  lookAtPlayer: 0
+  lookAtPlayer: 1
   damageWhenCollide: 0
   startState: {fileID: 0}
+  anyState: {fileID: 0}
+  currentState: {fileID: 0}
   canDash: 0
   canFlash: 0
   curveMove: 0
   canSplit: 0
   canExplode: 0
+  hasWeapon: 0
   dashSpeed: 0
   triggerMat: {fileID: 0}
   flashTime: 0
@@ -198,3 +215,4 @@ MonoBehaviour:
   explodeRange: 0
   explodeTime: 0
   explodeSound: 
+  weapon: {fileID: 0}

@@ -80,7 +80,7 @@ public class Player : MonoBehaviour
         GameManager.instance.LoadGame((int)SceneIndexes.START_MENU, true);
     }
 
-    public void Hurt(int _damage, Vector2 _knockbackForce = new Vector2())
+    public void Hurt(int _damage)
     {
         if (!isInvincible)
         {

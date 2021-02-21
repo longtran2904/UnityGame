@@ -49,7 +49,7 @@ public class ShowWhenDrawer : PropertyDrawer
                 }
                 else if (IsEnum(paramEnum))
                 {
-                    if (!CheckSameEnumType(new[] { paramEnum.GetType() }, property.serializedObject.targetObject.GetType(), conditionField.name))
+                    if (!CheckSameEnumType(new[] { paramEnum.GetType() }, property.serializedObject.targetObject.GetType(), conditionField.propertyPath))
                     {
                         ShowError(position, label, "Enum Types doesn't match");
                         return;
@@ -65,7 +65,7 @@ public class ShowWhenDrawer : PropertyDrawer
                 }
                 else if (IsEnum(paramEnumArray))
                 {
-                    if (!CheckSameEnumType(paramEnumArray.Select(x => x.GetType()), property.serializedObject.targetObject.GetType(), conditionField.name))
+                    if (!CheckSameEnumType(paramEnumArray.Select(x => x.GetType()), property.serializedObject.targetObject.GetType(), conditionField.propertyPath))
                     {
                         ShowError(position, label, "Enum Types doesn't match");
                         return;
@@ -199,7 +199,18 @@ public class ShowWhenDrawer : PropertyDrawer
     /// </summary>
     private static bool CheckSameEnumType(IEnumerable<Type> checkTypes, Type classType, string fieldName)
     {
-        FieldInfo memberInfo = classType.GetField(fieldName);
+        FieldInfo memberInfo;
+        string[] fields = fieldName.Split('.');
+        if (fields.Length > 1)
+        {
+            memberInfo = classType.GetField(fields[0]);
+            for (int i = 1; i < fields.Length; i++)
+            {
+                memberInfo = memberInfo.FieldType.GetField(fields[i]);
+            }
+        }
+        else
+            memberInfo = classType.GetField(fieldName);
 
         if (memberInfo != null)
             return checkTypes.All(x => x == memberInfo.FieldType);

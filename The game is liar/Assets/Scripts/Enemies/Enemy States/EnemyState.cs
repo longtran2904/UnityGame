@@ -1,55 +1,63 @@
 ﻿using UnityEngine;
 
-/*[CreateAssetMenu(menuName = "Enemy/States/Normal")]
+[CreateAssetMenu(menuName = "Enemy/State/Normal")]
 public class EnemyState : ScriptableObject
 {
-    public bool nextIsState;
-    [ShowWhen("nextIsState", false)] public StateSwitch Switch;
-    [ShowWhen("nextIsState")] public EnemyState state;
+    public bool repeat;
+    public bool wait;
 
-    public bool popStateWhenDone;
-    public string optionalAnimationToPlay;
+    [ShowWhen("repeat")] public IntReference maxRepeatCount;
+    private int maxRepeatValue;
+    private int repeatCount;
+    [ShowWhen("wait")] public FloatReference waitTime;
+    private float waitTimeValue;
 
-    public virtual void Init(Enemies enemy)
-    {
-        if (optionalAnimationToPlay != "")
-            enemy.anim.Play(optionalAnimationToPlay);
-    }
-
-    public virtual EnemyState UpdateState(Enemies enemy)
-    {
-        EnemyState nextState = nextIsState ? state : Switch.NextState(enemy);
-        if (nextState && popStateWhenDone) PopState(enemy);
-        return nextState;
-    }
-
-    private void PopState(Enemies enemy)
-    {
-        if (enemy.allStates.Peek() == this)
-            enemy.allStates.Pop();
-    }
-}*/
-
-[CreateAssetMenu(menuName = "Enemy/State")]
-public class EnemyState : ScriptableObject
-{
     public EnemyAction[] actions;
     public EnemyTransition[] transitions;
     public string enterAnimation;
-    public float elapsedTime;
+    [HideInInspector] public float elapsedTime;
 
     public void Enter(Enemy enemy)
     {
         if (enterAnimation != "")
             enemy.anim.Play(enterAnimation);
+
+        foreach (EnemyTransition transition in transitions)
+            foreach (EnemyDecision decision in transition.decisions)
+                if (decision.resetWhenEnter)
+                    decision.Reset();
+
         elapsedTime = 0;
+        if (wait) waitTimeValue = Time.time + waitTime;
+        if (repeat)
+        {
+            repeatCount = 0;
+            maxRepeatValue = maxRepeatCount;
+        }
     }
 
     public EnemyState UpdateState(Enemy enemy)
     {
-        DoActions(enemy);
         elapsedTime += Time.deltaTime;
-        return CheckTransitions(enemy);
+
+        if ((wait && Time.time >= waitTimeValue) || !wait)
+        {
+            DoActions(enemy);
+            waitTimeValue = Time.time + waitTime;
+        }
+        else
+            return null;
+
+        if (repeat)
+        {
+            repeatCount++;
+            if (repeatCount >= maxRepeatValue)
+                return CheckTransitions(enemy);
+        }
+        else
+            return CheckTransitions(enemy);
+
+        return null;
     }
 
     private void DoActions(Enemy enemy)
@@ -62,14 +70,13 @@ public class EnemyState : ScriptableObject
 
     private EnemyState CheckTransitions(Enemy enemy)
     {
-        EnemyState nextState = null;
-        for (int i = transitions.Length - 1; i >= 0; i--) // Top transition get higher priority
+        for (int i = 0; i < transitions.Length; i++) // Top transition get higher priority
         {
-            if (transitions[i].decision.Decide(enemy))
-                nextState = (transitions[i].trueState != this) ? transitions[i].trueState : null;
-            else
-                nextState = (transitions[i].falseState != this) ? transitions[i].falseState : null;
+            if (transitions[i].Result(enemy) && transitions[i].trueState != this && transitions[i].trueState != null)
+                return transitions[i].trueState;
+            else if (transitions[i].falseState != this && transitions[i].falseState != null)
+                return transitions[i].falseState;
         }
-        return nextState;
+        return null;
     }
 }

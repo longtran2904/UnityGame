@@ -6,22 +6,23 @@ public class Enemy : MonoBehaviour
 {
     public static int numberOfEnemiesAlive = 0;
 
-    public int health;
-    public int damage;
-    public float speed;
+    public IntReference health;
+    public IntReference damage;
+    public FloatReference speed;
 
-    public DropRange moneyDropRange;
+    public RangedFloat moneyDrop;
     public Material matWhite;
 
-    public bool hasSpawnVFX;
     public GameObject explosionParitcle;
-    public GameObject spawnEffect;
 
     public bool lookAtPlayer;
     public bool damageWhenCollide;
 
     public EnemyState startState;
-    public Stack<EnemyState> allStates = new Stack<EnemyState>();
+    public AnyState anyState; // This is like the "Any State" in the animation system;
+    [HideInInspector] public EnemyState currentState;
+    private EnemyState nextState;
+    private EnemyState fromAnyState;
 
     // This is only for showing in the inspector
 #if UNITY_EDITOR
@@ -61,8 +62,6 @@ public class Enemy : MonoBehaviour
     public SpriteRenderer sr { get; private set; }
     public Material defMat { get; private set; }
 
-    private EnemyState nextState;
-
     void Start()
     {
         numberOfEnemiesAlive += 1;
@@ -72,8 +71,8 @@ public class Enemy : MonoBehaviour
         defMat = sr.material;
         player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
 
-        allStates.Push(startState);
         startState.Enter(this);
+        currentState = startState;
 
         // Spawn the weapon if has one
         // TODO: Abstract this to a function somewhere
@@ -86,59 +85,12 @@ public class Enemy : MonoBehaviour
             //       This is just for temporary. Should I make different guns for enemy?
             Destroy(weapon.GetComponent<ActiveReload>());
         }
-
-        StartCoroutine(SpawnEnemy());
-    }
-
-    IEnumerator SpawnEnemy()
-    {
-        if (hasSpawnVFX)
-        {
-            // Disable behaviours and child objects
-            SpriteRenderer sr = GetComponent<SpriteRenderer>();
-            sr.enabled = false;
-            float startGravityScale = GetComponent<Rigidbody2D>().gravityScale;
-            GetComponent<Rigidbody2D>().gravityScale = 0;
-            foreach (var component in GetComponents<Behaviour>())
-            {
-                if (component == this)
-                {
-                    continue;
-                }
-                if (!component)
-                {
-                    InternalDebug.Log(component);
-                }
-                component.enabled = false;
-            }
-            foreach (Transform child in transform)
-            {
-                child.gameObject.SetActive(false);
-            }
-
-            Instantiate(spawnEffect, transform.position, Quaternion.identity);
-            yield return new WaitForSeconds(1);
-
-            // Enable components and child objects
-            sr.enabled = true;
-            GetComponent<Rigidbody2D>().gravityScale = startGravityScale;
-            foreach (var component in GetComponents<Behaviour>())
-            {
-                component.enabled = true;
-            }
-            foreach (Transform child in transform)
-            {
-                child.gameObject.SetActive(true);
-            }
-            hasSpawnVFX = false;
-            InternalDebug.Break();
-        }
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (health <= 0)
+        if (health.value <= 0)
         {
             if (explodeWhenDie)
                 Explode();
@@ -150,35 +102,45 @@ public class Enemy : MonoBehaviour
         if (lookAtPlayer) LookAtPlayer();
         else transform.rotation = Quaternion.Euler(0, rb.velocity.x > 0 ? 0 : 180, 0);
 
-        if (!hasSpawnVFX)
-        {
-            if (nextState != null)
-            {
-                allStates.Push(nextState);
-                nextState.Enter(this);
-            }
-            nextState = allStates.Peek().UpdateState(this);
+        ControlState();
+    }
 
-            InternalDebug.Log("Current State: " + allStates.Peek() + " Next State: " + nextState);
+    private void ControlState()
+    {
+        if (nextState != null)
+        {
+            nextState.Enter(this);
+            currentState = nextState;
         }
+        else if (fromAnyState) // The current state was previouslly transit from "Any State" and will transit back to the most recent not-from-any state
+        {
+            nextState = fromAnyState;
+            if (anyState.callEnterWhenDone)
+                nextState.Enter(this);
+            fromAnyState = null;
+        }
+
+        nextState = currentState.UpdateState(this);
+        fromAnyState = anyState?.CheckTransitions(this);
+        if (fromAnyState)
+            MathUtils.Swap(ref nextState, ref fromAnyState);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (damageWhenCollide && collision.CompareTag("Player")) player.Hurt(damage);
+        if (damageWhenCollide && collision.CompareTag("Player")) player.Hurt(damage.value);
     }
 
     void OnCollisionEnter2D(Collision2D collision)
     {
-        if (damageWhenCollide && collision.collider.CompareTag("Player")) player.Hurt(damage);
+        if (damageWhenCollide && collision.collider.CompareTag("Player")) player.Hurt(damage.value);
     }
 
     public void Die()
     {
-        GameObject explosion = explosionParitcle;
-        Instantiate(explosion, transform.position, Quaternion.identity);
+        Instantiate(explosionParitcle, transform.position, Quaternion.identity);
 
-        for (int i = 0; i < moneyDropRange.GetRandom(); i++)
+        for (int i = 0; i < moneyDrop.randomValue; i++)
             ObjectPooler.instance.SpawnFromPool("Money", transform.position, Random.rotation);
 
         if (splitEnemy && numberOfSplits > 0)
@@ -188,9 +150,9 @@ public class Enemy : MonoBehaviour
         Destroy(gameObject);
     }
 
-    public void Hurt(int _damage, Vector2 knockbackForce, float knockbackTime)
+    public void Hurt(int _damage)
     {
-        health -= _damage;
+        health.value -= _damage;
         AudioManager.instance.PlaySfx("GetHit");
         StartCoroutine(ResetMaterial());
 
@@ -220,7 +182,7 @@ public class Enemy : MonoBehaviour
         explodeVFX.transform.localScale = new Vector3(6.25f, 6.25f, 0) * explodeRange;
         Destroy(explodeVFX, .3f);
         if ((player.transform.position - transform.position).sqrMagnitude < explodeRange * explodeRange)
-            player.Hurt(damage);
+            player.Hurt(damage.value);
     }
 
     public IEnumerator Flashing(float duration)
@@ -263,8 +225,8 @@ public class Enemy : MonoBehaviour
     public void Split()
     {
         Vector3 offset = new Vector3(.5f, 0, 0);
-        Instantiate(splitEnemy, transform.position + offset, Quaternion.identity).hasSpawnVFX = false;
-        Instantiate(splitEnemy, transform.position + offset, Quaternion.identity).hasSpawnVFX = false;
+        Instantiate(splitEnemy, transform.position + offset, Quaternion.identity);
+        Instantiate(splitEnemy, transform.position + offset, Quaternion.identity);
     }
 
     public bool GroundCheck()

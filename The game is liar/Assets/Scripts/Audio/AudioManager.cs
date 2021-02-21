@@ -35,7 +35,7 @@ public class AudioManager : ScriptableObject
     {
         if (Time.time >= cue.timeBtwSoundsValue)
         {
-            PlaySfx(cue.sounds[UnityEngine.Random.Range(0, cue.sounds.Length)], UnityEngine.Random.Range(cue.volumeScaleMin, cue.volumeScaleMax), UnityEngine.Random.Range(cue.pitchMin, cue.pitchMax));
+            PlaySfx(cue.sounds[UnityEngine.Random.Range(0, cue.sounds.Length)], cue.volumeScale.randomValue, cue.pitch.randomValue);
             cue.timeBtwSoundsValue = Time.time + cue.timeBtwSounds;
         }
     }
