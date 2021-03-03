@@ -1,42 +1,45 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 
 [CreateAssetMenu(menuName = "Enemy/State/Normal")]
-public class EnemyState : ScriptableObject
+public class EnemyState : AnyState
 {
     public bool repeat;
     public bool wait;
+    public bool random;
 
     [ShowWhen("repeat")] public IntReference maxRepeatCount;
     private int maxRepeatValue;
     private int repeatCount;
+
     [ShowWhen("wait")] public FloatReference waitTime;
     private float waitTimeValue;
 
-    public EnemyAction[] actions;
-    public EnemyTransition[] transitions;
+    [ShowWhen("random")] public float[] probabilities;
+    private int transitionIndex;
+
     public string enterAnimation;
     [HideInInspector] public float elapsedTime;
 
     public void Enter(Enemy enemy)
     {
+        elapsedTime = 0;
+
         if (enterAnimation != "")
             enemy.anim.Play(enterAnimation);
-
-        foreach (EnemyTransition transition in transitions)
-            foreach (EnemyDecision decision in transition.decisions)
-                if (decision.resetWhenEnter)
-                    decision.Reset();
-
-        elapsedTime = 0;
-        if (wait) waitTimeValue = Time.time + waitTime;
+        if (wait)
+            waitTimeValue = Time.time + waitTime;
         if (repeat)
         {
             repeatCount = 0;
             maxRepeatValue = maxRepeatCount;
         }
+        if (random)
+            transitionIndex = MathUtils.Choose(probabilities);
     }
 
-    public EnemyState UpdateState(Enemy enemy)
+    public override EnemyState UpdateState(Enemy enemy)
     {
         elapsedTime += Time.deltaTime;
 
@@ -60,22 +63,15 @@ public class EnemyState : ScriptableObject
         return null;
     }
 
-    private void DoActions(Enemy enemy)
+    protected override EnemyState CheckTransitions(Enemy enemy)
     {
-        for (int i = 0; i < actions.Length; i++)
-        {
-            actions[i].Act(enemy);
-        }
-    }
+        if (random && IsTransitionValid(enemy, transitions[transitionIndex]))
+            return transitions[transitionIndex].nextState;
 
-    private EnemyState CheckTransitions(Enemy enemy)
-    {
-        for (int i = 0; i < transitions.Length; i++) // Top transition get higher priority
+        for (int i = 0; i < transitions.Count; i++) // Top transition get higher priority
         {
-            if (transitions[i].Result(enemy) && transitions[i].trueState != this && transitions[i].trueState != null)
-                return transitions[i].trueState;
-            else if (transitions[i].falseState != this && transitions[i].falseState != null)
-                return transitions[i].falseState;
+            if (IsTransitionValid(enemy, transitions[i]))
+                return transitions[i].nextState;
         }
         return null;
     }

@@ -12,26 +12,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9ea0e8b2ccf54ef4289d4e53e49153dd, type: 3}
   m_Name: State_Shoot
   m_EditorClassIdentifier: 
+  Name: 
+  callEnterWhenDone: 0
+  actions:
+  - {fileID: 11400000, guid: 3a20b8f1a76ddb3478fd88d185eb201a, type: 2}
+  transitions: []
   repeat: 0
-  wait: 0
+  wait: 1
+  random: 0
   maxRepeatCount:
     type: 0
     constantValue: 0
     variable: {fileID: 0}
     valueRange: {x: 0, y: 0}
   waitTime:
-    fieldType: 0
+    fieldType: 2
     constantValue: 0
     variable: {fileID: 0}
     valueRange:
-      min: 0
-      max: 0
-  actions:
-  - {fileID: 11400000, guid: 3a20b8f1a76ddb3478fd88d185eb201a, type: 2}
-  transitions:
-  - decisions:
-    - {fileID: 11400000, guid: d1adce00f202a144d828b7941a21495a, type: 2}
-    trueState: {fileID: 11400000, guid: f7748ee14fb10ac42a1a80c3840e3288, type: 2}
-    falseState: {fileID: 0}
+      min: 2
+      max: 3
+  probabilities: []
   enterAnimation: 
   elapsedTime: 0

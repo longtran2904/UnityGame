@@ -1,21 +1,47 @@
 ﻿using UnityEngine;
+using System.Collections.Generic;
 
 [CreateAssetMenu(menuName = "Enemy/State/Any")]
 public class AnyState : ScriptableObject
 {
+    public string Name; // For displaying in the graph editor
     public bool callEnterWhenDone;
-    public EnemyTransition[] transitions;
+    public EnemyAction[] actions;
+    public List<EnemyTransition> transitions = new List<EnemyTransition>();
 
-    public EnemyState CheckTransitions(Enemy enemy)
+    private void OnEnable()
     {
-        EnemyState nextState = null;
-        for (int i = transitions.Length - 1; i >= 0; i--) // Top transition get higher priority
+        Name = name;
+    }
+
+    public virtual EnemyState UpdateState(Enemy enemy)
+    {
+        DoActions(enemy);
+        return CheckTransitions(enemy);
+    }
+
+    protected void DoActions(Enemy enemy)
+    {
+        for (int i = 0; i < actions.Length; i++)
         {
-            if (transitions[i].Result(enemy) && transitions[i].trueState != this && transitions[i].trueState != null)
-                nextState = transitions[i].trueState;
-            else if (transitions[i].falseState != this && transitions[i].falseState != null)
-                nextState = transitions[i].falseState;
+            actions[i].Act(enemy);
         }
-        return nextState;
+    }
+
+    protected virtual EnemyState CheckTransitions(Enemy enemy)
+    {
+        for (int i = 0; i < transitions.Count; i++) // Top transition get higher priority
+        {
+            if (IsTransitionValid(enemy, transitions[i]))
+                return transitions[i].nextState;
+        }
+        return null;
+    }
+
+    protected bool IsTransitionValid(Enemy enemy, EnemyTransition transition)
+    {
+        if (transition.Result(enemy) && transition.nextState != this && transition.nextState != null)
+            return true;
+        return false;
     }
 }

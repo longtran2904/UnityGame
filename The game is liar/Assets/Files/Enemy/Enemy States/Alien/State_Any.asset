@@ -10,11 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c773127affca4cd4aa686348d82f4ed7, type: 3}
-  m_Name: State_Any
+  m_Name: 
   m_EditorClassIdentifier: 
+  Name: 
   callEnterWhenDone: 0
+  actions: []
   transitions:
   - decisions:
     - {fileID: 11400000, guid: affdd4307b451a249b0b7311464c041f, type: 2}
-    trueState: {fileID: 11400000, guid: 0668bd651a5006546844e194c86a5bdc, type: 2}
-    falseState: {fileID: 0}
+    nextState: {fileID: 0}

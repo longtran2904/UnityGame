@@ -337,6 +337,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slider: {fileID: 4257054356033542385}
   healthText: {fileID: 4257054355660493936}
+  playerHealth:
+    type: 1
+    constantValue: 0
+    variable: {fileID: 11400000, guid: 92b4194a07ed137448f5e864ffc83a34, type: 2}
+    valueRange: {x: 0, y: 0}
 --- !u!1 &4257054356532346692
 GameObject:
   m_ObjectHideFlags: 0

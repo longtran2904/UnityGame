@@ -192,7 +192,6 @@ public static class MathUtils
         return System.Array.ConvertAll(v, x => (Vector2)x);
     }
 
-    // NOTE: I looked at this here https://forum.unity.com/threads/how-to-check-a-vector3-position-is-between-two-other-vector3-along-a-line.461474/, still try to figure it out.
     public static float DistanceLineSegmentPoint(Vector2 point, Vector2 startLine, Vector2 endLine)
     {
         // If startLine == endLine line segment is a point and will cause a divide by zero in the line segment test.
@@ -204,6 +203,24 @@ public static class MathUtils
         Vector2 line = endLine - startLine;
         Vector2 pointToStart = startLine - point;
         return (pointToStart - line * (Vector2.Dot(pointToStart, line) / Vector2.Dot(line, line))).magnitude;
+    }
+
+    /// <param name="angle">The angle to rotate to in radiant</param>
+    public static Vector2 Rotate(Vector2 v, float angle)
+    {
+        return new Vector2(
+        v.x * Mathf.Cos(angle) - v.y * Mathf.Sin(angle),
+        v.x * Mathf.Sin(angle) + v.y * Mathf.Cos(angle)
+    );
+    }
+
+    /// <summary>
+    /// Shorthand for performing Inverse Lerp on both x, y of a vector.
+    /// </summary>
+    /// <returns>The percent of value between start and end (Clamped between [(0, 0), (1, 1)])</returns>
+    public static Vector2 InverseLerp(Vector2 start, Vector2 end, Vector2 value)
+    {
+        return (value - start) / (end - start);
     }
     #endregion
 
@@ -221,6 +238,66 @@ public static class MathUtils
     public static Vector3Int[] ToVector3Int(this Vector2Int[] v)
     {
         return System.Array.ConvertAll(v, ToVector3Int);
+    }
+    #endregion
+
+    #region Rect
+    public static Vector2 TopLeft(this Rect rect)
+    {
+        return new Vector2(rect.xMin, rect.yMin);
+    }
+
+    public static Vector2 TopRight(this Rect rect)
+    {
+        return new Vector2(rect.xMax, rect.yMin);
+    }
+
+    public static Vector2 BottomLeft(this Rect rect)
+    {
+        return new Vector2(rect.xMin, rect.yMax);
+    }
+
+    public static Vector2 BottomRight(this Rect rect)
+    {
+        return new Vector2(rect.xMax, rect.yMax);
+    }
+
+    public static Rect ScaleSizeBy(this Rect rect, float scale)
+    {
+        return rect.ScaleSizeBy(scale, rect.center);
+    }
+
+    public static Rect ScaleSizeBy(this Rect rect, float scale, Vector2 pivotPoint)
+    {
+        Rect result = rect;
+        result.x -= pivotPoint.x;
+        result.y -= pivotPoint.y;
+        result.xMin *= scale;
+        result.xMax *= scale;
+        result.yMin *= scale;
+        result.yMax *= scale;
+        result.x += pivotPoint.x;
+        result.y += pivotPoint.y;
+        return result;
+    }
+
+    public static Rect ScaleSizeBy(this Rect rect, Vector2 scale)
+    {
+        return rect.ScaleSizeBy(scale, rect.center);
+    }
+
+    public static Rect ScaleSizeBy(this Rect rect, Vector2 scale, Vector2 pivotPoint)
+    {
+        Rect result = rect;
+        result.x -= pivotPoint.x;
+        result.y -= pivotPoint.y;
+        result.xMin *= scale.x;
+        result.xMax *= scale.x;
+        result.yMin *= scale.y;
+        result.yMax *= scale.y;
+        result.x += pivotPoint.x;
+        result.y += pivotPoint.y;
+        return result;
     }
     #endregion
 
@@ -269,7 +346,7 @@ public static class MathUtils
     public static bool RandomBool(float prob)
     {
         prob = Mathf.Clamp(prob, 0, 1);
-        return Random.value < prob;
+        return Random.value <= prob;
     }
 
     /// <summary>

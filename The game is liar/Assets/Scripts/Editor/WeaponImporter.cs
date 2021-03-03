@@ -70,7 +70,6 @@ public class WeaponImporter : AssetPostprocessor
                         // Create and refresh the assets
                         string path = "Assets/Weapon Stats/" + weaponStat.weaponName + ".asset";
                         AssetDatabase.CreateAsset(weaponStat, path);
-                        Selection.activeObject = weaponStat;
                         InternalDebug.Log($"Done creating at {path}!");
                     }
                     AssetDatabase.SaveAssets();

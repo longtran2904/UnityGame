@@ -3,7 +3,7 @@
 [CreateAssetMenu(menuName = "Enemy/Decision/Random")]
 public class RandomDecision : EnemyDecision
 {
-    [Range(0f, 1f)] public float probability = .5f;
+    public float probability;
 
     public override bool Decide(Enemy enemy)
     {

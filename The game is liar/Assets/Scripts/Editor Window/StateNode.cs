@@ -5,6 +5,7 @@ public class StateNode
 {
     public Rect box;
     public EnemyState state;
+    public AnyState anyState;
 
     public StateNode(Vector2 pos, Vector2 size, EnemyState state, string name) : this(pos, size, state)
     {
@@ -15,6 +16,14 @@ public class StateNode
     {
         box = new Rect(pos, size);
         this.state = state;
+        anyState = null;
+    }
+
+    public StateNode(Vector2 pos, Vector2 size, AnyState state)
+    {
+        box = new Rect(pos, size);
+        anyState = state;
+        this.state = null;
     }
 
     public CustomEvent HandleEvent(Event e)
@@ -24,7 +33,7 @@ public class StateNode
             switch (e.type)
             {
                 case EventType.MouseDrag:
-                    if (box.Contains(e.mousePosition))
+                    if (box.Contains(e.mousePosition) && e.button == 0)
                     {
                         box.position += e.delta;
                         return CustomEvent.Select;
@@ -45,7 +54,7 @@ public class StateNode
 
     public void Paint()
     {
-        GUI.Box(box, state.name);
+        GUI.Box(box, state?.Name ?? anyState.Name);
     }
 }
 

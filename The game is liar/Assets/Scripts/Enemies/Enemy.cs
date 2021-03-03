@@ -121,7 +121,7 @@ public class Enemy : MonoBehaviour
         }
 
         nextState = currentState.UpdateState(this);
-        fromAnyState = anyState?.CheckTransitions(this);
+        fromAnyState = anyState?.UpdateState(this);
         if (fromAnyState)
             MathUtils.Swap(ref nextState, ref fromAnyState);
     }

@@ -2,8 +2,12 @@
 public class EnemyTransition
 {
     public EnemyDecision[] decisions;
-    public EnemyState trueState;
-    public EnemyState falseState;
+    public EnemyState nextState;
+
+    public EnemyTransition(EnemyState state)
+    {
+        nextState = state;
+    }
 
     public bool Result(Enemy enemy)
     {

@@ -133,9 +133,10 @@ MonoBehaviour:
   textBox: {fileID: 7831927951065639235, guid: f579f0e1f060e054d9bb399204658a08, type: 3}
   delay: 0.5
   playerMoney:
-    useConstant: 0
+    type: 0
     constantValue: 0
     variable: {fileID: 11400000, guid: 18f7894f0d00c974e9002c94fb008838, type: 2}
+    valueRange: {x: 0, y: 0}
   startInventory: {fileID: 11400000, guid: a8eed55430eb6264282f7b7108eb916a, type: 2}
 --- !u!114 &5351910767788233492
 MonoBehaviour:
@@ -333,6 +334,7 @@ MonoBehaviour:
     constantValue: 0
     variable: {fileID: 11400000, guid: d73b181d6a27f6b4e9fa3c531b010816, type: 2}
   dust: {fileID: 7374823657885153856}
+  isJumping: 0
   footStep: {fileID: 11400000, guid: 46b4186a47581f443942f60ced371ed6, type: 2}
   touchGround: {fileID: 11400000, guid: 72f008222db79214493497c7cb396b0e, type: 2}
   jumpPressedRemember: 0.15
@@ -351,15 +353,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health:
-    useConstant: 0
+    type: 1
     constantValue: 0
     variable: {fileID: 11400000, guid: 92b4194a07ed137448f5e864ffc83a34, type: 2}
+    valueRange: {x: 0, y: 0}
   position: {fileID: 11400000, guid: de549abf0dae22842898ee569e51421b, type: 2}
   moneyText: {fileID: 0}
   money:
-    useConstant: 0
+    type: 0
     constantValue: 0
     variable: {fileID: 11400000, guid: 18f7894f0d00c974e9002c94fb008838, type: 2}
+    valueRange: {x: 0, y: 0}
   invincibleTime: 1
   invincibleOpacity: 0.5
   hurtMat: {fileID: 2100000, guid: a52db8d2e3bb7c84f9a724b122d7baa7, type: 2}

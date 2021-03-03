@@ -18,4 +18,9 @@ public class BoolReference
                 variable.value = value;
         }
     }
+
+    public static implicit operator bool(BoolReference reference)
+    {
+        return reference.value;
+    }
 }

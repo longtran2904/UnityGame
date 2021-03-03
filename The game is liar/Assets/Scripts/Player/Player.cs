@@ -8,8 +8,8 @@ public class Player : MonoBehaviour
 {
     public IntReference health;
     public Vector3Variable position;
-    public TextMeshProUGUI moneyText;
     public IntReference money;
+    private TextMeshProUGUI moneyText;
 
     private PlayerController controller;
     private Animator anim;
@@ -54,8 +54,9 @@ public class Player : MonoBehaviour
             StartCoroutine(Die());
             Destroy(this);
         }
-        moneyText?.SetText(money.ToString());
+        moneyText?.SetText(money.value.ToString());
         position.value = transform.position;
+        isInvincible = controller.isJumping;
     }
 
     IEnumerator Die()
