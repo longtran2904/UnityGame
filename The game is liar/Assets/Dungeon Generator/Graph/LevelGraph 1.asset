@@ -105,7 +105,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8074dc491ddc34f4e83332d9eae76980, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Position: {x: 110, y: 317}
+  Position: {x: 121.12043, y: 323.80112}
   Name: Hub
   IndividualRoomTemplates: []
   RoomTemplateSets:
@@ -205,8 +205,8 @@ MonoBehaviour:
   - {fileID: 260722789866622703}
   - {fileID: 8061237426825822044}
   EditorData:
-    PanOffset: {x: 96.5173, y: 16.165619}
-    Zoom: 0.9496058
+    PanOffset: {x: -186.20807, y: -88.19257}
+    Zoom: 1.5609258
   RoomType: ProceduralLevelGenerator.Unity.Generators.Common.LevelGraph.Room
   ConnectionType: ProceduralLevelGenerator.Unity.Generators.Common.LevelGraph.Connection
 --- !u!114 &260722789866622703
@@ -343,7 +343,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8074dc491ddc34f4e83332d9eae76980, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Position: {x: 285.81244, y: 326.42184}
+  Position: {x: 281.70258, y: 300.22144}
   Name: Hub
   IndividualRoomTemplates: []
   RoomTemplateSets:

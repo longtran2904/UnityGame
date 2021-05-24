@@ -5,9 +5,9 @@ using UnityEngine;
 public class StateGraph : ScriptableObject
 {
     public string pathToSaveNewState = "Assets/Files/Enemy/Enemy States";
+    public StateNode startNode;
+    public StateNode anyNode;
     public List<StateNode> nodes = new List<StateNode>();
-    public List<EnemyState> temporaryState = new List<EnemyState>(); // List of custom new states that create through context menu in the window
-    public AnyState anyState;
     private Dictionary<EnemyState, StateNode> stateCache = new Dictionary<EnemyState, StateNode>();
 
     public void ClearCache()

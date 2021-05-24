@@ -10,6 +10,7 @@ public class EditorZoom
     public Vector2 zoomOrigin;
 
     private Matrix4x4 prevMatrix;
+    private Vector2 prevOrigionToCenter;
 
     public Rect Begin(params GUILayoutOption[] options)
     {
@@ -39,6 +40,7 @@ public class EditorZoom
         GUI.matrix = prevMatrix; //restore the original matrix
         GUI.EndGroup();
         GUI.BeginGroup(new Rect(0.0f, editorWindowTabHeight, Screen.width, Screen.height));
+        prevOrigionToCenter = GetContentOffset();
     }
 
     public void HandleEvents()
@@ -82,7 +84,11 @@ public class EditorZoom
     {
         Vector2 offset = -zoomOrigin / zoom; //offset the midpoint
         offset -= (zoomArea.size / 2f) / zoom; //offset the center
-        InternalDebug.Log(offset);
         return offset;
+    }
+
+    public Vector2 GetDelta()
+    {
+        return GetContentOffset() - prevOrigionToCenter;
     }
 }

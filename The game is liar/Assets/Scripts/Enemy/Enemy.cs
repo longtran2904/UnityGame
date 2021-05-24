@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using System.Collections;
-using System.Collections.Generic;
 
 public class Enemy : MonoBehaviour
 {
@@ -18,8 +17,7 @@ public class Enemy : MonoBehaviour
     public bool lookAtPlayer;
     public bool damageWhenCollide;
 
-    public EnemyState startState;
-    public AnyState anyState; // This is like the "Any State" in the animation system;
+    public StateGraph graph;
     [HideInInspector] public EnemyState currentState;
     private EnemyState nextState;
     private EnemyState fromAnyState;
@@ -71,8 +69,8 @@ public class Enemy : MonoBehaviour
         defMat = sr.material;
         player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
 
-        startState.Enter(this);
-        currentState = startState;
+        graph.startNode.state.Enter(this);
+        currentState = graph.startNode.state;
 
         // Spawn the weapon if has one
         // TODO: Abstract this to a function somewhere
@@ -115,13 +113,12 @@ public class Enemy : MonoBehaviour
         else if (fromAnyState) // The current state was previouslly transit from "Any State" and will transit back to the most recent not-from-any state
         {
             nextState = fromAnyState;
-            if (anyState.callEnterWhenDone)
-                nextState.Enter(this);
+            nextState.Enter(this);
             fromAnyState = null;
         }
 
         nextState = currentState.UpdateState(this);
-        fromAnyState = anyState?.UpdateState(this);
+        fromAnyState = graph.anyNode?.state.UpdateState(this);
         if (fromAnyState)
             MathUtils.Swap(ref nextState, ref fromAnyState);
     }

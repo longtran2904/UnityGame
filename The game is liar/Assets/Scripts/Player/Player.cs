@@ -90,6 +90,7 @@ public class Player : MonoBehaviour
             CameraShaker.Instance.ShakeOnce(5, 4, .1f, .1f);
             controller.KnockBack();
             isInvincible = true;
+            ActivatePlayerInput(false);
             StartCoroutine(Flashing());
         }
     }
@@ -109,13 +110,14 @@ public class Player : MonoBehaviour
         temp.a = 1;
         sr.color = temp;
         isInvincible = false;
+        ActivatePlayerInput(true);
     }
 
-    public void ActivePlayerInput(bool active)
+    public void ActivatePlayerInput(bool active)
     {
         // Weapon
         shootAndRotateBehaviour.enabled = active;
-        weaponSwitching.enabled = false;
+        weaponSwitching.enabled = active;
 
         //Movement
         controller.enabled = active;

@@ -3,8 +3,11 @@ using System.Linq;
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "Enemy/State/Normal")]
-public class EnemyState : AnyState
+public class EnemyState : ScriptableObject
 {
+    public string Name; // For displaying in the graph editor
+    public string enterAnimation;
+
     public bool repeat;
     public bool wait;
     public bool random;
@@ -19,8 +22,9 @@ public class EnemyState : AnyState
     [ShowWhen("random")] public float[] probabilities;
     private int transitionIndex;
 
-    public string enterAnimation;
     [HideInInspector] public float elapsedTime;
+    public EnemyAction[] actions;
+    public List<EnemyTransition> transitions = new List<EnemyTransition>();
 
     public void Enter(Enemy enemy)
     {
@@ -39,7 +43,7 @@ public class EnemyState : AnyState
             transitionIndex = MathUtils.Choose(probabilities);
     }
 
-    public override EnemyState UpdateState(Enemy enemy)
+    public EnemyState UpdateState(Enemy enemy)
     {
         elapsedTime += Time.deltaTime;
 
@@ -63,7 +67,15 @@ public class EnemyState : AnyState
         return null;
     }
 
-    protected override EnemyState CheckTransitions(Enemy enemy)
+    private void DoActions(Enemy enemy)
+    {
+        for (int i = 0; i < actions.Length; i++)
+        {
+            actions[i].Act(enemy);
+        }
+    }
+
+    protected EnemyState CheckTransitions(Enemy enemy)
     {
         if (random && IsTransitionValid(enemy, transitions[transitionIndex]))
             return transitions[transitionIndex].nextState;
@@ -74,5 +86,12 @@ public class EnemyState : AnyState
                 return transitions[i].nextState;
         }
         return null;
+    }
+
+    protected bool IsTransitionValid(Enemy enemy, EnemyTransition transition)
+    {
+        if (transition.Result(enemy) && transition.nextState != this && transition.nextState != null)
+            return true;
+        return false;
     }
 }

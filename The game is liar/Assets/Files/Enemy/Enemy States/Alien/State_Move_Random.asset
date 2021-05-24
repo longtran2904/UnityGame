@@ -10,15 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9ea0e8b2ccf54ef4289d4e53e49153dd, type: 3}
-  m_Name: 
+  m_Name: State_Move_Random
   m_EditorClassIdentifier: 
   Name: 
-  callEnterWhenDone: 0
-  actions: []
-  transitions:
-  - decisions:
-    - {fileID: 11400000, guid: b5b3f5fcbe27dfc40aaa57241e0f6ba9, type: 2}
-    nextState: {fileID: 0}
+  enterAnimation: 
   repeat: 0
   wait: 0
   random: 0
@@ -35,5 +30,9 @@ MonoBehaviour:
       min: 0
       max: 0
   probabilities: []
-  enterAnimation: 
   elapsedTime: 0
+  actions: []
+  transitions:
+  - decisions:
+    - {fileID: 11400000, guid: b5b3f5fcbe27dfc40aaa57241e0f6ba9, type: 2}
+    nextState: {fileID: 0}

@@ -1,5 +1,4 @@
-﻿using System.IO;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
@@ -12,23 +11,19 @@ using UnityEditor;
  * 4. GUI uses Rect which uses a different coordinate system: (0, 0) on the top left conner
  * 
  * TODO:
- * 1. Fix triangle arrow
- * 3. Snap To Grid
- * 4. Pan and zoom the window around
- * 5. Fix the close selection window change the Event.delta
+ * 1. Snap To Grid
+ * 2. Pan and zoom the window around
+ * 3. Fix the close selection window change the Event.delta
  */
 public class StateMachineEditorWindow : EditorWindow
 {
     private StateGraph graph;
     private StateNode connectionStartNode;
     private EditorZoom zoomer = new EditorZoom();
-
-    private int statePickerWindow;
     private int graphPickerWindow;
 
-    private Vector2 nodeSize = new Vector2(250, 50);
-    private Vector2 mousePosition; // Save the mouse position when you open the selection window
-    private float gridSize = 8;
+    private Vector2 nodeSize = new Vector2(240, 80);
+    private int gridSize = 8;
     private bool snapToGrid;
 
     [MenuItem("Window/State Machine Editor")]
@@ -44,39 +39,41 @@ public class StateMachineEditorWindow : EditorWindow
         if (graph)
         {
             StateMachineEditorWindow window = OpenStateMachineEditorWindow();
-            window.graph = graph;
+            window.Init(graph);
             return true;
         }
         return false;
     }
 
-    [MenuItem("Assets/Create/Graph From Selected States")]
-    static void CreateGraphFromStates()
+    private void Init(StateGraph graph)
     {
-        if (Selection.objects.Length > 1)
+        this.graph = graph;
+        Vector2 nodePos = position.size / 2 - nodeSize / 2;
+        if (graph.anyNode.state == null)
         {
-            StateMachineEditorWindow window = OpenStateMachineEditorWindow();
-
-            StateGraph graph = CreateInstance<StateGraph>();
-            Vector2 offset = new Vector2(50, 50);
-            if (!window.CreateNodesFromPosition(Selection.objects, graph, offset, offset))
-            {
-                DestroyImmediate(graph);
-                return;
-            }
-
-            string pathToSelection = Path.GetDirectoryName(AssetDatabase.GetAssetPath(Selection.objects[0]));
-            GameUtils.CreateAssetFile(graph, GameUtils.CreateUniquePath(pathToSelection + "/New Graph.asset"), true);
-            graph.pathToSaveNewState = pathToSelection;
-            window.graph = graph;
+            EnemyState state = CreateInstance<EnemyState>();
+            state.name = "Any State";
+            state.Name = "Any State";
+            graph.anyNode = new StateNode(nodePos, nodeSize, state);
+            graph.nodes.Add(graph.anyNode);
+            AssetDatabase.AddObjectToAsset(state, graph);
+        }
+        if (graph.startNode.state == null)
+        {
+            EnemyState state = CreateInstance<EnemyState>();
+            state.name = "Start State";
+            state.Name = "Start State";
+            graph.startNode = new StateNode(nodePos + new Vector2(0, nodeSize.y * 2), nodeSize, state);
+            graph.nodes.Add(graph.startNode);
+            AssetDatabase.AddObjectToAsset(state, graph);
         }
     }
 
     private void OnGUI()
     {
         // TODO: Optimize -> Only call Repaint and other Paint method when need
-        DrawGrid(gridSize, new Color(0, 0, 0, .3f));
-        DrawGrid(gridSize * 10, new Color(0, 0, 0, .5f));
+        //DrawGrid(gridSize, new Color(0, 0, 0, .3f));
+        //DrawGrid(gridSize * 10, new Color(0, 0, 0, .5f));
         PaintButtons();
         if (graph)
         {
@@ -109,8 +106,17 @@ public class StateMachineEditorWindow : EditorWindow
                         connectionStartNode = null;
                     }
                     else
-                        Selection.activeObject = node.state ?? node.anyState;
+                    {
+                        if (snapToGrid) node.box.position = MathUtils.Round(node.box.position, gridSize);
+                        Selection.activeObject = node.state;
+                    }
                     break;
+            }
+
+            if (node.state.name != node.state.Name)
+            {
+                node.state.name = node.state.Name;
+                //AssetDatabase.RenameAsset(AssetDatabase.GetAssetPath(node.state), node.state.Name);
             }
 
             if (nodeEvent != CustomEvent.None)
@@ -140,68 +146,9 @@ public class StateMachineEditorWindow : EditorWindow
                     return true;
                 }
                 break;
-            case EventType.DragUpdated:
-                DragAndDrop.visualMode = DragAndDropVisualMode.Copy;
-                Event.current.Use();
-                break;
-            case EventType.DragPerform:
-                DragAndDrop.AcceptDrag();
-                // Check if is dragged from Asset Folder
-                if (DragAndDrop.paths.Length == DragAndDrop.objectReferences.Length)
-                    CreateNodesFromPosition(DragAndDrop.objectReferences, graph, e.mousePosition, new Vector2(50, 50));
-                break;
-        }
-
-        if (e.commandName == "ObjectSelectorUpdated" && EditorGUIUtility.GetObjectPickerControlID() == statePickerWindow)
-        {
-            statePickerWindow = -1;
-            EnemyState state = EditorGUIUtility.GetObjectPickerObject() as EnemyState;
-            AnyState anyState = EditorGUIUtility.GetObjectPickerObject() as AnyState;
-            if (state && !graph.nodes.Contains(graph.GetNodeByState(state)))
-            {
-                graph.nodes.Add(new StateNode(mousePosition, nodeSize, state));
-                return true;
-            }
-            else if (anyState && !graph.anyState)
-            {
-                graph.nodes.Add(new StateNode(mousePosition, nodeSize, anyState));
-                return true;
-            }
         }
 
         return false;
-    }
-
-    private bool CreateNodesFromPosition(Object[] objects, StateGraph graph, Vector2 startPos, Vector2 distanceBtwNode)
-    {
-        Vector2 pos = startPos;
-        foreach (Object obj in objects)
-        {
-            EnemyState state = obj as EnemyState;
-            if (state)
-                AddNode(new StateNode(pos, nodeSize, state));
-            else
-            {
-                AnyState any = obj as AnyState;
-                if (any && !graph.anyState)
-                {
-                    AddNode(new StateNode(pos, nodeSize, any));
-                    graph.anyState = any;
-                }
-                else
-                    return false;
-            }
-        }
-        return true;
-
-        void AddNode(StateNode node)
-        {
-            InternalDebug.Log(node.state ?? node.anyState);
-            graph.nodes.Add(node);
-            pos.x += nodeSize.x + distanceBtwNode.x;
-            if (pos.x + nodeSize.x >= position.width)
-                pos = new Vector2(startPos.x, pos.y + nodeSize.y + distanceBtwNode.y);
-        }
     }
     
     private void OpenContextMenu(Vector2 mousePos)
@@ -209,24 +156,13 @@ public class StateMachineEditorWindow : EditorWindow
         GenericMenu menu = new GenericMenu();
         menu.AddItem(new GUIContent("Create New State"), false, () =>
         {
-            StateNode node = new StateNode(mousePos, nodeSize, CreateInstance<EnemyState>(), CreateUniqueName());
+            EnemyState state = CreateInstance<EnemyState>();
+            state.Name = CreateUniqueName();
+            state.name = state.Name;
+            StateNode node = new StateNode(mousePos, nodeSize, state);
             graph.nodes.Add(node);
-            graph.temporaryState.Add(node.state);
-        });
-        menu.AddItem(new GUIContent("Create Any State"), false, () =>
-        {
-            if (!graph.anyState)
-            {
-                StateNode node = new StateNode(mousePos, nodeSize, CreateInstance<AnyState>());
-                graph.nodes.Add(node);
-                graph.anyState = node.anyState; 
-            }
-        });
-        menu.AddItem(new GUIContent("Add Existing State"), false, () =>
-        {
-            mousePosition = mousePos;
-            statePickerWindow = EditorGUIUtility.GetControlID(FocusType.Passive) + 100;
-            EditorGUIUtility.ShowObjectPicker<EnemyState>(null, false, string.Empty, statePickerWindow);
+            AssetDatabase.AddObjectToAsset(node.state, graph);
+            AssetDatabase.SaveAssets();
         });
         menu.ShowAsContext();
     }
@@ -264,18 +200,14 @@ public class StateMachineEditorWindow : EditorWindow
         {
             graph.nodes.Remove(node);
             graph.ClearCache();
+            AssetDatabase.RemoveObjectFromAsset(node.state);
+            AssetDatabase.SaveAssets();
 
             // Remove all transitions that transit to destroyed node
             foreach (var n in graph.nodes)
                 for (int i = n.state.transitions.Count - 1; i >= 0; i--)
                     if (n.state.transitions[i].nextState == node.state)
                         n.state.transitions.RemoveAt(i);
-
-            if (graph.temporaryState.Contains(node.state))
-            {
-                DestroyImmediate(node.state);
-                graph.temporaryState.Remove(node.state);
-            }
         });
         menu.ShowAsContext();
     }
@@ -300,15 +232,6 @@ public class StateMachineEditorWindow : EditorWindow
         {
             graphPickerWindow = GUIUtility.GetControlID(FocusType.Passive) + 100;
             EditorGUIUtility.ShowObjectPicker<StateGraph>(null, false, string.Empty, graphPickerWindow);
-        }
-
-        if (GUILayout.Button(new GUIContent("Export All New States"), EditorStyles.toolbarButton, GUILayout.Width(150)))
-        {
-            foreach (var state in graph.temporaryState)
-            {
-                GameUtils.CreateAssetFile(state, graph.pathToSaveNewState + $"/{state.Name}.asset");
-            }
-            graph.temporaryState.Clear();
         }
 
         GUILayout.EndHorizontal();
@@ -340,18 +263,12 @@ public class StateMachineEditorWindow : EditorWindow
         List<CustomLine> edges = new List<CustomLine>();
         foreach (var node in graph.nodes)
         {
-            AnyState state = node.state ?? node.anyState;
-            if (!state) continue;
-            foreach (var transition in state.transitions)
+            foreach (var transition in node.state.transitions)
             {
                 if (transition.nextState)
                 {
-                    StateNode endNode = graph.GetNodeByState(transition.nextState);
-                    if (endNode == null) // When add an existing state that has a transition to a outside state that isn't in graph
-                        continue;
-
                     Vector2 startPos = node.box.center;
-                    Vector2 endPos = endNode.box.center;
+                    Vector2 endPos = graph.GetNodeByState(transition.nextState).box.center;
 
                     CustomLine edge = new CustomLine(startPos, endPos, 10);
                     if (edges.Contains(edge))
@@ -377,6 +294,7 @@ public class StateMachineEditorWindow : EditorWindow
     private void DrawArrow(Vector2 startPos, Vector2 endPos)
     {
         Vector2 center = MathUtils.Average(startPos, endPos);
+        Color color = Handles.color;
         Vector2 dir = (endPos - startPos).normalized;
 
         // The 3 points of the equilateral triangle
@@ -385,9 +303,15 @@ public class StateMachineEditorWindow : EditorWindow
         Vector3 c = center + MathUtils.Rotate(dir, -120 * Mathf.Deg2Rad) * 10;
 
         // Change the point's coordinate from GUI's Coordinate ((0, 0) on the top left conner) to the normal coordinate ((0, 0) on the bottom left conner)
-        a.y = position.height - 1 - a.y;
-        b.y = position.height - 1 - b.y;
-        c.y = position.height - 1 - c.y;
+#if true
+        a.y = position.height - 13.5f - a.y;
+        b.y = position.height - 13.5f - b.y;
+        c.y = position.height - 13.5f - c.y;
+#else
+        a.y = position.height - a.y;
+        b.y = position.height - b.y;
+        c.y = position.height - c.y;
+#endif
 
         // Return the value in [(0, 0), (1, 1)] because that what GL.Vertex use
         a = MathUtils.InverseLerp(Vector2.zero, position.size, a);
@@ -401,12 +325,15 @@ public class StateMachineEditorWindow : EditorWindow
     {
         foreach (var node in graph.nodes)
         {
+            //node.box.position += zoomer.GetDelta();
             node.Paint();
         }
     }
 
     private void DrawGrid(float gridSpacing, Color gridColor)
     {
+        gridSpacing = gridSpacing * zoomer.zoom;
+
         var widthDivs = Mathf.CeilToInt(position.width / gridSpacing);
         var heightDivs = Mathf.CeilToInt(position.height / gridSpacing);
 
@@ -414,16 +341,23 @@ public class StateMachineEditorWindow : EditorWindow
         var originalHandleColor = Handles.color;
         Handles.color = gridColor;
 
+        //Vector3 panOffset = zoomer.GetContentOffset() + position.size / 2;
+        //Vector3 panOffset += -(zoomer.zoom * (zoomCenter - panOffset * oldZoom) - zoomCenter * oldZoom) / (zoomer.zoom * oldZoom) - panOffset;
+        //Vector3 newOffset = new Vector3((zoomer.zoom * panOffset.x) % gridSpacing, (zoomer.zoom * panOffset.y) % gridSpacing, 0);
+        Vector3 newOffset = Vector3.zero;
+        //Vector3 newOffset = panOffset;
+        //InternalDebug.Log(newOffset);
+
         // Draw vertical lines
         for (var i = 0; i < widthDivs + 1; i++)
         {
-            Handles.DrawLine(new Vector3(gridSpacing * i, -gridSpacing, 0), new Vector3(gridSpacing * i, position.height + gridSpacing, 0f));
+            Handles.DrawLine(new Vector3(gridSpacing * i, -gridSpacing, 0) + newOffset, new Vector3(gridSpacing * i, position.height + gridSpacing, 0f) + newOffset);
         }
 
         // Draw horizontal lines
         for (var j = 0; j < heightDivs + 1; j++)
         {
-            Handles.DrawLine(new Vector3(-gridSpacing, gridSpacing * j, 0), new Vector3(position.width + gridSpacing, gridSpacing * j, 0f));
+            Handles.DrawLine(new Vector3(-gridSpacing, gridSpacing * j, 0) + newOffset, new Vector3(position.width + gridSpacing, gridSpacing * j, 0f) + newOffset);
         }
 
         Handles.color = originalHandleColor;

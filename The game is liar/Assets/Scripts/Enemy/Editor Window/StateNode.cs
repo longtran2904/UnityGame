@@ -5,7 +5,6 @@ public class StateNode
 {
     public Rect box;
     public EnemyState state;
-    public AnyState anyState;
 
     public StateNode(Vector2 pos, Vector2 size, EnemyState state, string name) : this(pos, size, state)
     {
@@ -16,14 +15,6 @@ public class StateNode
     {
         box = new Rect(pos, size);
         this.state = state;
-        anyState = null;
-    }
-
-    public StateNode(Vector2 pos, Vector2 size, AnyState state)
-    {
-        box = new Rect(pos, size);
-        anyState = state;
-        this.state = null;
     }
 
     public CustomEvent HandleEvent(Event e)
@@ -54,7 +45,7 @@ public class StateNode
 
     public void Paint()
     {
-        GUI.Box(box, state?.Name ?? anyState.Name);
+        GUI.Box(box, state?.Name);
     }
 }
 

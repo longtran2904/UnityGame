@@ -127,18 +127,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stat: {fileID: 11400000, guid: 1532d8e462fbbfe44a02eccb5c9b5ae8, type: 2}
-  offset: 0
-  projectilePrefab: {fileID: 1499001105755548140, guid: f93931237b1100d4f8ff9518401af730,
-    type: 3}
-  shotPos: {fileID: 497593185843999300}
+  shootPos: {fileID: 0}
   muzzleFlash: {fileID: 3161168585796676830, guid: 6fbd7c4d790e60a4e8436c0635bf376a,
     type: 3}
   muzzelFlashTime: 0.03
-  burstCount: 0
-  hitEffect: {fileID: 3092298337086151100, guid: b464239d2df71e34a813cc57e7c2a3e1,
-    type: 3}
-  ammoText: {fileID: 0}
-  canSwitch: 1
+  currentAmmo: 0
+  posOffset: {x: 0, y: 0}
 --- !u!114 &497593186375816573
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -151,13 +145,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad693bf794c039b44977e66357db2b45, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  slider: {fileID: 0}
-  reloadBar: {fileID: 0}
   curve:
     serializedVersion: 2
-    m_Curve: []
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 1
+      outSlope: 1
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 1
+      outSlope: 1
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  perfectRange: 20
-  activeRange: 60
+  perfectSize: 20
+  activeSize: 60

@@ -302,6 +302,28 @@ public static class MathUtils
     #endregion
 
     #region Math Calculation
+    /// <summary>
+    /// Rounds a given number to the given nearest number.
+    /// </summary>
+    /// <param name="i"></param>
+    /// <param name="nearest"></param>
+    /// <returns></returns>
+    public static int Round(float i, int nearest)
+    {
+        return (int)System.Math.Round(i / (double)nearest) * nearest;
+    }
+
+    /// <summary>
+    /// Rounds a given vector to the given nearest number.
+    /// </summary>
+    /// <param name="position"></param>
+    /// <param name="nearest"></param>
+    /// <returns></returns>
+    public static Vector2 Round(Vector2 position, int nearest)
+    {
+        return new Vector2(Round(position.x, nearest), Round(position.y, nearest));
+    }
+
     public static Vector2 GetBQCPoint(float t, Vector2 p0, Vector2 p1, Vector2 p2)
     {
         float u = 1 - t;
@@ -464,6 +486,17 @@ public static class MathUtils
                 randomPoint -= probs[i];
         }
         return probs.Length - 1;
+    }
+
+    public static void Shuffle<T>(T[] deck)
+    {
+        for (int i = 0; i < deck.Length; i++)
+        {
+            T temp = deck[i];
+            int randomIndex = Random.Range(0, deck.Length);
+            deck[i] = deck[randomIndex];
+            deck[randomIndex] = temp;
+        }
     }
     #endregion
 

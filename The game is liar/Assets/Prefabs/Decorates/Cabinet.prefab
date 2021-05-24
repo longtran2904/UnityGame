@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 4786136068067003096}
   - component: {fileID: 4786136068067003097}
   m_Layer: 0
-  m_Name: cabinet
+  m_Name: Cabinet
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -121,11 +121,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b0294d20441374d429fd379e9ff0fb66, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  particleScaleMultipler: 1
   destroyParticle: {fileID: 4463674184171219780, guid: 3a3a4bd149147a04f87bed79a3e2edde,
     type: 3}
   remainParticle: {fileID: 2522514208885787188, guid: 78660d3e120f24940a4e6496f9d1873b,
     type: 3}
   dropRange:
-    probability: 0
     min: 0
     max: 0

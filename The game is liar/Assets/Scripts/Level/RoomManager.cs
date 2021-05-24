@@ -14,21 +14,89 @@ public class RoomManager : MonoBehaviour
     public BoundsIntVariable currentBoundsInt;
 
     public const string startingRoom = "Starting Room";
+    public TileBase doorTile;
+    public TileBase normalTile;
 
     // Start is called before the first frame update
     void Start()
     {
-        // Find starting room and remove all door blocks
+        List<Vector3Int> removeTilesPos = new List<Vector3Int>();
+        List<Vector3Int> doorTilesPos   = new List<Vector3Int>();
+        List<Vector3Int> wallTilesPos   = new List<Vector3Int>();
+
+        // Find starting room and remove all door tiles
         foreach (var room in rooms)
         {
             if (room.RoomTemplatePrefab.name == startingRoom)
-            {
                 currentRoom.value = room;
-            }
-            RemoveBlockTile(room);
-        }
-        tilemap.RefreshAllTiles();
 
+            Tilemap wallTilemap = room.RoomTemplateInstance.transform.Find("tilemaps").GetChild(2).GetComponent<Tilemap>();
+            wallTilemap.CompressBounds();
+            BoundsInt roomBounds = wallTilemap.cellBounds;
+
+            HandleTiles(room.Doors, null, pos => removeTilesPos.Add(pos));
+            HandleTiles(EdgarHelper.GetUnusedDoors(room), pos => doorTilesPos.Add(pos), pos => wallTilesPos.Add(pos));
+
+            /// <summary>
+            /// Check to see if there are any tiles that will be set/removed when a door is opened/closed.
+            /// </summary>
+            /// <param name="doorPosFunc">
+            /// function to be executed if the current tile position is a special tile and at door position.
+            /// </param>
+            /// <param name="otherPosFunc">
+            /// function to be executed if the current tile position is a special tile and not at door position.
+            /// </param>
+            void HandleTiles(List<DoorInstance> doors, System.Action<Vector3Int> doorPosFunc, System.Action<Vector3Int> otherPosFunc)
+            {
+                foreach (var door in doors)
+                {
+                    TileBase tileAtDoor = tilemap.GetTile(door.DoorLine.From);
+                    if (tileAtDoor != doorTile)
+                    {
+                        for (int x = roomBounds.xMin; x <= roomBounds.xMax; x++)
+                        {
+                            for (int y = roomBounds.yMin; y <= roomBounds.yMax; y++)
+                            {
+                                Vector3Int pos = new Vector3Int(x, y, 0);
+                                if (pos == door.DoorLine.From || pos == door.DoorLine.To)
+                                {
+                                    doorPosFunc?.Invoke(pos);
+                                }
+                                else if (tilemap.GetTile(pos) == tileAtDoor)
+                                {
+                                    otherPosFunc?.Invoke(pos);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            Vector3Int removeDir = Vector3Int.right;
+            foreach (var door in room.Doors)
+            {
+                if (door.ConnectedRoomInstance != null)
+                {
+                    removeDir = -(Vector3Int)door.FacingDirection;
+                    Remove(door.DoorLine.From + room.Position + removeDir);
+                    Remove(door.DoorLine.To + room.Position + removeDir);
+                }
+            }
+
+            void Remove(Vector3Int pos)
+            {
+                if (tilemap.GetTile(pos))
+                {
+                    removeTilesPos.Add(pos);
+                    Remove(pos + removeDir);
+                }
+            }
+        }
+
+        tilemap.SetTiles(doorTilesPos.ToArray(), new TileBase[doorTilesPos.Count].Populate(doorTile));
+        tilemap.SetTiles(removeTilesPos.ToArray(), null);
+        tilemap.SetTiles(wallTilesPos.ToArray(), new TileBase[wallTilesPos.Count].Populate(normalTile));
+        tilemap.RefreshAllTiles();
         currentBoundsInt.value = EdgarHelper.GetRoomBoundsInt(currentRoom.value);
     }
 
@@ -41,6 +109,7 @@ public class RoomManager : MonoBehaviour
         }
     }
 
+    // Called by the custom Game Event
     public void LockRoom()
     {
         EnemySpawner currentSpawner = currentRoom.value.RoomTemplateInstance.transform.Find("Enemies")?.GetComponent<EnemySpawner>();
@@ -68,42 +137,14 @@ public class RoomManager : MonoBehaviour
         }
     }
 
-    public void UnLockRoom()
+    // Called by the custom Game Event
+    public void UnlockRoom()
     {
         foreach (var doorInstance in currentRoom.value.Doors)
         {
             Door door = doorInstance.ConnectedRoomInstance.RoomTemplateInstance.transform.Find("Doors")?.GetComponentInChildren<Door>();
             if (door)
                 door.canOpen = true;
-        }
-    }
-
-    void RemoveBlockTile(RoomInstance room)
-    {
-        Vector2Int removeDir = Vector2Int.right;
-
-        if (room == null)
-        {
-            return;
-        }
-
-        foreach (var door in room.Doors)
-        {
-            if (door.ConnectedRoomInstance != null)
-            {
-                removeDir = -door.FacingDirection;
-                RemoveTile((Vector2Int)(door.DoorLine.From + room.Position) + removeDir);
-                RemoveTile((Vector2Int)(door.DoorLine.To + room.Position) + removeDir);
-            }
-        }
-
-        void RemoveTile(Vector2Int pos)
-        {
-            if (tilemap.GetTile((Vector3Int)pos))
-            {
-                tilemap.SetTile((Vector3Int)pos, null);
-                RemoveTile(pos + removeDir);
-            }
         }
     }
 }

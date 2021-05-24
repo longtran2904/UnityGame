@@ -54,7 +54,7 @@ public class DialogueManager : MonoBehaviour
             sentences.Enqueue(sentence);
         }
         dialogueBox.SetActive(true);
-        player.ActivePlayerInput(false);
+        player.ActivatePlayerInput(false);
         DisplayNextSentence();
     }
 
@@ -135,7 +135,7 @@ public class DialogueManager : MonoBehaviour
         IEnumerator EnablePlayerInput()
         {
             yield return new WaitForEndOfFrame();
-            player.ActivePlayerInput(true);
+            player.ActivatePlayerInput(true);
         }
     }
 }

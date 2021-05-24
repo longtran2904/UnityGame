@@ -1,28 +1,9 @@
 ﻿using System.Collections;
 using System.IO;
-using UnityEditor;
 using UnityEngine;
 
 public static class GameUtils
 {
-    /// <summary>
-    /// Create an asset at path. This will also save and refresh so use CreateAssetFiles if creat multiple assets.
-    /// </summary>
-    /// <param name="obj">The object to create asset from</param>
-    /// <param name="path">The path relative to the project, must start with "Assets/" and has a extension</param>
-    /// <param name="focus">Whether to focus project window and change the active selection to the new obj</param>
-    public static void CreateAssetFile(Object obj, string path, bool focus = false)
-    {
-        AssetDatabase.CreateAsset(obj, path);
-        AssetDatabase.SaveAssets();
-        AssetDatabase.Refresh();
-        if (focus)
-        {
-            EditorUtility.FocusProjectWindow();
-            Selection.activeObject = obj; 
-        }
-    }
-
     public static string CreateUniquePath(string path)
     {
         string dir = Path.GetDirectoryName(path);
