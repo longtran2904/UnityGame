@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-// Physics2D cast -> GetMask
+// NOTE: Physics2D cast -> GetMask
+//       Physics2D cast always return a RaycastHit2D object (implicit convert to bool), the collider property of the object will equal to null if it didn't hit anything
+//       Physics2D cast will ignore any collider that have the layer mask different the layerMask property
+//       transform.right change when rotation/eulerAngle change (angle = (0, 180, 0) -> transform.right = (-1, 0) )
 
 public class PlayerController : MonoBehaviour
 {    
@@ -76,7 +79,6 @@ public class PlayerController : MonoBehaviour
 
         GroundCheck();
         Jump();
-
         lastMoveInput = moveInput;
     }
 

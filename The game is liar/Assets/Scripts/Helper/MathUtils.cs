@@ -521,4 +521,27 @@ public static class MathUtils
         a = b;
         b = temp;
     }
+
+    public static void ToFirst<T>(this T[] array, int index)
+    {
+        if (index == 0 || index >= array.Length) return;
+        T temp = array[index];
+        for (int i = 0; i <= index; i++)
+        {
+            Swap(ref temp, ref array[i]);
+        }
+    }
+
+    public static void ToFirst<T>(this List<T> list, int index) where T : class
+    {
+        if (index == 0 || index >= list.Count) return;
+        T temp = list[index];
+        for (int i = 0; i <= index; i++)
+        {
+            // Can't use Swap like in ToFirst for array because list[i] is an indexer and can't be passed by ref.
+            T _temp = temp;
+            temp = list[i];
+            list[i] = _temp;
+        }
+    }
 }

@@ -1,40 +1,29 @@
-﻿using UnityEngine;
-
-[System.Serializable]
+﻿[System.Serializable]
 public class IntReference
 {
-    public FieldType type;
-    [ShowWhen("type", FieldType.Constant)] public int constantValue;
-    [ShowWhen("type", FieldType.Reference)] public IntVariable variable;
-    [ShowWhen("type", FieldType.Random)] public Vector2Int valueRange;
+    public bool useConstant = true;
+    public int constantValue;
+    public IntVariable variable;
 
     public int value
     {
         get
         {
-            switch (type)
-            {
-                case FieldType.Reference:
-                    return variable.value;
-                case FieldType.Random:
-                    return Random.Range(valueRange.x, valueRange.y + 1);
-                default:
-                    return constantValue;
-            }
+            return useConstant ? constantValue : variable.value;
         }
         set
         {
-            if (type == FieldType.Constant)
+            if (useConstant)
                 constantValue = value;
-            else if (type == FieldType.Reference)
+            else
                 variable.value = value;
         }
     }
 
     public IntReference(int value)
     {
+        useConstant = true;
         constantValue = value;
-        type = FieldType.Constant;
     }
 
     public static implicit operator int(IntReference reference)

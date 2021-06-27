@@ -21,14 +21,12 @@ public static class GameUtils
 
     public static void DrawGLTriangle(Vector3 a, Vector3 b, Vector3 c)
     {
-        GL.PushMatrix();
-        GL.LoadOrtho();
-        GL.Begin(GL.TRIANGLES);
-        GL.Vertex(a);
-        GL.Vertex(b);
-        GL.Vertex(c);
-        GL.End();
-        GL.PopMatrix();
+        DrawGLTriangle(a, b, c, Color.white);
+    }
+
+    public static void DrawGLTriangle(Vector3 a, Vector3 b, Vector3 c, Color color)
+    {
+        DrawGL(GL.TRIANGLES, color, a, b, c);
     }
 
     public static void DrawGLLine(Vector3 a, Vector3 b)
@@ -38,12 +36,23 @@ public static class GameUtils
 
     public static void DrawGLLine(Vector3 a, Vector3 b, Color color)
     {
+        DrawGL(GL.LINES, color, a, b);
+    }
+
+    private static void DrawGL(int mode, Color color, params Vector3[] vertices)
+    {
+        Material mat = new Material(Shader.Find("Sprites/Default"));
+        mat.hideFlags = HideFlags.HideAndDontSave;
+
         GL.PushMatrix();
+        mat.SetPass(0);
         GL.LoadOrtho();
-        GL.Begin(GL.LINES);
+        GL.Begin(mode);
         GL.Color(color);
-        GL.Vertex(a);
-        GL.Vertex(b);
+        foreach (var vertex in vertices)
+        {
+            GL.Vertex(vertex);
+        }
         GL.End();
         GL.PopMatrix();
     }
