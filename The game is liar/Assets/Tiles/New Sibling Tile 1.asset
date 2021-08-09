@@ -12,14 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f969ef0503cc7d94d9221e0e47b3452c, type: 3}
   m_Name: New Sibling Tile 1
   m_EditorClassIdentifier: 
-  m_DefaultSprite: {fileID: 6886029275248449733, guid: fd440b3e91764e345990b2cbf61fc69b,
+  m_DefaultSprite: {fileID: 5858540492619512500, guid: fd440b3e91764e345990b2cbf61fc69b,
     type: 3}
   m_DefaultGameObject: {fileID: 0}
   m_DefaultColliderType: 1
   m_TilingRules:
   - m_Id: 0
     m_Sprites:
-    - {fileID: 6886029275248449733, guid: fd440b3e91764e345990b2cbf61fc69b, type: 3}
+    - {fileID: 5858540492619512500, guid: fd440b3e91764e345990b2cbf61fc69b, type: 3}
     m_GameObject: {fileID: 0}
     m_AnimationSpeed: 1
     m_PerlinScale: 0.5
@@ -33,7 +33,7 @@ MonoBehaviour:
     m_RuleTransform: 0
   - m_Id: 1
     m_Sprites:
-    - {fileID: -7997046371764358591, guid: fd440b3e91764e345990b2cbf61fc69b, type: 3}
+    - {fileID: -2044222535130456021, guid: fd440b3e91764e345990b2cbf61fc69b, type: 3}
     m_GameObject: {fileID: 0}
     m_AnimationSpeed: 1
     m_PerlinScale: 0.5
@@ -46,7 +46,7 @@ MonoBehaviour:
     m_RuleTransform: 0
   - m_Id: 2
     m_Sprites:
-    - {fileID: -7379430224469622496, guid: fd440b3e91764e345990b2cbf61fc69b, type: 3}
+    - {fileID: 6959151424881392730, guid: fd440b3e91764e345990b2cbf61fc69b, type: 3}
     m_GameObject: {fileID: 0}
     m_AnimationSpeed: 1
     m_PerlinScale: 0.5
