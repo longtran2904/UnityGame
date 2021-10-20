@@ -1,14 +1,16 @@
 ﻿using UnityEngine;
 using System;
 
-// NOTE: These abilities happen in an amount of time (through multiple frames) and need to be kept track of.
-public enum MultipleFramesAbility
+public enum AbilityType
 {
-    None,
-    JumpAttack,
-    ChargeAttack,
-    Shoot,
+    Teleport,
+    Flash,
+    Charge,
     Explode,
+    Split,
+    Shoot,
+
+    AbilityCount
 }
 
 public enum ActivationType
@@ -22,15 +24,14 @@ public struct TeleportAbility
 {
     public bool flipVertically;
     [HideInInspector] public TrailRenderer trail;
-    public float distanceToPlayer;
-    public Optional<float> DistanceToTeleportX;
-    public Optional<float> DistanceToTeleportY;
+    [MinMax(0, 10)] public RangedFloat distanceToPlayer;
+    public Optional<float> distanceToTeleportX;
+    public Optional<float> distanceToTeleportY;
 }
 
 [Serializable]
 public struct FlashAbility
 {
-    public float flashTime;
     public float timeBtwFlashes;
     public Color color;
     public Material triggerMat;
@@ -48,21 +49,13 @@ public struct ChargeAttack
 }
 
 [Serializable]
-public struct JumpAttack
-{
-    public int jumpDamage;
-    public float distanceToJump;
-    public JumpData jumpData;
-}
-
-[Serializable]
 public struct ExplodeAbility
 {
     public ActivationType activationType;
     public FlashAbility flashData;
     public float explodeTime;
     public float explodeRange;
-    public float distanceToExplode;
+    [ShowWhen("activationType", ActivationType.InRange)] public float distanceToExplode;
     public int explodeDamage;
     public GameObject explodeParticle;
     public string explodeSound;
@@ -71,7 +64,6 @@ public struct ExplodeAbility
 [Serializable]
 public struct SplitAbility
 {
-    public int numberOfSplits;
     public GameObject splitEnemy;
 }
 
@@ -79,18 +71,17 @@ public struct SplitAbility
 public enum BulletPattern
 {
     Gun,
-    Circle,
-    Square,
-    Triangle,
+    Burst,
 }
 
 [Serializable]
 public struct ShootAbility
 {
     public BulletPattern shootPattern;
+    public float cooldown;
 
-    public ShootPatternData patternData;
-    public GunData gunData;
+    [ShowWhen("shootPattern", BulletPattern.Gun)] public GunData gunData;
+    [ShowWhen("shootPattern", BulletPattern.Burst)] public BurstData burstData;
 }
 
 [Serializable]
@@ -107,26 +98,19 @@ public struct GunData
 }
 
 [Serializable]
-public struct ShootPatternData
+public struct BurstData
 {
+    [Header("Projectile Data")]
+    public int damage;
+    public string projectile;
+    public string sfx;
+
+    [Header("Burst Data")]
     public int numberOfBullets;
-    public float delayBulletTime;
-
-    public bool rotate;
-    [ShowWhen("rotate")] public float rotateSpeed;
-    [ShowWhen("rotate")] public bool clockwise;
-
-    public BulletHolder bulletHolder;
-    [HideInInspector] public Projectile[] bullets;
-    [HideInInspector] public Vector2[] bulletsPos;
-
-    // Circle
     public int radius;
+    public int waves;
+    public float timeBtwWaves;
 
-    // Square
-    public Vector2 size;
-
-    // Triangle
-    public float distanceToCenter;
-    public float rotation;
+    [HideInInspector] public Vector3[] positions;
+    [HideInInspector] public Quaternion[] rotations;
 }

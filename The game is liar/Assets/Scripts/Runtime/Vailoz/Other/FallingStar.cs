@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+[ExecuteInEditMode]
 public class FallingStar : MonoBehaviour
 {
     [Header("Shader")]
@@ -25,6 +26,7 @@ public class FallingStar : MonoBehaviour
     private RenderTexture renderTex;
     private new Camera camera;
     private RawImage image;
+    private RectTransform canvas;
 
     private void Start()
     {
@@ -37,21 +39,36 @@ public class FallingStar : MonoBehaviour
         block.SetFloat("_MaxTimeNoiseScale", maxTimeNoiseScale.randomValue);
         sr.SetPropertyBlock(block);
 
-        renderTex = new RenderTexture(size.x, size.y, 0);
-        renderTex.Create();
-        camera = new GameObject("Window Camera", typeof(Camera)).GetComponent<Camera>();
-        camera.transform.parent = transform;
-        camera.transform.localPosition = new Vector3(0, 0, -10);
-        camera.orthographic = true;
-        camera.orthographicSize = transform.localScale.x / 2;
-        camera.cullingMask = LayerMask.GetMask("Meteor");
-        camera.targetTexture = renderTex;
-        image = GetComponentInChildren<RawImage>();
-        image.texture = renderTex;
-        image.canvas.worldCamera = camera;
+        canvas = GetComponentInChildren<RectTransform>();
+        canvas.sizeDelta = sr.size;
 
-        StartCoroutine(SpawnMeteor());
+        if (Application.isPlaying)
+        {
+            renderTex = new RenderTexture((int)(size.x * sr.size.x), (int)(size.y * sr.size.y), 0);
+            renderTex.Create();
+
+            camera = new GameObject("Window Camera", typeof(Camera)).GetComponent<Camera>();
+            camera.transform.parent = transform;
+            camera.transform.localPosition = new Vector3(0, 0, -10);
+            camera.orthographic = true;
+            camera.orthographicSize = transform.localScale.x / 2;
+            camera.cullingMask = LayerMask.GetMask("Meteor");
+            camera.targetTexture = renderTex;
+
+            image = GetComponentInChildren<RawImage>();
+            image.texture = renderTex;
+            image.canvas.worldCamera = camera;
+
+            StartCoroutine(SpawnMeteor());
+        }
     }
+
+#if UNITY_EDITOR
+    private void Update()
+    {
+        canvas.sizeDelta = sr.size;
+    }
+#endif
 
     IEnumerator SpawnMeteor()
     {

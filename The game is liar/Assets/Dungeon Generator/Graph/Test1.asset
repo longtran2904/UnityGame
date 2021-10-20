@@ -56,10 +56,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8074dc491ddc34f4e83332d9eae76980, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Position: {x: 234, y: 231}
+  Position: {x: 234, y: 230}
   Name: Room
   IndividualRoomTemplates:
-  - {fileID: 2813084950526564668, guid: ee4706a62e8bbe34aac2cacaac594a92, type: 3}
+  - {fileID: 7478377503439826787, guid: 90b4222dc67346e4194d7b60bf635479, type: 3}
   RoomTemplateSets: []
 --- !u!114 &3343436341994481078
 MonoBehaviour:
@@ -73,10 +73,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8074dc491ddc34f4e83332d9eae76980, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Position: {x: 233, y: 333}
+  Position: {x: 233, y: 334}
   Name: Room
   IndividualRoomTemplates:
-  - {fileID: 2358819829679714048, guid: 9b55bbeeeee1c8f44916e86b1e04e97b, type: 3}
+  - {fileID: 6300264907568003944, guid: 2ee1e89853b718a48b7d63a19b06e7e1, type: 3}
+  - {fileID: 4376619053174178529, guid: 672830e7e65b095448adb38fcb915e63, type: 3}
+  - {fileID: 4587819440818473107, guid: ddcd09b9618657340a2859a59ec6202c, type: 3}
   RoomTemplateSets: []
 --- !u!114 &5663144032955442438
 MonoBehaviour:

@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 5924276614243950739}
   - component: {fileID: 9093901118932588473}
   - component: {fileID: 1167272742}
+  - component: {fileID: 3581186087520014817}
   m_Layer: 10
   m_Name: NormalSlime
   m_TagString: Enemy
@@ -50,6 +51,7 @@ SpriteRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -164,4 +166,128 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fallMultiplier: 8
-  lowJumpMultiplier: 1
+--- !u!114 &3581186087520014817
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1741172069716696371}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f833eb0d584ca54eb047bd79179d644, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  health:
+    useConstant: 1
+    constantValue: 10
+    variable: {fileID: 0}
+  moneyDrop:
+    min: 1
+    max: 4
+  lookAtPlayer: 0
+  collideDamage: 0
+  spawnVFX: {fileID: 6779077847636645101, guid: 36d7ac47e5d4fa94a978f44e53c8b68a,
+    type: 3}
+  hurtMat: {fileID: 2100000, guid: a52db8d2e3bb7c84f9a724b122d7baa7, type: 2}
+  deathParticle: {fileID: 8704956847754461958, guid: 3181c8d874d60414f9701b433c293e7d,
+    type: 3}
+  audioManager: {fileID: 11400000, guid: 01443e5a6bdc47b4387217618b65db47, type: 2}
+  pooler: {fileID: 11400000, guid: 45efe5bf297d938428e78116078a92c9, type: 2}
+  moveType: 1
+  run:
+    target: 0
+    runSpeed: 0
+  jump:
+    jumpForce: 12
+    jumpAngle: 45
+    timeBtwJumps: 1
+  fly:
+    pattern: 0
+    flySpeed: 0
+    aX:
+      min: 0
+      max: 0
+    aY:
+      min: 0
+      max: 0
+    bX:
+      min: 0
+      max: 0
+    bY:
+      min: 0
+      max: 0
+    yMutiplier:
+      min: 0
+      max: 0
+    start: {x: 0, y: 0}
+    end: {x: 0, y: 0}
+    curvePoint1: {x: 0, y: 0}
+    curvePoint2: {x: 0, y: 0}
+  chargeAttack:
+    enabled: 0
+    value:
+      damage: 0
+      dashSpeed: 0
+      dashTime: 0
+      chargeTime: 0
+      distanceToCharge: 0
+      flashData:
+        timeBtwFlashes: 0
+        color: {r: 0, g: 0, b: 0, a: 0}
+        triggerMat: {fileID: 0}
+  explodeAbility:
+    enabled: 0
+    value:
+      activationType: 0
+      flashData:
+        timeBtwFlashes: 0
+        color: {r: 0, g: 0, b: 0, a: 0}
+        triggerMat: {fileID: 0}
+      explodeTime: 0
+      explodeRange: 0
+      distanceToExplode: 0
+      explodeDamage: 0
+      explodeParticle: {fileID: 0}
+      explodeSound: 
+  splitAbility:
+    enabled: 1
+    value:
+      splitEnemy: {fileID: 4113925877527348020, guid: 6d558e7f1688edb41a0449343bea2142,
+        type: 3}
+  shootAbility:
+    enabled: 0
+    value:
+      shootPattern: 0
+      cooldown: 0
+      gunData:
+        damage: 0
+        numberOfBulletsEachTurn: 0
+        numberOfShootTurn: 0
+        fireRate: 0
+        timeBtwTurn: 0
+        sfx: 
+        projectile: 
+        weapon: {fileID: 0}
+      burstData:
+        damage: 0
+        projectile: 
+        sfx: 
+        numberOfBullets: 0
+        radius: 0
+        waves: 0
+        timeBtwWaves: 0
+        positions: []
+        rotations: []
+  teleportAbility:
+    enabled: 0
+    value:
+      flipVertically: 0
+      trail: {fileID: 0}
+      distanceToPlayer: 0
+      DistanceToTeleportX:
+        enabled: 0
+        value: 0
+      DistanceToTeleportY:
+        enabled: 0
+        value: 0

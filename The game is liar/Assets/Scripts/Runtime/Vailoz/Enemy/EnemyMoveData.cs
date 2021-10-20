@@ -5,7 +5,7 @@ public enum MoveType
 {
     Run,
     Jump,
-    Fly
+    Fly,
 }
 
 public enum TargetType
@@ -18,12 +18,12 @@ public enum MoveState
 {
     Move,
     Wait,
-    Stop,
 }
 
 [Serializable]
 public struct RunData
 {
+    public TargetType target;
     public float runSpeed;
 }
 
@@ -37,24 +37,23 @@ public struct JumpData
 public enum FlyPattern
 {
     Linear,
-    Quadratic,
-    Cubic,
+    Curve,
 }
 
 [Serializable]
 public struct FlyData
 {
-    public FlyPattern type;
+    public FlyPattern pattern;
     public float flySpeed;
 
-    [ShowWhen("type", new object[] { FlyPattern.Quadratic, FlyPattern.Cubic })] public RangedFloat aX;
-    [ShowWhen("type", new object[] { FlyPattern.Quadratic, FlyPattern.Cubic })] public RangedFloat aY;
-    [ShowWhen("type", FlyPattern.Cubic)] public RangedFloat bX;
-    [ShowWhen("type", FlyPattern.Cubic)] public RangedFloat bY;
-    [ShowWhen("type", new object[] { FlyPattern.Quadratic, FlyPattern.Cubic })] public RangedFloat yMutiplier;
+    [ShowWhen("pattern", FlyPattern.Curve)] public RangedFloat aX;
+    [ShowWhen("pattern", FlyPattern.Curve)] public RangedFloat aY;
+    [ShowWhen("pattern", FlyPattern.Curve)] public RangedFloat bX;
+    [ShowWhen("pattern", FlyPattern.Curve)] public RangedFloat bY;
+    [ShowWhen("pattern", FlyPattern.Curve)] public RangedFloat yMutiplier;
 
     [HideInInspector] public Vector2 start;
     [HideInInspector] public Vector2 end;
-    [HideInInspector] public Vector2 curvePoint;
-    [HideInInspector] public Vector2 secondCurvePoint;
+    [HideInInspector] public Vector2 curvePoint1;
+    [HideInInspector] public Vector2 curvePoint2;
 }

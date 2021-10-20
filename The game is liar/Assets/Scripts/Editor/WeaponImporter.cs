@@ -8,7 +8,8 @@ public class WeaponImporter : AssetPostprocessor
 {
     private enum WeaponStats
     {
-        Name, Damage, CritDamage, CritChance, FireRate, Mode, Ammo, Knockback, Price, Standard, Active, Perfect, Failed, Description
+        Name, Damage, CritDamage, CritChance, FireRate, Ammo, Knockback, Price, Standard, Active, Perfect, Failed, Description,
+        StatCount
     }
 
     public static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromAssetPaths)
@@ -47,7 +48,7 @@ public class WeaponImporter : AssetPostprocessor
                             continue;
                         }
 
-                        bool[] isCorrect = new bool[12];
+                        bool[] isCorrect = new bool[(int)WeaponStats.StatCount];
 
                         WeaponStat weaponStat = ScriptableObject.CreateInstance<WeaponStat>();
                         weaponStat.weaponName = stats[(int)WeaponStats.Name];
@@ -55,14 +56,13 @@ public class WeaponImporter : AssetPostprocessor
                         isCorrect[1]  = int.TryParse(stats[(int)WeaponStats.CritDamage], out weaponStat.critDamage);
                         isCorrect[2]  = float.TryParse(stats[(int)WeaponStats.CritChance], out weaponStat.critChance);
                         isCorrect[3]  = float.TryParse(stats[(int)WeaponStats.FireRate], out weaponStat.fireRate);
-                        isCorrect[4]  = Enum.TryParse(stats[(int)WeaponStats.Mode], out weaponStat.mode);
-                        isCorrect[5]  = int.TryParse(stats[(int)WeaponStats.Ammo], out weaponStat.ammo);
-                        isCorrect[6]  = float.TryParse(stats[(int)WeaponStats.Knockback], out weaponStat.knockback);
-                        isCorrect[7]  = int.TryParse(stats[(int)WeaponStats.Price], out weaponStat.price);
-                        isCorrect[8]  = float.TryParse(stats[(int)WeaponStats.Standard], out weaponStat.standardReload);
-                        isCorrect[9]  = float.TryParse(stats[(int)WeaponStats.Active], out weaponStat.activeReload);
-                        isCorrect[10] = float.TryParse(stats[(int)WeaponStats.Perfect], out weaponStat.perfectReload);
-                        isCorrect[11] = float.TryParse(stats[(int)WeaponStats.Failed], out weaponStat.failedReload);
+                        isCorrect[4]  = int.TryParse(stats[(int)WeaponStats.Ammo], out weaponStat.ammo);
+                        isCorrect[5]  = float.TryParse(stats[(int)WeaponStats.Knockback], out weaponStat.knockback);
+                        isCorrect[6]  = int.TryParse(stats[(int)WeaponStats.Price], out weaponStat.price);
+                        isCorrect[7]  = float.TryParse(stats[(int)WeaponStats.Standard], out weaponStat.standardReload);
+                        isCorrect[8]  = float.TryParse(stats[(int)WeaponStats.Active], out weaponStat.activeReload);
+                        isCorrect[9] = float.TryParse(stats[(int)WeaponStats.Perfect], out weaponStat.perfectReload);
+                        isCorrect[10] = float.TryParse(stats[(int)WeaponStats.Failed], out weaponStat.failedReload);
                         weaponStat.description = stats[(int)WeaponStats.Description];
 
                         debug.Add(weaponStat.weaponName, isCorrect);

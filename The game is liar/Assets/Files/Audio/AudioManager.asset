@@ -72,7 +72,7 @@ MonoBehaviour:
     volume: 1
     pitch: 1
     loop: 1
-    playOnAwake: 1
+    playOnAwake: 0
   - name: BossFight
     clip: {fileID: 8300000, guid: 2fc7d2fa8cae24b47ad17fedc5bc5f8b, type: 3}
     volume: 1
@@ -153,6 +153,12 @@ MonoBehaviour:
     playOnAwake: 0
   - name: TouchGround_4
     clip: {fileID: 8300000, guid: d68b22ab5c678724b9bd3c727531400f, type: 3}
+    volume: 0.3
+    pitch: 1
+    loop: 0
+    playOnAwake: 0
+  - name: OpenChest
+    clip: {fileID: 8300000, guid: a9a4d88fc1a00ff40b4adb89712cd3d8, type: 3}
     volume: 0.3
     pitch: 1
     loop: 0

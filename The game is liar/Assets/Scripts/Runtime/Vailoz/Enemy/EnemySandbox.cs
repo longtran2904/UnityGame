@@ -14,6 +14,12 @@ public partial class Enemy : MonoBehaviour
         transform.rotation = Quaternion.Euler(transform.up.y > 0 ? 0 : 180, targetDir.x > 0 ? 0 : 180, 0);
     }
 
+    bool IsInWall()
+    {
+        ExtDebug.DrawBox(transform.position, sr.bounds.extents, Quaternion.identity, Color.red);
+        return Physics2D.BoxCast(transform.position, sr.bounds.size, 0, Vector2.zero, 0, LayerMask.GetMask("Ground"));
+    }
+
     bool GroundCheck()
     {
         Vector2 pos = (Vector2)transform.position - new Vector2(0, sr.bounds.extents.y * transform.up.y);
@@ -24,16 +30,19 @@ public partial class Enemy : MonoBehaviour
 
     bool CliffCheck()
     {
-        Vector2 pos = (Vector2)transform.position + new Vector2((sr.bounds.extents.x + .1f) * Mathf.Sign(rb.velocity.x), -sr.bounds.extents.y * transform.up.y);
-        InternalDebug.DrawRay(pos, Vector2.down, Color.cyan);
-        return !Physics2D.Raycast(pos, Vector2.down, .1f, LayerMask.GetMask("Ground"));
+        float offset = .2f;
+        float length = .1f;
+        Vector2 pos = (Vector2)transform.position + new Vector2((sr.bounds.extents.x + offset) * Mathf.Sign(rb.velocity.x), -sr.bounds.extents.y * transform.up.y);
+        InternalDebug.DrawRay(pos, -transform.up * length, Color.cyan);
+        return !Physics2D.Raycast(pos, -transform.up, length, LayerMask.GetMask("Ground"));
     }
 
     bool WallCheck()
     {
+        float length = .2f;
         Vector2 pos = transform.position + new Vector3(sr.bounds.extents.x * transform.right.x, 0, 0);
-        InternalDebug.DrawRay(pos, transform.right * .1f, Color.yellow);
-        RaycastHit2D hit = Physics2D.Raycast(pos, transform.right, .1f, LayerMask.GetMask("Ground"));
+        InternalDebug.DrawRay(pos, transform.right * length, Color.yellow);
+        RaycastHit2D hit = Physics2D.Raycast(pos, transform.right, length, LayerMask.GetMask("Ground"));
         return hit;
     }
 

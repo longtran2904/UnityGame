@@ -1,39 +1,37 @@
 ﻿using UnityEngine;
 using System.Collections;
-using System.Collections.Generic;
 
-public enum AIType
+public enum BrainType
 {
-    Simple,
+    Slime,
+    Maggot,
+    NoEyes,
+    Bat,
+
+    BrainCount
 }
 
 public partial class Enemy : MonoBehaviour
 {
     public static int numberOfEnemiesAlive = 0;
 
+    [Header("Enemy Data")]
     public IntReference health;
-    public RangedFloat moneyDrop;
+    [MinMax(0, 5)] public RangedInt moneyDrop;
     public bool lookAtPlayer;
-    public bool damageWhenCollide;
-    [ShowWhen("damageWhenCollide", order = 0)]
     public int collideDamage;
-    public GameObject deathParticle;
+    public Animator spawnVFX;
     public Material hurtMat;
-    public AIType AI;
+    public GameObject deathParticle;
+
+    public AudioManager audioManager;
+    public ObjectPooler pooler;
 
     [Header("Movement Data")]
     public MoveType moveType;
-    public TargetType targetType;
-    public Vector2 targetDir = Vector2.right;
-    private MoveState state = MoveState.Move;
-
-    public bool canStop;
-    [ShowWhen("canStop")] public float moveTime;
-    [ShowWhen("canStop")] public float waitTime;
-    [ShowWhen("canStop")] public bool onlyUseAbilityWhenWait;
-    private bool haveUsedAbility;
-    [ShowWhen("moveType", new object[] { MoveType.Jump, MoveType.Run })]
-    public bool onPlatform;
+    private MoveState moveState;
+    private float waitTime;
+    private Vector2 targetDir = Vector2.right;
 
     [ShowWhen("moveType", MoveType.Run)]
     public RunData run;
@@ -47,33 +45,39 @@ public partial class Enemy : MonoBehaviour
 
     [Header("Ability Data")]
     public Optional<ChargeAttack> chargeAttack;
-    public Optional<JumpAttack> jumpAttack;
-    private Vector2 jumpAttackVelocity;
     public Optional<ExplodeAbility> explodeAbility;
     public Optional<SplitAbility> splitAbility;
     public Optional<ShootAbility> shootAbility;
+    private float shootCooldown;
     public Optional<TeleportAbility> teleportAbility;
 
-    private MultipleFramesAbility currentAbility;
     private Rigidbody2D rb;
     private Player player;
     private SpriteRenderer playerSr;
     private Animator anim;
     private SpriteRenderer sr;
     private Material defMat;
-    private event System.Action collidePlayer;
     private float timer;
     private Optional<bool> groundCheck = new Optional<bool>(false);
     private Optional<bool> cliffCheck = new Optional<bool>(false);
     private Optional<bool> wallCheck = new Optional<bool>(false);
+    private Optional<bool> isInWall = new Optional<bool>(false);
+    private EnemyState state;
 
-    private List<EnemyTag> tags = new List<EnemyTag>();
+    private enum EnemyState
+    {
+        Normal,
+        Stop,
+        Invincible,
+    }
 
     void Start()
     {
         Init();
         InitMovement();
         InitAbility();
+        if (spawnVFX)
+            StartCoroutine(StartSpawnVFX());
     }
 
     void Init()
@@ -85,54 +89,65 @@ public partial class Enemy : MonoBehaviour
         defMat = sr.material;
         player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
         playerSr = player.GetComponent<SpriteRenderer>();
+    }
 
-        if (moveType == MoveType.Fly)
-        {
-            groundCheck.enabled = false;
-            cliffCheck.enabled = false;
-            wallCheck.enabled = false;
-        }
+    private IEnumerator StartSpawnVFX()
+    {
+        float vfxTime = Instantiate(spawnVFX, transform.position, Quaternion.identity).GetCurrentAnimatorStateInfo(0).length;
+        enabled = false;
+        sr.enabled = false;
+        yield return new WaitForSeconds(vfxTime);
+        enabled = true;
+        sr.enabled = true;
     }
     
     // Update is called once per frame
     void Update()
     {
+        if (state == EnemyState.Invincible) return; 
+
         if (health <= 0)
         {
             if (explodeAbility.enabled && explodeAbility.value.activationType == ActivationType.Die)
             {
-                Explode(explodeAbility);
+                StartCoroutine(StartExploding(explodeAbility));
+                return;
             }
-            if (splitAbility.enabled && splitAbility.value.numberOfSplits > 0)
+            if (splitAbility.enabled && splitAbility.value.splitEnemy)
             {
                 Split(splitAbility.value.splitEnemy);
             }
             Die();
-        }        
+        }
+
+        if (state == EnemyState.Stop) return;
 
         RotateEnemy();
         if (groundCheck.enabled) groundCheck.value = GroundCheck();
         if (wallCheck.enabled) wallCheck.value = WallCheck();
         if (cliffCheck.enabled) cliffCheck.value = CliffCheck();
+        if (isInWall.enabled) isInWall.value = IsInWall();
 
         Move();
         UseAbility();
-        InternalDebug.Log(state);
     }
 
     public void Die()
     {
         Instantiate(deathParticle, transform.position, Quaternion.identity);
-        for (int i = 0; i < moneyDrop.randomValue; i++)
-            ObjectPooler.instance.SpawnFromPool("Money", transform.position, Random.rotation);
+        int dropValue = moneyDrop.randomValue;
+        for (int i = 0; i < dropValue; i++)
+        {
+            ObjectPooler.instance.SpawnFromPool("Money", transform.position, Quaternion.identity);
+        }
         numberOfEnemiesAlive--;
         Destroy(gameObject);
     }
 
     public void Hurt(int damage)
     {
+        audioManager.PlaySfx("GetHit");
         health.value -= damage;
-        AudioManager.instance.PlaySfx("GetHit");
         StartCoroutine(ResetMaterial());
 
         IEnumerator ResetMaterial()
@@ -158,9 +173,7 @@ public partial class Enemy : MonoBehaviour
     {
         if (collision.CompareTag("Player"))
         {
-            collidePlayer?.Invoke();
-            if (damageWhenCollide)
-                player.Hurt(collideDamage);
+            player.Hurt(collideDamage);
         }
     }
 }

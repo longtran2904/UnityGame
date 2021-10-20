@@ -1,25 +1,5 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-
-/*
- * NOTE: The enemy system consists of two things: Move data & Ability data
- * 
- * Here's how the system update every frame:
- * 1. Check if health <= 0, then execute any abilities that can be executed and then die
- * 2. Rotate the enemy if need to
- * 3. Move according to the move data
- * 4. Use ability according to the ability data
- * 
- * Here's how the move function work:
- * 1. Set up the correct direction
- * 2. Move with the correct type/pattern
- * 
- * Here's how the use ability function work:
- * 1. Loop through all the abilities each frame until can execute one ability
- * 2. If it's a one frame ability, execute it and go back to step 1
- * 3. If it's a multiple frames ability, start the coroutine and wait until it's finished, then go back to step 1
- */
 
 public partial class Enemy : MonoBehaviour
 {
@@ -30,8 +10,24 @@ public partial class Enemy : MonoBehaviour
             case MoveType.Jump:
                 {
                     jumpVelocity = MathUtils.MakeVector2(jump.jumpAngle, jump.jumpForce);
-                }
-                break;
+                    cliffCheck.enabled = false;
+                    isInWall.enabled = false;
+                } break;
+            case MoveType.Run:
+                {
+                    if (run.target == TargetType.Random)
+                        targetDir = MathUtils.RandomBool() ? Vector2.left : Vector2.right;
+                    isInWall.enabled = false;
+                } break;
+            case MoveType.Fly:
+                {
+                    if (moveType == MoveType.Fly)
+                    {
+                        groundCheck.enabled = false;
+                        cliffCheck.enabled = false;
+                        wallCheck.enabled = false;
+                    }
+                } break;
         }
     }
 
@@ -39,20 +35,23 @@ public partial class Enemy : MonoBehaviour
     {
         if (shootAbility.enabled)
         {
+            shootCooldown = Time.time + shootAbility.value.cooldown;
             if (shootAbility.value.shootPattern == BulletPattern.Gun)
                 CreateWeapon(ref shootAbility.value.gunData.weapon);
             else
             {
-                shootAbility.value.patternData.bullets = new Projectile[shootAbility.value.patternData.numberOfBullets];
-                shootAbility.value.patternData.bulletsPos = new Vector2[shootAbility.value.patternData.numberOfBullets];
+                BurstData burst = shootAbility.value.burstData;
+                burst.positions = new Vector3[burst.numberOfBullets];
+                MathUtils.GenerateCircleOutlineNonAlloc(Vector3.zero, burst.radius, 0, burst.positions);
+                burst.rotations = new Quaternion[burst.numberOfBullets];
+                for (int i = 0; i < burst.numberOfBullets; i++)
+                {
+                    burst.rotations[i] = Quaternion.LookRotation(burst.positions[i].normalized, Vector3.up);
+                }
             }
         }
         if (teleportAbility.enabled)
             teleportAbility.value.trail = GetComponent<TrailRenderer>();
-        if (jumpAttack.enabled)
-        {
-            jumpAttackVelocity = MathUtils.MakeVector2(jumpAttack.value.jumpData.jumpAngle, jumpAttack.value.jumpData.jumpForce);
-        }
     }
 
     void CreateWeapon(ref Weapon weapon)
@@ -65,120 +64,81 @@ public partial class Enemy : MonoBehaviour
         Destroy(weapon.GetComponent<ActiveReload>());
     }
 
+    // TODO: Better jump
+    // TODO: Animation handling
     void Move()
     {
-        switch (state)
+        switch (moveState)
         {
-            case MoveState.Move:
-                {
-                    if (canStop)
-                    {
-                        if (timer >= moveTime)
-                        {
-                            rb.velocity = Vector2.zero;
-                            state = MoveState.Wait;
-                            timer = 0;
-                            return;
-                        }
-                        timer += Time.deltaTime;
-                    }
-                } break;
             case MoveState.Wait:
                 {
-                    if (timer >= waitTime)
+                    if (moveType == MoveType.Jump)
                     {
-                        state = MoveState.Move;
-                        timer = 0;
-                        haveUsedAbility = false;
-                        return;
+                        if (wallCheck)
+                        {
+                            targetDir.x *= -1;
+                            jumpVelocity.x *= -1;
+                            rb.velocity = new Vector2(rb.velocity.x * -1, rb.velocity.y);
+                        }
                     }
                     timer += Time.deltaTime;
+                    if (timer >= waitTime)
+                    {
+                        moveState = MoveState.Move;
+                        timer = 0;
+                    }
                     return;
                 }
-            case MoveState.Stop:
-                return;
-        }
-
-        switch (targetType)
-        {
-            case TargetType.Random:
-                {
-                    if (state == MoveState.Move && timer == 0)
-                    {
-                        if (moveType != MoveType.Fly)
-                        {
-                            targetDir = MathUtils.RandomBool() ? Vector2.right : Vector2.left;
-                            InternalDebug.Log("Target Direction: " + targetDir);
-                        }
-                        else
-                        {
-                            if (fly.type == FlyPattern.Linear)
-                            {
-                                targetDir = MathUtils.RandomVector2().normalized;
-                            }
-                            else
-                            {
-                                InitFlyCurve(Vector2.zero); // TODO: Need some ways to get a random position in a room
-                            }
-                        }
-                    }
-                }
-                break;
-            case TargetType.Player:
-                {
-                    if (moveType != MoveType.Fly)
-                    {
-                        targetDir = player.transform.position.x > transform.position.x ? Vector2.right : Vector2.left;
-                        if (onPlatform && cliffCheck)
-                        {
-                            if (transform.right.x == Mathf.Sign(player.transform.position.x - transform.position.x))
-                                targetDir = Vector2.zero;
-                        }
-                    }
-                    else
-                    {
-                        if (fly.type == FlyPattern.Linear)
-                            targetDir = (player.transform.position - transform.position).normalized;
-                        else
-                            InitFlyCurve(player.transform.position);
-                    }
-                } break;
-        }
-
-        if (targetType != TargetType.Player && moveType != MoveType.Fly)
-        {
-            if ((onPlatform && cliffCheck) || wallCheck)
-            {
-                targetDir *= -1;
-            }
         }
 
         switch (moveType)
         {
             case MoveType.Run:
                 {
+                    switch (run.target)
+                    {
+                        case TargetType.Random:
+                            {
+                                if (cliffCheck || wallCheck)
+                                {
+                                    targetDir *= -1;
+                                }
+                            }
+                            break;
+                        case TargetType.Player:
+                            {
+                                targetDir = player.transform.position.x > transform.position.x ? Vector2.right : Vector2.left;
+                                if (cliffCheck && transform.right.x == Mathf.Sign(player.transform.position.x - transform.position.x))
+                                {
+                                    targetDir = Vector2.zero;
+                                }
+                            }
+                            break;
+                    }
                     rb.velocity = targetDir * run.runSpeed;
                 } break;
             case MoveType.Jump:
                 {
-                    rb.velocity = jumpVelocity * targetDir.x;
+                    if (groundCheck)
+                    {
+                        rb.velocity = jumpVelocity;
+                        waitTime = jump.timeBtwJumps;
+                        moveState = MoveState.Wait;
+                    }
                 } break;
             case MoveType.Fly:
                 {
-                    switch (fly.type)
+                    switch (fly.pattern)
                     {
                         case FlyPattern.Linear:
                             {
+                                targetDir = (player.transform.position - transform.position).normalized;
                                 rb.velocity = targetDir * fly.flySpeed;
                             } break;
-                        case FlyPattern.Quadratic:
+                        case FlyPattern.Curve:
                             {
-                                Vector2 dir = (Vector3)MathUtils.QuadraticCurve(Time.deltaTime, fly.start, fly.curvePoint, fly.end) - transform.position;
-                                rb.velocity = dir.normalized * fly.flySpeed; 
-                            } break;
-                        case FlyPattern.Cubic:
-                            {
-                                Vector2 dir = (Vector3)MathUtils.CubicCurve(Time.deltaTime, fly.start, fly.curvePoint, fly.secondCurvePoint, fly.end) - transform.position;
+                                InitFlyCurve(player.transform.position); // TODO: add some timer rather then init every frame
+                                Vector2 dir = (Vector3)MathUtils.CubicCurve(Time.deltaTime, fly.start, fly.curvePoint1, fly.curvePoint2, fly.end) - transform.position;
                                 rb.velocity = dir.normalized * fly.flySpeed;
                             } break;
                     }
@@ -191,174 +151,166 @@ public partial class Enemy : MonoBehaviour
             fly.start = transform.position;
             float halfDistance = (fly.end - fly.start).magnitude / 2;
             Vector2 offset = new Vector2(fly.aX.randomValue, fly.aY.randomValue * fly.yMutiplier.randomValue) * halfDistance;
-            fly.curvePoint = fly.start + offset;
-            if (fly.type == FlyPattern.Cubic)
-            {
-                offset = new Vector2(fly.bX.randomValue, fly.bY.randomValue * fly.yMutiplier.randomValue) * halfDistance;
-                fly.secondCurvePoint = fly.end - offset;
-            }
+            fly.curvePoint1 = fly.start + offset;
+            offset = new Vector2(fly.bX.randomValue, fly.bY.randomValue * fly.yMutiplier.randomValue) * halfDistance;
+            fly.curvePoint2 = fly.end - offset;
         }
     }
 
     void UseAbility()
     {
-        if (currentAbility != MultipleFramesAbility.None || (onlyUseAbilityWhenWait && (state != MoveState.Wait || (state == MoveState.Wait && haveUsedAbility))))
-        {
-            return;
-        }
-
         if (chargeAttack.enabled && IsInRange(chargeAttack.value.distanceToCharge))
         {
-            StartAbility(MultipleFramesAbility.ChargeAttack);
             StartCoroutine(ChargeAttack(chargeAttack));
         }
-        else if (jumpAttack.enabled && IsInRange(jumpAttack.value.distanceToJump))
+        else if (explodeAbility.enabled && explodeAbility.value.activationType == ActivationType.InRange && IsInRange(explodeAbility.value.distanceToExplode) && !isInWall)
         {
-            StartAbility(MultipleFramesAbility.JumpAttack);
-            StartCoroutine(JumpAttack(jumpAttack));
-        }
-        else if (explodeAbility.enabled && explodeAbility.value.activationType == ActivationType.InRange && IsInRange(explodeAbility.value.distanceToExplode))
-        {
-            StartAbility(MultipleFramesAbility.Explode);
             StartCoroutine(StartExploding(explodeAbility));
         }
         else if (teleportAbility.enabled
-            && ((teleportAbility.value.DistanceToTeleportX.enabled && !InRangeX(teleportAbility.value.DistanceToTeleportX))
-            || (teleportAbility.value.DistanceToTeleportY.enabled && !InRangeY(teleportAbility.value.DistanceToTeleportY)))
-            && !player.controller.isJumping)
+            && ((teleportAbility.value.distanceToTeleportX.enabled && !InRangeX(teleportAbility.value.distanceToTeleportX)) // canTeleportX
+            || (teleportAbility.value.distanceToTeleportY.enabled && !InRangeY(teleportAbility.value.distanceToTeleportY))) // canTeleportY
+            && player.controller.isGrounded)
         {
-            //bool canTeleportX = teleportAbility.value.DistanceToTeleportX.enabled && !InRangeX(teleportAbility.value.DistanceToTeleportX);
-            //bool canTeleportY = teleportAbility.value.DistanceToTeleportY.enabled && !InRangeY(teleportAbility.value.DistanceToTeleportY);
-            //if ((canTeleportX || canTeleportY) && !player.controller.isJumping)
-                StartCoroutine(Teleport(teleportAbility));
+            StartCoroutine(Teleport(teleportAbility));
         }
-        else if (shootAbility.enabled)
+        else if (shootAbility.enabled && Time.time >= shootCooldown)
         {
-            StartAbility(MultipleFramesAbility.Shoot);
-            Shoot(shootAbility);
-        }
-
-        void StartAbility(MultipleFramesAbility ability)
-        {
-            currentAbility = ability;
-            haveUsedAbility = true;
+            StartCoroutine(Shoot(shootAbility));
         }
     }
 
-    IEnumerator JumpAttack(JumpAttack jump)
+    private IEnumerator Shoot(ShootAbility ability)
     {
-        rb.velocity = jumpAttackVelocity * targetDir.x;
-        collidePlayer += () => player.Hurt(jump.jumpDamage);
-        while (!groundCheck)
-        {
-            yield return null;
-        }
-        currentAbility = MultipleFramesAbility.None;
-    }
-
-    private void Shoot(ShootAbility ability)
-    {
+        state = EnemyState.Stop;
+        float stopTime = (ability.gunData.timeBtwTurn + 1/ability.gunData.fireRate * ability.gunData.numberOfBulletsEachTurn) * ability.gunData.numberOfShootTurn;
         if (ability.shootPattern == BulletPattern.Gun)
         {
-            StartCoroutine(ShootWithGun(ability));
+            StartCoroutine(ShootWithGun(ability.gunData));
         }
         else
         {
-            shootAbility.value.patternData.bulletHolder = Instantiate(shootAbility.value.patternData.bulletHolder, transform.position, Quaternion.identity);
-            switch (ability.shootPattern)
-            {
-                case BulletPattern.Circle:
-                    MathUtils.GenerateCircleOutlineNonAlloc(transform.position, ability.patternData.radius, 0, ability.patternData.bulletsPos);
-                    break;
-            }
-            ability.patternData.bulletHolder.StartCoroutine(ShootShape(ability.gunData, ability.patternData, ability.patternData.bulletsPos));
+            // TODO: Calculate stop time
+            StartCoroutine(BurstProjectiles(ability.burstData));
         }
+        yield return new WaitForSeconds(stopTime);
+        shootCooldown = Time.time + ability.cooldown;
+        state = EnemyState.Normal;
     }
 
-    private IEnumerator ShootWithGun(ShootAbility shooter)
+    private IEnumerator ShootWithGun(GunData gunData)
     {
-        int numberOfBullets = shooter.gunData.numberOfBulletsEachTurn;
-        while (shooter.gunData.numberOfShootTurn > 0)
+        int numberOfBullets = gunData.numberOfBulletsEachTurn;
+        while (gunData.numberOfShootTurn > 0)
         {
             while (numberOfBullets > 0)
             {
-                AudioManager.instance.PlaySfx(shooter.gunData.sfx);
-                Projectile projectile = ObjectPooler.instance.SpawnFromPool<Projectile>(shooter.gunData.projectile,
-                    shooter.gunData.weapon.shootPos.position, Quaternion.Euler(0, 0, CaculateRotationToPlayer()));
-                projectile.Init(shooter.gunData.damage, 0, 0, true, false);
+                audioManager.PlaySfx(gunData.sfx);
+                Projectile projectile = pooler.SpawnFromPool<Projectile>(gunData.projectile,
+                    gunData.weapon.shootPos.position, Quaternion.Euler(0, 0, CaculateRotationToPlayer()));
+                projectile.Init(gunData.damage, 0, 0, true, false);
                 numberOfBullets--;
-                yield return new WaitForSeconds(1 / shooter.gunData.fireRate);
+                yield return new WaitForSeconds(1 / gunData.fireRate);
             }
-            numberOfBullets = shooter.gunData.numberOfBulletsEachTurn;
-            shooter.gunData.numberOfShootTurn--;
-            yield return new WaitForSeconds(shooter.gunData.timeBtwTurn);
+            numberOfBullets = gunData.numberOfBulletsEachTurn;
+            gunData.numberOfShootTurn--;
+            yield return new WaitForSeconds(gunData.timeBtwTurn);
         }
-        currentAbility = MultipleFramesAbility.None;
     }
 
-    private IEnumerator ShootShape(GunData bullet, ShootPatternData patternData, Vector2[] bulletPos)
+    private IEnumerator BurstProjectiles(BurstData burst)
     {
-        int i = 0;
-        foreach (Vector2 pos in bulletPos)
+        audioManager.PlaySfx(burst.sfx);
+        WaitForSeconds timeBtwWaves = new WaitForSeconds(burst.timeBtwWaves);
+        for (int n = 0; n < burst.waves; n++)
         {
-            patternData.bullets[i] = ObjectPooler.instance.SpawnFromPool<Projectile>(bullet.projectile, pos, Quaternion.identity, patternData.bulletHolder.transform);
-            patternData.bullets[i].Init(bullet.damage, 0, 0, true, false);
-            patternData.bullets[i].SetVelocity(0);
-            i++;
-        }
-
-        AudioManager.instance.PlaySfx(bullet.sfx);
-        Vector2 dir = (player.transform.position - transform.position).normalized;
-        yield return new WaitForSeconds(patternData.delayBulletTime);
-
-        patternData.bulletHolder.Move(dir, patternData.bullets[0].speed);
-        float timeToStop = Time.time + patternData.bullets[0].timer;
-        if (patternData.rotate)
-            while (Time.time < timeToStop)
+            for (int i = 0; i < burst.numberOfBullets; i++)
             {
-                patternData.bulletHolder.transform.Rotate(new Vector3(0, 0, patternData.rotateSpeed * Time.deltaTime * (patternData.clockwise ? 1 : -1)));
-                yield return null;
+                Projectile bullet = pooler.SpawnFromPool<Projectile>(burst.projectile, burst.positions[i] + transform.position, burst.rotations[i]);
+                bullet.Init(burst.damage, 0, 0, true, false);
+                bullet.SetVelocity(0);
             }
-        Destroy(patternData.bulletHolder.gameObject);
-        currentAbility = MultipleFramesAbility.None;
+            yield return timeBtwWaves;
+        }
     }
 
-    // TODO: Currently, there are situations that the enemy teleport to mid air.
-    //       We need to check if it is grounded, if not then move to the opposite side of player, if it still isn't grounded, then just don't teleport and wait=
+    // TODO: Maybe switch to teleport to a tile from a tiles array
     IEnumerator Teleport(TeleportAbility ability)
     {
         Vector3 destination = player.transform.position;
-        destination.x += Mathf.Sign(transform.position.x - player.transform.position.x) * ability.distanceToPlayer;
+        destination.y += (sr.bounds.extents.y - playerSr.bounds.extents.y) * player.transform.up.y;
+
+        int dirX = (int)Mathf.Sign(transform.position.x - player.transform.position.x);
+        float randomDistance = ability.distanceToPlayer.randomValue;
+        float minDistance = ability.distanceToPlayer.min;
+        
+        bool switchDir = false;
+        bool done = false;
+        goto CheckPos;
+
+        NextPos:
+        done = true;
+        CheckPos:
+        Vector3 offset = new Vector3(randomDistance * dirX, 0);
+        while (!IsPositionValid(destination + offset, Color.yellow, Color.green))
+        {
+            if (switchDir)
+            {
+                if (done) // The enemy can't find a valid position
+                {
+                    rb.velocity = Vector2.zero;
+                    yield break;
+                }
+
+                dirX = -dirX;
+                switchDir = false;
+                goto NextPos;
+            }
+
+            offset.x = minDistance * dirX;
+            switchDir = true;
+        }
+
         if (ability.flipVertically && player.transform.up.y != transform.up.y)
         {
             transform.Rotate(new Vector3(180, 0, 0), Space.World);
         }
-        destination.y += (sr.bounds.extents.y - playerSr.bounds.extents.y) * transform.up.y;
-
         ability.trail.enabled = true;
-        transform.position = destination;
+        transform.position = destination + offset;
         yield return null;
         ability.trail.enabled = false;
+
+        bool IsPositionValid(Vector3 pos, Color ground, Color wall)
+        {
+            ExtDebug.DrawBox(pos - new Vector3(0, sr.bounds.extents.y * player.transform.up.y), new Vector2(sr.bounds.extents.x, .1f), Quaternion.identity, ground);
+            ExtDebug.DrawBox(pos + new Vector3(0, .1f * player.transform.up.y), sr.bounds.extents, Quaternion.identity, wall);
+            return Physics2D.BoxCast(pos - new Vector3(0, sr.bounds.extents.y * player.transform.up.y), new Vector2(sr.bounds.size.x, .1f), 0, Vector2.zero, 0, LayerMask.GetMask("Ground"))
+                && !Physics2D.BoxCast(pos + new Vector3(0, .1f * player.transform.up.y), sr.bounds.size, 0, Vector2.zero, 0, LayerMask.GetMask("Ground"));
+        }
     }
 
+    /*
+     * TODO:
+     * 1. Update the player's position when dash or close to dash
+     * 2. Stop charging when the player move away before some threshold
+     */
     IEnumerator ChargeAttack(ChargeAttack charge)
     {
-        MoveState currentState = state;
+        state = EnemyState.Stop;
         rb.velocity = Vector2.zero;
-        state = MoveState.Stop;
         StartCoroutine(Flashing(charge.flashData, charge.chargeTime));
         yield return new WaitForSeconds(charge.chargeTime);
         rb.velocity = targetDir * charge.dashSpeed;
         yield return new WaitForSeconds(charge.dashTime);
-        currentAbility = MultipleFramesAbility.None;
-        state = currentState;
+        rb.velocity = Vector2.zero;
+        state = EnemyState.Normal;
     }
 
 
     IEnumerator StartExploding(ExplodeAbility explodesion)
     {
+        state = EnemyState.Invincible;
         rb.velocity = Vector2.zero;
-        state = MoveState.Stop;
         StartCoroutine(Flashing(explodesion.flashData, explodesion.explodeTime));
         yield return new WaitForSeconds(explodesion.explodeTime);
         Explode(explodesion);
@@ -367,10 +319,10 @@ public partial class Enemy : MonoBehaviour
 
     void Explode(ExplodeAbility explodesion)
     {
-        AudioManager.instance.PlaySfx(explodesion.explodeSound);
+        audioManager.PlaySfx(explodesion.explodeSound);
         EZCameraShake.CameraShaker.Instance.ShakeOnce(8, 5, 0.1f, 0.5f);
         GameObject explodeVFX = Instantiate(explodesion.explodeParticle, transform.position, Quaternion.identity);
-        explodeVFX.transform.localScale = new Vector3(6.25f, 6.25f, 0) * explodesion.explodeRange;
+        explodeVFX.transform.localScale = Vector3.one * explodesion.explodeRange;
         Destroy(explodeVFX, .3f);
         if ((player.transform.position - transform.position).sqrMagnitude < explodesion.explodeRange * explodesion.explodeRange)
             player.Hurt(explodesion.explodeDamage);
@@ -378,13 +330,14 @@ public partial class Enemy : MonoBehaviour
 
     IEnumerator Flashing(FlashAbility flash, float duration)
     {
-        flash.triggerMat.color = flash.color;
+        Material triggerMat = new Material(flash.triggerMat);
+        triggerMat.color = flash.color;
         while (duration > 0)
         {
             float currentTime = Time.time;
 
-            sr.material = flash.triggerMat;
-            yield return new WaitForSeconds(flash.flashTime);
+            sr.material = triggerMat;
+            yield return new WaitForSeconds(flash.timeBtwFlashes);
 
             sr.material = defMat;
             yield return new WaitForSeconds(flash.timeBtwFlashes);
@@ -395,8 +348,8 @@ public partial class Enemy : MonoBehaviour
 
     void Split(GameObject splitEnemy)
     {
-        Vector3 offset = new Vector3(.5f, 0, 0);
+        Vector3 offset = new Vector3(1f, 0, 0);
         Instantiate(splitEnemy, transform.position + offset, Quaternion.identity);
-        Instantiate(splitEnemy, transform.position + offset, Quaternion.identity);
+        Instantiate(splitEnemy, transform.position - offset, Quaternion.identity);
     }
 }

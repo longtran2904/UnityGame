@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f16c5f5e229e204b99c305e99eedf02, type: 3}
+  m_Name: ShopInventory
+  m_EditorClassIdentifier: 
+  items:
+  - {fileID: 3631726893683871135, guid: b3444eea86a91f146aa26779539b3637, type: 3}
+  - {fileID: 442285581772507195, guid: 97a36991887cbe74d83b97f91c1961e4, type: 3}
+  defaultItems:
+  - {fileID: 3631726893683871135, guid: b3444eea86a91f146aa26779539b3637, type: 3}
+  - {fileID: 442285581772507195, guid: 97a36991887cbe74d83b97f91c1961e4, type: 3}
+  currentWeapon: 0
+  startWeaponIndex: 0
