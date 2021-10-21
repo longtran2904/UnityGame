@@ -3,7 +3,9 @@
 [System.Serializable]
 public struct RangedFloat
 {
+    [Tooltip("Min Inclusive")]
     public float min;
+    [Tooltip("Max Inclusive")]
     public float max;
 
     public RangedFloat(float min, float max)
@@ -29,14 +31,14 @@ public class MinMaxAttribute : PropertyAttribute
     public float min;
     public float max;
 
-    public MinMaxAttribute(float aMin, float aMax)
+    public MinMaxAttribute(float min, float max)
     {
-        min = aMin;
-        max = aMax;
+        this.min = min;
+        this.max = max;
     }
 
-    public bool IsInRange(float aValue)
+    public bool IsInRange(float value)
     {
-        return aValue >= min && aValue <= max;
+        return value >= min && value <= max;
     }
 }

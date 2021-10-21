@@ -2,6 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
+// TODO: Move ActiveReload to player rather than on every weapons
 public class ActiveReload : MonoBehaviour
 {
     private Image slider;
@@ -14,12 +15,20 @@ public class ActiveReload : MonoBehaviour
 
     public bool isReloading { get; private set; }
     private Weapon weapon;
-    private ShootAndRotateGun shootAndRotate;
-    private WeaponSwitching weaponSwitch;
+    //private WeaponInventory playerInventory;
+    private Player player;
+
+    private enum ReloadType
+    {
+        Perfect,
+        Fast,
+        Failed
+    }
 
     private void Start()
     {
-        weapon = GetComponent<Weapon>();
+        //playerInventory = GetComponentInParent<Player>().inventory;
+        player = GetComponentInParent<Player>();
 
         // NOTE: Fix reload bar and slider to be more elegant
         reloadBar = transform.parent.parent.Find("Canvas").Find("ReloadBar").gameObject;
@@ -29,15 +38,14 @@ public class ActiveReload : MonoBehaviour
         white = reloadBar.transform.GetChild(1).GetComponent<RectTransform>();
         grey.sizeDelta = new Vector2(activeSize, grey.sizeDelta.y);
         white.sizeDelta = new Vector2(perfectSize, white.sizeDelta.y);
-
-        shootAndRotate = GetComponentInParent<ShootAndRotateGun>();
-        weaponSwitch = GetComponentInParent<WeaponSwitching>();
     }
 
     private void Update()
     {
         if (!isReloading)
         {
+            weapon = player.inventory.GetCurrent();//playerInventory.GetCurrent();
+
             if (weapon.currentAmmo <= 0 && Input.GetMouseButton(0))
             {
                 BeginReload();
@@ -58,7 +66,7 @@ public class ActiveReload : MonoBehaviour
     public void BeginReload()
     {
         isReloading = true;
-        shootAndRotate.enabled = false;
+        player.EnableInput(false, true);
 
         slider.color = Color.white;
         reloadBar.SetActive(true);
@@ -97,26 +105,25 @@ public class ActiveReload : MonoBehaviour
             }
             yield return null;
         }
-        StartCoroutine(FinishReload(0.0f, false));
+        StartCoroutine(FinishReload(0.0f));
     }
 
-    enum ReloadType { Perfect, Fast, Failed }
     void ReloadHandler(float value, ReloadType type)
     {
         float t = Mathf.InverseLerp(0, reloadBar.GetComponent<RectTransform>().sizeDelta.x, value);
         slider.color = type == ReloadType.Perfect ? Color.green : type == ReloadType.Fast ? Color.blue : Color.red;
         float remaining = (type == ReloadType.Perfect ? weapon.stat.perfectReload : ((type == ReloadType.Fast) ? weapon.stat.activeReload : weapon.stat.failedReload)) - 
             (t * weapon.stat.standardReload);
-        StartCoroutine(FinishReload(remaining, true));
+        StartCoroutine(FinishReload(remaining));
     }
 
-    private IEnumerator FinishReload(float duration, bool perfect)
+    private IEnumerator FinishReload(float duration)
     {
         yield return new WaitForSeconds(duration);
         slider.rectTransform.anchoredPosition = new Vector2(0, 0);
         reloadBar.SetActive(false);
         weapon.currentAmmo = weapon.stat.ammo;
         isReloading = false;
-        weaponSwitch.enabled = true;
+        player.EnableInput(true, false);
     }
 }

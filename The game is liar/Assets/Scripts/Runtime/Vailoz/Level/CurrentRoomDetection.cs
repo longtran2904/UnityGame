@@ -31,10 +31,6 @@ public class CurrentRoomDetection : MonoBehaviour
             i = 1;
         }
         room = baseRoom.Doors[i].ConnectedRoomInstance;
-        foreach (var door in baseRoom.Doors)
-        {
-            InternalDebug.Log("Corridor: " + baseRoom.RoomTemplateInstance.GetInstanceID() + " Facing Direction: " + door.FacingDirection + " Door line: " + door.DoorLine.From);
-        }
     }
 
     private void OnTriggerExit2D(Collider2D collision)

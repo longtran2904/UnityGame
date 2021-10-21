@@ -12,16 +12,17 @@ public class PlayerController : MonoBehaviour
 {
     public float speed;
     public float fallSpeed;
+    public Vector3Variable position;
     public BoolReference onGround; // false if the player is upside down
     public ParticleSystem dust;
-    [HideInInspector] public bool isJumping;
 
+    public AudioManager audioManager;
     public SoundCue footStep;
     public SoundCue touchGround;
 
+    [HideInInspector] public bool isGrounded;
     private float moveInput;
     private float lastMoveInput;
-    private bool isGrounded;
     private Rigidbody2D rb;
     private SpriteRenderer sprite;
     private Animator anim;    
@@ -44,11 +45,6 @@ public class PlayerController : MonoBehaviour
 
     // Start is called before the first frame update
     void Start()
-    {
-        Setup();
-    }
-
-    void Setup()
     {
         rb = GetComponent<Rigidbody2D>();
         sprite = GetComponent<SpriteRenderer>();
@@ -80,7 +76,7 @@ public class PlayerController : MonoBehaviour
         }
 
         if (moveInput != 0 && isGrounded)
-            AudioManager.instance?.PlaySfx(footStep);
+            audioManager?.PlaySfx(footStep);
 
         if (PauseMenu.isGamePaused) return;
         transform.eulerAngles = new Vector3(onGround.value ? 0 : 180, mousePos.x - transform.position.x > 0 ? 0 : 180, 0);
@@ -88,6 +84,8 @@ public class PlayerController : MonoBehaviour
         GroundCheck();
         Jump();
         lastMoveInput = moveInput;
+
+        position.value = transform.position;
     }
 
     void GroundCheck()
@@ -109,10 +107,9 @@ public class PlayerController : MonoBehaviour
             groundRemember = groundRememberTime;
             if (isGrounded == false) // When fall and touch ground
             {
-                dust.Play();
-                AudioManager.instance?.PlaySfx(touchGround);
+                dust?.Play();
+                audioManager?.PlaySfx(touchGround);
                 isGrounded = true;
-                isJumping = false;
             }
         }
         else
@@ -130,10 +127,9 @@ public class PlayerController : MonoBehaviour
             jumpPressedRememberValue = 0;
             rb.velocity = Vector2.zero;
             rb.gravityScale *= -1;
-            dust.Play();
-            isJumping = true;
+            dust?.Play();
             Invoke("SwitchTop", .1f);
-            AudioManager.instance?.PlaySfx("PlayerJump");
+            audioManager?.PlaySfx("PlayerJump");
         }
     }
 
@@ -148,5 +144,23 @@ public class PlayerController : MonoBehaviour
         knockbackCounter = knockbackTime;
         rb.velocity = Vector2.zero;
         moveInput = 0;
+    }
+
+    [System.Diagnostics.Conditional("UNITY_EDITOR")]
+    public void EnterDemo()
+    {
+        dust = null;
+        audioManager = null;
+
+        GetComponent<SpriteRenderer>().enabled = false;
+        Destroy(GetComponent<Player>());
+        Destroy(GetComponent<PlayerCombat>());
+        Destroy(GetComponent<ItemManager>());
+
+        foreach (Transform child in transform)
+        {
+            Destroy(child.gameObject);
+        }
+        transform.DetachChildren();
     }
 }

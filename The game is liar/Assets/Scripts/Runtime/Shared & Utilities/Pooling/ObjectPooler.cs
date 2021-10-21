@@ -15,7 +15,8 @@ public class ObjectPooler : ScriptableObject
     private void OnEnable()
     {
 #if UNITY_EDITOR
-        UnityEditor.EditorApplication.playModeStateChanged += state => { if (state == UnityEditor.PlayModeStateChange.EnteredPlayMode) Init(); };
+        //UnityEditor.EditorApplication.playModeStateChanged += state => { if (state == UnityEditor.PlayModeStateChange.EnteredPlayMode) Init(); };
+        if (UnityEditor.EditorApplication.isPlayingOrWillChangePlaymode) Init();
 #else
         if (Application.isPlaying) Init();
 #endif

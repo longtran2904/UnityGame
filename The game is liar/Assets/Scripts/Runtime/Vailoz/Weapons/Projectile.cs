@@ -21,7 +21,10 @@ public class Projectile : MonoBehaviour, IPooledObject
 
     public bool canTouchGround; // can go through wall and grounds
     public bool canTouchPlayer; // go through player and still damage him
-    
+
+    public AudioManager audioManager;
+
+
     public virtual void OnObjectSpawn()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -91,7 +94,7 @@ public class Projectile : MonoBehaviour, IPooledObject
         }
         if (collision.CompareTag("Ground") && !canTouchGround)
         {
-            AudioManager.instance.PlaySfx("HitWall");
+            audioManager.PlaySfx("HitWall");
             gameObject.SetActive(false);
         }
     }

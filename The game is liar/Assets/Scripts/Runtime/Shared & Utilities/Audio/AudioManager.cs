@@ -10,12 +10,12 @@ public class AudioManager : ScriptableObject
     private AudioSource musicSource;
     private AudioSource sfxSource;
 
-    public static AudioManager instance;
+    static AudioManager instance;
 
     private void OnEnable()
     {
 #if UNITY_EDITOR
-        UnityEditor.EditorApplication.playModeStateChanged += state => { if (state == UnityEditor.PlayModeStateChange.EnteredPlayMode) Init(); };
+        if (UnityEditor.EditorApplication.isPlayingOrWillChangePlaymode) Init();
 #else
         if (Application.isPlaying) Init();
 #endif
@@ -27,7 +27,7 @@ public class AudioManager : ScriptableObject
         {
             instance = this;
             GameObject audioObject = new GameObject("AudioManager");
-            audioObject.hideFlags = HideFlags.HideAndDontSave;
+            //audioObject.hideFlags = HideFlags.HideAndDontSave;
             instance.musicSource = audioObject.AddComponent<AudioSource>();
             instance.sfxSource = audioObject.AddComponent<AudioSource>();
             foreach (Sound s in instance.sounds)

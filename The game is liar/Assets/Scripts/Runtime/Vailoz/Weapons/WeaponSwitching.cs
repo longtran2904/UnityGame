@@ -2,13 +2,23 @@
 
 public class WeaponSwitching : MonoBehaviour
 {
+    public WeaponInventory startInventory;
     public int selectedWeapon;
     WeaponInventory inventory;
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         inventory = GetComponentInParent<Player>().inventory;
+
+        foreach (Weapon item in startInventory.items)
+        {
+            Weapon gun = Instantiate(item, transform.position, Quaternion.identity);
+            gun.transform.parent = transform;
+            gun.transform.localPosition = item.posOffset;
+            inventory.items.Add(gun);
+        }
+
         SelectWeapon();
     }
 

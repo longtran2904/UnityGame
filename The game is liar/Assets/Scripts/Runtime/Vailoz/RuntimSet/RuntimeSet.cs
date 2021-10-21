@@ -9,7 +9,8 @@ public abstract class RuntimeSet<T> : ScriptableObject
 
     protected virtual void OnEnable()
     {
-        items = new List<T>(defaultItems);
+        if (defaultItems != null)
+            items = new List<T>(defaultItems);
     }
 
     public void Add(T t)

@@ -6,12 +6,12 @@ using UnityEditor;
 [CustomPropertyDrawer(typeof(MinMaxAttribute))]
 public class RangedFloatDrawer : PropertyDrawer
 {
-    private static MinMaxAttribute m_DefaultRange = new MinMaxAttribute(0, 1);
+    private static MinMaxAttribute defaultRange = new MinMaxAttribute(0, 1);
     public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
     {
         MinMaxAttribute limits = attribute as MinMaxAttribute;
         if (limits == null)
-            limits = m_DefaultRange;
+            limits = defaultRange;
         var minProp = property.FindPropertyRelative("min");
         var maxProp = property.FindPropertyRelative("max");
         bool isRangedInt = minProp.propertyType == SerializedPropertyType.Integer;

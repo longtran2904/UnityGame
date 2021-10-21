@@ -20,6 +20,8 @@ public class GiantEyeBoss : Boss
     private bool playSound = true;
     public GameObject endScreen;
 
+    public AudioManager audioManager;
+
     // Start is called before the first frame update
     protected override void Start()
     {
@@ -52,7 +54,7 @@ public class GiantEyeBoss : Boss
         {
             if (playSound == true)
             {
-                AudioManager.instance.PlaySfx("DefeatBoss");
+                audioManager.PlaySfx("DefeatBoss");
                 playSound = false;
             }
         }
@@ -63,7 +65,7 @@ public class GiantEyeBoss : Boss
         health -= _damage;
         sr.material = whiteMat;
         Invoke("ResetMaterial", .1f);
-        AudioManager.instance.PlaySfx("GetHit");
+        audioManager.PlaySfx("GetHit");
     }
 
     void ResetMaterial()
@@ -73,10 +75,10 @@ public class GiantEyeBoss : Boss
 
     protected override void Die()
     {
-        AudioManager.instance.PlaySfx("BossExplosion");
+        audioManager.PlaySfx("BossExplosion");
         CameraShaker.Instance.ShakeOnce(8, 5, 0.1f, 0.5f);
         Instantiate(explosion, transform.position, Quaternion.identity);
-        AudioManager.instance.StopMusic();
+        audioManager.StopMusic();
         Invoke("EndDemo", 1);
         gameObject.SetActive(false);
         Destroy(gameObject, 1);

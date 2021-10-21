@@ -17,8 +17,10 @@ public class WeaponInventory : RuntimeSet<Weapon>
         if (!items.Contains(weapon))
         {
             items.Add(weapon);
-            currentWeapon = items.IndexOf(weapon);
+            currentWeapon = items.Count - 1;
         }
+        else
+            currentWeapon = items.IndexOf(weapon);
     }
 
     public bool SetCurrent(Weapon weapon)

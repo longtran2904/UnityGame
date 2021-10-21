@@ -9,7 +9,6 @@ public class WeaponStat : ScriptableObject
     public int critDamage;
     public float critChance;
     public float fireRate;
-    public FireMode mode;
     public int ammo;
     public float knockback;
     public int price;

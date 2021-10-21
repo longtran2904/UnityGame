@@ -21,6 +21,25 @@ public static class MathUtils
     {
         return new Bounds((Vector3)(bounds.min + bounds.max) * .5f, bounds.size);
     }
+
+    public static List<Vector3Int> GetOutlinePoints(this BoundsInt bounds)
+    {
+        List<Vector3Int> result = new List<Vector3Int>(bounds.size.x * 2 + (bounds.size.y - 2) * 2);
+
+        for (int y = 1; y < bounds.size.y - 1; y++)
+        {
+            result.Add(new Vector3Int(bounds.xMin, bounds.yMin + y, 0));
+            result.Add(new Vector3Int(bounds.xMax-1, bounds.yMin + y, 0));
+        }
+
+        for (int x = 0; x < bounds.size.x; x++)
+        {
+            result.Add(new Vector3Int(bounds.xMin + x, bounds.yMin, 0));
+            result.Add(new Vector3Int(bounds.xMin + x, bounds.yMax-1, 0));
+        }
+
+        return result;
+    }
     #endregion
 
     #region Int
@@ -144,6 +163,12 @@ public static class MathUtils
     #endregion
 
     #region Vector2
+    public static bool InRange(Vector2 center, Vector2 pos, float range)
+    {
+        return (pos.x < center.x + range && pos.x > center.x - range) &&
+            (pos.y < center.y + range && pos.y > center.y - range);
+    }
+
     /// <param name="degree">In degree, the function will automatically convert it to radian</param>
     public static Vector2 MakeVector2(float degree, float magnitude = 1)
     {
@@ -347,25 +372,13 @@ public static class MathUtils
     }
 
     // If offset == 0 then the first point is on the most right and it's anti-clockwise
-    public static Vector2[] GenerateCircleOutline(Vector2 center, int numberOfPoints, float radius = 1, float offset = 0)
-    {
-        Vector2[] points = new Vector2[numberOfPoints];
-        float deltaAngle = 360f / numberOfPoints + offset;
-        for (int i = 0; i < numberOfPoints; i++)
-        {
-            float angle = i * deltaAngle;
-            points[i] = center + MakeVector2(angle) * radius;
-        }
-        return points;
-    }
-
-    public static void GenerateCircleOutlineNonAlloc(Vector2 center, float radius, float offset, Vector2[] posArray)
+    public static void GenerateCircleOutlineNonAlloc(Vector3 center, float radius, float offset, Vector3[] posArray)
     {
         float deltaAngle = 360f / posArray.Length * Mathf.Deg2Rad + offset;
         for (int i = 0; i < posArray.Length; i++)
         {
             float angle = i * deltaAngle;
-            posArray[i] = center + MakeVector2(angle) * radius;
+            posArray[i] = center + (Vector3)MakeVector2(angle) * radius;
         }
     }
     #endregion
@@ -382,6 +395,24 @@ public static class MathUtils
     #endregion
 
     #region Random
+    public static T PopRandom<T>(this List<T> list)
+    {
+        int index = Random.Range(0, list.Count);
+        T item = list[index];
+        list.RemoveAt(index);
+        return item;
+    }
+
+    public static T RandomElement<T>(this List<T> list)
+    {
+        return list[Random.Range(0, list.Count)];
+    }
+
+    public static T RandomElement<T>(this T[] array)
+    {
+        return array[Random.Range(0, array.Length)];
+    }
+
     public static int RandomSign()
     {
         return RandomBool() ? 1 : -1;
@@ -548,28 +579,5 @@ public static class MathUtils
         T temp = a;
         a = b;
         b = temp;
-    }
-
-    public static void ToFirst<T>(this T[] array, int index)
-    {
-        if (index == 0 || index >= array.Length) return;
-        T temp = array[index];
-        for (int i = 0; i <= index; i++)
-        {
-            Swap(ref temp, ref array[i]);
-        }
-    }
-
-    public static void ToFirst<T>(this List<T> list, int index) where T : class
-    {
-        if (index == 0 || index >= list.Count) return;
-        T temp = list[index];
-        for (int i = 0; i <= index; i++)
-        {
-            // Can't use Swap like in ToFirst for array because list[i] is an indexer and can't be passed by ref.
-            T _temp = temp;
-            temp = list[i];
-            list[i] = _temp;
-        }
     }
 }

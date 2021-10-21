@@ -2,15 +2,17 @@
 
 public class MainMenu : MonoBehaviour
 {
+    public AudioManager audioManager;
+
     void Awake()
     {
-        AudioManager.instance.StopMusic();
-        AudioManager.instance.PlaySfx("8bit");
+        audioManager.StopMusic();
+        audioManager.PlaySfx("8bit");
     }
 
     public void PlayGame()
     {
-        AudioManager.instance.PlaySfx("Select");
+        audioManager.PlaySfx("Select");
         GameManager.instance.LoadGame((int)SceneIndexes.ROOM, true);
     }
 

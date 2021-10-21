@@ -1,36 +1,27 @@
 fileFormatVersion: 2
-guid: 752e71b8301f452408250fd5c31cbd40
+guid: f1dd8aa97f95ad648aae75500e7cf36a
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -3462067056620832857
-    second: Teleport_VFX_0
+      213: -4201556458574107994
+    second: teleport_VFX_0
   - first:
-      213: -4906008602459016535
-    second: Teleport_VFX_1
+      213: -1272512807020474196
+    second: teleport_VFX_1
   - first:
-      213: 3731405541479731041
-    second: Teleport_VFX_2
+      213: -2752577806089197600
+    second: teleport_VFX_2
   - first:
-      213: -2344782202123528058
-    second: Teleport_VFX_3
+      213: -8944908008988300613
+    second: teleport_VFX_3
   - first:
-      213: 8603808084717474835
-    second: Teleport_VFX_4
+      213: 4022708871328959500
+    second: teleport_VFX_4
   - first:
-      213: 2448604751070339459
-    second: Teleport_VFX_5
-  - first:
-      213: -5955178558061186884
-    second: Teleport_VFX_6
-  - first:
-      213: 1643944607868337478
-    second: Teleport_VFX_7
-  - first:
-      213: -3735736269351683568
-    second: Teleport_VFX_8
+      213: -5104188900118133641
+    second: teleport_VFX_5
   externalObjects: {}
-  serializedVersion: 10
+  serializedVersion: 11
   mipmaps:
     mipMapMode: 0
     enableMipMap: 0
@@ -84,6 +75,7 @@ TextureImporter:
   maxTextureSizeSet: 0
   compressionQualitySet: 0
   textureFormatSet: 0
+  applyGammaDecoding: 0
   platformSettings:
   - serializedVersion: 3
     buildTarget: DefaultTexturePlatform
@@ -161,13 +153,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Teleport_VFX_0
+      name: teleport_VFX_0
       rect:
         serializedVersion: 2
         x: 0
-        y: 28
+        y: 0
         width: 16
-        height: 20
+        height: 32
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -175,20 +167,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 7a77885da5444ffc0800000000000000
-      internalID: -3462067056620832857
+      spriteID: 6aa21f669a211b5c0800000000000000
+      internalID: -4201556458574107994
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Teleport_VFX_1
+      name: teleport_VFX_1
       rect:
         serializedVersion: 2
         x: 16
-        y: 28
+        y: 0
         width: 16
-        height: 20
+        height: 32
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -196,20 +188,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 9a27b615b2b5aebb0800000000000000
-      internalID: -4906008602459016535
+      spriteID: ca0d8651850275ee0800000000000000
+      internalID: -1272512807020474196
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Teleport_VFX_2
+      name: teleport_VFX_2
       rect:
         serializedVersion: 2
         x: 32
-        y: 28
+        y: 0
         width: 16
-        height: 20
+        height: 32
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -217,20 +209,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 16fc2d4f19d98c330800000000000000
-      internalID: 3731405541479731041
+      spriteID: 0e7ed63b111ecc9d0800000000000000
+      internalID: -2752577806089197600
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Teleport_VFX_3
+      name: teleport_VFX_3
       rect:
         serializedVersion: 2
         x: 48
-        y: 28
+        y: 0
         width: 16
-        height: 20
+        height: 32
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -238,20 +230,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 688d4c6a209a57fd0800000000000000
-      internalID: -2344782202123528058
+      spriteID: bbaa4b7de8d4dd380800000000000000
+      internalID: -8944908008988300613
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Teleport_VFX_4
+      name: teleport_VFX_4
       rect:
         serializedVersion: 2
         x: 64
-        y: 28
+        y: 0
         width: 16
-        height: 20
+        height: 32
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -259,20 +251,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 314183d3eddd66770800000000000000
-      internalID: 8603808084717474835
+      spriteID: c0c006eb76883d730800000000000000
+      internalID: 4022708871328959500
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Teleport_VFX_5
+      name: teleport_VFX_5
       rect:
         serializedVersion: 2
         x: 80
-        y: 28
+        y: 0
         width: 16
-        height: 20
+        height: 32
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -280,8 +272,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 381a1ee3c013bf120800000000000000
-      internalID: 2448604751070339459
+      spriteID: 77487fd0d374a29b0800000000000000
+      internalID: -5104188900118133641
       vertices: []
       indices: 
       edges: []

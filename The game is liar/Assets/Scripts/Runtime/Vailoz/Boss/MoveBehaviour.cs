@@ -45,8 +45,8 @@ public class MoveBehaviour : StateMachineBehaviour
         dashTimeValue = dashTime;
         attackTimeValue = attackTime;
         chargeTimeValue = chargeTime;
-        AudioManager.instance.StopMusic();
-        AudioManager.instance.PlayMusic("BossFight");
+        boss.audioManager.StopMusic();
+        boss.audioManager.PlayMusic("BossFight");
         boss.isInvulnerable = false;
     }
 

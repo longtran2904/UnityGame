@@ -7,7 +7,6 @@ using TMPro;
 public class Player : MonoBehaviour
 {
     public IntReference health;
-    public Vector3Variable position;
     public IntReference money;
     private TextMeshProUGUI moneyText;
 
@@ -55,13 +54,12 @@ public class Player : MonoBehaviour
             Destroy(this);
         }
         moneyText?.SetText(money.value.ToString());
-        position.value = transform.position;
-        isInvincible = controller.isJumping;
+        isInvincible = !controller.isGrounded;
     }
 
     IEnumerator Die()
     {
-        AudioManager.instance.PlaySfx("PlayerDeath");
+        controller.audioManager.PlaySfx("PlayerDeath");
         anim.SetTrigger("Death");
         foreach (Transform child in transform)
         {
@@ -86,11 +84,11 @@ public class Player : MonoBehaviour
         if (!isInvincible)
         {
             health.value -= _damage;
-            AudioManager.instance.PlaySfx("GetHit");
+            controller.audioManager.PlaySfx("GetHit");
             CameraShaker.Instance.ShakeOnce(5, 4, .1f, .1f);
             controller.KnockBack();
             isInvincible = true;
-            ActivatePlayerInput(false);
+            EnableInput(false);
             StartCoroutine(Flashing());
         }
     }
@@ -110,18 +108,18 @@ public class Player : MonoBehaviour
         temp.a = 1;
         sr.color = temp;
         isInvincible = false;
-        ActivatePlayerInput(true);
+        EnableInput(true);
     }
 
-    public void ActivatePlayerInput(bool active)
+    public void EnableInput(bool enable, bool onlyWeapon = false)
     {
-        // Weapon
-        shootAndRotateBehaviour.enabled = active;
-        weaponSwitching.enabled = active;
+        shootAndRotateBehaviour.enabled = enable;
+        weaponSwitching.enabled = enable;
 
-        //Movement
-        controller.enabled = active;
-        combat.enabled = active;
+        if (onlyWeapon) return;
+
+        controller.enabled = enable;
+        combat.enabled = enable;
     }
 
     // Call this to teleport (Play tp animation -> Animation event get called -> tpDelegate)
@@ -134,7 +132,6 @@ public class Player : MonoBehaviour
     // Call in animation event
     void Teleport()
     {
-        if (teleportEvent != null)
-            teleportEvent();
+        teleportEvent?.Invoke();
     }
 }

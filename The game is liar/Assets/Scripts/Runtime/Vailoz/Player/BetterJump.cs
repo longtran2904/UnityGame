@@ -6,8 +6,6 @@ public class BetterJump : MonoBehaviour
 {
     public float fallMultiplier = 8f;
 
-    public float lowJumpMultiplier = 4f;
-
     Rigidbody2D rb;
 
     // Start is called before the first frame update
@@ -21,11 +19,7 @@ public class BetterJump : MonoBehaviour
     {
         if (rb.velocity.y < 0)
         {
-            rb.velocity += (Vector2)transform.up * Physics2D.gravity.y * (fallMultiplier - 1) * Time.deltaTime;
-        }
-        else if (rb.velocity.y > 0 && !Input.GetKey(KeyCode.Space))
-        {
-            rb.velocity += (Vector2)transform.up * Physics2D.gravity.y * (lowJumpMultiplier - 1) * Time.deltaTime;
+            rb.velocity += (Vector2)transform.up * Physics2D.gravity.y * rb.gravityScale * (fallMultiplier - 1) * Time.deltaTime;
         }
     }
 }

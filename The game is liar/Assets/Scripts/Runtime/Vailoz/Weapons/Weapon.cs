@@ -1,11 +1,5 @@
 ﻿using UnityEngine;
 
-public enum FireMode
-{
-    Auto,
-    Single
-}
-
 public class Weapon : MonoBehaviour
 {
     public WeaponStat stat;
@@ -13,7 +7,7 @@ public class Weapon : MonoBehaviour
     public GameObject muzzleFlash;
     public float muzzelFlashTime;
 
-    public int currentAmmo;
+    [HideInInspector] public int currentAmmo;
     public Vector2 posOffset;
 
     void Awake()

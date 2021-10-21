@@ -49,6 +49,7 @@ SpriteRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -101,6 +102,7 @@ MonoBehaviour:
   hitEffect: {fileID: 0}
   canTouchGround: 0
   canTouchPlayer: 0
+  audioManager: {fileID: 11400000, guid: 01443e5a6bdc47b4387217618b65db47, type: 2}
 --- !u!50 &8507593736587019091
 Rigidbody2D:
   serializedVersion: 4

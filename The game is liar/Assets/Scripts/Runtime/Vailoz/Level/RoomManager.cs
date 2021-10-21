@@ -17,9 +17,101 @@ public class RoomManager : MonoBehaviour
     public TileBase doorTile;
     public TileBase normalTile;
 
+#if UNITY_EDITOR
+    [Header("Demo")]
+    public bool enableEnemies;
+    public bool demoMode;
+    [ShowWhen("demoMode")] public bool automaticallyMoveCamera;
+    [ShowWhen("demoMode")] public float cameraSpeed;
+    private Vector3 startPos;
+    private Vector3 endPos;
+    private int currentDemoRoom = -1;
+    private PlayerController player;
+    private Camera main;
+
+    void NextRoom()
+    {
+        currentBoundsInt.value = EdgarHelper.GetRoomBoundsInt(rooms[++currentDemoRoom]);
+
+        float aspect = (float)currentBoundsInt.value.size.x / currentBoundsInt.value.size.y;
+        Vector3 offset;
+        if (aspect >= main.aspect)
+        {
+            main.orthographicSize = currentBoundsInt.value.size.y / 2f;
+        }
+        else
+        {
+            main.orthographicSize = currentBoundsInt.value.size.x / main.aspect / 2f;
+        }
+        offset = new Vector3(main.orthographicSize * main.aspect, main.orthographicSize);
+        startPos = currentBoundsInt.value.min + offset + Vector3.forward * -10;
+        endPos = currentBoundsInt.value.max - offset + Vector3.forward * -10;
+        Debug.DrawLine(startPos, endPos, Color.yellow, 1000);
+    }
+
+    System.Collections.IEnumerator UpdateDemo()
+    {
+        yield return null;
+        NEXT_ROOM:
+        NextRoom();
+        float t = 0;
+        bool toNextRoom = false;
+        while (true)
+        {
+            if (t > 1)
+            {
+                if (toNextRoom)
+                {
+                    if (currentDemoRoom == rooms.Count - 1)
+                        yield break;
+                    goto NEXT_ROOM;
+                }
+                MathUtils.Swap(ref startPos, ref endPos);
+                t = 0;
+                toNextRoom = true;
+            }
+            main.transform.position = Vector3.Lerp(startPos, endPos, t);
+            t += cameraSpeed * Time.deltaTime;
+            yield return null;
+        }
+    }
+#endif
+
+    [System.Diagnostics.Conditional("UNITY_EDITOR")]
+    void EnterDemo(PlayerController controller)
+    {
+        if (demoMode)
+        {
+            enableEnemies = false;
+            if (automaticallyMoveCamera)
+            {
+                if (cameraSpeed <= 0)
+                    cameraSpeed = 1;
+                main = Camera.main;
+                Destroy(main.GetComponentInParent<CameraFollow2D>());
+                Destroy(controller.gameObject);
+                StartCoroutine(UpdateDemo());
+            }
+            else
+            {
+                player = controller;
+                player.EnterDemo();
+            }
+        }
+
+        if (!enableEnemies)
+            foreach (var listener in GetComponents<GameEventListener>())
+            {
+                listener.Event.UnregisterListener(listener);
+                Destroy(listener);
+            }
+    }
+
     // Start is called before the first frame update
     void Start()
     {
+        Debug.Assert(tilemap.cellSize == Vector3Int.one, "Tilemap's size is different than Vector3Int.one!");
+
         List<Vector3Int> removeTilesPos = new List<Vector3Int>();
         List<Vector3Int> doorTilesPos   = new List<Vector3Int>();
         List<Vector3Int> wallTilesPos   = new List<Vector3Int>();
@@ -28,14 +120,17 @@ public class RoomManager : MonoBehaviour
         foreach (var room in rooms)
         {
             if (room.RoomTemplatePrefab.name == startingRoom)
+            {
                 currentRoom.value = room;
+                EnterDemo(currentRoom.value.RoomTemplateInstance.GetComponentInChildren<PlayerController>());
+            }
 
-            Tilemap wallTilemap = room.RoomTemplateInstance.transform.Find("tilemaps").GetChild(2).GetComponent<Tilemap>();
+            Tilemap wallTilemap = room.RoomTemplateInstance.transform.Find("Tilemaps").GetChild(2).GetComponent<Tilemap>();
             wallTilemap.CompressBounds();
             BoundsInt roomBounds = wallTilemap.cellBounds;
 
-            HandleTiles(room.Doors, null, pos => removeTilesPos.Add(pos));
-            HandleTiles(EdgarHelper.GetUnusedDoors(room), pos => doorTilesPos.Add(pos), pos => wallTilesPos.Add(pos));
+            //HandleTiles(room.Doors, null, pos => removeTilesPos.Add(pos));
+            //HandleTiles(EdgarHelper.GetUnusedDoors(room), pos => doorTilesPos.Add(pos), pos => wallTilesPos.Add(pos));
 
             /// <summary>
             /// Check to see if there are any tiles that will be set/removed when a door is opened/closed.
@@ -46,7 +141,7 @@ public class RoomManager : MonoBehaviour
             /// <param name="otherPosFunc">
             /// function to be executed if the current tile position is a special tile and not at door position.
             /// </param>
-            void HandleTiles(List<DoorInstance> doors, System.Action<Vector3Int> doorPosFunc, System.Action<Vector3Int> otherPosFunc)
+            /*void HandleTiles(List<DoorInstance> doors, System.Action<Vector3Int> doorPosFunc, System.Action<Vector3Int> otherPosFunc)
             {
                 foreach (var door in doors)
                 {
@@ -70,7 +165,7 @@ public class RoomManager : MonoBehaviour
                         }
                     }
                 }
-            }
+            }*/
 
             Vector3Int removeDir = Vector3Int.right;
             foreach (var door in room.Doors)
@@ -93,13 +188,14 @@ public class RoomManager : MonoBehaviour
             }
         }
 
-        tilemap.SetTiles(doorTilesPos.ToArray(), new TileBase[doorTilesPos.Count].Populate(doorTile));
-        tilemap.SetTiles(removeTilesPos.ToArray(), null);
-        tilemap.SetTiles(wallTilesPos.ToArray(), new TileBase[wallTilesPos.Count].Populate(normalTile));
+        //tilemap.SetTiles(doorTilesPos.ToArray(), new TileBase[doorTilesPos.Count].Populate(doorTile));
+        tilemap.SetTiles(removeTilesPos.ToArray(), new TileBase[removeTilesPos.Count].Populate(null));
+        //tilemap.SetTiles(wallTilesPos.ToArray(), new TileBase[wallTilesPos.Count].Populate(normalTile));
         tilemap.RefreshAllTiles();
         currentBoundsInt.value = EdgarHelper.GetRoomBoundsInt(currentRoom.value);
     }
 
+#if UNITY_EDITOR
     void Update()
     {
         foreach (var room in rooms)
@@ -108,6 +204,7 @@ public class RoomManager : MonoBehaviour
             ExtDebug.DrawBox(bounds.center, bounds.extents, Quaternion.identity, Color.cyan);
         }
     }
+#endif
 
     // Called by the custom Game Event
     public void LockRoom()

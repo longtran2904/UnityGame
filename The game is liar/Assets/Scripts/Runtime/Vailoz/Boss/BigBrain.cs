@@ -28,6 +28,7 @@ public class BigBrain : Boss
     public float speed;
     public float slamSpeed;
     public float knockbackForce;
+    public AudioManager audioManager;
 
     Material defMat;
     public Material triggerMat, whiteMat;
@@ -136,7 +137,7 @@ public class BigBrain : Boss
 
                     rb.velocity = Vector2.zero;
                     timer = Random.Range(4, 6);
-                    AudioManager.instance.PlayMusic("Laser");
+                    audioManager.PlayMusic("Laser");
                     canSetup = false;
                 }
 
@@ -147,7 +148,7 @@ public class BigBrain : Boss
                     foreach (var laser in lasers)
                         laser.gameObject.SetActive(false);
 
-                    AudioManager.instance.StopMusic();
+                    audioManager.StopMusic();
                     canSetup = true;
                     ResetSlamAttack();
                 }
@@ -180,7 +181,7 @@ public class BigBrain : Boss
     {
         float positionY = onGround.value ? groundPos.position.y + playerHeight : ceilingPos.position.y - playerHeight;
         transform.position = new Vector3(player.transform.position.x, positionY, 0);
-        AudioManager.instance.PlaySfx("Teleport");
+        audioManager.PlaySfx("Teleport");
         StartCoroutine(flashCoroutine);
         canFakeAttack = MathUtils.RandomBool(fakeAttackProbability);
         state = EnemyState.Charge;
@@ -240,7 +241,7 @@ public class BigBrain : Boss
     {
         int i = onGround.value ? (Random.value < .5f ? 0 : 3) : Random.Range(1, 3);
         transform.position = restPositions[i].position;
-        AudioManager.instance.PlaySfx("Teleport");
+        audioManager.PlaySfx("Teleport");
     }
 
     void ShootLaser()
@@ -249,7 +250,7 @@ public class BigBrain : Boss
         {
             TeleportToRestPos();
             rb.velocity = Mathf.Sign(player.transform.position.x - transform.position.x) * new Vector2(speed, 0);
-            AudioManager.instance.PlayMusic("Laser");
+            audioManager.PlayMusic("Laser");
             laser.SetActive(true);
             posY = onGround.value ? groundPos.position.y : ceilingPos.position.y;
         }
@@ -258,7 +259,7 @@ public class BigBrain : Boss
         if (stopLaser)
         {
             laser.SetActive(false);
-            AudioManager.instance.StopMusic();
+            audioManager.StopMusic();
         }
 
         laser.transform.position = new Vector3(eyePos.position.x, MathUtils.Average(eyePos.position.y, posY), 0);
@@ -271,7 +272,7 @@ public class BigBrain : Boss
         Vector3 center = MathUtils.Average(ceilingPos.position, groundPos.position);
         transform.position = center;
         transform.position += center - eyePos.position; // eyePos is at the center
-        AudioManager.instance.PlaySfx("Teleport");
+        audioManager.PlaySfx("Teleport");
     }
 
     void SetupLasers()
@@ -317,7 +318,7 @@ public class BigBrain : Boss
                 Projectile bullet = ObjectPooler.instance.SpawnFromPool<Projectile>("TurretBullet", pos.position, pos.rotation);
                 bullet.Init(damage, 0, 0, true, false);
             }
-            AudioManager.instance.PlaySfx("Shoot");
+            audioManager.PlaySfx("Shoot");
             yield return new WaitForSeconds(timeBtwBullets);
             eyePos.Rotate(new Vector3(0, 0, 10));
         }
@@ -328,7 +329,7 @@ public class BigBrain : Boss
         health -= _damage;
         sr.material = whiteMat;
         Invoke("ResetMaterial", .1f);
-        AudioManager.instance.PlaySfx("GetHit");
+        audioManager.PlaySfx("GetHit");
     }
 
     void ResetMaterial()
@@ -348,7 +349,7 @@ public class BigBrain : Boss
             if (state == EnemyState.Slam)
             {
                 CreateShockWave();
-                AudioManager.instance.PlaySfx("Slam");
+                audioManager.PlaySfx("Slam");
                 int maxAttack = health <= maxHealth * .5f ? 3 : 2;
                 int randAttack = Random.Range(0, maxAttack);
                 switch (randAttack)
