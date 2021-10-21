@@ -47,6 +47,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   updateCurrentRoom: {fileID: 11400000, guid: 7484fc3ac67b8da45b0f6fbb708c0e02, type: 2}
   currentRoom: {fileID: 11400000, guid: c16780bbd065465449aa96a3fb65dcb9, type: 2}
+  currentBoundsInt: {fileID: 0}
+  doorTile: {fileID: 0}
+  normalTile: {fileID: 0}
 --- !u!114 &8689803038939835655
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -64,6 +67,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 8484263503420184072}
+        m_TargetAssemblyTypeName: 
         m_MethodName: LockRoom
         m_Mode: 1
         m_Arguments:
@@ -91,7 +95,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 8484263503420184072}
-        m_MethodName: UnLockRoom
+        m_TargetAssemblyTypeName: RoomManager, Assembly-CSharp
+        m_MethodName: UnlockRoom
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

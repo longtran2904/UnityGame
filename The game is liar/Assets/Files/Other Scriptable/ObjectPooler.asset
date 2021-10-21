@@ -45,3 +45,7 @@ MonoBehaviour:
     prefab: {fileID: 4882740483767263727, guid: 7bc98f32e8618004787d858b0286b4eb,
       type: 3}
     size: 10
+  - tag: ResponseButton
+    prefab: {fileID: 6271391693074333662, guid: cbf4f2c8da1fa5c459b3c514c70b587b,
+      type: 3}
+    size: 10
