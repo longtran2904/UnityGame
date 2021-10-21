@@ -1129,3 +1129,364 @@ AssetImportParameters requested are different than current active one (requested
   custom:video-decoder-webm-vp8: 9c59270c3fd7afecdb556c50c9e8de78 -> 
   custom:audio-decoder-ogg-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
   custom:audio-encoder-webm-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+========================================================================
+Received Prepare
+Registering precompiled user dll's ...
+Registered in 0.005242 seconds.
+Begin MonoManager ReloadAssembly
+Native extension for WindowsStandalone target not found
+Native extension for WebGL target not found
+Refreshing native plugins compatible for Editor in 0.63 ms, found 5 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Mono: successfully reloaded assembly
+- Completed reload, in  1.007 seconds
+Platform modules already initialized, skipping
+Shader 'Universal Render Pipeline/Particles/Lit': fallback shader 'Universal Render Pipeline/Particles/SimpleLit' not found
+Refreshing native plugins compatible for Editor in 1.01 ms, found 5 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 3087 Unused Serialized files (Serialized files now loaded: 0)
+System memory in use before: 140.6 MB.
+System memory in use after: 140.8 MB.
+
+Unloading 24 unused Assets to reduce memory usage. Loaded Objects now: 3935.
+Total: 2.477800 ms (FindLiveObjects: 0.341000 ms CreateObjectMapping: 0.145100 ms MarkObjects: 1.973800 ms  DeleteObjects: 0.017000 ms)
+
+AssetImportParameters requested are different than current active one (requested -> active):
+  custom:framework-win-MediaFoundation: 216162199b28c13a410421893ffa2e32 -> 
+  custom:video-decoder-ogg-theora: a1e56fd34408186e4bbccfd4996cb3dc -> 
+  custom:container-muxer-webm: aa71ff27fc2769a1b78a27578f13a17b -> 
+  custom:container-demuxer-webm: 4f35f7cbe854078d1ac9338744f61a02 -> 
+  custom:container-demuxer-ogg: 62fdf1f143b41e24485cea50d1cbac27 -> 
+  custom:video-encoder-webm-vp8: eb34c28f22e8b96e1ab97ce403110664 -> 
+  custom:video-decoder-webm-vp8: 9c59270c3fd7afecdb556c50c9e8de78 -> 
+  custom:audio-decoder-ogg-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+  custom:audio-encoder-webm-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+========================================================================
+Received Import Request.
+  Time since last request: 1944.790402 seconds.
+  path: Assets/Scripts/Runtime/Vailoz/Level/CurrentRoomDetection.cs
+  artifactKey: Guid(92efce7ba77416b4aa9757f37c8c3602) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Scripts/Runtime/Vailoz/Level/CurrentRoomDetection.cs using Guid(92efce7ba77416b4aa9757f37c8c3602) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '8b1069d7103ea16f4019af311d134021') in 0.008892 seconds 
+  Import took 0.013450 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.001428 seconds.
+  path: Assets/Scripts/Runtime/Vailoz/Level/CurrentRoomDetection.cs
+  artifactKey: Guid(92efce7ba77416b4aa9757f37c8c3602) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Scripts/Runtime/Vailoz/Level/CurrentRoomDetection.cs using Guid(92efce7ba77416b4aa9757f37c8c3602) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '8b1069d7103ea16f4019af311d134021') in 0.001540 seconds 
+  Import took 0.005899 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 383.192455 seconds.
+  path: Assets/Scripts/Runtime/Vailoz/Enemy/Enemy.cs
+  artifactKey: Guid(1f833eb0d584ca54eb047bd79179d644) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Scripts/Runtime/Vailoz/Enemy/Enemy.cs using Guid(1f833eb0d584ca54eb047bd79179d644) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '165791274eb9c8b1a9318914674339e2') in 0.005510 seconds 
+  Import took 0.010583 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.021816 seconds.
+  path: Assets/Scripts/Runtime/Vailoz/Enemy/Enemy.cs
+  artifactKey: Guid(1f833eb0d584ca54eb047bd79179d644) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Scripts/Runtime/Vailoz/Enemy/Enemy.cs using Guid(1f833eb0d584ca54eb047bd79179d644) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '165791274eb9c8b1a9318914674339e2') in 0.001562 seconds 
+  Import took 0.006054 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 226.467552 seconds.
+  path: Assets/Dungeon Generator/Corridors/HCoridors.prefab
+  artifactKey: Guid(61c012f6e4d420643a4315fdf1ae84b7) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Dungeon Generator/Corridors/HCoridors.prefab using Guid(61c012f6e4d420643a4315fdf1ae84b7) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'dbce7bccb23a51280f050d90066be5c0') in 0.121898 seconds 
+  Import took 0.128115 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000200 seconds.
+  path: Assets/Dungeon Generator/Corridors/VCorridors.prefab
+  artifactKey: Guid(49775fce879e8e8428d424595726fb1f) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Dungeon Generator/Corridors/VCorridors.prefab using Guid(49775fce879e8e8428d424595726fb1f) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '78a5825e3227cec255bfbede0007a817') in 0.007221 seconds 
+  Import took 0.011758 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.291910 seconds.
+  path: Assets/Dungeon Generator/Rooms/Custom Room template 2.prefab
+  artifactKey: Guid(0c179c37d4dfc4e42b825cfc26832676) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Dungeon Generator/Rooms/Custom Room template 2.prefab using Guid(0c179c37d4dfc4e42b825cfc26832676) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'ca9222efffd67822e356b7c6fbf9bab6') in 0.200402 seconds 
+  Import took 0.206085 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000204 seconds.
+  path: Assets/Dungeon Generator/Rooms/Room 8.prefab
+  artifactKey: Guid(4a55feb459af3674989d0114fcf05a1a) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Dungeon Generator/Rooms/Room 8.prefab using Guid(4a55feb459af3674989d0114fcf05a1a) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '085abbed6505fcae7664b64b4342b47f') in 0.018178 seconds 
+  Import took 0.024488 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000221 seconds.
+  path: Assets/Dungeon Generator/Rooms/Starting Room.prefab
+  artifactKey: Guid(ae449f3c8c052cd4696c710076876b06) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Dungeon Generator/Rooms/Starting Room.prefab using Guid(ae449f3c8c052cd4696c710076876b06) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'a32313c17446b0fe59347084b2e50056') in 0.064915 seconds 
+  Import took 0.070292 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000197 seconds.
+  path: Assets/Dungeon Generator/Rooms/Room 5.prefab
+  artifactKey: Guid(87a9f57e5a34a8345a5c016c7275663b) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Dungeon Generator/Rooms/Room 5.prefab using Guid(87a9f57e5a34a8345a5c016c7275663b) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '7a2454b9dbd34351ca757fe09d836048') in 0.014167 seconds 
+  Import took 0.019079 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000210 seconds.
+  path: Assets/Dungeon Generator/Rooms/Custom Room template.prefab
+  artifactKey: Guid(a852b1226b8cb044395889f3f53517e9) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Dungeon Generator/Rooms/Custom Room template.prefab using Guid(a852b1226b8cb044395889f3f53517e9) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'd54a422c20c2520443ef106deb092b67') in 0.031960 seconds 
+  Import took 0.037862 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000159 seconds.
+  path: Assets/Dungeon Generator/Rooms/Custom Room template 3.prefab
+  artifactKey: Guid(5b0ab9ed011271b48bcb731063b11ead) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Dungeon Generator/Rooms/Custom Room template 3.prefab using Guid(5b0ab9ed011271b48bcb731063b11ead) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '892fc2bc9e205be50ad23e03058bb4dd') in 0.020047 seconds 
+  Import took 0.025200 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.023241 seconds.
+  path: Assets/Dungeon Generator/Rooms/Demo_Rooms/Boss Room.prefab
+  artifactKey: Guid(ce0819be0f64eac419d728da4365725a) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Dungeon Generator/Rooms/Demo_Rooms/Boss Room.prefab using Guid(ce0819be0f64eac419d728da4365725a) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'a9209233cab93c38bf2303e7033cfc0f') in 0.012921 seconds 
+  Import took 0.018016 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000230 seconds.
+  path: Assets/Dungeon Generator/Rooms/Demo_Rooms/Custom Room template 8.prefab
+  artifactKey: Guid(ee4706a62e8bbe34aac2cacaac594a92) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Dungeon Generator/Rooms/Demo_Rooms/Custom Room template 8.prefab using Guid(ee4706a62e8bbe34aac2cacaac594a92) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '282b50a1eb57382c7e14b8be9ff9791a') in 0.006811 seconds 
+  Import took 0.011923 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000216 seconds.
+  path: Assets/Dungeon Generator/Rooms/Demo_Rooms/Custom Room template 17.prefab
+  artifactKey: Guid(080d99c9be42f6646bbf37cc96756dbb) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Dungeon Generator/Rooms/Demo_Rooms/Custom Room template 17.prefab using Guid(080d99c9be42f6646bbf37cc96756dbb) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '2c08884ba636c4f9dd65ed0c414c648e') in 0.006808 seconds 
+  Import took 0.011949 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000141 seconds.
+  path: Assets/Dungeon Generator/Rooms/Demo_Rooms/Custom Room template 16.prefab
+  artifactKey: Guid(736dafa9cd478954d945fb4f7dc16727) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Dungeon Generator/Rooms/Demo_Rooms/Custom Room template 16.prefab using Guid(736dafa9cd478954d945fb4f7dc16727) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '9c7d61f909a1513343125708312f17a0') in 0.006466 seconds 
+  Import took 0.011099 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000178 seconds.
+  path: Assets/Dungeon Generator/Rooms/Demo_Rooms/Custom Room template 12.prefab
+  artifactKey: Guid(28f412ba4fdd4e34993bef7d1810ff0d) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Dungeon Generator/Rooms/Demo_Rooms/Custom Room template 12.prefab using Guid(28f412ba4fdd4e34993bef7d1810ff0d) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'd7034c7ad589dd580100cbb29d818809') in 0.006733 seconds 
+  Import took 0.011499 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000203 seconds.
+  path: Assets/Dungeon Generator/Rooms/Demo_Rooms/Custom Room template 13.prefab
+  artifactKey: Guid(5b6a8cb8223482d4dbd0e7ac848c8095) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Dungeon Generator/Rooms/Demo_Rooms/Custom Room template 13.prefab using Guid(5b6a8cb8223482d4dbd0e7ac848c8095) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'e6ccb03d964589367d25d47dd918b287') in 0.006607 seconds 
+  Import took 0.011316 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000194 seconds.
+  path: Assets/Dungeon Generator/Rooms/Demo_Rooms/Room 8.prefab
+  artifactKey: Guid(2ee1e89853b718a48b7d63a19b06e7e1) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Dungeon Generator/Rooms/Demo_Rooms/Room 8.prefab using Guid(2ee1e89853b718a48b7d63a19b06e7e1) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '57ed213f42482bc03a35f5581794be54') in 0.011108 seconds 
+  Import took 0.016244 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000196 seconds.
+  path: Assets/Dungeon Generator/Rooms/Demo_Rooms/Custom Room template 14.prefab
+  artifactKey: Guid(7748f9c87036e224fb79ac3cbe881bc6) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Dungeon Generator/Rooms/Demo_Rooms/Custom Room template 14.prefab using Guid(7748f9c87036e224fb79ac3cbe881bc6) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '3e480e4882e601d5a4966d1a4eb05664') in 0.006878 seconds 
+  Import took 0.011968 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000198 seconds.
+  path: Assets/Dungeon Generator/Rooms/Demo_Rooms/Custom Room template 6.prefab
+  artifactKey: Guid(90b4222dc67346e4194d7b60bf635479) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Dungeon Generator/Rooms/Demo_Rooms/Custom Room template 6.prefab using Guid(90b4222dc67346e4194d7b60bf635479) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '9bd0ec6755e36b9d78c1173c4fc27a9e') in 0.012247 seconds 
+  Import took 0.017420 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000166 seconds.
+  path: Assets/Dungeon Generator/Rooms/Demo_Rooms/Custom Room template 7.prefab
+  artifactKey: Guid(dc9c6b9966e6a034c93683580b3365cc) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Dungeon Generator/Rooms/Demo_Rooms/Custom Room template 7.prefab using Guid(dc9c6b9966e6a034c93683580b3365cc) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '9b82b70118009d71bfbfa09dcd8bc501') in 0.013673 seconds 
+  Import took 0.018850 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000201 seconds.
+  path: Assets/Dungeon Generator/Rooms/Demo_Rooms/Custom Room template 9.prefab
+  artifactKey: Guid(2e0280b53c1307c4a8325604d3092f8f) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Dungeon Generator/Rooms/Demo_Rooms/Custom Room template 9.prefab using Guid(2e0280b53c1307c4a8325604d3092f8f) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '47c2915ffe4a4d994e0f8d36692682e7') in 0.012722 seconds 
+  Import took 0.018075 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000170 seconds.
+  path: Assets/Dungeon Generator/Rooms/Demo_Rooms/Custom Room template 4.prefab
+  artifactKey: Guid(f54c2bda2c05d1445b6ef5f67d9287f3) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Dungeon Generator/Rooms/Demo_Rooms/Custom Room template 4.prefab using Guid(f54c2bda2c05d1445b6ef5f67d9287f3) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '0cdf59bec500f6503591dcd2052b0991') in 0.013206 seconds 
+  Import took 0.020080 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000137 seconds.
+  path: Assets/Dungeon Generator/Rooms/Demo_Rooms/Custom Room template 2.prefab
+  artifactKey: Guid(1ebaeda9b1a28ab478673dc66233a4ba) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Dungeon Generator/Rooms/Demo_Rooms/Custom Room template 2.prefab using Guid(1ebaeda9b1a28ab478673dc66233a4ba) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '00cdfbc3c20a71a89136af754311b40f') in 0.011490 seconds 
+  Import took 0.016519 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000184 seconds.
+  path: Assets/Dungeon Generator/Rooms/Demo_Rooms/Shop.prefab
+  artifactKey: Guid(7d64e820904a23b4fa12e45859e9ab35) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Dungeon Generator/Rooms/Demo_Rooms/Shop.prefab using Guid(7d64e820904a23b4fa12e45859e9ab35) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'faa962958722bb893ed009cef8573482') in 0.042149 seconds 
+  Import took 0.047849 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000137 seconds.
+  path: Assets/Dungeon Generator/Rooms/Demo_Rooms/Room 6.prefab
+  artifactKey: Guid(b7b3dd54f4af3a648adf1f0fe146bad0) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Dungeon Generator/Rooms/Demo_Rooms/Room 6.prefab using Guid(b7b3dd54f4af3a648adf1f0fe146bad0) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'f4907897c74bbb877dea8c1c8520a304') in 0.024917 seconds 
+  Import took 0.029671 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000223 seconds.
+  path: Assets/Dungeon Generator/Rooms/Demo_Rooms/Starting Room.prefab
+  artifactKey: Guid(d0b2db5c343693d46ab93a31f290cb18) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Dungeon Generator/Rooms/Demo_Rooms/Starting Room.prefab using Guid(d0b2db5c343693d46ab93a31f290cb18) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'a33a28e4646f9543e66164d071e14262') in 0.049032 seconds 
+  Import took 0.054482 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 1.044114 seconds.
+  path: Assets/Dungeon Generator/Rooms/Test/Custom Room template 1.prefab
+  artifactKey: Guid(ddcd09b9618657340a2859a59ec6202c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Dungeon Generator/Rooms/Test/Custom Room template 1.prefab using Guid(ddcd09b9618657340a2859a59ec6202c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '0bcb2fe7d2ff094499ce82347747f49e') in 0.012418 seconds 
+  Import took 0.017568 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000215 seconds.
+  path: Assets/Dungeon Generator/Rooms/Test/Room.prefab
+  artifactKey: Guid(7bba7ebcb065c5b48937c9fda36beeae) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Dungeon Generator/Rooms/Test/Room.prefab using Guid(7bba7ebcb065c5b48937c9fda36beeae) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'c7eb60117708972ae42188819ba40b86') in 0.012030 seconds 
+  Import took 0.035695 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000182 seconds.
+  path: Assets/Dungeon Generator/Rooms/Test/Custom Room template 5.prefab
+  artifactKey: Guid(ad5473f8a81157a4cabe2c153a761a89) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Dungeon Generator/Rooms/Test/Custom Room template 5.prefab using Guid(ad5473f8a81157a4cabe2c153a761a89) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'b44945ac1680bd1d243739ce24ab96e8') in 0.007799 seconds 
+  Import took 0.013074 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000239 seconds.
+  path: Assets/Dungeon Generator/Rooms/Test/Custom Room template 10.prefab
+  artifactKey: Guid(7d8eb1ffa90d35242bb1b6801e44514f) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Dungeon Generator/Rooms/Test/Custom Room template 10.prefab using Guid(7d8eb1ffa90d35242bb1b6801e44514f) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'b63b7da824c44a10db1acc9591da6d30') in 0.015048 seconds 
+  Import took 0.020171 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000196 seconds.
+  path: Assets/Dungeon Generator/Rooms/Test/Custom Room template 11.prefab
+  artifactKey: Guid(9b55bbeeeee1c8f44916e86b1e04e97b) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Dungeon Generator/Rooms/Test/Custom Room template 11.prefab using Guid(9b55bbeeeee1c8f44916e86b1e04e97b) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '1f2143d8610958bf82a717355b874638') in 0.016340 seconds 
+  Import took 0.021986 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000252 seconds.
+  path: Assets/Dungeon Generator/Rooms/Test/Custom Room template 18.prefab
+  artifactKey: Guid(de53f9724342bd349b6adb1ff9590327) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Dungeon Generator/Rooms/Test/Custom Room template 18.prefab using Guid(de53f9724342bd349b6adb1ff9590327) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'c62a357d85272e28b669025d24dccb5a') in 0.020720 seconds 
+  Import took 0.025788 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000223 seconds.
+  path: Assets/Dungeon Generator/Rooms/Test/Custom Room template 15.prefab
+  artifactKey: Guid(fd2e85a5fa8f9b54d99eb7e4bd303e9c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Dungeon Generator/Rooms/Test/Custom Room template 15.prefab using Guid(fd2e85a5fa8f9b54d99eb7e4bd303e9c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '124ca1a75e3fca131b03df63d75cbcda') in 0.006168 seconds 
+  Import took 0.010884 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000201 seconds.
+  path: Assets/Dungeon Generator/Rooms/Test/Custom Room template.prefab
+  artifactKey: Guid(672830e7e65b095448adb38fcb915e63) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Dungeon Generator/Rooms/Test/Custom Room template.prefab using Guid(672830e7e65b095448adb38fcb915e63) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '7d41636384853e602054298bd54ab506') in 0.005513 seconds 
+  Import took 0.027984 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000181 seconds.
+  path: Assets/Dungeon Generator/Rooms/Test/Room 5.prefab
+  artifactKey: Guid(6306d1611dbe5064c89ec4b7955baf95) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Dungeon Generator/Rooms/Test/Room 5.prefab using Guid(6306d1611dbe5064c89ec4b7955baf95) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'f8a50b431ade7a61836eceac6f7b6209') in 0.009699 seconds 
+  Import took 0.014666 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 4.519799 seconds.
+  path: Assets/Materials/New Render Texture.renderTexture
+  artifactKey: Guid(7f7569248e238b74f9735695065c0f61) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Materials/New Render Texture.renderTexture using Guid(7f7569248e238b74f9735695065c0f61) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '1853892eabef3c7a5ec061e004dfd8be') in 0.054827 seconds 
+  Import took 0.059908 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000236 seconds.
+  path: Assets/Materials/Shader Graphs_New Shader Graph.mat
+  artifactKey: Guid(52d0a939d1f0ff34dab7d7123f8e2cf9) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Materials/Shader Graphs_New Shader Graph.mat using Guid(52d0a939d1f0ff34dab7d7123f8e2cf9) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '2ce694550a188fab18a5cbfbea57ff04') in 0.023780 seconds 
+  Import took 0.028714 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000244 seconds.
+  path: Assets/Materials/New Render Texture.renderTexture
+  artifactKey: Guid(7f7569248e238b74f9735695065c0f61) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Materials/New Render Texture.renderTexture using Guid(7f7569248e238b74f9735695065c0f61) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '1853892eabef3c7a5ec061e004dfd8be') in 0.004097 seconds 
+  Import took 0.008649 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000220 seconds.
+  path: Assets/Materials/RedMat.mat
+  artifactKey: Guid(d5792750c9f5bf240a7b854ab8aa3870) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Materials/RedMat.mat using Guid(d5792750c9f5bf240a7b854ab8aa3870) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '6387eacc5533d3d63e54ccbc11dd2be4') in 0.009144 seconds 
+  Import took 0.013491 seconds .
+
+AssetImportWorkerClient::OnTransportError - code=2 error=End of file
