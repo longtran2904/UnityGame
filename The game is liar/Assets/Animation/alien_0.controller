@@ -161,7 +161,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Move
+  m_Name: Alien_run
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
@@ -297,7 +297,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Idle
+  m_Name: Alien_idle
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
@@ -352,7 +352,7 @@ AnimatorStateMachine:
     m_Position: {x: -100, y: -30, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -5178278805922379141}
-    m_Position: {x: 190, y: -30, z: 0}
+    m_Position: {x: 190, y: -40, z: 0}
   m_ChildStateMachines: []
   m_AnyStateTransitions: []
   m_EntryTransitions: []
