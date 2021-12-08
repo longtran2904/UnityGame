@@ -1,10 +1,11 @@
 ﻿using UnityEngine;
 using System;
 
+// Prototyping
+#if false
 public enum MoveType
 {
     Run,
-    Jump,
     Fly,
 }
 
@@ -34,6 +35,7 @@ public struct JumpData
     public float jumpAngle;
     public float timeBtwJumps;
 }
+
 public enum FlyPattern
 {
     Linear,
@@ -57,3 +59,4 @@ public struct FlyData
     [HideInInspector] public Vector2 curvePoint1;
     [HideInInspector] public Vector2 curvePoint2;
 }
+#endif

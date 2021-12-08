@@ -1,14 +1,12 @@
 ﻿using UnityEngine;
 using System;
 
+// Prototyping
+#if false
 public enum AbilityType
 {
-    Teleport,
-    Flash,
-    Charge,
-    Explode,
-    Split,
-    Shoot,
+    TeleportAndExplode,
+
 
     AbilityCount
 }
@@ -114,3 +112,4 @@ public struct BurstData
     [HideInInspector] public Vector3[] positions;
     [HideInInspector] public Quaternion[] rotations;
 }
+#endif

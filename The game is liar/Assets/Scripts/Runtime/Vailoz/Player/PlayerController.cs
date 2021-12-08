@@ -43,6 +43,8 @@ public class PlayerController : MonoBehaviour
     public float knockbackTime;
     private float knockbackCounter;
 
+    private bool demo;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -70,13 +72,13 @@ public class PlayerController : MonoBehaviour
         if (moveInput != lastMoveInput)
         {
             if (moveInput != 0)
-                anim.SetBool("isRunning", true);
+                anim.Play("Run");
             else
-                anim.SetBool("isRunning", false);
+                anim.Play("Idle");
         }
 
-        if (moveInput != 0 && isGrounded)
-            audioManager?.PlaySfx(footStep);
+        if (!demo && moveInput != 0 && isGrounded)
+            audioManager.PlaySfx(footStep);
 
         if (PauseMenu.isGamePaused) return;
         transform.eulerAngles = new Vector3(onGround.value ? 0 : 180, mousePos.x - transform.position.x > 0 ? 0 : 180, 0);
@@ -107,8 +109,11 @@ public class PlayerController : MonoBehaviour
             groundRemember = groundRememberTime;
             if (isGrounded == false) // When fall and touch ground
             {
-                dust?.Play();
-                audioManager?.PlaySfx(touchGround);
+                if (!demo)
+                {
+                    dust.Play();
+                    audioManager.PlaySfx(touchGround);
+                }
                 isGrounded = true;
             }
         }
@@ -127,9 +132,13 @@ public class PlayerController : MonoBehaviour
             jumpPressedRememberValue = 0;
             rb.velocity = Vector2.zero;
             rb.gravityScale *= -1;
-            dust?.Play();
+            if (!demo)
+            {
+                dust.Play();
+                audioManager.PlaySfx("PlayerJump");
+            }
+            isGrounded = false;
             Invoke("SwitchTop", .1f);
-            audioManager?.PlaySfx("PlayerJump");
         }
     }
 
@@ -149,8 +158,7 @@ public class PlayerController : MonoBehaviour
     [System.Diagnostics.Conditional("UNITY_EDITOR")]
     public void EnterDemo()
     {
-        dust = null;
-        audioManager = null;
+        demo = true;
 
         GetComponent<SpriteRenderer>().enabled = false;
         Destroy(GetComponent<Player>());

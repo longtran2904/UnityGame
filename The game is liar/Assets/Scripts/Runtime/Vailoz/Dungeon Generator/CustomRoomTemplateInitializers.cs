@@ -10,6 +10,10 @@ namespace Assets.Scripts
 {
     public class CustomRoomTemplateInitializer : RoomTemplateInitializerBase
     {
+        // NOTE: The tilemap material in the dungeon generator's config only affects the shared tilemap.
+        // If I need to override the material for the "Custom room template" scriptable object
+        // I need to do it here and assign the material to all the tilemap objects.
+
         public override void Initialize()
         {
             base.Initialize();
@@ -57,14 +61,14 @@ namespace Assets.Scripts
             // ONLY THIS LINE HAS TO BE CHANGED if we want to add a menu item with a different RoomTemplateInitializer
             var roomTemplateInitializer = roomTemplate.AddComponent<CustomRoomTemplateInitializer>();
             roomTemplateInitializer.Initialize();
-            Object.DestroyImmediate(roomTemplateInitializer);
+            DestroyImmediate(roomTemplateInitializer);
 
             // Save prefab
             var currentPath = GetCurrentPath();
             PrefabUtility.SaveAsPrefabAsset(roomTemplate, AssetDatabase.GenerateUniqueAssetPath(currentPath + "/Custom Room template.prefab"));
 
             // Remove game object from scene
-            Object.DestroyImmediate(roomTemplate);
+            DestroyImmediate(roomTemplate);
         }
 
         public static string GetCurrentPath()

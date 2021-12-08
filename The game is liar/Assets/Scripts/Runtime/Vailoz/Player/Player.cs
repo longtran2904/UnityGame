@@ -54,13 +54,12 @@ public class Player : MonoBehaviour
             Destroy(this);
         }
         moneyText?.SetText(money.value.ToString());
-        isInvincible = !controller.isGrounded;
     }
 
     IEnumerator Die()
     {
         controller.audioManager.PlaySfx("PlayerDeath");
-        anim.SetTrigger("Death");
+        anim.Play("Death");
         foreach (Transform child in transform)
         {
             child.gameObject.SetActive(false);
@@ -81,20 +80,26 @@ public class Player : MonoBehaviour
 
     public void Hurt(int _damage)
     {
+        // NOTE: The CameraFollow2D uses playerPos which gets updated by the PlayerController.
+        //       So by disabling the PlayerController, the camera'll stop getting the latest player's pos.
+        //       Currently, it doesn't cause any problems because the player's pos will never change when get hit.
+        isInvincible = !controller.isGrounded;
         if (!isInvincible)
         {
             health.value -= _damage;
             controller.audioManager.PlaySfx("GetHit");
             CameraShaker.Instance.ShakeOnce(5, 4, .1f, .1f);
             controller.KnockBack();
-            isInvincible = true;
-            EnableInput(false);
-            StartCoroutine(Flashing());
+            anim.Play("Idle");
+            StartCoroutine(Hurting());
         }
     }
 
-    IEnumerator Flashing()
+    IEnumerator Hurting()
     {
+        EnableInput(false);
+        isInvincible = true;
+        anim.speed = 0;
         sr.material = hurtMat;
         yield return new WaitForSeconds(.1f);
         sr.material = defMat;
@@ -107,6 +112,7 @@ public class Player : MonoBehaviour
 
         temp.a = 1;
         sr.color = temp;
+        anim.speed = 1;
         isInvincible = false;
         EnableInput(true);
     }

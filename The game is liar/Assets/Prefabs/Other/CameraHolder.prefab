@@ -153,6 +153,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eaa811d5203b867448d04d4bd0f2bb32, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tilemap: {fileID: 0}
   bounds:
     useConstant: 1
     constantValue:
@@ -235,8 +236,8 @@ Camera:
   m_GameObject: {fileID: 8069887698966904010}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_ClearFlags: 2
+  m_BackGroundColor: {r: 0.3529412, g: 0.4117647, b: 0.53333336, a: 1}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -290,7 +291,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   DefaultPosInfluence: {x: 1, y: 1, z: 0}
-  DefaultRotInfluence: {x: 2, y: 2, z: 0}
+  DefaultRotInfluence: {x: 0, y: 0, z: 3}
   RestPositionOffset: {x: 0, y: 0, z: 0}
   RestRotationOffset: {x: 0, y: 0, z: 0}
 --- !u!114 &8069887698966904013

@@ -1,0 +1,184 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!687078895 &4343727234628468602
+SpriteAtlas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Spacecraft
+  m_EditorData:
+    serializedVersion: 2
+    textureSettings:
+      serializedVersion: 2
+      anisoLevel: 1
+      compressionQuality: 50
+      maxTextureSize: 2048
+      textureCompression: 0
+      filterMode: 0
+      generateMipMaps: 0
+      readable: 0
+      crunchedCompression: 0
+      sRGB: 1
+    platformSettings:
+    - serializedVersion: 3
+      m_BuildTarget: DefaultTexturePlatform
+      m_MaxTextureSize: 2048
+      m_ResizeAlgorithm: 0
+      m_TextureFormat: -1
+      m_TextureCompression: 0
+      m_CompressionQuality: 50
+      m_CrunchedCompression: 0
+      m_AllowsAlphaSplitting: 0
+      m_Overridden: 0
+      m_AndroidETC2FallbackOverride: 0
+      m_ForceMaximumCompressionQuality_BC6H_BC7: 0
+    packingSettings:
+      serializedVersion: 2
+      padding: 4
+      blockOffset: 1
+      allowAlphaSplitting: 0
+      enableRotation: 1
+      enableTightPacking: 1
+    secondaryTextureSettings: {}
+    variantMultiplier: 1
+    packables:
+    - {fileID: 2800000, guid: fd440b3e91764e345990b2cbf61fc69b, type: 3}
+    totalSpriteSurfaceArea: 0
+    bindAsDefault: 1
+    isAtlasV2: 0
+    cachedData: {fileID: 0}
+  m_MasterAtlas: {fileID: 0}
+  m_PackedSprites:
+  - {fileID: 6435385604052209506, guid: fd440b3e91764e345990b2cbf61fc69b, type: 3}
+  - {fileID: -838181955580156914, guid: fd440b3e91764e345990b2cbf61fc69b, type: 3}
+  - {fileID: 291282631847626850, guid: fd440b3e91764e345990b2cbf61fc69b, type: 3}
+  - {fileID: -1910237192045468360, guid: fd440b3e91764e345990b2cbf61fc69b, type: 3}
+  - {fileID: -2838830282599354885, guid: fd440b3e91764e345990b2cbf61fc69b, type: 3}
+  - {fileID: 2055448044297749234, guid: fd440b3e91764e345990b2cbf61fc69b, type: 3}
+  - {fileID: 321902710503117883, guid: fd440b3e91764e345990b2cbf61fc69b, type: 3}
+  - {fileID: 7668035823025121850, guid: fd440b3e91764e345990b2cbf61fc69b, type: 3}
+  - {fileID: -8850853889098251108, guid: fd440b3e91764e345990b2cbf61fc69b, type: 3}
+  - {fileID: -735528829318207192, guid: fd440b3e91764e345990b2cbf61fc69b, type: 3}
+  - {fileID: -879970656376653753, guid: fd440b3e91764e345990b2cbf61fc69b, type: 3}
+  - {fileID: -2044222535130456021, guid: fd440b3e91764e345990b2cbf61fc69b, type: 3}
+  - {fileID: -2352036100784368750, guid: fd440b3e91764e345990b2cbf61fc69b, type: 3}
+  - {fileID: 4480942048051369700, guid: fd440b3e91764e345990b2cbf61fc69b, type: 3}
+  - {fileID: 5858540492619512500, guid: fd440b3e91764e345990b2cbf61fc69b, type: 3}
+  - {fileID: 2941304839033968973, guid: fd440b3e91764e345990b2cbf61fc69b, type: 3}
+  - {fileID: 6959151424881392730, guid: fd440b3e91764e345990b2cbf61fc69b, type: 3}
+  - {fileID: -4317544318155929823, guid: fd440b3e91764e345990b2cbf61fc69b, type: 3}
+  - {fileID: -1537156772443317409, guid: fd440b3e91764e345990b2cbf61fc69b, type: 3}
+  - {fileID: -5951379218890109455, guid: fd440b3e91764e345990b2cbf61fc69b, type: 3}
+  - {fileID: -8907799301073133264, guid: fd440b3e91764e345990b2cbf61fc69b, type: 3}
+  - {fileID: 1495854787268492085, guid: fd440b3e91764e345990b2cbf61fc69b, type: 3}
+  - {fileID: 1098119122236637485, guid: fd440b3e91764e345990b2cbf61fc69b, type: 3}
+  - {fileID: 8527469552350913771, guid: fd440b3e91764e345990b2cbf61fc69b, type: 3}
+  - {fileID: 912429666613243552, guid: fd440b3e91764e345990b2cbf61fc69b, type: 3}
+  - {fileID: 6881155370671487302, guid: fd440b3e91764e345990b2cbf61fc69b, type: 3}
+  - {fileID: 3098503979980846346, guid: fd440b3e91764e345990b2cbf61fc69b, type: 3}
+  - {fileID: 7110143261191098040, guid: fd440b3e91764e345990b2cbf61fc69b, type: 3}
+  - {fileID: -7697608926468406245, guid: fd440b3e91764e345990b2cbf61fc69b, type: 3}
+  - {fileID: -3115700165880809121, guid: fd440b3e91764e345990b2cbf61fc69b, type: 3}
+  - {fileID: 166369707581343536, guid: fd440b3e91764e345990b2cbf61fc69b, type: 3}
+  - {fileID: -1950379207867837728, guid: fd440b3e91764e345990b2cbf61fc69b, type: 3}
+  - {fileID: -2021850598436975545, guid: fd440b3e91764e345990b2cbf61fc69b, type: 3}
+  - {fileID: 7645076287700350358, guid: fd440b3e91764e345990b2cbf61fc69b, type: 3}
+  - {fileID: -1065672149441861520, guid: fd440b3e91764e345990b2cbf61fc69b, type: 3}
+  - {fileID: 9038613968562987238, guid: fd440b3e91764e345990b2cbf61fc69b, type: 3}
+  - {fileID: -1275787576289370410, guid: fd440b3e91764e345990b2cbf61fc69b, type: 3}
+  - {fileID: -4326946263317868179, guid: fd440b3e91764e345990b2cbf61fc69b, type: 3}
+  - {fileID: 8850413269198080239, guid: fd440b3e91764e345990b2cbf61fc69b, type: 3}
+  - {fileID: 5159366646252626357, guid: fd440b3e91764e345990b2cbf61fc69b, type: 3}
+  - {fileID: 7404376473003613611, guid: fd440b3e91764e345990b2cbf61fc69b, type: 3}
+  - {fileID: -4768592376195236077, guid: fd440b3e91764e345990b2cbf61fc69b, type: 3}
+  - {fileID: -7815220893663634045, guid: fd440b3e91764e345990b2cbf61fc69b, type: 3}
+  - {fileID: -7565955656093572482, guid: fd440b3e91764e345990b2cbf61fc69b, type: 3}
+  - {fileID: 3127546621443638151, guid: fd440b3e91764e345990b2cbf61fc69b, type: 3}
+  - {fileID: 2389277570198361553, guid: fd440b3e91764e345990b2cbf61fc69b, type: 3}
+  - {fileID: -7997046371764358591, guid: fd440b3e91764e345990b2cbf61fc69b, type: 3}
+  - {fileID: 2253088484067835716, guid: fd440b3e91764e345990b2cbf61fc69b, type: 3}
+  - {fileID: 5424468704737987483, guid: fd440b3e91764e345990b2cbf61fc69b, type: 3}
+  - {fileID: -5038815645698033226, guid: fd440b3e91764e345990b2cbf61fc69b, type: 3}
+  - {fileID: -5861263671631050709, guid: fd440b3e91764e345990b2cbf61fc69b, type: 3}
+  - {fileID: 8373938375150063504, guid: fd440b3e91764e345990b2cbf61fc69b, type: 3}
+  - {fileID: -199080502871324093, guid: fd440b3e91764e345990b2cbf61fc69b, type: 3}
+  - {fileID: -5381292551194407783, guid: fd440b3e91764e345990b2cbf61fc69b, type: 3}
+  - {fileID: -1366696353822808282, guid: fd440b3e91764e345990b2cbf61fc69b, type: 3}
+  - {fileID: 767472513587168173, guid: fd440b3e91764e345990b2cbf61fc69b, type: 3}
+  - {fileID: -3710615402038783258, guid: fd440b3e91764e345990b2cbf61fc69b, type: 3}
+  - {fileID: -7379430224469622496, guid: fd440b3e91764e345990b2cbf61fc69b, type: 3}
+  - {fileID: 6253339637617790991, guid: fd440b3e91764e345990b2cbf61fc69b, type: 3}
+  - {fileID: 6886029275248449733, guid: fd440b3e91764e345990b2cbf61fc69b, type: 3}
+  - {fileID: 549334181778951492, guid: fd440b3e91764e345990b2cbf61fc69b, type: 3}
+  - {fileID: -2433841173457000895, guid: fd440b3e91764e345990b2cbf61fc69b, type: 3}
+  - {fileID: 2486997761880429853, guid: fd440b3e91764e345990b2cbf61fc69b, type: 3}
+  - {fileID: -2067519411412958357, guid: fd440b3e91764e345990b2cbf61fc69b, type: 3}
+  m_PackedSpriteNamesToIndex:
+  - spacecraft_tileset_38
+  - spacecraft_tileset_39
+  - spacecraft_tileset_63
+  - spacecraft_tileset_62
+  - spacecraft_tileset_58
+  - spacecraft_tileset_61
+  - spacecraft_tileset_59
+  - spacecraft_tileset_60
+  - spacecraft_tileset_30
+  - spacecraft_tileset_31
+  - spacecraft_tileset_49
+  - spacecraft_tileset_32
+  - spacecraft_tileset_52
+  - spacecraft_tileset_48
+  - spacecraft_tileset_33
+  - spacecraft_tileset_53
+  - spacecraft_tileset_34
+  - spacecraft_tileset_50
+  - spacecraft_tileset_35
+  - spacecraft_tileset_51
+  - spacecraft_tileset_45
+  - spacecraft_tileset_36
+  - spacecraft_tileset_56
+  - spacecraft_tileset_44
+  - spacecraft_tileset_37
+  - spacecraft_tileset_57
+  - spacecraft_tileset_47
+  - spacecraft_tileset_54
+  - spacecraft_tileset_46
+  - spacecraft_tileset_55
+  - spacecraft_tileset_41
+  - spacecraft_tileset_40
+  - spacecraft_tileset_43
+  - spacecraft_tileset_42
+  - spacecraft_tileset_9
+  - spacecraft_tileset_8
+  - spacecraft_tileset_3
+  - spacecraft_tileset_2
+  - spacecraft_tileset_1
+  - spacecraft_tileset_0
+  - spacecraft_tileset_7
+  - spacecraft_tileset_6
+  - spacecraft_tileset_5
+  - spacecraft_tileset_4
+  - spacecraft_tileset_29
+  - spacecraft_tileset_28
+  - spacecraft_tileset_23
+  - spacecraft_tileset_22
+  - spacecraft_tileset_18
+  - spacecraft_tileset_21
+  - spacecraft_tileset_19
+  - spacecraft_tileset_20
+  - spacecraft_tileset_16
+  - spacecraft_tileset_27
+  - spacecraft_tileset_17
+  - spacecraft_tileset_26
+  - spacecraft_tileset_14
+  - spacecraft_tileset_25
+  - spacecraft_tileset_15
+  - spacecraft_tileset_24
+  - spacecraft_tileset_12
+  - spacecraft_tileset_13
+  - spacecraft_tileset_10
+  - spacecraft_tileset_11
+  m_RenderDataMap: {}
+  m_Tag: Spacecraft
+  m_IsVariant: 0

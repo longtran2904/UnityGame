@@ -15,6 +15,8 @@ public class Projectile : MonoBehaviour, IPooledObject
     protected bool isCritical;
     protected bool isEnemy;
     public GameObject hitEffect;
+    public float particleRotOffset;
+    public GameObject particleEffect;
 
     // State for enemy
     private State state;
@@ -72,8 +74,7 @@ public class Projectile : MonoBehaviour, IPooledObject
 
     protected virtual void HitCollider(Collider2D collision)
     {
-        if (hitEffect) Instantiate(hitEffect, transform.position, transform.rotation);
-
+        if (hitEffect) Instantiate(hitEffect, transform.position, Quaternion.identity);
         if (collision.CompareTag("Enemy") && !isEnemy)
         {
             Hit(collision, x => {
@@ -94,6 +95,8 @@ public class Projectile : MonoBehaviour, IPooledObject
         }
         if (collision.CompareTag("Ground") && !canTouchGround)
         {
+            if (particleEffect)
+                Instantiate(particleEffect, transform.position, transform.rotation * Quaternion.Euler(0, 0, particleRotOffset));
             audioManager.PlaySfx("HitWall");
             gameObject.SetActive(false);
         }

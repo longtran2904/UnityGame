@@ -11,6 +11,7 @@ namespace Edgar.Unity
     /// <typeparam name="TPayload"></typeparam>
     public abstract class LevelGeneratorBase<TPayload> : VersionedMonoBehaviour, ILevelGenerator where TPayload : class
     {
+        public int seed;
         private readonly Random seedsGenerator = new Random();
 
         protected readonly PipelineRunner<TPayload> PipelineRunner = new PipelineRunner<TPayload>();
@@ -21,6 +22,7 @@ namespace Edgar.Unity
             {
                 seed = seedsGenerator.Next();
             }
+            this.seed = seed;
 
             Debug.Log($"Random generator seed: {seed}");
 

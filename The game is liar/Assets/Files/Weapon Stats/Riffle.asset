@@ -12,11 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 173ad8e0789d44d40b3a4ba736e38c75, type: 3}
   m_Name: Riffle
   m_EditorClassIdentifier: 
-  damage: 20
+  damage: 10
   critDamage: 30
   critChance: 0.3
   fireRate: 5
-  mode: 0
   ammo: 30
   knockback: 0
   price: 40

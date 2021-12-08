@@ -149,6 +149,48 @@ TextureImporter:
   - first:
       213: 8190935376220745999
     second: spacecraft_tileset_normalMap_48
+  - first:
+      213: 4228105445333638549
+    second: spacecraft_tileset_normalMap_49
+  - first:
+      213: 2917852109847632350
+    second: spacecraft_tileset_normalMap_50
+  - first:
+      213: 4751581523477803432
+    second: spacecraft_tileset_normalMap_51
+  - first:
+      213: -8938023117600278363
+    second: spacecraft_tileset_normalMap_52
+  - first:
+      213: 4776416927568244846
+    second: spacecraft_tileset_normalMap_53
+  - first:
+      213: -2828527276653925534
+    second: spacecraft_tileset_normalMap_54
+  - first:
+      213: 925642066888525422
+    second: spacecraft_tileset_normalMap_55
+  - first:
+      213: 8815909322129398285
+    second: spacecraft_tileset_normalMap_56
+  - first:
+      213: 1375248728796775972
+    second: spacecraft_tileset_normalMap_57
+  - first:
+      213: 6350297640985326677
+    second: spacecraft_tileset_normalMap_58
+  - first:
+      213: 4369039390837766018
+    second: spacecraft_tileset_normalMap_59
+  - first:
+      213: 5061930594596318050
+    second: spacecraft_tileset_normalMap_60
+  - first:
+      213: -7565682988488611806
+    second: spacecraft_tileset_normalMap_61
+  - first:
+      213: 479545468819084896
+    second: spacecraft_tileset_normalMap_62
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -1087,7 +1129,7 @@ TextureImporter:
       name: spacecraft_tileset_normalMap_38
       rect:
         serializedVersion: 2
-        x: 144
+        x: 128
         y: 192
         width: 16
         height: 16
@@ -1108,7 +1150,7 @@ TextureImporter:
       name: spacecraft_tileset_normalMap_39
       rect:
         serializedVersion: 2
-        x: 160
+        x: 144
         y: 192
         width: 16
         height: 16
@@ -1129,8 +1171,8 @@ TextureImporter:
       name: spacecraft_tileset_normalMap_40
       rect:
         serializedVersion: 2
-        x: 0
-        y: 176
+        x: 160
+        y: 192
         width: 16
         height: 16
       alignment: 0
@@ -1150,7 +1192,7 @@ TextureImporter:
       name: spacecraft_tileset_normalMap_41
       rect:
         serializedVersion: 2
-        x: 16
+        x: 0
         y: 176
         width: 16
         height: 16
@@ -1171,7 +1213,7 @@ TextureImporter:
       name: spacecraft_tileset_normalMap_42
       rect:
         serializedVersion: 2
-        x: 32
+        x: 16
         y: 176
         width: 16
         height: 16
@@ -1192,7 +1234,7 @@ TextureImporter:
       name: spacecraft_tileset_normalMap_43
       rect:
         serializedVersion: 2
-        x: 48
+        x: 32
         y: 176
         width: 16
         height: 16
@@ -1213,7 +1255,7 @@ TextureImporter:
       name: spacecraft_tileset_normalMap_44
       rect:
         serializedVersion: 2
-        x: 64
+        x: 48
         y: 176
         width: 16
         height: 16
@@ -1234,7 +1276,7 @@ TextureImporter:
       name: spacecraft_tileset_normalMap_45
       rect:
         serializedVersion: 2
-        x: 80
+        x: 64
         y: 176
         width: 16
         height: 16
@@ -1255,7 +1297,7 @@ TextureImporter:
       name: spacecraft_tileset_normalMap_46
       rect:
         serializedVersion: 2
-        x: 96
+        x: 80
         y: 176
         width: 16
         height: 16
@@ -1276,7 +1318,7 @@ TextureImporter:
       name: spacecraft_tileset_normalMap_47
       rect:
         serializedVersion: 2
-        x: 144
+        x: 96
         y: 176
         width: 16
         height: 16
@@ -1297,7 +1339,7 @@ TextureImporter:
       name: spacecraft_tileset_normalMap_48
       rect:
         serializedVersion: 2
-        x: 160
+        x: 128
         y: 176
         width: 16
         height: 16
@@ -1310,6 +1352,300 @@ TextureImporter:
       bones: []
       spriteID: f0171d5c35c0ca170800000000000000
       internalID: 8190935376220745999
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spacecraft_tileset_normalMap_49
+      rect:
+        serializedVersion: 2
+        x: 144
+        y: 176
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 59d9106408f3daa30800000000000000
+      internalID: 4228105445333638549
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spacecraft_tileset_normalMap_50
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 176
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ed99792d80b4e7820800000000000000
+      internalID: 2917852109847632350
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spacecraft_tileset_normalMap_51
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 160
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8a1343c783201f140800000000000000
+      internalID: 4751581523477803432
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spacecraft_tileset_normalMap_52
+      rect:
+        serializedVersion: 2
+        x: 16
+        y: 160
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5a8b4398453c5f380800000000000000
+      internalID: -8938023117600278363
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spacecraft_tileset_normalMap_53
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 160
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e603eda93ed394240800000000000000
+      internalID: 4776416927568244846
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spacecraft_tileset_normalMap_54
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 160
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 26b2a859d6d0fb8d0800000000000000
+      internalID: -2828527276653925534
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spacecraft_tileset_normalMap_55
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 160
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e668c0a3e8a88dc00800000000000000
+      internalID: 925642066888525422
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spacecraft_tileset_normalMap_56
+      rect:
+        serializedVersion: 2
+        x: 80
+        y: 160
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d0ad39dd1d6685a70800000000000000
+      internalID: 8815909322129398285
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spacecraft_tileset_normalMap_57
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 144
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4264db5be6dd51310800000000000000
+      internalID: 1375248728796775972
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spacecraft_tileset_normalMap_58
+      rect:
+        serializedVersion: 2
+        x: 16
+        y: 144
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5547ee42f0ac02850800000000000000
+      internalID: 6350297640985326677
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spacecraft_tileset_normalMap_59
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 144
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 287f2948d22f1ac30800000000000000
+      internalID: 4369039390837766018
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spacecraft_tileset_normalMap_60
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 144
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 26b68987e079f3640800000000000000
+      internalID: 5061930594596318050
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spacecraft_tileset_normalMap_61
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 144
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 228abeb186b410790800000000000000
+      internalID: -7565682988488611806
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spacecraft_tileset_normalMap_62
+      rect:
+        serializedVersion: 2
+        x: 80
+        y: 144
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0661c9a2010b7a600800000000000000
+      internalID: 479545468819084896
       vertices: []
       indices: 
       edges: []

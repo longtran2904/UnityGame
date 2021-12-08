@@ -21,4 +21,6 @@ public class SpawnerInfo : ScriptableObject
     [MinMax(1, 5)] public RangedInt numberOfWaves;
     [MinMax(1, 20)] public RangedInt numberOfEnemies;
     public Optional<EnemyInfo>[] info;
+    public Optional<Animator> spawnVFX;
+    public bool disableDropCell;
 }

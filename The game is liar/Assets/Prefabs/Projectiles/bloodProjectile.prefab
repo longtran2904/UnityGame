@@ -97,9 +97,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1cf41cb090b23a84f8c584abaa4a6ed3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 10
+  speed: 20
   timer: 5
-  hitEffect: {fileID: 0}
+  hitEffect: {fileID: 5049361141196189442, guid: a42ef4e42aeceb449af0e2794d166445,
+    type: 3}
+  particleRotOffset: 0
+  particleEffect: {fileID: 0}
   canTouchGround: 0
   canTouchPlayer: 0
   audioManager: {fileID: 11400000, guid: 01443e5a6bdc47b4387217618b65db47, type: 2}

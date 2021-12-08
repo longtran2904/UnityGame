@@ -14,20 +14,44 @@ public class RoomManager : MonoBehaviour
     public BoundsIntVariable currentBoundsInt;
 
     public const string startingRoom = "Starting Room";
-    public TileBase doorTile;
-    public TileBase normalTile;
+    public TileBase wallTile;
+    //public TileBase doorTile;
+    //public TileBase normalTile;
 
 #if UNITY_EDITOR
     [Header("Demo")]
-    public bool enableEnemies;
-    public bool demoMode;
-    [ShowWhen("demoMode")] public bool automaticallyMoveCamera;
-    [ShowWhen("demoMode")] public float cameraSpeed;
+    public Optional<float> cameraSpeed;
+    [ShowWhen("cameraSpeed.enabled", false)] public bool enablePlayerDemoMode;
+    [ShowWhen("cameraSpeed.enabled", false)] public bool disableEnemies;
     private Vector3 startPos;
     private Vector3 endPos;
     private int currentDemoRoom = -1;
     private PlayerController player;
     private Camera main;
+    static int seed;
+
+    [EasyButtons.Button]
+    void RestartLevel()
+    {
+        if (Application.isPlaying)
+        {
+            DungeonGenerator generator = FindObjectOfType<DungeonGenerator>();
+            // NOTE: generator.seed is a quick fix for me to get the local random seed of the generator. Remeber to add this when updating Edgar.
+            seed = generator.seed;
+            UnityEngine.SceneManagement.SceneManager.LoadScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex);
+        }
+    }
+
+    private void Awake()
+    {
+        if (seed != 0)
+        {
+            DungeonGenerator generator = FindObjectOfType<DungeonGenerator>();
+            generator.UseRandomSeed = false;
+            generator.RandomGeneratorSeed = seed;
+            seed = 0;
+        }
+    }
 
     void NextRoom()
     {
@@ -80,26 +104,22 @@ public class RoomManager : MonoBehaviour
     [System.Diagnostics.Conditional("UNITY_EDITOR")]
     void EnterDemo(PlayerController controller)
     {
-        if (demoMode)
+        if (cameraSpeed.enabled)
         {
-            enableEnemies = false;
-            if (automaticallyMoveCamera)
-            {
-                if (cameraSpeed <= 0)
-                    cameraSpeed = 1;
-                main = Camera.main;
-                Destroy(main.GetComponentInParent<CameraFollow2D>());
+            disableEnemies = true;
+            main = Camera.main;
+            Destroy(main.GetComponentInParent<CameraFollow2D>());
+            if (controller)
                 Destroy(controller.gameObject);
-                StartCoroutine(UpdateDemo());
-            }
-            else
-            {
-                player = controller;
-                player.EnterDemo();
-            }
+            StartCoroutine(UpdateDemo());
+        }
+        else if (enablePlayerDemoMode && controller)
+        {
+            player = controller;
+            player.EnterDemo();
         }
 
-        if (!enableEnemies)
+        if (disableEnemies)
             foreach (var listener in GetComponents<GameEventListener>())
             {
                 listener.Event.UnregisterListener(listener);
@@ -110,27 +130,30 @@ public class RoomManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Debug.Assert(tilemap.cellSize == Vector3Int.one, "Tilemap's size is different than Vector3Int.one!");
+        Debug.Assert(tilemap.cellSize == Vector3Int.one, "Tilemap's size isn't Vector3Int.one!");
 
         List<Vector3Int> removeTilesPos = new List<Vector3Int>();
         List<Vector3Int> doorTilesPos   = new List<Vector3Int>();
         List<Vector3Int> wallTilesPos   = new List<Vector3Int>();
 
         // Find starting room and remove all door tiles
+        bool hasStartingRoom = false;
         foreach (var room in rooms)
         {
             if (room.RoomTemplatePrefab.name == startingRoom)
             {
                 currentRoom.value = room;
                 EnterDemo(currentRoom.value.RoomTemplateInstance.GetComponentInChildren<PlayerController>());
+                hasStartingRoom = true;
             }
 
+#if false
             Tilemap wallTilemap = room.RoomTemplateInstance.transform.Find("Tilemaps").GetChild(2).GetComponent<Tilemap>();
             wallTilemap.CompressBounds();
             BoundsInt roomBounds = wallTilemap.cellBounds;
 
-            //HandleTiles(room.Doors, null, pos => removeTilesPos.Add(pos));
-            //HandleTiles(EdgarHelper.GetUnusedDoors(room), pos => doorTilesPos.Add(pos), pos => wallTilesPos.Add(pos));
+            HandleTiles(room.Doors, null, pos => removeTilesPos.Add(pos));
+            HandleTiles(EdgarHelper.GetUnusedDoors(room), pos => doorTilesPos.Add(pos), pos => wallTilesPos.Add(pos));
 
             /// <summary>
             /// Check to see if there are any tiles that will be set/removed when a door is opened/closed.
@@ -141,7 +164,7 @@ public class RoomManager : MonoBehaviour
             /// <param name="otherPosFunc">
             /// function to be executed if the current tile position is a special tile and not at door position.
             /// </param>
-            /*void HandleTiles(List<DoorInstance> doors, System.Action<Vector3Int> doorPosFunc, System.Action<Vector3Int> otherPosFunc)
+            void HandleTiles(List<DoorInstance> doors, System.Action<Vector3Int> doorPosFunc, System.Action<Vector3Int> otherPosFunc)
             {
                 foreach (var door in doors)
                 {
@@ -165,7 +188,8 @@ public class RoomManager : MonoBehaviour
                         }
                     }
                 }
-            }*/
+            }
+#endif
 
             Vector3Int removeDir = Vector3Int.right;
             foreach (var door in room.Doors)
@@ -187,6 +211,9 @@ public class RoomManager : MonoBehaviour
                 }
             }
         }
+
+        if (!hasStartingRoom)
+            EnterDemo(null);
 
         //tilemap.SetTiles(doorTilesPos.ToArray(), new TileBase[doorTilesPos.Count].Populate(doorTile));
         tilemap.SetTiles(removeTilesPos.ToArray(), new TileBase[removeTilesPos.Count].Populate(null));

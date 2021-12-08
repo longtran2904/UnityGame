@@ -297,7 +297,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8074dc491ddc34f4e83332d9eae76980, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Position: {x: 255, y: 285.5}
+  Position: {x: 255, y: 284.5}
   Name: Room
   IndividualRoomTemplates: []
   RoomTemplateSets: []
@@ -313,7 +313,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8074dc491ddc34f4e83332d9eae76980, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Position: {x: 119, y: 385.5}
+  Position: {x: 118, y: 385.5}
   Name: Room
   IndividualRoomTemplates: []
   RoomTemplateSets: []

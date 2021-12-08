@@ -2,6 +2,7 @@
 
 public class CameraFollow2D : MonoBehaviour
 {
+    public UnityEngine.Tilemaps.Tilemap tilemap;
     public BoundsIntReference bounds;
     public Vector3Reference playerPos;
     public float smoothTime;
@@ -15,6 +16,12 @@ public class CameraFollow2D : MonoBehaviour
     private void Start()
     {
         main = Camera.main;
+        if (bounds.useConstant && tilemap)
+        {
+            tilemap.RefreshAllTiles();
+            tilemap.CompressBounds();
+            bounds.value = tilemap.cellBounds;
+        }
         ToNextRoom();
     }
 

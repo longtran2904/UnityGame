@@ -104,5 +104,15 @@ PrefabInstance:
       propertyPath: m_Name
       value: Glavel
       objectReference: {fileID: 0}
+    - target: {fileID: 5923302995725911546, guid: 5c94a61b4cfdce141b132fa7cdb697bc,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.165
+      objectReference: {fileID: 0}
+    - target: {fileID: 5923302995725911546, guid: 5c94a61b4cfdce141b132fa7cdb697bc,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.01
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5c94a61b4cfdce141b132fa7cdb697bc, type: 3}

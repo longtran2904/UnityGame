@@ -163,3 +163,15 @@ MonoBehaviour:
     pitch: 1
     loop: 0
     playOnAwake: 0
+  - name: BossHit
+    clip: {fileID: 8300000, guid: b7f90fb0d9aff0f4080453b62d9d0b49, type: 3}
+    volume: 0.5
+    pitch: 1
+    loop: 0
+    playOnAwake: 0
+  - name: BossDash
+    clip: {fileID: 8300000, guid: 6e243ff5996ac9f4ba23a53f6b4b1870, type: 3}
+    volume: 0.3
+    pitch: 1
+    loop: 0
+    playOnAwake: 0

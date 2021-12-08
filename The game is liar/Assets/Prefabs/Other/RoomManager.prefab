@@ -48,8 +48,12 @@ MonoBehaviour:
   updateCurrentRoom: {fileID: 11400000, guid: 7484fc3ac67b8da45b0f6fbb708c0e02, type: 2}
   currentRoom: {fileID: 11400000, guid: c16780bbd065465449aa96a3fb65dcb9, type: 2}
   currentBoundsInt: {fileID: 11400000, guid: 766edb4cce1be7d49b8ae0457fb0e355, type: 2}
-  doorTile: {fileID: 0}
-  normalTile: {fileID: 0}
+  wallTile: {fileID: 11400000, guid: 196d4bd183ac65e40a98489c70eabb05, type: 2}
+  cameraSpeed:
+    enabled: 0
+    value: 0.2
+  enablePlayerDemoMode: 0
+  disableEnemies: 0
 --- !u!114 &8689803038939835655
 MonoBehaviour:
   m_ObjectHideFlags: 0

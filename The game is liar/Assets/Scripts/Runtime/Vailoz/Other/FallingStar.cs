@@ -14,7 +14,7 @@ public class FallingStar : MonoBehaviour
     [Header("Meteor")]
     public Rigidbody2D meteor;
     [MinMax(1, 20)] public RangedFloat speed;
-    [MinMax(5, 30)] public RangedFloat timeBtwMeteors;
+    [MinMax(0, 30)] public RangedFloat timeBtwMeteors;
     public float lifetime;
 
     [Header("Render Texture")]
@@ -24,7 +24,6 @@ public class FallingStar : MonoBehaviour
     private MaterialPropertyBlock block;
 
     private RenderTexture renderTex;
-    private new Camera camera;
     private RawImage image;
     private RectTransform canvas;
 
@@ -47,11 +46,12 @@ public class FallingStar : MonoBehaviour
             renderTex = new RenderTexture((int)(size.x * sr.size.x), (int)(size.y * sr.size.y), 0);
             renderTex.Create();
 
-            camera = new GameObject("Window Camera", typeof(Camera)).GetComponent<Camera>();
+            Camera camera = new GameObject("Window Camera", typeof(Camera)).GetComponent<Camera>();
             camera.transform.parent = transform;
             camera.transform.localPosition = new Vector3(0, 0, -10);
             camera.orthographic = true;
-            camera.orthographicSize = transform.localScale.x / 2;
+            camera.aspect = (sr.size.x * transform.localScale.x) / (sr.size.y * transform.localScale.y);
+            camera.orthographicSize = (sr.size.y * transform.localScale.y) / 2;
             camera.cullingMask = LayerMask.GetMask("Meteor");
             camera.targetTexture = renderTex;
 

@@ -91,11 +91,11 @@ public class AudioManager : ScriptableObject
 
     public Sound GetSound(string name)
     {
+        if (string.IsNullOrEmpty(name))
+            return null;
         Sound s = Array.Find(sounds, sound => sound.name == name);
         if (s == null)
-        {
             InternalDebug.LogWarning("Sound: " + name + " not found!");
-        }
         return s;
     }
 

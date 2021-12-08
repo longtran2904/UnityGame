@@ -167,7 +167,7 @@ public class ShowWhenDrawer : PropertyDrawer
         }
 
         if (showField)
-            EditorGUI.PropertyField(position, property, true);
+            EditorGUI.PropertyField(position, property, label, true);
     }
 
     public override float GetPropertyHeight(SerializedProperty property, GUIContent label)

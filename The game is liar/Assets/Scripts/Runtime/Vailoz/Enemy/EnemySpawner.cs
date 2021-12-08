@@ -3,6 +3,7 @@
 #endif
 
 using System.Collections.Generic;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -96,17 +97,50 @@ public class EnemySpawner : MonoBehaviour
     // TODO: Enemies don't spawn close to doors
     private void SpawnEnemy(int enemyCount)
     {
+        for (int i = 0; i <= spawner.info.Length; i++)
+        {
+            if (i == spawner.info.Length)
+            {
+                Debug.Assert(false, "All enemies are disabled");
+                return;
+            }
+            else if (spawner.info[i].enabled)
+                break;
+        }
+
         List<Vector3> usedPos = new List<Vector3>(enemyCount - 1);
         Vector3 pos;
         for (int i = 0; i < enemyCount; i++)
         {
-            EnemyInfo enemy = spawner.info.RandomElement();
+            Optional<EnemyInfo> info = spawner.info.RandomElement();
+            while (!info.enabled)
+                info = spawner.info.RandomElement();
+            EnemyInfo enemy = info.value;
+            float enemyHeight = enemy.enemy.GetComponent<SpriteRenderer>().bounds.extents.y;
+
             do
             {
-                pos = spawnPos[(int)enemy.spawnLocation].RandomElement() + tilemap.transform.position + new Vector3(.5f, .5f, 0);
+                Vector3 offset = new Vector3(.5f, .5f);
+                if (enemy.spawnLocation == SpawnLocation.Ground)
+                    offset.y = enemyHeight;
+                pos = spawnPos[(int)enemy.spawnLocation].RandomElement() + tilemap.transform.position + offset;
             } while (Physics2D.BoxCast(pos, Vector2.one * 3, 0, Vector2.zero, 0) && usedPos.Contains(pos));
+
             usedPos.Add(pos);
-            Instantiate(enemy.enemy, pos, Quaternion.identity);
+            Enemy spawnedEnemy = Instantiate(enemy.enemy, pos, Quaternion.identity);
+            Enemy.numberOfEnemiesAlive++;
+            if (spawner.disableDropCell)
+                spawnedEnemy.moneyDrop = new RangedInt(0, 0);
+            if (spawner.spawnVFX.enabled)
+                StartCoroutine(StartSpawnVFX(spawnedEnemy));
         }
+    }
+
+    private IEnumerator StartSpawnVFX(Enemy enemy)
+    {
+        float vfxTime = Instantiate(spawner.spawnVFX.value, enemy.transform.position, Quaternion.identity).GetCurrentAnimatorStateInfo(0).length;
+        enemy.gameObject.SetActive(false);
+        yield return new WaitForSeconds(vfxTime);
+        enemy.gameObject.SetActive(true);
     }
 }

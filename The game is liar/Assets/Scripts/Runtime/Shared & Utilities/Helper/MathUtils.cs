@@ -66,9 +66,7 @@ public static class MathUtils
     public static bool InRange(int min, int max, int value)
     {
         if ((value >= min) && (value <= max))
-        {
             return true;
-        }
         return false;
     }
     #endregion
@@ -203,7 +201,7 @@ public static class MathUtils
         return (a + b) / 2;
     }
 
-    public static Vector2 Signed(Vector2 a)
+    public static Vector2 Sign(Vector2 a)
     {
         if (a.x < 0f) a.x = -1;
         if (a.x > 0f) a.x =  1;
@@ -255,6 +253,11 @@ public static class MathUtils
         return (value - start) / (end - start);
     }
     #endregion
+
+    public static Vector3 Abs(Vector3 v)
+    {
+        return new Vector3(Mathf.Abs(v.x), Mathf.Abs(v.y), Mathf.Abs(v.z));
+    }
 
     #region Vector3Int
     public static Vector3Int ToVector3Int(this Vector3 v)
@@ -372,13 +375,12 @@ public static class MathUtils
     }
 
     // If offset == 0 then the first point is on the most right and it's anti-clockwise
-    public static void GenerateCircleOutlineNonAlloc(Vector3 center, float radius, float offset, Vector3[] posArray)
+    public static void GenerateCircleOutlineNonAlloc(Vector3 center, float radius, Vector3[] posArray)
     {
-        float deltaAngle = 360f / posArray.Length * Mathf.Deg2Rad + offset;
+        float deltaDegree = 360f / posArray.Length;
         for (int i = 0; i < posArray.Length; i++)
         {
-            float angle = i * deltaAngle;
-            posArray[i] = center + (Vector3)MakeVector2(angle) * radius;
+            posArray[i] = center + (Vector3)MakeVector2(i * deltaDegree) * radius;
         }
     }
     #endregion

@@ -32,7 +32,8 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -13.57, y: 5.48, z: 0}
   m_LocalScale: {x: 3.125, y: 3.125, z: 1}
-  m_Children: []
+  m_Children:
+  - {fileID: 8947182557610414703}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -75,7 +76,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 338600657
   m_SortingLayer: 1
-  m_SortingOrder: -1
+  m_SortingOrder: 2
   m_Sprite: {fileID: -7673213691580825933, guid: 83040bbd4b2bbcf4caa1dfd3cdbfbc04,
     type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -204,30 +205,21 @@ TrailRenderer:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 0.20212746
+        value: 0.2502079
         inSlope: 0
         outSlope: 0
         tangentMode: 0
         weightedMode: 0
         inWeight: 0.33333334
         outWeight: 0.33333334
-      - serializedVersion: 3
-        time: 1
-        value: 0
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
     colorGradient:
       serializedVersion: 2
-      key0: {r: 0.764151, g: 0.1743993, b: 0, a: 1}
-      key1: {r: 1, g: 1, b: 1, a: 1}
-      key2: {r: 0, g: 0, b: 0, a: 0}
+      key0: {r: 1, g: 0.9411765, b: 0, a: 0.39215687}
+      key1: {r: 1, g: 0.9411765, b: 0, a: 0.39215687}
+      key2: {r: 0.8490566, g: 0.7840296, b: 0.1481844, a: 0}
       key3: {r: 0, g: 0, b: 0, a: 0}
       key4: {r: 0, g: 0, b: 0, a: 0}
       key5: {r: 0, g: 0, b: 0, a: 0}
@@ -235,7 +227,7 @@ TrailRenderer:
       key7: {r: 0, g: 0, b: 0, a: 0}
       ctime0: 0
       ctime1: 65535
-      ctime2: 0
+      ctime2: 65535
       ctime3: 0
       ctime4: 0
       ctime5: 0
@@ -249,7 +241,7 @@ TrailRenderer:
       atime5: 0
       atime6: 0
       atime7: 0
-      m_Mode: 0
+      m_Mode: 1
       m_NumColorKeys: 2
       m_NumAlphaKeys: 2
     numCornerVertices: 0
@@ -275,116 +267,125 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   health:
     useConstant: 1
-    constantValue: 10
+    constantValue: 300
     variable: {fileID: 0}
   moneyDrop:
     min: 1
     max: 4
-  lookAtPlayer: 1
+  whiteMat: {fileID: 2100000, guid: a52db8d2e3bb7c84f9a724b122d7baa7, type: 2}
   collideDamage: 0
-  spawnVFX: {fileID: 6779077847636645101, guid: 36d7ac47e5d4fa94a978f44e53c8b68a,
-    type: 3}
-  hurtMat: {fileID: 2100000, guid: a52db8d2e3bb7c84f9a724b122d7baa7, type: 2}
+  hurtColor: {r: 1, g: 1, b: 1, a: 1}
   deathParticle: {fileID: 8704956847754461958, guid: 3181c8d874d60414f9701b433c293e7d,
     type: 3}
   audioManager: {fileID: 11400000, guid: 01443e5a6bdc47b4387217618b65db47, type: 2}
   pooler: {fileID: 11400000, guid: 45efe5bf297d938428e78116078a92c9, type: 2}
-  moveType: 0
-  run:
-    target: 1
-    runSpeed: 5
-  jump:
-    jumpForce: 0
-    jumpAngle: 0
-    timeBtwJumps: 0
-  fly:
-    pattern: 0
-    flySpeed: 0
-    aX:
-      min: 0
-      max: 0
-    aY:
-      min: 0
-      max: 0
-    bX:
-      min: 0
-      max: 0
-    bY:
-      min: 0
-      max: 0
-    yMutiplier:
-      min: 0
-      max: 0
-    start: {x: 0, y: 0}
-    end: {x: 0, y: 0}
-    curvePoint1: {x: 0, y: 0}
-    curvePoint2: {x: 0, y: 0}
-  chargeAttack:
-    enabled: 0
-    value:
-      damage: 0
-      dashSpeed: 0
-      dashTime: 0
-      chargeTime: 0
-      distanceToCharge: 0
-      flashData:
-        timeBtwFlashes: 0
-        color: {r: 0, g: 0, b: 0, a: 0}
-        triggerMat: {fileID: 0}
-  explodeAbility:
-    enabled: 1
-    value:
-      activationType: 0
-      flashData:
-        timeBtwFlashes: 0.05
-        color: {r: 1, g: 1, b: 1, a: 1}
-        triggerMat: {fileID: 2100000, guid: d5792750c9f5bf240a7b854ab8aa3870, type: 2}
-      explodeTime: 1.2
-      explodeRange: 10
-      distanceToExplode: 3
-      explodeDamage: 1
-      explodeParticle: {fileID: 36039838053138487, guid: 3a0eff6c700c5fb4c8ff904e00dc84a7,
+  brain: 0
+  speed: 3
+  rotZOffset: 0
+  timeToReachRot: 0
+  eye: {fileID: 0}
+  lookUpPos: {x: 0, y: 0}
+  lookDownPos: {x: 0, y: 0}
+  abilityCooldownTime: 0.5
+  waitTimeAfterExecute: 0.2
+  distanceToExecute: 3
+  abilityDamage: 0
+  abilityChargeTime: 1.5
+  timeBtwFlashes: 0.05
+  flashColor: {r: 1, g: 0, b: 0, a: 1}
+  abilitySound: BatExplosion
+  trailTime: 0.2
+  emitTrailTime: 0.1
+  distanceToTeleportX: 20
+  distanceToTeleportY: 3
+  teleportPosOffset:
+    min: 5.0025496
+    max: 7.0083294
+  delayTeleportTime: 0.3
+  updatePlayerPosTime: 0
+  speedAfterDashScale: 0
+  dashSpeed: 0
+  dashTime: 0
+  explodeRange: 6
+  explodeParticle: {fileID: 36039838053138487, guid: 3a0eff6c700c5fb4c8ff904e00dc84a7,
+    type: 3}
+  numberOfBulletsEachTurn: 0
+  numberOfShootTurn: 0
+  fireRate: 0
+  projectile: 
+  weapon: {fileID: 0}
+--- !u!1001 &467790342
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 5709645794468026835}
+    m_Modifications:
+    - target: {fileID: 8947182557981669462, guid: bc1f3048ca1b8234db7dedcdbcc08996,
         type: 3}
-      explodeSound: BatExplosion
-  splitAbility:
-    enabled: 0
-    value:
-      splitEnemy: {fileID: 0}
-  shootAbility:
-    enabled: 0
-    value:
-      shootPattern: 0
-      cooldown: 0
-      gunData:
-        damage: 0
-        numberOfBulletsEachTurn: 0
-        numberOfShootTurn: 0
-        fireRate: 0
-        timeBtwTurn: 0
-        sfx: 
-        projectile: 
-        weapon: {fileID: 0}
-      burstData:
-        damage: 0
-        projectile: 
-        sfx: 
-        numberOfBullets: 0
-        radius: 0
-        waves: 0
-        timeBtwWaves: 0
-        positions: []
-        rotations: []
-  teleportAbility:
-    enabled: 1
-    value:
-      flipVertically: 1
-      trail: {fileID: 0}
-      distanceToPlayer:
-        min: 1.9988893
-        max: 4.9972234
-      distanceToTeleportX:
-        enabled: 1
-        value: 15
-      distanceToTeleportY:
-        enabled: 1
-        value: 3
+      propertyPath: m_Name
+      value: Teleport VFX
+      objectReference: {fileID: 0}
+    - target: {fileID: 8947182557981669481, guid: bc1f3048ca1b8234db7dedcdbcc08996,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8947182557981669481, guid: bc1f3048ca1b8234db7dedcdbcc08996,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8947182557981669481, guid: bc1f3048ca1b8234db7dedcdbcc08996,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8947182557981669481, guid: bc1f3048ca1b8234db7dedcdbcc08996,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8947182557981669481, guid: bc1f3048ca1b8234db7dedcdbcc08996,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8947182557981669481, guid: bc1f3048ca1b8234db7dedcdbcc08996,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8947182557981669481, guid: bc1f3048ca1b8234db7dedcdbcc08996,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8947182557981669481, guid: bc1f3048ca1b8234db7dedcdbcc08996,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8947182557981669481, guid: bc1f3048ca1b8234db7dedcdbcc08996,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8947182557981669481, guid: bc1f3048ca1b8234db7dedcdbcc08996,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8947182557981669481, guid: bc1f3048ca1b8234db7dedcdbcc08996,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: bc1f3048ca1b8234db7dedcdbcc08996, type: 3}
+--- !u!4 &8947182557610414703 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8947182557981669481, guid: bc1f3048ca1b8234db7dedcdbcc08996,
+    type: 3}
+  m_PrefabInstance: {fileID: 467790342}
+  m_PrefabAsset: {fileID: 0}
