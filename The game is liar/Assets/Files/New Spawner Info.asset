@@ -1,0 +1,42 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 363869961f2fc334fbb0e33424c8e3f2, type: 3}
+  m_Name: New Spawner Info
+  m_EditorClassIdentifier: 
+  numberOfWaves:
+    min: 1
+    max: 2
+  numberOfEnemies:
+    min: 2
+    max: 3
+  info:
+  - enabled: 1
+    value:
+      enemy: {fileID: 2054538223, guid: 946973c6766886d419466c4b6d4bfea8, type: 3}
+      spawnLocation: 1
+  - enabled: 1
+    value:
+      enemy: {fileID: 3813123720794263493, guid: b52db128f176fe048b6500163d081e8e,
+        type: 3}
+      spawnLocation: 1
+  - enabled: 1
+    value:
+      enemy: {fileID: 614643677, guid: c87b904466d026645bf0669aa8b4e29d, type: 3}
+      spawnLocation: 1
+  - enabled: 1
+    value:
+      enemy: {fileID: 588600417, guid: 855716bd3f7133b4a80e6f14147e44a6, type: 3}
+      spawnLocation: 0
+  spawnVFX:
+    enabled: 1
+    value: {fileID: 6779077847636645101, guid: 36d7ac47e5d4fa94a978f44e53c8b68a, type: 3}
+  disableDropCell: 0

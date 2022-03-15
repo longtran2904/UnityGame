@@ -26,7 +26,6 @@ public class TextboxHandler : MonoBehaviour
     private bool inDialogue;
     private Player player;
     private Weapon[] weaponTemplates;
-    private ShootAndRotateGun shoot;
 
     private void Start()
     {
@@ -35,22 +34,20 @@ public class TextboxHandler : MonoBehaviour
         textbox = textboxCanvas.GetComponentInChildren<DialogueBox>();
         player = GetComponentInParent<Player>();
         weaponTemplates = GetComponent<WeaponSwitching>().startInventory.items.ToArray();
-        shoot = GetComponent<ShootAndRotateGun>();
     }
 
     private void Update()
     {
         if (inDialogue)
         {
-            if (Input.GetMouseButtonDown(0))
+            if (GameInput.GetRawInput(InputType.NextDialogue))
             {
                 if (sentences.Count == 0)
                 {
                     inDialogue = false;
                     lastObj = null; // This will make closestObj != lastObj and will show the "Press F to talk" textbox properly
                     textboxCanvas.SetActive(false);
-                    player.EnableInput(true);
-                    shoot.delayUntilNextMouseDown = true;
+                    GameInput.EnableAllInputs(true);
                 }
                 else
                     textbox.ShowDialogue(null, sentences.Dequeue());
@@ -103,7 +100,7 @@ public class TextboxHandler : MonoBehaviour
 
         if (trigger)
         {
-            if (Input.GetKeyDown(KeyCode.F))
+            if (GameInput.GetInput(InputType.Interact))
             {
                 trigger.trigger?.Invoke();
 
@@ -118,7 +115,7 @@ public class TextboxHandler : MonoBehaviour
                             }
                             inDialogue = true;
                             textbox.ShowDialogue(null, sentences.Dequeue());
-                            player.EnableInput(false);
+                            GameInput.EnableAllInputs(false);
                         } break;
                     case TextboxType.CHEST:
                         {

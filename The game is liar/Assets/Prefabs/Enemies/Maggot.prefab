@@ -270,30 +270,32 @@ MonoBehaviour:
     constantValue: 300
     variable: {fileID: 0}
   moneyDrop:
-    min: 1
+    min: 2
     max: 4
   whiteMat: {fileID: 2100000, guid: a52db8d2e3bb7c84f9a724b122d7baa7, type: 2}
   collideDamage: 0
   hurtColor: {r: 1, g: 1, b: 1, a: 1}
   deathParticle: {fileID: 8704956847754461958, guid: 3181c8d874d60414f9701b433c293e7d,
     type: 3}
+  deathEffect: {fileID: 6839049992637430885, guid: 8e212a19ddbe9cb46b4ad6ad03ac4854,
+    type: 3}
   audioManager: {fileID: 11400000, guid: 01443e5a6bdc47b4387217618b65db47, type: 2}
   pooler: {fileID: 11400000, guid: 45efe5bf297d938428e78116078a92c9, type: 2}
   brain: 0
   speed: 3
+  abilityCooldownTime: 0.5
+  waitTimeAfterExecute: 0.2
+  distanceToExecute: 3
+  abilityDamage: 0
+  abilityChargeTime: 1
+  timeBtwFlashes: 0.05
+  flashColor: {r: 1, g: 0, b: 0, a: 1}
+  abilitySound: BatExplosion
   rotZOffset: 0
   timeToReachRot: 0
   eye: {fileID: 0}
   lookUpPos: {x: 0, y: 0}
   lookDownPos: {x: 0, y: 0}
-  abilityCooldownTime: 0.5
-  waitTimeAfterExecute: 0.2
-  distanceToExecute: 3
-  abilityDamage: 0
-  abilityChargeTime: 1.5
-  timeBtwFlashes: 0.05
-  flashColor: {r: 1, g: 0, b: 0, a: 1}
-  abilitySound: BatExplosion
   trailTime: 0.2
   emitTrailTime: 0.1
   distanceToTeleportX: 20
@@ -306,14 +308,15 @@ MonoBehaviour:
   speedAfterDashScale: 0
   dashSpeed: 0
   dashTime: 0
+  hitSFX: 
+  cameraShakeMode: 3
   explodeRange: 6
   explodeParticle: {fileID: 36039838053138487, guid: 3a0eff6c700c5fb4c8ff904e00dc84a7,
     type: 3}
-  numberOfBulletsEachTurn: 0
-  numberOfShootTurn: 0
-  fireRate: 0
-  projectile: 
-  weapon: {fileID: 0}
+  bulletCount: 0
+  bullet: 
+  bulletDamage: 0
+  radius: 0
 --- !u!1001 &467790342
 PrefabInstance:
   m_ObjectHideFlags: 0

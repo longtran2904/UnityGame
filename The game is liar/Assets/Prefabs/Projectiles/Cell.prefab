@@ -15,7 +15,6 @@ GameObject:
   - component: {fileID: 1865458717}
   - component: {fileID: 878432984807618659}
   - component: {fileID: 5408130054535759406}
-  - component: {fileID: -7130037225841044541}
   m_Layer: 12
   m_Name: Cell
   m_TagString: Untagged
@@ -295,31 +294,3 @@ MonoBehaviour:
     constantValue: 0
     variable: {fileID: 11400000, guid: 18f7894f0d00c974e9002c94fb008838, type: 2}
   audioManager: {fileID: 11400000, guid: 01443e5a6bdc47b4387217618b65db47, type: 2}
---- !u!114 &-7130037225841044541
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1915952708550527436}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7f044b61b0d5a504fa99f51ca94eaa25, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Event: {fileID: 11400000, guid: 7a34d503cc652a74c9a0455f5d058de4, type: 2}
-  Response:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 5408130054535759406}
-        m_TargetAssemblyTypeName: Cell, Scripts.Shared
-        m_MethodName: MoveTowardPlayer
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2

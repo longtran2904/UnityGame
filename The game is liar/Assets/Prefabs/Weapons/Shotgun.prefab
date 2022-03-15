@@ -80,10 +80,11 @@ SpriteRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: ac3b9a630b4c2cb4f82b7696c2f66200, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -103,7 +104,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 338600657
   m_SortingLayer: 1
-  m_SortingOrder: 1
+  m_SortingOrder: 2
   m_Sprite: {fileID: -5643105228771564274, guid: 73a953e4af87b944baca12b64abaa1d0,
     type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -129,11 +130,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stat: {fileID: 11400000, guid: a824fc0bbb08ca04f8fe70953d0ef144, type: 2}
-  shootPos: {x: 0, y: 0, z: 0}
+  shootPos: {fileID: 0}
   muzzleFlash: {fileID: 7360930300925033069}
-  muzzelFlashTime: 0.03
+  muzzelFlashTime: 0.04
   currentAmmo: 0
-  posOffset: {x: 0.04, y: -0.025}
+  posOffset: {x: 0.25, y: -0.15625}
 --- !u!114 &27096027260016494
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -184,11 +185,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: MuzzleFlash
       objectReference: {fileID: 0}
-    - target: {fileID: 3161168585796676830, guid: 6fbd7c4d790e60a4e8436c0635bf376a,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 6224890372784554212, guid: 6fbd7c4d790e60a4e8436c0635bf376a,
         type: 3}
       propertyPath: m_RootOrder
@@ -197,12 +193,12 @@ PrefabInstance:
     - target: {fileID: 6224890372784554212, guid: 6fbd7c4d790e60a4e8436c0635bf376a,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 1
+      value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 6224890372784554212, guid: 6fbd7c4d790e60a4e8436c0635bf376a,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 1
+      value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 6224890372784554212, guid: 6fbd7c4d790e60a4e8436c0635bf376a,
         type: 3}
@@ -212,12 +208,12 @@ PrefabInstance:
     - target: {fileID: 6224890372784554212, guid: 6fbd7c4d790e60a4e8436c0635bf376a,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.1
+      value: 0.145
       objectReference: {fileID: 0}
     - target: {fileID: 6224890372784554212, guid: 6fbd7c4d790e60a4e8436c0635bf376a,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 0.0025
       objectReference: {fileID: 0}
     - target: {fileID: 6224890372784554212, guid: 6fbd7c4d790e60a4e8436c0635bf376a,
         type: 3}

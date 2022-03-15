@@ -34,7 +34,7 @@ public class BounceBullet : Projectile
         }
         else if (collision.collider.CompareTag("Ground") || collision.collider.CompareTag("Player"))
         {
-            audioManager.PlaySfx("HitWall");
+            audioManager.PlayAudio(AudioType.Weapon_Hit_Wall);
             gameObject.SetActive(false);
         }
     }

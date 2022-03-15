@@ -71,12 +71,17 @@ PrefabInstance:
     - target: {fileID: 310902724418139098, guid: 5c94a61b4cfdce141b132fa7cdb697bc,
         type: 3}
       propertyPath: posOffset.x
-      value: 0.035
+      value: 0.21875
       objectReference: {fileID: 0}
     - target: {fileID: 310902724418139098, guid: 5c94a61b4cfdce141b132fa7cdb697bc,
         type: 3}
       propertyPath: posOffset.y
-      value: -0.03
+      value: -0.1875
+      objectReference: {fileID: 0}
+    - target: {fileID: 310902724418139098, guid: 5c94a61b4cfdce141b132fa7cdb697bc,
+        type: 3}
+      propertyPath: muzzelFlashTime
+      value: 0.04
       objectReference: {fileID: 0}
     - target: {fileID: 310902724418139099, guid: 5c94a61b4cfdce141b132fa7cdb697bc,
         type: 3}
@@ -112,7 +117,7 @@ PrefabInstance:
     - target: {fileID: 5923302995725911546, guid: 5c94a61b4cfdce141b132fa7cdb697bc,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.025
+      value: 0.0275
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5c94a61b4cfdce141b132fa7cdb697bc, type: 3}

@@ -9,8 +9,10 @@ using UnityEngine.Tilemaps;
 
 public class EnemySpawner : MonoBehaviour
 {
+    // TODO: Collases all enemy spawner to a single instance (maybe a scriptable object?) and maybe replace waveCount and totalWaves with a IntVariable?
+    public static int waveCount;
+    public static int totalWaves;
     public SpawnerInfo spawner;
-    public GameEvent endWaves;
 
 #if UNITY_EDITOR
     [Header("DEBUG_SEARCH")]
@@ -19,14 +21,12 @@ public class EnemySpawner : MonoBehaviour
     public TileBase debugFailTile;
     private Tilemap debugTilemap;
 #endif
-
-    [HideInInspector] public int waveCount;
     private List<Vector3Int>[] spawnPos = new List<Vector3Int>[(int)SpawnLocation.LocationCount];
     private Tilemap tilemap;
 
     private void Start()
     {
-        waveCount = spawner.numberOfWaves.randomValue;
+        totalWaves = spawner.numberOfWaves.randomValue;
 
         tilemap = transform.parent.GetChild(0).GetChild(2).GetComponent<Tilemap>();
 #if DEBUG_SEARCH
@@ -82,14 +82,16 @@ public class EnemySpawner : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Enemy.numberOfEnemiesAlive <= 0 && waveCount > 0)
+        if (Enemy.numberOfEnemiesAlive <= 0 && waveCount < totalWaves)
         {
-            waveCount--;
+            ++waveCount;
             SpawnEnemy(spawner.numberOfEnemies.randomValue);
         }
         else if (Enemy.numberOfEnemiesAlive == 0)
         {
-            endWaves.Raise();
+            totalWaves = 0;
+            waveCount = 0;
+            GameInput.TriggerEvent(GameEventType.EndRoom, transform.parent);
             Destroy(gameObject);
         }
     }

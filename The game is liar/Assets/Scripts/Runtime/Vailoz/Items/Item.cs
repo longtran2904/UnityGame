@@ -37,7 +37,7 @@ public abstract class Item : MonoBehaviour
     protected void Throw(float gravityScale = 6)
     {
         rb.gravityScale = gravityScale;
-        rb.velocity = (Input.mousePosition - player.transform.position).normalized * throwForce;
+        rb.velocity = GameInput.GetDirToMouse(player.transform.position).normalized * throwForce;
     }
 
     // Check only the bottom part of the object

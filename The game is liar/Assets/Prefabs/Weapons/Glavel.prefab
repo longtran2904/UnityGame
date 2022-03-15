@@ -71,12 +71,12 @@ PrefabInstance:
     - target: {fileID: 310902724418139098, guid: 5c94a61b4cfdce141b132fa7cdb697bc,
         type: 3}
       propertyPath: posOffset.x
-      value: 0.04
+      value: 0.25
       objectReference: {fileID: 0}
     - target: {fileID: 310902724418139098, guid: 5c94a61b4cfdce141b132fa7cdb697bc,
         type: 3}
       propertyPath: posOffset.y
-      value: -0.02
+      value: -0.125
       objectReference: {fileID: 0}
     - target: {fileID: 310902724418139099, guid: 5c94a61b4cfdce141b132fa7cdb697bc,
         type: 3}

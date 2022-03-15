@@ -84,7 +84,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  - {fileID: 2100000, guid: ac3b9a630b4c2cb4f82b7696c2f66200, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -131,7 +131,7 @@ MonoBehaviour:
   stat: {fileID: 11400000, guid: f411da3e4187c844389e7966c52f8d32, type: 2}
   shootPos: {fileID: 6488369060298341391}
   muzzleFlash: {fileID: 1511908783867461011}
-  muzzelFlashTime: 0.03
+  muzzelFlashTime: 0.04
   currentAmmo: 0
   posOffset: {x: 0, y: 0}
 --- !u!114 &-1598523406299389304
@@ -184,11 +184,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: MuzzleFlash
       objectReference: {fileID: 0}
-    - target: {fileID: 3161168585796676830, guid: 6fbd7c4d790e60a4e8436c0635bf376a,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 6224890372784554212, guid: 6fbd7c4d790e60a4e8436c0635bf376a,
         type: 3}
       propertyPath: m_RootOrder
@@ -197,17 +192,17 @@ PrefabInstance:
     - target: {fileID: 6224890372784554212, guid: 6fbd7c4d790e60a4e8436c0635bf376a,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.5
+      value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 6224890372784554212, guid: 6fbd7c4d790e60a4e8436c0635bf376a,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.5
+      value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 6224890372784554212, guid: 6fbd7c4d790e60a4e8436c0635bf376a,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.09
+      value: 0.095
       objectReference: {fileID: 0}
     - target: {fileID: 6224890372784554212, guid: 6fbd7c4d790e60a4e8436c0635bf376a,
         type: 3}

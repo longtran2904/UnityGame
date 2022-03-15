@@ -165,7 +165,7 @@ GameObject:
   - component: {fileID: 7712399941424367633}
   - component: {fileID: 6538305682677167094}
   - component: {fileID: 2635179820375387873}
-  - component: {fileID: 2689949303780540515}
+  - component: {fileID: 6222460301340840966}
   m_Layer: 0
   m_Name: Teleporter
   m_TagString: Untagged
@@ -266,7 +266,7 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.16, y: 0.36}
   m_EdgeRadius: 0
---- !u!114 &2689949303780540515
+--- !u!114 &6222460301340840966
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -275,7 +275,23 @@ MonoBehaviour:
   m_GameObject: {fileID: 8843765705703286678}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 31f381a9fdf3f5142b78b41fd0fdea13, type: 3}
+  m_Script: {fileID: 11500000, guid: f7ffae49a57b87c40b65a43d8717f296, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  destination: GiantEyeMonster
+  useTag: 0
+  compareTag: 
+  collisionEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 0}
+        m_TargetAssemblyTypeName: 
+        m_MethodName: 
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2

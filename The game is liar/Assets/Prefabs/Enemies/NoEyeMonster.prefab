@@ -161,29 +161,32 @@ MonoBehaviour:
     constantValue: 100
     variable: {fileID: 0}
   moneyDrop:
-    min: 1
+    min: 2
     max: 4
   whiteMat: {fileID: 2100000, guid: a52db8d2e3bb7c84f9a724b122d7baa7, type: 2}
   collideDamage: 0
   hurtColor: {r: 1, g: 1, b: 1, a: 1}
   deathParticle: {fileID: 8704956847754461958, guid: 3181c8d874d60414f9701b433c293e7d,
     type: 3}
+  deathEffect: {fileID: 6839049992637430885, guid: 8e212a19ddbe9cb46b4ad6ad03ac4854,
+    type: 3}
   audioManager: {fileID: 11400000, guid: 01443e5a6bdc47b4387217618b65db47, type: 2}
   pooler: {fileID: 11400000, guid: 45efe5bf297d938428e78116078a92c9, type: 2}
   brain: 1
   speed: 10
+  abilityCooldownTime: 1
+  waitTimeAfterExecute: 0
+  distanceToExecute: 4
+  abilityDamage: 0
+  abilityChargeTime: 0.8
+  timeBtwFlashes: 0.06
+  flashColor: {r: 1, g: 0, b: 0, a: 1}
+  abilitySound: 
   rotZOffset: 0
   timeToReachRot: 0
   eye: {fileID: 0}
   lookUpPos: {x: 0, y: 0}
   lookDownPos: {x: 0, y: 0}
-  abilityCooldownTime: 1
-  distanceToExecute: 4
-  abilityDamage: 0
-  abilityChargeTime: 1.2
-  timeBtwFlashes: 0.06
-  flashColor: {r: 1, g: 0, b: 0, a: 1}
-  abilitySound: 
   trailTime: 0
   emitTrailTime: 0
   distanceToTeleportX: 0
@@ -191,19 +194,19 @@ MonoBehaviour:
   teleportPosOffset:
     min: 0
     max: 0
-  waitTimeAfterTeleport: 0
   delayTeleportTime: 0
   updatePlayerPosTime: 0.5
   speedAfterDashScale: 0.4
   dashSpeed: 30
   dashTime: 0.3
+  hitSFX: 
+  cameraShakeMode: 0
   explodeRange: 0
   explodeParticle: {fileID: 0}
-  numberOfBulletsEachTurn: 0
-  numberOfShootTurn: 0
-  fireRate: 0
-  projectile: 
-  weapon: {fileID: 0}
+  bulletCount: 0
+  bullet: 
+  bulletDamage: 0
+  radius: 0
 --- !u!96 &453943451
 TrailRenderer:
   serializedVersion: 2

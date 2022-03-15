@@ -405,6 +405,7 @@ MonoBehaviour:
     - {x: 1, y: 0, z: 0}
     - {x: 0, y: -1, z: 0}
     m_RuleTransform: 0
+  allowSiblings: 1
   siblings:
   - {fileID: 11400000, guid: 6aae7e3bb74322f4283d0d51f5f355c7, type: 2}
   - {fileID: 11400000, guid: d938f0320091e654c914297d654b4ab7, type: 2}

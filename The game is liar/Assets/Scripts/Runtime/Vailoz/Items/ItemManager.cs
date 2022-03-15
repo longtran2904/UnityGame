@@ -13,14 +13,10 @@ public class ItemManager : MonoBehaviour
     {
         Cooldown();
 
-        if (Input.GetKeyDown(KeyCode.Q))
-        {
+        if (GameInput.GetInput(InputType.LeftItem))
             UseItem(0);
-        }
-        else if (Input.GetKeyDown(KeyCode.E))
-        {
+        else if (GameInput.GetInput(InputType.RightItem))
             UseItem(1);
-        }
     }
 
     private void Cooldown()

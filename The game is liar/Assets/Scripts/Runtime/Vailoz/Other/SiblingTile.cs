@@ -4,8 +4,9 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 
 [CreateAssetMenu(menuName = "Tiles/Sibling")]
-public class SiblingTile : RuleTile<SiblingTile.Neighbor> {
-
+public class SiblingTile : RuleTile<SiblingTile.Neighbor>
+{
+	public bool allowSiblings;
 	public List<TileBase> siblings = new List<TileBase>();
 
 	public class Neighbor : TilingRuleOutput.Neighbor
@@ -15,14 +16,16 @@ public class SiblingTile : RuleTile<SiblingTile.Neighbor> {
 
 	public override bool RuleMatch(int neighbor, TileBase tile)
 	{
+		bool ContainSibling(TileBase tile) => allowSiblings && siblings.Contains(tile);
+
 		switch (neighbor)
 		{
 			case TilingRuleOutput.Neighbor.This:
-                return (siblings.Contains(tile) 
-                    || base.RuleMatch(neighbor, tile));
+				return ContainSibling(tile)
+                    || base.RuleMatch(neighbor, tile);
             case TilingRuleOutput.Neighbor.NotThis:
-                return (!siblings.Contains(tile)
-                    && base.RuleMatch(neighbor, tile));
+                return !ContainSibling(tile)
+                    && base.RuleMatch(neighbor, tile);
 		}
 		return base.RuleMatch(neighbor, tile);
 	}

@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59faa275f1274b845a48470c3b14fec1, type: 3}
+  m_Name: DoorInfo
+  m_EditorClassIdentifier: 
+  wallTile: {fileID: 11400000, guid: 8336b4958251290489b22971d581f00b, type: 2}
+  backgroundTile: {fileID: 11400000, guid: 5e7144324905f914fb4acb6c237be815, type: 2}
+  ruleTile: {fileID: 11400000, guid: 9b0c386f605137a42ac3d00e5d825792, type: 2}
+  door: {fileID: 8152792989799810138, guid: 9d4665dce7377314eb1837e1b7c84305, type: 3}
+  offset: {x: 0.5, y: 1}

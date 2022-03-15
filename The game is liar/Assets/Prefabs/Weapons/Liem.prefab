@@ -36,12 +36,12 @@ PrefabInstance:
     - target: {fileID: 310902724418139098, guid: 5c94a61b4cfdce141b132fa7cdb697bc,
         type: 3}
       propertyPath: posOffset.x
-      value: 0.03
+      value: 0.1875
       objectReference: {fileID: 0}
     - target: {fileID: 310902724418139098, guid: 5c94a61b4cfdce141b132fa7cdb697bc,
         type: 3}
       propertyPath: posOffset.y
-      value: -0.03
+      value: -0.1875
       objectReference: {fileID: 0}
     - target: {fileID: 310902724418139099, guid: 5c94a61b4cfdce141b132fa7cdb697bc,
         type: 3}
@@ -72,7 +72,7 @@ PrefabInstance:
     - target: {fileID: 5923302995725911546, guid: 5c94a61b4cfdce141b132fa7cdb697bc,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.18
+      value: 0.165
       objectReference: {fileID: 0}
     - target: {fileID: 5923302995725911546, guid: 5c94a61b4cfdce141b132fa7cdb697bc,
         type: 3}

@@ -4,7 +4,6 @@ Shader "Unlit/SubPixel"
     {
         _MainTex ("Texture", 2D) = "white" {}
         _mode("Mode", Int) = 0
-        _sampler_type("Sampler Type (point, linear)", Int) = 0
     }
     SubShader
     {
@@ -42,56 +41,71 @@ Shader "Unlit/SubPixel"
             int _mode;
             int _sampler_type;
 
+            float2 CSantos(float2 uv, float2 texelSize)
+            {
+                float2 pixels = uv * texelSize;
+                float2 alpha = 0.7 * fwidth(pixels);
+                float2 pixels_fract = frac(pixels);
+                float2 pixels_diff = clamp(.5 / alpha * pixels_fract, 0, .5) + clamp(.5 / alpha * (pixels_fract - 1) + .5, 0, .5);
+                pixels = floor(pixels) + pixels_diff;
+                uv = pixels / texelSize;
+
+                return uv;
+            }
+
+            float2 Klems(float2 uv, float2 texelSize)
+            {
+                float2 pixels = uv * texelSize + 0.5;
+                float2 fl = floor(pixels);
+                float2 fr = frac(pixels);
+                float2 aa = fwidth(pixels) * 0.75;
+
+                fr = smoothstep(.5 - aa, .5 + aa, fr);
+
+                uv = (fl + fr - 0.5) / texelSize;
+
+                return uv;
+            }
+
+            float2 InigoQuilez(float2 uv, float2 texelSize)
+            {
+                float2 pixel = uv * texelSize;
+
+                float2 seam = floor(pixel + 0.5);
+                float2 dudv = fwidth(pixel);
+                pixel = seam + clamp((pixel - seam) / dudv, -0.5, 0.5);
+
+                uv = pixel / texelSize;
+
+                return uv;
+            }
+
+            // This is the Casey's way
+            float2 FatPixel(float2 uv, float2 texelSize)
+            {
+                float2 pixel = uv * texelSize;
+
+                float2 fat_pixel = floor(pixel) + 0.5;
+                fat_pixel += 1 - clamp((1.0 - frac(pixel)) * fwidth(pixel + .5), 0, 1);
+
+                uv = fat_pixel / texelSize;
+
+                return uv;
+            }
+
+            // https://jorenjoestar.github.io/post/pixel_art_filtering/
             float4 Sampling(float2 uv)
             {
                 if (_mode == 0)
-                {
-                    // uv - your texcoord
-                    // tex - your texture sampler with bilinear filtering
-                    uv *= _MainTex_TexelSize.zw;
-                    float2 duv = fwidth(uv);
-                    uv = floor(uv) + .5 + clamp((frac(uv) - .5 + duv) / duv, 0, 1);
-                    uv *= _MainTex_TexelSize.xy;
-                }
+                    uv = CSantos(uv, _MainTex_TexelSize.zw);
                 else if (_mode == 1)
-                {
-                    float2 pixels = uv * _MainTex_TexelSize.zw;
-
-                    // Updated to the final article
-                    float2 alpha = 0.7 * fwidth(pixels);
-                    float2 pixels_fract = frac(pixels);
-                    float2 pixels_diff = clamp(.5 / alpha * pixels_fract, 0, .5) + clamp(.5 / alpha * (pixels_fract - 1) + .5, 0, .5);
-                    pixels = floor(pixels) + pixels_diff;
-                    uv = pixels * _MainTex_TexelSize.xy;
-                }
+                    uv = Klems(uv, _MainTex_TexelSize.zw);
                 else if (_mode == 2)
-                {
-                    float2 pixels = uv * _MainTex_TexelSize.zw + 0.5;
-
-                    // tweak fractional value of the texture coordinate
-                    float2 fl = floor(pixels);
-                    float2 fr = frac(pixels);
-                    float2 aa = fwidth(pixels) * 0.75;
-
-                    fr = smoothstep(.5 - aa, .5 + aa, fr);
-
-                    uv = (fl + fr - 0.5) * _MainTex_TexelSize.xy;
-                }
+                    uv = InigoQuilez(uv, _MainTex_TexelSize.zw);
                 else if (_mode == 3)
-                {
-                    float2 pixel = uv * _MainTex_TexelSize.zw;
-                    
-                    float2 seam = floor(pixel + 0.5);
-                    float2 dudv = fwidth(pixel);
-                    pixel = seam + clamp((pixel - seam) / dudv, -0.5, 0.5);
+                    uv = FatPixel(uv, _MainTex_TexelSize.zw);
 
-                    uv = pixel * _MainTex_TexelSize.xy;
-                }
-
-                if (_sampler_type == 0)
-                    return _MainTex.Sample(point_clamp_sampler, uv);
-                else
-                    return _MainTex.Sample(linear_clamp_sampler, uv);
+                return _MainTex.Sample(linear_clamp_sampler, uv);
             }
 
             v2f vert (appdata v)

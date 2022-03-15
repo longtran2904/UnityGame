@@ -31,7 +31,7 @@ public class PlayerCombat : MonoBehaviour
         if (Time.time > nextAttackTime)
         {
             weaponHolder.SetActive(true);
-            if (Input.GetKeyDown(KeyCode.V) && (player.inventory.GetCurrent().GetComponent<ActiveReload>()?.isReloading ?? true)) // Can't attack when player is reloading
+            if (GameInput.GetInput(InputType.Melee) && !player.inventory.GetCurrent().GetComponent<ActiveReload>().isReloading)
             {
                 Attack();
                 nextAttackTime = Time.time + 1 / attackRate;

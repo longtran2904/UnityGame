@@ -84,7 +84,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  - {fileID: 2100000, guid: ac3b9a630b4c2cb4f82b7696c2f66200, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -132,9 +132,9 @@ MonoBehaviour:
   shootPos: {fileID: 5030356878461577901}
   muzzleFlash: {fileID: 3161168585796676830, guid: 6fbd7c4d790e60a4e8436c0635bf376a,
     type: 3}
-  muzzelFlashTime: 0.03
+  muzzelFlashTime: 0.04
   currentAmmo: 0
-  posOffset: {x: 0.045, y: -0.025}
+  posOffset: {x: 0.28125, y: -0.15625}
 --- !u!114 &4381377778608441418
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -185,11 +185,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: MuzzleFlash
       objectReference: {fileID: 0}
-    - target: {fileID: 3161168585796676830, guid: 6fbd7c4d790e60a4e8436c0635bf376a,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 6224890372784554212, guid: 6fbd7c4d790e60a4e8436c0635bf376a,
         type: 3}
       propertyPath: m_RootOrder
@@ -198,12 +193,12 @@ PrefabInstance:
     - target: {fileID: 6224890372784554212, guid: 6fbd7c4d790e60a4e8436c0635bf376a,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 1
+      value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 6224890372784554212, guid: 6fbd7c4d790e60a4e8436c0635bf376a,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 1
+      value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 6224890372784554212, guid: 6fbd7c4d790e60a4e8436c0635bf376a,
         type: 3}

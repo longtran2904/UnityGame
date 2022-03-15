@@ -1,7 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using System;
+﻿using UnityEngine;
 
 // NOTE: Physics2D cast -> GetMask
 //       Physics2D cast always return a RaycastHit2D object (implicit convert to bool), the collider property of the object will equal to null if it didn't hit anything
@@ -13,21 +10,19 @@ public class PlayerController : MonoBehaviour
     public float speed;
     public float fallSpeed;
     public Vector3Variable position;
-    public BoolReference onGround; // false if the player is upside down
-    public ParticleSystem dust;
+    public ParticleSystem leftDust;
+    public ParticleSystem rightDust;
 
     public AudioManager audioManager;
-    public SoundCue footStep;
-    public SoundCue touchGround;
+    public RangedFloat timeBtwFootsteps;
+    private float timeBtwFootstepsValue;
 
-    [HideInInspector] public bool isGrounded;
     private float moveInput;
-    private float lastMoveInput;
     private Rigidbody2D rb;
-    private SpriteRenderer sprite;
-    private Animator anim;    
-    private Camera mainCamera;
-    private Vector3 mousePos;
+    private Animator anim;
+    [HideInInspector] public bool groundCheck;
+    private Coroutine resetSize;
+    private Vector2 spriteExtents;
 
     // Jump and ground pressed remember
     public float jumpPressedRemember;
@@ -35,135 +30,140 @@ public class PlayerController : MonoBehaviour
     public float groundRememberTime;
     private float groundRemember;
 
-    // BoxCast
-    Vector3 boxOffset;
-    RaycastHit2D groundCheck;
-
-    // Knock back
-    public float knockbackTime;
-    private float knockbackCounter;
-
-    private bool demo;
-
     // Start is called before the first frame update
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        sprite = GetComponent<SpriteRenderer>();
         anim = GetComponent<Animator>();
-        mainCamera = Camera.main;
         rb.drag = MathUtils.GetDragFromAcceleration(Physics2D.gravity.magnitude, fallSpeed);
+        spriteExtents = GetComponent<SpriteRenderer>().bounds.extents;
+        resetSize = this.EmptyCoroutine();
+        groundCheck = CastBox();
     }
 
     // Update is called once per frame
     void Update()
     {
-        mousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
-        if (knockbackCounter > 0)
-        {
-            knockbackCounter -= Time.deltaTime;
-        }
-        else
-        {
-            moveInput = Input.GetAxisRaw("Horizontal");
-        }
-        rb.velocity = new Vector2(moveInput * speed, rb.velocity.y);
+        if (Mathf.Sign(GameInput.GetDirToMouse(transform.position, 1).x) != transform.right.x)
+            transform.Rotate(0, 180, 0);
 
-        if (moveInput != lastMoveInput)
+        float lastMoveInput = moveInput;
         {
-            if (moveInput != 0)
-                anim.Play("Run");
-            else
-                anim.Play("Idle");
+            moveInput = GameInput.GetAxis(AxisType.Horizontal);
+            rb.velocity = new Vector2(moveInput * speed, rb.velocity.y);
         }
 
-        if (!demo && moveInput != 0 && isGrounded)
-            audioManager.PlaySfx(footStep);
+        bool lastCheck = groundCheck;
+        groundCheck = CastBox();
 
-        if (PauseMenu.isGamePaused) return;
-        transform.eulerAngles = new Vector3(onGround.value ? 0 : 180, mousePos.x - transform.position.x > 0 ? 0 : 180, 0);
-
-        GroundCheck();
-        Jump();
-        lastMoveInput = moveInput;
-
-        position.value = transform.position;
-    }
-
-    void GroundCheck()
-    {
-        // Cast box
-        Vector2 boxSize = new Vector2(0.25f, 0.01f);
-        boxOffset = new Vector3(0, sprite.bounds.extents.y + boxSize.y + 0.01f, 0);
-        if (!onGround.value)
-        {
-            boxOffset = -boxOffset;
-        }
-        groundCheck = Physics2D.BoxCast(transform.position - boxOffset, boxSize, 0, -transform.up, boxSize.y, LayerMask.GetMask("Ground"));
-        ExtDebug.DrawBoxCastBox(transform.position - boxOffset, boxSize, Quaternion.identity, -transform.up, boxSize.y, Color.red);
-        groundRemember -= Time.deltaTime;
-
-        // Check ground
         if (groundCheck)
         {
             groundRemember = groundRememberTime;
-            if (isGrounded == false) // When fall and touch ground
+            if (moveInput != 0 && Time.time > timeBtwFootstepsValue)
             {
-                if (!demo)
+                audioManager.PlayAudio(AudioType.Player_Footstep);
+                timeBtwFootstepsValue = Time.time + timeBtwFootsteps.randomValue;
+            }
+
+            if (!lastCheck)
+            {
+                StartJumpEffect(false);
+                if (moveInput != 0)
+                    anim.Play("Run");
+            }
+            else if (moveInput != lastMoveInput)
+            {
+                if (lastMoveInput == 0)
                 {
-                    dust.Play();
-                    audioManager.PlaySfx(touchGround);
+                    PlayDust(-moveInput);
+                    anim.Play("Run");
                 }
-                isGrounded = true;
+                else
+                {
+                    PlayDust(lastMoveInput);
+                    if (moveInput == 0)
+                        anim.Play("Idle");
+                }
             }
         }
         else
-            isGrounded = false;
-    }
+        {
+            groundRemember -= Time.deltaTime;
+            if (lastCheck)
+                anim.Play("Idle");
+        }
 
-    void Jump()
-    {
-        jumpPressedRememberValue -= Time.deltaTime;
-        if (Input.GetButtonDown("Jump"))
+        if (GameInput.GetInput(InputType.Jump))
             jumpPressedRememberValue = jumpPressedRemember;
+        else
+            jumpPressedRememberValue -= Time.deltaTime;
 
         if (jumpPressedRememberValue > 0 && groundRemember > 0)
         {
             jumpPressedRememberValue = 0;
+            groundRemember = 0;
             rb.velocity = Vector2.zero;
             rb.gravityScale *= -1;
-            if (!demo)
-            {
-                dust.Play();
-                audioManager.PlaySfx("PlayerJump");
-            }
-            isGrounded = false;
-            Invoke("SwitchTop", .1f);
+
+            this.InvokeAfter(.1f, () => transform.Rotate(180, 0, 0));
+            StartJumpEffect(true);
+        }
+
+        position.value = transform.position;
+    }
+
+    bool CastBox()
+    {
+        Vector2 boxSize = new Vector2(spriteExtents.x / 1.5f, 0.02f);
+        Vector3 boxPos = transform.position - new Vector3(0, spriteExtents.y + boxSize.y + .075f) * Mathf.Sign(rb.gravityScale);
+        ExtDebug.DrawBox(boxPos, boxSize / 2, Quaternion.identity, Color.red);
+        return Physics2D.BoxCast(boxPos, boxSize, 0, Vector2.zero, 0, LayerMask.GetMask("Ground"));
+    }
+
+    void StartJumpEffect(bool isJumping)
+    {
+        CameraShake.instance?.Shake(ShakeMode.Medium, trauma: .4f);
+        PlayDust(-moveInput);
+        audioManager.PlayAudio(isJumping ? AudioType.Player_Jump : AudioType.Player_Land);
+
+        // Change Size
+        transform.localScale = isJumping ? new Vector3(.75f, 1.25f) : new Vector3(1.25f, .75f);
+        transform.position -= GetPosOnGround();
+
+        StopCoroutine(resetSize);
+        resetSize = this.InvokeAfter(.2f, () => {
+            transform.localScale = new Vector3(1f, 1f);
+            if (!isJumping)
+                transform.position -= GetPosOnGround();
+        });
+
+        Vector3 GetPosOnGround()
+        {
+            float groundHeight = Physics2D.BoxCast(transform.position, new Vector2(spriteExtents.x / 2, 0.01f), 0, -transform.up, spriteExtents.y * 2, LayerMask.GetMask("Ground")).distance;
+            Vector3 offset = new Vector3(0, groundHeight - spriteExtents.y * transform.localScale.y) * transform.up.y;
+            Debug.DrawRay(transform.position, -transform.up * groundHeight, Color.blue);
+            return offset;
         }
     }
 
-    // Invoke by Jump()
-    void SwitchTop()
+    void PlayDust(float dir)
     {
-        onGround.value = !onGround.value;
-    }
-
-    public void KnockBack()
-    {
-        knockbackCounter = knockbackTime;
-        rb.velocity = Vector2.zero;
-        moveInput = 0;
+        if (dir >= 0)
+            rightDust.Play();
+        if (dir <= 0)
+            leftDust.Play();
     }
 
     [System.Diagnostics.Conditional("UNITY_EDITOR")]
     public void EnterDemo()
     {
-        demo = true;
+        //demo = true;
 
         GetComponent<SpriteRenderer>().enabled = false;
         Destroy(GetComponent<Player>());
         Destroy(GetComponent<PlayerCombat>());
         Destroy(GetComponent<ItemManager>());
+        Destroy(GetComponent<Animation>());
 
         foreach (Transform child in transform)
         {

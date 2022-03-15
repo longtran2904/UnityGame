@@ -1,0 +1,417 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a51c9106a90459642b2f6b42e427d49c, type: 3}
+  m_Name: AudioManager
+  m_EditorClassIdentifier: 
+  sounds:
+  - name: PlayerJump
+    clip: {fileID: 8300000, guid: d95f3af1fe872324eaa743f0dd98c07e, type: 3}
+    volume: 0.1
+    pitch: 1
+    loop: 0
+    playOnAwake: 0
+  - name: PlayerShoot
+    clip: {fileID: 8300000, guid: 6748319220a026247b477256ba304326, type: 3}
+    volume: 0.2
+    pitch: 1
+    loop: 0
+    playOnAwake: 0
+  - name: PlayerShoot2
+    clip: {fileID: 8300000, guid: f4da0c4c70d47e540a30c5c879073625, type: 3}
+    volume: 0.3
+    pitch: 1
+    loop: 0
+    playOnAwake: 0
+  - name: PlayerShoot3
+    clip: {fileID: 8300000, guid: c0ca862777eeee340abcb92522ed433e, type: 3}
+    volume: 0.3
+    pitch: 1
+    loop: 0
+    playOnAwake: 0
+  - name: TurretShoot
+    clip: {fileID: 8300000, guid: 2b2b779217c14504ba442a690e0c9fef, type: 3}
+    volume: 1
+    pitch: 1
+    loop: 0
+    playOnAwake: 0
+  - name: GetHit
+    clip: {fileID: 8300000, guid: fc9ff7f79f7c03f40a8fe7b16e2b4c1e, type: 3}
+    volume: 0.1
+    pitch: 1
+    loop: 0
+    playOnAwake: 0
+  - name: BatExplosion
+    clip: {fileID: 8300000, guid: 99b5706e52d33c64a9331a74964004c5, type: 3}
+    volume: 1
+    pitch: 1
+    loop: 0
+    playOnAwake: 0
+  - name: PlayerDeath
+    clip: {fileID: 8300000, guid: 99b5706e52d33c64a9331a74964004c5, type: 3}
+    volume: 1
+    pitch: 1
+    loop: 0
+    playOnAwake: 0
+  - name: Select
+    clip: {fileID: 8300000, guid: cfa8ba85a3d30fa468ce12d1a0258c64, type: 3}
+    volume: 1
+    pitch: 1
+    loop: 0
+    playOnAwake: 0
+  - name: DefeatBoss
+    clip: {fileID: 8300000, guid: a88fa52f68285824496d8457c4a0a054, type: 3}
+    volume: 1
+    pitch: 1
+    loop: 0
+    playOnAwake: 0
+  - name: BossExplosion
+    clip: {fileID: 8300000, guid: 1ada27f583cdda74fb5acad6ea037214, type: 3}
+    volume: 1
+    pitch: 1
+    loop: 0
+    playOnAwake: 0
+  - name: 8bit
+    clip: {fileID: 8300000, guid: 46f548df1e3539e49867f22327492a31, type: 3}
+    volume: 1
+    pitch: 1
+    loop: 1
+    playOnAwake: 0
+  - name: BossFight
+    clip: {fileID: 8300000, guid: 2fc7d2fa8cae24b47ad17fedc5bc5f8b, type: 3}
+    volume: 1
+    pitch: 1
+    loop: 1
+    playOnAwake: 0
+  - name: Shotgun
+    clip: {fileID: 8300000, guid: 2f2b07580e6c71b488b697130f5cff23, type: 3}
+    volume: 1
+    pitch: 1
+    loop: 0
+    playOnAwake: 0
+  - name: Buy
+    clip: {fileID: 8300000, guid: 6320295b90a2f1046abb93c53858b5d5, type: 3}
+    volume: 1
+    pitch: 1
+    loop: 0
+    playOnAwake: 0
+  - name: PickupCoin
+    clip: {fileID: 8300000, guid: 57cc25e0fd9097e4cbcc1164f56bd028, type: 3}
+    volume: 1
+    pitch: 1
+    loop: 0
+    playOnAwake: 0
+  - name: Bounce
+    clip: {fileID: 8300000, guid: b34f091cbeeb08f4984fa6fa63ca420d, type: 3}
+    volume: 1
+    pitch: 1
+    loop: 0
+    playOnAwake: 0
+  - name: Trickshot
+    clip: {fileID: 8300000, guid: f2854084d09ec0c48b8474631bb5f05f, type: 3}
+    volume: 1
+    pitch: 1
+    loop: 0
+    playOnAwake: 0
+  - name: HitWall
+    clip: {fileID: 8300000, guid: fd03f3a76bb7a664f9ff60751c5d9925, type: 3}
+    volume: 1
+    pitch: 1
+    loop: 0
+    playOnAwake: 0
+  - name: Footstep_1
+    clip: {fileID: 8300000, guid: 0d9489f707c31904892b3472b66b49bc, type: 3}
+    volume: 0.3
+    pitch: 1
+    loop: 0
+    playOnAwake: 0
+  - name: Footstep_2
+    clip: {fileID: 8300000, guid: 2399e1966f8aaa7418cd11346d44ab8b, type: 3}
+    volume: 0.3
+    pitch: 1
+    loop: 0
+    playOnAwake: 0
+  - name: Footstep_3
+    clip: {fileID: 8300000, guid: fa21e5e5d377100429d2948453c3e4e7, type: 3}
+    volume: 0.3
+    pitch: 1
+    loop: 0
+    playOnAwake: 0
+  - name: Footstep_4
+    clip: {fileID: 8300000, guid: f5892e03b80dfd24d90fae3dff486764, type: 3}
+    volume: 0.3
+    pitch: 1
+    loop: 0
+    playOnAwake: 0
+  - name: TouchGround_1
+    clip: {fileID: 8300000, guid: b8f0791fea0407a4db0579e14e778e49, type: 3}
+    volume: 0.3
+    pitch: 1
+    loop: 0
+    playOnAwake: 0
+  - name: TouchGround_2
+    clip: {fileID: 8300000, guid: 750efc80b3ce7d14f9764f78786e0cd9, type: 3}
+    volume: 0.3
+    pitch: 1
+    loop: 0
+    playOnAwake: 0
+  - name: TouchGround_3
+    clip: {fileID: 8300000, guid: 624115b132909754c8e2debac06a3719, type: 3}
+    volume: 0.3
+    pitch: 1
+    loop: 0
+    playOnAwake: 0
+  - name: TouchGround_4
+    clip: {fileID: 8300000, guid: d68b22ab5c678724b9bd3c727531400f, type: 3}
+    volume: 0.3
+    pitch: 1
+    loop: 0
+    playOnAwake: 0
+  - name: OpenChest
+    clip: {fileID: 8300000, guid: a9a4d88fc1a00ff40b4adb89712cd3d8, type: 3}
+    volume: 0.3
+    pitch: 1
+    loop: 0
+    playOnAwake: 0
+  - name: BossHit
+    clip: {fileID: 8300000, guid: b7f90fb0d9aff0f4080453b62d9d0b49, type: 3}
+    volume: 0.5
+    pitch: 1
+    loop: 0
+    playOnAwake: 0
+  - name: BossDash
+    clip: {fileID: 8300000, guid: 6e243ff5996ac9f4ba23a53f6b4b1870, type: 3}
+    volume: 0.3
+    pitch: 1
+    loop: 0
+    playOnAwake: 0
+  - name: EnemyDeath
+    clip: {fileID: 8300000, guid: 03c6a22c39509934fbf31a4b023fcddc, type: 3}
+    volume: 0.3
+    pitch: 1
+    loop: 0
+    playOnAwake: 0
+  audios:
+  - type: 0
+    clips:
+    - {fileID: 8300000, guid: d95f3af1fe872324eaa743f0dd98c07e, type: 3}
+    volume:
+      min: 0.40039256
+      max: 0.60058886
+    pitch:
+      min: 0.7536801
+      max: 1.0951914
+  - type: 1
+    clips:
+    - {fileID: 8300000, guid: 6748319220a026247b477256ba304326, type: 3}
+    - {fileID: 8300000, guid: f4da0c4c70d47e540a30c5c879073625, type: 3}
+    - {fileID: 8300000, guid: c0ca862777eeee340abcb92522ed433e, type: 3}
+    volume:
+      min: 0.75368005
+      max: 1.7988224
+    pitch:
+      min: 0.60058886
+      max: 1.4013739
+  - type: 2
+    clips:
+    - {fileID: 8300000, guid: fc9ff7f79f7c03f40a8fe7b16e2b4c1e, type: 3}
+    volume:
+      min: 1.0009813
+      max: 1.2011777
+    pitch:
+      min: 0.8007852
+      max: 1.2011777
+  - type: 3
+    clips:
+    - {fileID: 8300000, guid: 0d9489f707c31904892b3472b66b49bc, type: 3}
+    - {fileID: 8300000, guid: 2399e1966f8aaa7418cd11346d44ab8b, type: 3}
+    - {fileID: 8300000, guid: fa21e5e5d377100429d2948453c3e4e7, type: 3}
+    - {fileID: 8300000, guid: f5892e03b80dfd24d90fae3dff486764, type: 3}
+    volume:
+      min: 0.047105007
+      max: 0.24730128
+    pitch:
+      min: 0.5034348
+      max: 1.9990187
+  - type: 4
+    clips:
+    - {fileID: 8300000, guid: b8f0791fea0407a4db0579e14e778e49, type: 3}
+    - {fileID: 8300000, guid: 750efc80b3ce7d14f9764f78786e0cd9, type: 3}
+    - {fileID: 8300000, guid: 624115b132909754c8e2debac06a3719, type: 3}
+    - {fileID: 8300000, guid: d68b22ab5c678724b9bd3c727531400f, type: 3}
+    volume:
+      min: 0.20019628
+      max: 0.40039253
+    pitch:
+      min: 0.90677136
+      max: 1.0951914
+  - type: 5
+    clips:
+    - {fileID: 8300000, guid: 99b5706e52d33c64a9331a74964004c5, type: 3}
+    volume:
+      min: 1.2011777
+      max: 1.8017664
+    pitch:
+      min: 0.7536801
+      max: 1.2482827
+  - type: 6
+    clips:
+    - {fileID: 8300000, guid: a88fa52f68285824496d8457c4a0a054, type: 3}
+    volume:
+      min: 1.4955838
+      max: 2.0019627
+    pitch:
+      min: 1.0009813
+      max: 1.0009813
+  - type: 8
+    clips:
+    - {fileID: 8300000, guid: 2b2b779217c14504ba442a690e0c9fef, type: 3}
+    volume:
+      min: 0.8007851
+      max: 1.4955839
+    pitch:
+      min: 0.9538764
+      max: 1.8959765
+  - type: 9
+    clips:
+    - {fileID: 8300000, guid: 99b5706e52d33c64a9331a74964004c5, type: 3}
+    volume:
+      min: 0.80078506
+      max: 1.2482827
+    pitch:
+      min: 0.8007851
+      max: 1.2836114
+  - type: 10
+    clips:
+    - {fileID: 8300000, guid: 03c6a22c39509934fbf31a4b023fcddc, type: 3}
+    volume:
+      min: 0.8
+      max: 1.2
+    pitch:
+      min: 0.8
+      max: 1.2
+  - type: 11
+    clips:
+    - {fileID: 8300000, guid: 1ada27f583cdda74fb5acad6ea037214, type: 3}
+    volume:
+      min: 1.0001963
+      max: 1.8123652
+    pitch:
+      min: 0.8
+      max: 1.2
+  - type: 12
+    clips:
+    - {fileID: 8300000, guid: b7f90fb0d9aff0f4080453b62d9d0b49, type: 3}
+    volume:
+      min: 0.5055937
+      max: 0.90559375
+    pitch:
+      min: 0.8
+      max: 1.2
+  - type: 13
+    clips:
+    - {fileID: 8300000, guid: 6e243ff5996ac9f4ba23a53f6b4b1870, type: 3}
+    volume:
+      min: 0.44671246
+      max: 0.6347401
+    pitch:
+      min: 0.8
+      max: 1.2
+  - type: 15
+    clips:
+    - {fileID: 8300000, guid: 2f2b07580e6c71b488b697130f5cff23, type: 3}
+    volume:
+      min: 0.51737
+      max: 0.91736996
+    pitch:
+      min: 0.8
+      max: 1.2
+  - type: 16
+    clips:
+    - {fileID: 8300000, guid: b34f091cbeeb08f4984fa6fa63ca420d, type: 3}
+    volume:
+      min: 0.4820412
+      max: 0.88204145
+    pitch:
+      min: 0.8
+      max: 1.2
+  - type: 17
+    clips:
+    - {fileID: 8300000, guid: f2854084d09ec0c48b8474631bb5f05f, type: 3}
+    volume:
+      min: 0.49381748
+      max: 0.89381754
+    pitch:
+      min: 0.8
+      max: 1.2
+  - type: 18
+    clips:
+    - {fileID: 8300000, guid: fd03f3a76bb7a664f9ff60751c5d9925, type: 3}
+    volume:
+      min: 0.32894996
+      max: 0.72895
+    pitch:
+      min: 0.8
+      max: 1.2
+  - type: 20
+    clips:
+    - {fileID: 8300000, guid: cfa8ba85a3d30fa468ce12d1a0258c64, type: 3}
+    volume:
+      min: 0.42315996
+      max: 0.5169774
+    pitch:
+      min: 0.8
+      max: 1.2
+  - type: 21
+    clips:
+    - {fileID: 8300000, guid: 6320295b90a2f1046abb93c53858b5d5, type: 3}
+    volume:
+      min: 0.42315996
+      max: 0.54052997
+    pitch:
+      min: 0.8
+      max: 1.2
+  - type: 22
+    clips:
+    - {fileID: 8300000, guid: 57cc25e0fd9097e4cbcc1164f56bd028, type: 3}
+    volume:
+      min: 1.2474976
+      max: 1.6474977
+    pitch:
+      min: 0.8
+      max: 1.2
+  - type: 23
+    clips:
+    - {fileID: 8300000, guid: a9a4d88fc1a00ff40b4adb89712cd3d8, type: 3}
+    volume:
+      min: 0.57625127
+      max: 0.6582925
+    pitch:
+      min: 0.8
+      max: 1.2
+  - type: 25
+    clips:
+    - {fileID: 8300000, guid: 46f548df1e3539e49867f22327492a31, type: 3}
+    volume:
+      min: 0.9998038
+      max: 0.9998038
+    pitch:
+      min: 1.0001963
+      max: 1.0001963
+  - type: 26
+    clips:
+    - {fileID: 8300000, guid: 2fc7d2fa8cae24b47ad17fedc5bc5f8b, type: 3}
+    volume:
+      min: 0.9998038
+      max: 0.9998038
+    pitch:
+      min: 1.0001963
+      max: 1.0001963

@@ -56,12 +56,6 @@ public class Projectile : MonoBehaviour, IPooledObject
         rb.velocity = speed * transform.right;
     }
 
-    public void SetVelocity(float speed, float angle)
-    {
-        transform.rotation = Quaternion.Euler(0, 0, angle);
-        SetVelocity(speed);
-    }
-
     private void OnTriggerEnter2D(Collider2D collision)
     {
         HitCollider(collision);
@@ -74,7 +68,6 @@ public class Projectile : MonoBehaviour, IPooledObject
 
     protected virtual void HitCollider(Collider2D collision)
     {
-        if (hitEffect) Instantiate(hitEffect, transform.position, Quaternion.identity);
         if (collision.CompareTag("Enemy") && !isEnemy)
         {
             Hit(collision, x => {
@@ -89,23 +82,28 @@ public class Projectile : MonoBehaviour, IPooledObject
         {
             Hit(collision, x => x.GetComponent<Player>().Hurt(damage), false, canTouchPlayer);
         }
-        else if (collision.CompareTag("Boss") && !isEnemy)
+        /*else if (collision.CompareTag("Boss") && !isEnemy)
         {
             Hit(collision, x => x.GetComponent<Boss>().Hurt(damage), true);
-        }
+        }*/
         if (collision.CompareTag("Ground") && !canTouchGround)
         {
+            if (hitEffect)
+                Instantiate(hitEffect, transform.position, Quaternion.identity);
             if (particleEffect)
                 Instantiate(particleEffect, transform.position, transform.rotation * Quaternion.Euler(0, 0, particleRotOffset));
-            audioManager.PlaySfx("HitWall");
+            audioManager.PlayAudio(AudioType.Weapon_Hit_Wall);
             gameObject.SetActive(false);
         }
     }
 
     void Hit(Collider2D collision, Action<Collider2D> hurtDelegate, bool spawnPopup, bool setActive = false)
     {
-        if (spawnPopup) DamagePopup.Create(collision.transform.position, damage, isCritical);
-        hurtDelegate?.Invoke(collision);
+        if (hitEffect)
+            Instantiate(hitEffect, transform.position, Quaternion.identity);
+        if (spawnPopup)
+            DamagePopup.Create(collision.transform.position, damage, isCritical);
+        hurtDelegate(collision);
         transform.parent = null;
         gameObject.SetActive(setActive);
     }

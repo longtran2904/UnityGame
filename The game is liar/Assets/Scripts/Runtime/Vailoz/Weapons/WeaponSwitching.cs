@@ -26,7 +26,7 @@ public class WeaponSwitching : MonoBehaviour
     void Update()
     {
         int previousSelectedWeapon = selectedWeapon;
-        float scrollInput = Input.GetAxis("Mouse ScrollWheel");
+        float scrollInput = GameInput.GetMouseWheel();
 
         if (scrollInput > 0)
         {

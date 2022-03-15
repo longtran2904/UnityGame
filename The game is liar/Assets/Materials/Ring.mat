@@ -51,9 +51,12 @@ Material:
     m_Floats:
     - _EnableExternalAlpha: 0
     - _Fade: 0.02
-    - _Thickness: 0.06
+    - _Pixelate: 64
+    - _Radius: 1
+    - _Thickness: 0.075
+    - _Timer: 0
     m_Colors:
-    - _Color: {r: 1, g: 0.8691129, b: 0.12549019, a: 1}
+    - _Color: {r: 0, g: 3.8324604, b: 3.9999995, a: 1}
     - _Flip: {r: 1, g: 1, b: 1, a: 1}
     - _RendererColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []

@@ -36,6 +36,23 @@ MonoBehaviour:
   rounded:
     m_OverrideState: 0
     m_Value: 0
+--- !u!114 &-950391793566954337
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 97c23e3b12dc18c42a140437e53d3951, type: 3}
+  m_Name: Tonemapping
+  m_EditorClassIdentifier: 
+  active: 1
+  m_AdvancedMode: 0
+  mode:
+    m_OverrideState: 1
+    m_Value: 1
 --- !u!114 &-890287384893660693
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -56,11 +73,11 @@ MonoBehaviour:
     min: 0
   intensity:
     m_OverrideState: 1
-    m_Value: 10
+    m_Value: 20
     min: 0
   scatter:
     m_OverrideState: 1
-    m_Value: 0.5
+    m_Value: 0.7
     min: 0
     max: 1
   clamp:
@@ -103,6 +120,8 @@ MonoBehaviour:
   components:
   - {fileID: -3744010131794814621}
   - {fileID: -890287384893660693}
+  - {fileID: -950391793566954337}
+  - {fileID: 8968166234978548767}
 --- !u!114 &5824797844380737988
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -122,3 +141,41 @@ MonoBehaviour:
     m_Value: 0
     min: 0
     max: 1
+--- !u!114 &8968166234978548767
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 66f335fb1ffd8684294ad653bf1c7564, type: 3}
+  m_Name: ColorAdjustments
+  m_EditorClassIdentifier: 
+  active: 1
+  m_AdvancedMode: 0
+  postExposure:
+    m_OverrideState: 1
+    m_Value: -0.3
+  contrast:
+    m_OverrideState: 1
+    m_Value: 5
+    min: -100
+    max: 100
+  colorFilter:
+    m_OverrideState: 0
+    m_Value: {r: 0.8627451, g: 0.8627451, b: 0.8627451, a: 1}
+    hdr: 1
+    showAlpha: 0
+    showEyeDropper: 1
+  hueShift:
+    m_OverrideState: 1
+    m_Value: 2
+    min: -180
+    max: 180
+  saturation:
+    m_OverrideState: 1
+    m_Value: 15
+    min: -100
+    max: 100

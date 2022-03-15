@@ -15,7 +15,6 @@ public class ActiveReload : MonoBehaviour
 
     public bool isReloading { get; private set; }
     private Weapon weapon;
-    //private WeaponInventory playerInventory;
     private Player player;
 
     private enum ReloadType
@@ -27,7 +26,6 @@ public class ActiveReload : MonoBehaviour
 
     private void Start()
     {
-        //playerInventory = GetComponentInParent<Player>().inventory;
         player = GetComponentInParent<Player>();
 
         // NOTE: Fix reload bar and slider to be more elegant
@@ -44,16 +42,11 @@ public class ActiveReload : MonoBehaviour
     {
         if (!isReloading)
         {
-            weapon = player.inventory.GetCurrent();//playerInventory.GetCurrent();
-
-            if (weapon.currentAmmo <= 0 && Input.GetMouseButton(0))
-            {
+            weapon = player.inventory.GetCurrent();
+            if (weapon.currentAmmo <= 0 && GameInput.GetInput(InputType.Shoot))
                 BeginReload();
-            }
-            else if (Input.GetKeyDown(KeyCode.R) && weapon.currentAmmo < weapon.stat.ammo)
-            {
+            else if (GameInput.GetInput(InputType.Reload) && weapon.currentAmmo < weapon.stat.ammo)
                 BeginReload();
-            } 
         }
     }
 
@@ -66,7 +59,7 @@ public class ActiveReload : MonoBehaviour
     public void BeginReload()
     {
         isReloading = true;
-        player.EnableInput(false, true);
+        EnableShooting(false);
 
         slider.color = Color.white;
         reloadBar.SetActive(true);
@@ -85,7 +78,7 @@ public class ActiveReload : MonoBehaviour
         {
             float value = Mathf.Lerp(0, reloadRange, curve.Evaluate(t));
             slider.rectTransform.anchoredPosition = new Vector2(value, 0);
-            if (Input.GetKeyDown(KeyCode.R))
+            if (GameInput.GetRawInput(InputType.Reload))
             {
                 if (MathUtils.InRange(perfectPos, perfectPos + perfectSize, value))
                 {
@@ -124,6 +117,12 @@ public class ActiveReload : MonoBehaviour
         reloadBar.SetActive(false);
         weapon.currentAmmo = weapon.stat.ammo;
         isReloading = false;
-        player.EnableInput(true, false);
+        EnableShooting(true);
+    }
+
+    void EnableShooting(bool enable)
+    {
+        GameInput.EnableInput(InputType.Shoot, enable);
+        GameInput.EnableMouseInput(enable, 0);
     }
 }

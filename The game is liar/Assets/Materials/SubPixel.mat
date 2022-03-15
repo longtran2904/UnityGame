@@ -49,7 +49,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - _EnableExternalAlpha: 0
-    - _mode: 1
+    - _mode: 2
     - _sampler_type: 1
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}

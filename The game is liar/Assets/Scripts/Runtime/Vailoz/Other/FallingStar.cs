@@ -21,8 +21,6 @@ public class FallingStar : MonoBehaviour
     public Vector2Int size;
 
     private SpriteRenderer sr;
-    private MaterialPropertyBlock block;
-
     private RenderTexture renderTex;
     private RawImage image;
     private RectTransform canvas;
@@ -30,20 +28,22 @@ public class FallingStar : MonoBehaviour
     private void Start()
     {
         sr = GetComponent<SpriteRenderer>();
-        block = new MaterialPropertyBlock();
-
-        sr.GetPropertyBlock(block);
-        block.SetFloat("_NoiseScale", noiseScale.randomValue);
-        block.SetFloat("_MinTimeNoiseScale", minTimeNoiseScale.randomValue);
-        block.SetFloat("_MaxTimeNoiseScale", maxTimeNoiseScale.randomValue);
-        sr.SetPropertyBlock(block);
-
         canvas = GetComponentInChildren<RectTransform>();
-        canvas.sizeDelta = sr.size;
+
+        GameUtils.SetMaterialBlock(sr, block =>
+        {
+            block.SetFloat("_NoiseScale", noiseScale.randomValue);
+            block.SetFloat("_MinTimeNoiseScale", minTimeNoiseScale.randomValue);
+            block.SetFloat("_MaxTimeNoiseScale", maxTimeNoiseScale.randomValue);
+            block.SetFloat("_Ratio", sr.size.x / sr.size.y);
+        });
+
 
         if (Application.isPlaying)
         {
-            renderTex = new RenderTexture((int)(size.x * sr.size.x), (int)(size.y * sr.size.y), 0);
+            // NOTE: DefaultHDR is chosen based on the platform, so it may not always have bloom effect. If it turn out to be the case then use RGB111110Float.
+            // https://forum.unity.com/threads/camera-render-texture-with-post-processing.817674/#post-6777809
+            renderTex = new RenderTexture((int)(size.x * sr.size.x), (int)(size.y * sr.size.y), 0, RenderTextureFormat.DefaultHDR);
             renderTex.Create();
 
             Camera camera = new GameObject("Window Camera", typeof(Camera)).GetComponent<Camera>();
@@ -67,6 +67,7 @@ public class FallingStar : MonoBehaviour
     private void Update()
     {
         canvas.sizeDelta = sr.size;
+        GameUtils.SetMaterialBlock(sr, block => block.SetFloat("_Ratio", sr.size.x / sr.size.y));
     }
 #endif
 

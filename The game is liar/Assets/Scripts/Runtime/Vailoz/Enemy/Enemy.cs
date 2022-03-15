@@ -39,6 +39,7 @@ public partial class Enemy : MonoBehaviour
     public int collideDamage;
     public Color hurtColor;
     public GameObject deathParticle;
+    public GameObject deathEffect;
 
     public AudioManager audioManager;
     public ObjectPooler pooler;
@@ -87,6 +88,7 @@ public partial class Enemy : MonoBehaviour
     public string hitSFX;
 
     [Header("Explosion Data")]
+    public ShakeMode cameraShakeMode;
     public float explodeRange;
     public GameObject explodeParticle;
 
@@ -222,7 +224,7 @@ public partial class Enemy : MonoBehaviour
                                 if (!isDelaying)
                                 {
                                     bool inRange = IsInRangeX(distanceToTeleportX) && IsInRangeY(distanceToTeleportY);
-                                    if (player.controller.isGrounded && (!inRange || cliffCheck))
+                                    if (player.controller.groundCheck && (!inRange || cliffCheck))
                                     {
                                         if (canTeleport || cliffCheck)
                                         {
@@ -491,25 +493,13 @@ public partial class Enemy : MonoBehaviour
         yield return new WaitForSeconds(abilityChargeTime);
 
         audioManager.PlaySfx(abilitySound);
-        EZCameraShake.CameraShaker.Instance.ShakeOnce(8, 5, 0.1f, 0.5f);
-        GameObject explodeVFX = Instantiate(explodeParticle, transform.position, Quaternion.identity);
-        explodeVFX.transform.localScale = Vector3.one * explodeRange;
-        Destroy(explodeVFX, .3f);
+        CameraShake.instance.Shake(cameraShakeMode, MathUtils.SmoothStart3);
+        CameraShake.instance.Shock(2);
+        // TODO: Change ParticleEffect to a singleton
+        FindObjectOfType<ParticleEffect>().SpawnParticle(ParticleType.Explosion, transform.position, explodeRange);
         if (IsInRange(explodeRange))
             player.Hurt(abilityDamage);
-        Die();
-    }
-
-    public void _Explode()
-    {
-        audioManager.PlaySfx(abilitySound);
-        EZCameraShake.CameraShaker.Instance.ShakeOnce(8, 5, 0.1f, 0.5f);
-        GameObject explodeVFX = Instantiate(explodeParticle, transform.position, Quaternion.identity);
-        explodeVFX.transform.localScale = Vector3.one * explodeRange;
-        Destroy(explodeVFX, .3f);
-        if (IsInRange(explodeRange))
-            player.Hurt(abilityDamage);
-        Die();
+        Die(true);
     }
 
     // TODO: Maybe switch to teleport to a tile from a tiles array
@@ -584,9 +574,19 @@ public partial class Enemy : MonoBehaviour
         this.state = EnemyState.Normal;
     }
 
-    public void Die()
+    public void Die(bool explode = false)
     {
-        Instantiate(deathParticle, transform.position, Quaternion.identity);
+        if (!explode)
+        {
+            CameraShake.instance.Shake(ShakeMode.Medium);
+            Instantiate(deathParticle, transform.position, Quaternion.identity);
+            Instantiate(deathEffect, transform.position, Quaternion.identity);
+        }
+
+        // TODO: Spawn splash of blood and small pieces
+
+        player.InvokeAfter(.3f, () => player.StartCoroutine(GameUtils.StopTime(.05f)));
+        audioManager.PlayAudio(AudioType.Enemy_Death);
         int dropValue = moneyDrop.randomValue;
         for (int i = 0; i < dropValue; i++)
             ObjectPooler.instance.SpawnFromPool("Money", transform.position, Quaternion.identity);
@@ -598,8 +598,11 @@ public partial class Enemy : MonoBehaviour
     {
         if (state == EnemyState.Invincible)
             return;
-        audioManager.PlaySfx("GetHit");
+        // TODO: Have different hurt sound for enemies.
+        audioManager.PlayAudio(AudioType.Player_Hurt);
         health.value -= damage;
+        if (health.value > 0f)
+            StartCoroutine(GameUtils.StopTime(.02f));
         StartCoroutine(Flashing(.1f, .1f, hurtColor));
     }
 
