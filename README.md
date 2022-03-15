@@ -1,2 +1,2 @@
-# Rogue-like-game-i-guess
+# Vailoz
 A small game/prototype i am working on.
