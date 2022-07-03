@@ -78,6 +78,7 @@ TextureImporter:
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
   vTOnly: 0
+  ignoreMasterTextureLimit: 0
   grayScaleToAlpha: 0
   generateCubemap: 6
   cubemapConvolution: 0
@@ -580,6 +581,25 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
+    nameFileIdTable:
+      EyeMonster_14: 4044605103987328966
+      EyeMonster_10: -3307428386653811365
+      EyeMonster_16: 8462923197395132387
+      EyeMonster_6: 1219061153750105232
+      EyeMonster_13: 7874016950560966407
+      EyeMonster_7: -5867924507410289307
+      EyeMonster_17: 3349741190653996408
+      EyeMonster_15: 7504063699327480450
+      EyeMonster_1: -2009427316012929905
+      EyeMonster_4: -7898703289466955903
+      EyeMonster_0: -6573069573500222382
+      EyeMonster_11: 3847903685843094840
+      EyeMonster_8: 3876356795046166002
+      EyeMonster_3: 8657180667714554521
+      EyeMonster_2: -7535378375613994169
+      EyeMonster_9: -5718567299133417006
+      EyeMonster_12: 3867069365063887937
+      EyeMonster_5: -5997298322305600186
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

@@ -22,13 +22,13 @@ public class ItemDisplay : MonoBehaviour
         DisplayIcon();
     }
 
-    private void Update()
+    /*private void Update()
     {
-        //if (Input.GetKeyDown(KeyCode.Tab))
-        //{
-        //    DisplayDescription();
-        //}
-    }
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            DisplayDescription();
+        }
+    }*/
 
     public void DisplayIcon()
     {

@@ -1,27 +1,44 @@
-﻿// PUT IN EDITOR FOLDER
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using UnityEngine;
 using UnityEditor;
 
 [CustomPropertyDrawer(typeof(ShowWhenAttribute))]
 public class ShowWhenDrawer : PropertyDrawer
 {
-    private bool showField = true;
-
     public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
     {
+        bool showField = ShouldShowField(property, out bool hasError, out string errorMessage);
+
+        if (hasError)
+        {
+            ShowError(position, label, errorMessage);
+            return;
+        }
+
+        if (showField)
+            EditorGUI.PropertyField(position, property, label, true);
+    }
+
+    bool ShouldShowField(SerializedProperty property, out bool hasError, out string errorMessage)
+    {
+        bool showField = true;
+
         ShowWhenAttribute attribute = (ShowWhenAttribute)this.attribute;
+        hasError = false;
+        errorMessage = "";
+
+        //SerializedProperty conditionField = property.serializedObject.FindProperty(attribute.conditionFieldName);
+
         SerializedProperty conditionField = property.FindSiblingProperty(attribute.conditionFieldName);
 
         // We check that exist a Field with the parameter name
         if (conditionField == null)
         {
-            ShowError(position, label, "Error getting the condition Field. Check the name.");
-            return;
+            hasError = true;
+            errorMessage = "Error getting the condition Field. Check the name.";
+            return true;// Errors should be displayed
         }
 
         switch (conditionField.propertyType)
@@ -34,8 +51,9 @@ public class ShowWhenDrawer : PropertyDrawer
                 }
                 catch
                 {
-                    ShowError(position, label, "Invalid comparation Value Type");
-                    return;
+                    hasError = true;
+                    errorMessage = "Invalid comparation Value Type";
+                    return true;// Errors should be displayed
                 }
                 break;
             case SerializedPropertyType.Enum:
@@ -44,15 +62,17 @@ public class ShowWhenDrawer : PropertyDrawer
 
                 if (paramEnum == null && paramEnumArray == null)
                 {
-                    ShowError(position, label, "The comparation enum value is null");
-                    return;
+                    hasError = true;
+                    errorMessage = "The comparation enum value is null";
+                    return true;// Errors should be displayed
                 }
                 else if (IsEnum(paramEnum))
                 {
                     if (!CheckSameEnumType(new[] { paramEnum.GetType() }, property.serializedObject.targetObject.GetType(), conditionField.propertyPath))
                     {
-                        ShowError(position, label, "Enum Types doesn't match");
-                        return;
+                        hasError = true;
+                        errorMessage = "Enum Types doesn't match";
+                        return true;// Errors should be displayed
                     }
                     else
                     {
@@ -67,8 +87,9 @@ public class ShowWhenDrawer : PropertyDrawer
                 {
                     if (!CheckSameEnumType(paramEnumArray.Select(x => x.GetType()), property.serializedObject.targetObject.GetType(), conditionField.propertyPath))
                     {
-                        ShowError(position, label, "Enum Types doesn't match");
-                        return;
+                        hasError = true;
+                        errorMessage = "Enum Types doesn't match";
+                        return true;// Errors should be displayed
                     }
                     else
                     {
@@ -79,10 +100,26 @@ public class ShowWhenDrawer : PropertyDrawer
                             showField = true;
                     }
                 }
+                /*else if (paramEnum.GetType() == typeof(string))
+                {
+                    string notEnum = paramEnum.ToString().Remove(0, 1);
+                    if (string.IsNullOrWhiteSpace(notEnum))
+                    {
+                        hasError = true;
+                        errorMessage = "The comparation enum value is empty, whitespace, or null";
+                        return true;
+                    }
+                    string enumValue = Enum.GetValues(conditionField.GetTheActualType()).GetValue(conditionField.enumValueIndex).ToString();
+                    if (enumValue == notEnum)
+                        showField = false;
+                    else
+                        showField = true;
+                }*/
                 else
                 {
-                    ShowError(position, label, "The comparation enum value is not an enum");
-                    return;
+                    hasError = true;
+                    errorMessage = "The comparation enum value is not an enum";
+                    return true;// Errors should be displayed
                 }
                 break;
             case SerializedPropertyType.Integer:
@@ -102,8 +139,9 @@ public class ShowWhenDrawer : PropertyDrawer
                 }
                 catch
                 {
-                    ShowError(position, label, "Invalid comparation Value Type");
-                    return;
+                    hasError = true;
+                    errorMessage = "Invalid comparation Value Type";
+                    return true;// Errors should be displayed
                 }
 
                 if (stringValue.StartsWith("=="))
@@ -157,25 +195,28 @@ public class ShowWhenDrawer : PropertyDrawer
 
                 if (error)
                 {
-                    ShowError(position, label, "Invalid comparation instruction for Int or float value");
-                    return;
+                    hasError = true;
+                    errorMessage = "Invalid comparation instruction for Int or float value";
+                    return true;// Errors should be displayed
                 }
                 break;
             default:
-                ShowError(position, label, "This type has not supported.");
-                return;
+                hasError = true;
+                errorMessage = "This type has not supported.";
+                return true;// Errors should be displayed
         }
 
-        if (showField)
-            EditorGUI.PropertyField(position, property, label, true);
+        return showField;
     }
 
     public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
     {
-        if (showField)
+        if (ShouldShowField(property, out bool error, out string errorMessage))
             return EditorGUI.GetPropertyHeight(property);
-        else
-            return -EditorGUIUtility.standardVerticalSpacing;
+
+        return 0.0f;
+        //else
+        //    return -EditorGUIUtility.standardVerticalSpacing;
     }
 
     /// <summary>
@@ -199,21 +240,28 @@ public class ShowWhenDrawer : PropertyDrawer
     /// </summary>
     private static bool CheckSameEnumType(IEnumerable<Type> checkTypes, Type classType, string fieldName)
     {
-        FieldInfo memberInfo;
+        Type currentFieldType;
         string[] fields = fieldName.Split('.');
         if (fields.Length > 1)
         {
-            memberInfo = classType.GetField(fields[0]);
+            currentFieldType = classType.GetField(fields[0]).FieldType;
             for (int i = 1; i < fields.Length; i++)
             {
-                memberInfo = memberInfo.FieldType.GetField(fields[i]);
+                if (currentFieldType.IsArray)
+                {
+                    currentFieldType = currentFieldType.GetElementType();// GetFields()[fieldIdx];
+
+                    i += 1;// The fieldNames for array will containt Array.data[0] so we need to skip two
+                }
+                else
+                    currentFieldType = currentFieldType.GetField(fields[i]).FieldType;
             }
         }
         else
-            memberInfo = classType.GetField(fieldName);
+            currentFieldType = classType.GetField(fieldName).FieldType;
 
-        if (memberInfo != null)
-            return checkTypes.All(x => x == memberInfo.FieldType);
+        if (currentFieldType != null)
+            return checkTypes.All(x => x == currentFieldType);
 
         return false;
     }
@@ -221,7 +269,6 @@ public class ShowWhenDrawer : PropertyDrawer
     private void ShowError(Rect position, GUIContent label, string errorText)
     {
         EditorGUI.LabelField(position, label, new GUIContent(errorText));
-        showField = true;
     }
 
     /// <summary>

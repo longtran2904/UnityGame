@@ -177,7 +177,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 003aa0d9af2003e4ca24b7e9aebeda44, type: 2}
   - {fileID: 11400000, guid: 2d4a0a41697708a4b9345351a90237f9, type: 2}
   - {fileID: 11400000, guid: a0b73aac046f0404b8dc73c25d1ad4a3, type: 2}
-  dropData:
+  chestData:
     inventory: {fileID: 0}
     dropIndex:
       min: 0

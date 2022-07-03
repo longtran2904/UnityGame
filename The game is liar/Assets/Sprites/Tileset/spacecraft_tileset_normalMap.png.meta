@@ -213,6 +213,7 @@ TextureImporter:
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
   vTOnly: 0
+  ignoreMasterTextureLimit: 0
   grayScaleToAlpha: 0
   generateCubemap: 6
   cubemapConvolution: 0
@@ -1660,6 +1661,70 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
+    nameFileIdTable:
+      spacecraft_tileset_normalMap_23: -1475574925070354778
+      spacecraft_tileset_normalMap_52: -8938023117600278363
+      spacecraft_tileset_normalMap_25: -281879718289615434
+      spacecraft_tileset_normalMap_49: 4228105445333638549
+      spacecraft_tileset_normalMap_8: 2128548887152654112
+      spacecraft_tileset_normalMap_36: 8626630900256839294
+      spacecraft_tileset_normalMap_51: 4751581523477803432
+      spacecraft_tileset_normalMap_22: 8585332095950034598
+      spacecraft_tileset_normalMap_44: -2809396488031872657
+      spacecraft_tileset_normalMap_57: 1375248728796775972
+      spacecraft_tileset_normalMap_60: 5061930594596318050
+      spacecraft_tileset_normalMap_12: 7197093137617275929
+      spacecraft_tileset_normalMap_62: 479545468819084896
+      spacecraft_tileset_normalMap_61: -7565682988488611806
+      spacecraft_tileset_normalMap_47: 8975781989652299019
+      spacecraft_tileset_normalMap_48: 8190935376220745999
+      spacecraft_tileset_normalMap_42: 759418915205686039
+      spacecraft_tileset_normalMap_31: 431647709262990579
+      spacecraft_tileset_normalMap_20: 3924129624642011268
+      spacecraft_tileset_normalMap_45: -17713749881775656
+      spacecraft_tileset_normalMap_32: -7380989262185019638
+      spacecraft_tileset_normalMap_24: -8974015400307233719
+      spacecraft_tileset_normalMap_34: -2499643091919427319
+      spacecraft_tileset_normalMap_0: -5105404012992417390
+      spacecraft_tileset_normalMap_19: 2541252424564280530
+      spacecraft_tileset_normalMap_27: 7041887604451144884
+      spacecraft_tileset_normalMap_9: -5460184035033477522
+      spacecraft_tileset_normalMap_38: -4480124002230139762
+      spacecraft_tileset_normalMap_37: 7328190460141661002
+      spacecraft_tileset_normalMap_6: -4189294138745372386
+      spacecraft_tileset_normalMap_30: -1794650909830512242
+      spacecraft_tileset_normalMap_10: -2438649803007398383
+      spacecraft_tileset_normalMap_50: 2917852109847632350
+      spacecraft_tileset_normalMap_43: 6257358253910679447
+      spacecraft_tileset_normalMap_13: -1833136841344493810
+      spacecraft_tileset_normalMap_3: -6734414607296448965
+      spacecraft_tileset_normalMap_28: 6772010667100409798
+      spacecraft_tileset_normalMap_35: 7328389712009683387
+      spacecraft_tileset_normalMap_2: -7805811674929558306
+      spacecraft_tileset_normalMap_39: -6950913615172079882
+      spacecraft_tileset_normalMap_53: 4776416927568244846
+      spacecraft_tileset_normalMap_1: 8596192184282153390
+      spacecraft_tileset_normalMap_58: 6350297640985326677
+      spacecraft_tileset_normalMap_54: -2828527276653925534
+      spacecraft_tileset_normalMap_14: 296986976440036698
+      spacecraft_tileset_normalMap_16: -7856313128028481562
+      spacecraft_tileset_normalMap_55: 925642066888525422
+      spacecraft_tileset_normalMap_18: -5254964243893238017
+      spacecraft_tileset_normalMap_21: 171195391772141510
+      spacecraft_tileset_normalMap_41: -8539102465813856722
+      spacecraft_tileset_normalMap_56: 8815909322129398285
+      spacecraft_tileset_normalMap_7: -8561052050105033098
+      spacecraft_tileset_normalMap_15: -4626862954588114638
+      spacecraft_tileset_normalMap_5: -6823405036041114343
+      spacecraft_tileset_normalMap_26: 1499747115955923401
+      spacecraft_tileset_normalMap_33: 553761631390340123
+      spacecraft_tileset_normalMap_4: -226134268764113683
+      spacecraft_tileset_normalMap_17: -1189460782801251842
+      spacecraft_tileset_normalMap_29: 7712094821841933632
+      spacecraft_tileset_normalMap_40: -3571578855475457154
+      spacecraft_tileset_normalMap_11: -3750143714119362857
+      spacecraft_tileset_normalMap_59: 4369039390837766018
+      spacecraft_tileset_normalMap_46: 395018327930475111
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

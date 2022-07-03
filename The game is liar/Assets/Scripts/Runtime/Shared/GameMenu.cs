@@ -49,8 +49,10 @@ public class GameMenu : MonoBehaviour
 
     private void Start()
     {
-        menus = new Dictionary<MenuType, GameObject>((int)MenuType.Count);
-        menus[MenuType.None] = null;
+        menus = new Dictionary<MenuType, GameObject>((int)MenuType.Count)
+        {
+            [MenuType.None] = null
+        };
         foreach (MenuInspector menu in gameMenus)
             menus[menu.type] = menu.menu;
         openedMenus = new Stack<MenuType>((int)MenuType.Count);

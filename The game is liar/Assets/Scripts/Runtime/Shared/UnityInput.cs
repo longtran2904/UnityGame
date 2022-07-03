@@ -102,6 +102,11 @@ public class UnityInput : MonoBehaviour
         return disableAllInputs || disableMouseInputs[0] ? Vector2.zero : (Vector2)Input.mousePosition;
     }
 
+    public Vector2 GetMouseWorldPos()
+    {
+        return mainCamera.ScreenToWorldPoint(GetMousePos());
+    }
+
     public float GetMouseWheel()
     {
         return disableAllInputs || disableMouseInputs[0] ? 0 : Input.mouseScrollDelta.y;
@@ -112,13 +117,13 @@ public class UnityInput : MonoBehaviour
         return disableAllInputs || disableMouseInputs[level] ? Vector2.zero : ((Vector2)mainCamera.ScreenToWorldPoint(Input.mousePosition) - pos);
     }
 
-    public Vector2 GetMouseDir()
+    public Vector2 GetMouseDir(int level)
     {
-        if (disableAllInputs || disableMouseInputs[0])
+        if (disableAllInputs || disableMouseInputs[level])
             return Vector2.zero;
 
         Vector2 mousePos = Input.mousePosition;
-        Vector2 dir = new Vector2(mousePos.x / Screen.width, mousePos.y / Screen.height) * 2f - Vector2.one;
+        Vector2 dir = MathUtils.Clamp01(new Vector2(mousePos.x / Screen.width, mousePos.y / Screen.height)) * 2f - Vector2.one;
         return dir;
     }
 
@@ -129,7 +134,7 @@ public class UnityInput : MonoBehaviour
 
     public bool IsMouseOnScreen()
     {
-        // NOTE: Currently, this check is useless.
-        return disableAllInputs ? false : Screen.safeArea.Contains(Input.mousePosition);
+        // NOTE: Currently, this check for disableAllInputs is useless.
+        return !disableAllInputs && Screen.safeArea.Contains(Input.mousePosition);
     }
 }

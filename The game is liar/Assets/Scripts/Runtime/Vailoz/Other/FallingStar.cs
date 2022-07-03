@@ -12,10 +12,8 @@ public class FallingStar : MonoBehaviour
     [MinMax(100, 800)] public RangedFloat maxTimeNoiseScale;
 
     [Header("Meteor")]
-    public Rigidbody2D meteor;
     [MinMax(1, 20)] public RangedFloat speed;
     [MinMax(0, 30)] public RangedFloat timeBtwMeteors;
-    public float lifetime;
 
     [Header("Render Texture")]
     public Vector2Int size;
@@ -83,13 +81,10 @@ public class FallingStar : MonoBehaviour
                 pos.x = -pos.x;
                 dir.x = -dir.x;
             }
-            Rigidbody2D meteorRb = Instantiate(meteor, pos + sr.bounds.center, Quaternion.LookRotation(dir, Vector3.up));
-            TrailRenderer trail = meteorRb.GetComponent<TrailRenderer>();
-            float meteorWidth = transform.lossyScale.x / sr.sharedMaterial.GetFloat("_PixelateAmount") * 2;
-            trail.startWidth = meteorWidth;
-            meteorRb.velocity = speed.randomValue * dir;
-            yield return new WaitForSeconds(lifetime);
-            Destroy(meteorRb.gameObject);
+            GameObject meteor = ObjectPooler.Spawn(PoolType.Meteor, pos + sr.bounds.center);
+            meteor.transform.right = dir;
+            meteor.GetComponent<Entity>().speed = speed.randomValue;
+            meteor.GetComponent<TrailRenderer>().startWidth = transform.lossyScale.x / sr.sharedMaterial.GetFloat("_PixelateAmount") * 2;
         }
     }
 }

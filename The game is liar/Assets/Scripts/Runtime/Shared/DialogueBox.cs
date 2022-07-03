@@ -29,7 +29,7 @@ public class DialogueBox : MonoBehaviour
     {
         int headerLength = speakerText.text.Length;
         int dialogueLength = dialogueText.text.Length;
-        layoutElement.enabled = (headerLength > charWrapLimit) || (dialogueLength > charWrapLimit) ? true : false;
+        layoutElement.enabled = (headerLength > charWrapLimit) || (dialogueLength > charWrapLimit);
     }
 
 #if UNITY_EDITOR

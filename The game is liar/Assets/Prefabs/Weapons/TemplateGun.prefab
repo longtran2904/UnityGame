@@ -11,7 +11,8 @@ GameObject:
   - component: {fileID: 310902724418139096}
   - component: {fileID: 310902724418139099}
   - component: {fileID: 310902724418139098}
-  - component: {fileID: 310902724418139101}
+  - component: {fileID: 7614543559393696714}
+  - component: {fileID: -1518713244673456096}
   m_Layer: 11
   m_Name: TemplateGun
   m_TagString: Weapon
@@ -101,10 +102,37 @@ MonoBehaviour:
   stat: {fileID: 0}
   shootPos: {fileID: 310902724552470230}
   muzzleFlash: {fileID: 3426736245321656768}
-  muzzelFlashTime: 0.05
+  muzzelFlashTime: 0.04
   currentAmmo: 0
   posOffset: {x: 0, y: 0}
---- !u!114 &310902724418139101
+  moveUpAndDownWhenDrop: 1
+  speed: 0.3
+  halfDistance: 0.15
+  waitTime:
+    min: 0.15
+    max: 0.4
+--- !u!50 &7614543559393696714
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 310902724418139100}
+  m_BodyType: 1
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 5
+  m_Material: {fileID: 6200000, guid: 0811cf2439e11e146b9feaf2968c7402, type: 2}
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 4
+--- !u!114 &-1518713244673456096
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -113,35 +141,28 @@ MonoBehaviour:
   m_GameObject: {fileID: 310902724418139100}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ad693bf794c039b44977e66357db2b45, type: 3}
+  m_Script: {fileID: 11500000, guid: ba48b27921f46154c8f7ac594b99bab5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  curve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 1
-      outSlope: 1
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 1
-      outSlope: 1
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  perfectSize: 20
-  activeSize: 60
+  textboxType: 0
+  textboxOffset: {x: 0, y: 1.5}
+  trigger:
+    m_PersistentCalls:
+      m_Calls: []
+  dialogues: []
+  chestData:
+    inventory: {fileID: 0}
+    dropIndex:
+      min: 0
+      max: 0
+    dropRotation:
+      min: 0
+      max: 0
+    dropForce:
+      min: 0
+      max: 0
+  hitGroundPos: {x: 0, y: 0, z: 0}
+  weapon: {fileID: 0}
 --- !u!1 &310902724552470217
 GameObject:
   m_ObjectHideFlags: 0

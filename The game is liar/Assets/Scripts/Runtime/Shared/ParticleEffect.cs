@@ -1,9 +1,9 @@
 using System.Collections;
-using UnityEngine.Rendering;
 using UnityEngine;
 
 public enum ParticleType
 {
+    None,
     Explosion,
 }
 
@@ -76,7 +76,6 @@ public class ParticleEffect : MonoBehaviour
     [ColorUsage(true, true)] public Color lightColor;
     [Range(0, 1)] public float centerAlpha;
     [Range(0, 1)] public float secondaryAlpha;
-    public bool debug;
     [Range(0, 3)] public float speedModifier = 1f;
 
     public SpriteRenderer prefab;
@@ -181,14 +180,12 @@ public class ParticleEffect : MonoBehaviour
             case ParticleType.Explosion:
                 {
                     StartCoroutine(SpawnExplosion(pos, range));
-                } break;
+                } return;
         }
     }
 
     IEnumerator SpawnExplosion(Vector2 pos, float range)
     {
-        if (debug)
-            Debug.Break();
         explodeEffect.SetActive(true);
         explodeEffect.transform.localScale = new Vector3(range, range, 1);
         explodeEffect.transform.position = new Vector3(pos.x, pos.y, -10);
@@ -217,7 +214,7 @@ public class ParticleEffect : MonoBehaviour
         yield return new WaitForSeconds(FrameToTime(6));
 
 
-        // Step 5
+        // Step 4
         color.a = centerAlpha;
         CreateCircle(pos, range / 3f, 0f, color, CircleType.Scale_Thickness, 0, LifeTimeToSpeed(FrameToTime(18))); // 18 frames
 

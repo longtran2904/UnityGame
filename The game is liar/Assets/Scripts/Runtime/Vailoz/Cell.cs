@@ -1,51 +1,36 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class Cell : MonoBehaviour, IPooledObject
 {
     public float speed;
-    public IntReference addMoney;
-    public IntReference playerMoney;
-    public AudioManager audioManager;
-    
+    public int addedMoney;
+    public IntVariable playerMoney;
+    public Vector3Variable playerPos;
+
+    private bool startMoving;
     private Rigidbody2D rb;
-    private Transform player;
+    private Collider2D collision;
+
+    public void OnObjectInit()
+    {
+        rb = GetComponent<Rigidbody2D>();
+        collision = GetComponent<Collider2D>();
+    }
 
     public void OnObjectSpawn()
     {
         rb = GetComponent<Rigidbody2D>();
+        StartMoving(false);
         rb.velocity = new Vector2(Random.Range(-1, 1), Random.value).normalized * speed;
-        GameInput.BindEvent(GameEventType.EndRoom, _ => MoveTowardPlayer());
-    }
-
-    // Call by game event listener
-    void MoveTowardPlayer()
-    {
-        if (player) return;
-        player = GameObject.FindGameObjectWithTag("Player").transform;
-        Collider2D collider = GetComponent<Collider2D>();
-        collider.isTrigger = true;
-        collider.attachedRigidbody.bodyType = RigidbodyType2D.Kinematic;
+        GameInput.BindEvent(GameEventType.EndRoom, _ => StartMoving(true));
     }
 
     void Update()
     {
-        if (player)
-        {
-            Vector2 dir = (player.position - transform.position).normalized;
-            rb.velocity = dir * speed;
-        }
-        else
-        {
-            player = Physics2D.OverlapCircle(transform.position, 5f, LayerMask.GetMask("Player"))?.transform;
-            if (player)
-            {
-                Collider2D collider = GetComponent<Collider2D>();
-                collider.isTrigger = true;
-                collider.attachedRigidbody.bodyType = RigidbodyType2D.Kinematic;
-            }
-        }
+        if (startMoving)
+            rb.velocity = (playerPos.value - transform.position).normalized * speed;
+        else if (MathUtils.InRange(transform.position, playerPos.value, 5f))
+                StartMoving(true);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -62,13 +47,16 @@ public class Cell : MonoBehaviour, IPooledObject
     {
         if (collision.CompareTag("Player"))
         {
-            audioManager.PlayAudio(AudioType.Game_Pickup);
-            playerMoney.value += addMoney.value;
-
+            AudioManager.PlayAudio(AudioType.Game_Pickup);
+            playerMoney.value += addedMoney;
             gameObject.SetActive(false);
-            Collider2D collider = GetComponent<Collider2D>();
-            collider.isTrigger = false;
-            collider.attachedRigidbody.bodyType = RigidbodyType2D.Dynamic;
         }
+    }
+
+    void StartMoving(bool start)
+    {
+        startMoving = start;
+        collision.isTrigger = start;
+        collision.attachedRigidbody.bodyType = start ? RigidbodyType2D.Kinematic : RigidbodyType2D.Dynamic;
     }
 }

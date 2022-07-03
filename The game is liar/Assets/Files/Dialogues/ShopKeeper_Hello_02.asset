@@ -16,4 +16,7 @@ MonoBehaviour:
   speaker: ShopKeeper
   dialogues:
   - Hello! Welcom to our shop! What do you want to buy?
-  responses: []
+  responses:
+  - text: 
+    dialogueID: 
+    dialogue: {fileID: 0}

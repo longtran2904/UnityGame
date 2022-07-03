@@ -69,6 +69,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Liem
       objectReference: {fileID: 0}
+    - target: {fileID: 310902724418139101, guid: 5c94a61b4cfdce141b132fa7cdb697bc,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5923302995725911546, guid: 5c94a61b4cfdce141b132fa7cdb697bc,
         type: 3}
       propertyPath: m_LocalPosition.x

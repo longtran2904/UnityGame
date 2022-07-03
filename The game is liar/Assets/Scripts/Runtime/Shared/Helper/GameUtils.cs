@@ -4,6 +4,34 @@ using UnityEngine;
 
 public static class GameUtils
 {
+    public static string LoopThroughAndPrint<T>(T[] array)
+    {
+        string result = array.Length.ToString();
+       for (int i = 0; i < array.Length; ++i)
+            result += "\n[" + i + "] " + array[i].ToString();
+        return result;
+    }
+
+    public static void Play(this AudioSource source, AudioClip clip, float volume)
+    {
+        source.clip = clip;
+        source.volume = volume;
+        source.Play();
+    }
+
+    public static Collider2D GetClosestCollider(Vector3 pos, float radius, Collider2D[] colliders, int layerMask)
+    {
+        int length = Physics2D.OverlapCircleNonAlloc(pos, radius, colliders, layerMask);
+        if (length == 0)
+            return null;
+
+        int closest = 0;
+        for (int i = 0; i < length; i++)
+            if ((pos - colliders[i].transform.position).sqrMagnitude < (pos - colliders[closest].transform.position).sqrMagnitude)
+                closest = i;
+        return colliders[closest];
+    }
+
     public static string CreateUniquePath(string path)
     {
         string dir = Path.GetDirectoryName(path);
@@ -46,8 +74,10 @@ public static class GameUtils
 
     private static void DrawGL(int mode, Color color, params Vector3[] vertices)
     {
-        Material mat = new Material(Shader.Find("Sprites/Default"));
-        mat.hideFlags = HideFlags.HideAndDontSave;
+        Material mat = new Material(Shader.Find("Sprites/Default"))
+        {
+            hideFlags = HideFlags.HideAndDontSave
+        };
 
         GL.PushMatrix();
         mat.SetPass(0);
@@ -78,10 +108,9 @@ public static class GameUtils
             Object.Destroy(child.gameObject);
     }
 
-    public static IEnumerator Deactive(GameObject obj, float time)
+    public static void DeactiveGameObject(this MonoBehaviour behaviour, float time)
     {
-        yield return new WaitForSeconds(time);
-        obj.SetActive(false);
+        behaviour.InvokeAfter(time, () => behaviour.gameObject.SetActive(false));
     }
 
     // Use this to destroy in the OnValidate or in the editor
@@ -91,7 +120,7 @@ public static class GameUtils
         Object.DestroyImmediate(go);
     }
 
-    public static Coroutine InvokeAfter(this MonoBehaviour behaviour, float delayTime, System.Action action)
+    public static Coroutine InvokeAfter(this MonoBehaviour behaviour, float delayTime, System.Action action, bool useRealTime = false)
     {
         if (behaviour != null && action != null)
             return behaviour.StartCoroutine(InvokeAfter());
@@ -99,7 +128,31 @@ public static class GameUtils
 
         IEnumerator InvokeAfter()
         {
-            yield return new WaitForSeconds(delayTime);
+            if (delayTime > 0)
+            {
+                if (useRealTime)
+                    yield return new WaitForSecondsRealtime(delayTime);
+                else
+                    yield return new WaitForSeconds(delayTime);
+            }
+            action();
+        }
+    }
+
+    public static Coroutine InvokeAfterFrames(this MonoBehaviour behaviour, int frame, System.Action action)
+    {
+        if (behaviour != null && action != null)
+            if (frame > 0)
+                return behaviour.StartCoroutine(WaitFrames());
+            else
+                action();
+
+        return null;
+
+        IEnumerator WaitFrames()
+        {
+            for (int i = 0; i < frame; i++)
+                yield return null;
             action();
         }
     }
@@ -107,6 +160,8 @@ public static class GameUtils
     // TODO: Only stop time on a global gameObject that can't be destroyed.
     public static IEnumerator StopTime(float time)
     {
+        if (time <= 0)
+            yield break;
         Time.timeScale = 0;
         yield return new WaitForSecondsRealtime(time);
         Time.timeScale = 1;
@@ -116,7 +171,7 @@ public static class GameUtils
     {
         return mb.StartCoroutine(Empty());
 
-        IEnumerator Empty()
+        static IEnumerator Empty()
         {
             yield return null;
         }

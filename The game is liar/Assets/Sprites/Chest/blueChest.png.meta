@@ -42,6 +42,7 @@ TextureImporter:
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
   vTOnly: 0
+  ignoreMasterTextureLimit: 0
   grayScaleToAlpha: 0
   generateCubemap: 6
   cubemapConvolution: 0
@@ -292,6 +293,13 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
+    nameFileIdTable:
+      blueChest_1: 8649882941427879787
+      blueChest_0: 766398484040647013
+      blueChest_4: -4214747787922877378
+      blueChest_2: -3928847068455090304
+      blueChest_5: 3482376193513606820
+      blueChest_3: 5322012312693623195
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

@@ -16,12 +16,9 @@ MonoBehaviour:
   critDamage: 50
   critChance: 0.23
   fireRate: 8.4
-  mode: 0
   ammo: 25
   knockback: 0
   price: 42
-  sfx: PlayerShoot
-  projectile: PlayerBullet
   icon: {fileID: 21300000, guid: d8e3f78938a0e7647a61155ac9b63dc7, type: 3}
   weaponName: Newbye
   description: Riffles

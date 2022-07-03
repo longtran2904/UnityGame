@@ -16,12 +16,9 @@ MonoBehaviour:
   critDamage: 22
   critChance: 0.5
   fireRate: 5
-  mode: 2
   ammo: 20
   knockback: 0
   price: 10
-  sfx: PlayerShoot
-  projectile: PlayerBullet
   icon: {fileID: 21300000, guid: 4fe76f6283d708442b75190889cd48fb, type: 3}
   weaponName: Glassick
   description: Glock

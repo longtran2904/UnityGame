@@ -123,10 +123,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   particleScaleMultipler: 1
-  destroyParticle: {fileID: 4463674184171219780, guid: 3a3a4bd149147a04f87bed79a3e2edde,
-    type: 3}
-  remainParticle: {fileID: 2522514208885787188, guid: 78660d3e120f24940a4e6496f9d1873b,
-    type: 3}
+  particles: 1300000014000000
   dropRange:
     min: 0
     max: 0

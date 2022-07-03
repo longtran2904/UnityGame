@@ -2,917 +2,476 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
+public enum RoomType
+{
+    Normal,
+    Shop,
+    Hub,
+    Boss,
+    Starting,
+
+    Count
+}
+
+public class GenConnection
+{
+    public GenRoom a;
+    public GenRoom b;
+
+    public GenConnection globalNext;
+
+    public RectInt rect;
+
+    public GenConnection(GenRoom a, GenRoom b)
+    {
+        this.a = a;
+        this.b = b;
+    }
+}
+
+public class GenRoomConnection
+{
+    public GenConnection connection;
+    public GenRoomConnection next;
+
+    //public Vector2Int facingDir;
+}
+
+public class GenRoomInfo
+{
+    // TODO: Fill this in later
+    public string name;
+    public Vector2Int size;
+    public List<RectInt> doors;
+    public GameObject prefab;
+
+    public GenRoomInfo(int width, int height, int doorCount, string name = null, GameObject prefab = null)
+    {
+        size = new Vector2Int(width, height);
+        doors = new List<RectInt>(doorCount);
+        this.name = name;
+        this.prefab = prefab;
+    }
+
+    public void AddSimpleDoors(int doorLength, int doorOffset)
+    {
+        Vector2Int[] corners = { Vector2Int.zero, new Vector2Int(size.x, 0), size, new Vector2Int(0, size.y) };
+
+        bool singleHorizontal = size.x < (doorLength + doorOffset) * 2;
+        bool singleVertical = size.y < (doorLength + doorOffset) * 2;
+
+        for (int i = 0; i < 4; i++)
+        {
+            Vector2Int corner = corners[i];
+            Vector2Int horizontalOffset = corner.x == 0 ? Vector2Int.right * doorOffset : Vector2Int.left * (doorOffset + doorLength);
+            Vector2Int verticalOffset   = corner.y == 0 ? Vector2Int.up    * doorOffset : Vector2Int.down * (doorOffset + doorLength);
+            if (corner.x != 0)
+                verticalOffset += Vector2Int.left;
+            if (corner.y != 0)
+                horizontalOffset += Vector2Int.down;
+
+            if ((singleHorizontal && i % 2 == 0) || !singleHorizontal)
+                doors.Add(new RectInt(corner + horizontalOffset, Vector2Int.right * (doorLength - 1) + Vector2Int.one));
+            if ((singleVertical && i < 2) || !singleVertical)
+                doors.Add(new RectInt(corner + verticalOffset, Vector2Int.up * (doorLength - 1) + Vector2Int.one));
+        }
+    }
+}
+
+public class GenRoom
+{
+    public GenRoomConnection firstConnection;
+    public GenRoom globalNext;
+
+    public GenRoomInfo info;
+
+    public List<RectInt> unconnectedDoors;
+    public RectInt rect;
+    public uint generationIndex;
+    public RoomType type;
+    public string name;
+
+    public GenRoom GetOtherRoom(GenRoomConnection connection)
+    {
+        GenConnection con = connection.connection;
+        Debug.Assert(con.a != null && con.b != null, $"The room {GetHashCode()} is connected to a null room");
+        GenRoom result = con.a;
+        if (con.a == this)
+        {
+            result = con.b;
+            Debug.Assert(con.b != this, $"The connection is self looping to the room: {GetHashCode()}");
+        }
+        else
+            Debug.Assert(con.b == this, $"The connection doesn't belong to the room: {GetHashCode()}");
+        return result;
+    }
+}
+
+public class RoomCollection
+{
+    public List<GenRoomInfo> rooms;
+    public Dictionary<RoomType, RangedInt> roomTypes;
+
+    public void AddEdgarRooms(RoomType type, params Edgar.Unity.RoomTemplateSettings[] rooms)
+    {
+        Debug.Assert(!roomTypes.ContainsKey(type), $"The type: {type} has already been added");
+        roomTypes[type] = new RangedInt(this.rooms.Count, this.rooms.Count + rooms.Length - 1);
+        foreach (var room in rooms)
+        {
+            var rect = room.GetOutline().BoundingRectangle;
+            var doors = room.GetComponent<Edgar.Unity.Doors>();
+            GenRoomInfo info = new GenRoomInfo(rect.Width + 1, rect.Height + 1, doors.DoorsList.Count, room.name, room.gameObject);
+            foreach (var door in doors.DoorsList)
+            {
+                Debug.Assert(rect.A.X < rect.B.X && rect.A.Y < rect.B.Y, $"({rect.A}, {rect.B})"); // A is always min and B is always max
+                Vector2Int pos = door.From.ToVector3Int().ToVector2Int();
+                pos.x -= rect.A.X; pos.y -= rect.A.Y;
+
+                // NOTE: The door.To isn't neccessary greater than the door.From and they might be negative
+                Vector2Int size = MathUtils.Abs((door.To - door.From).ToVector3Int().ToVector2Int()) + Vector2Int.one;
+                info.doors.Add(new RectInt(pos, size));
+            }
+            this.rooms.Add(info);
+        }
+    }
+
+    public void AddRooms(RoomType type, params GenRoomInfo[] rooms)
+    {
+        roomTypes[type] = new RangedInt(this.rooms.Count, this.rooms.Count + rooms.Length - 1);
+        this.rooms.AddRange(rooms);
+    }
+
+    public GenRoomInfo GetRandomRoom(RoomType type)
+    {
+        return rooms[roomTypes[type].randomValue];
+    }
+
+    public RoomCollection(int roomCount, int typeCount)
+    {
+        rooms = new List<GenRoomInfo>(roomCount);
+        roomTypes = new Dictionary<RoomType, RangedInt>(typeCount);
+    }
+}
+
 public class LevelGenerator : MonoBehaviour
 {
-    public struct Line
-    {
-        public Vector2Int start;
-        public Vector2Int end;
-
-        public Line(Vector2Int start, int length, bool isHorizontal)
-        {
-            this.start = start;
-            end = start + (isHorizontal ? Vector2Int.right : Vector2Int.up) * length;
-        }
-
-        public Line(Vector2Int start, int offsetFromStart, int length, bool isHorizontal)
-        {
-            Vector2Int lineDir = isHorizontal ? Vector2Int.right : Vector2Int.up;
-            this.start = start + lineDir * offsetFromStart;
-            end = start + lineDir * length;
-        }
-
-        public Line Add(Vector2Int a)
-        {
-            Line newLine = this;
-            newLine.start += a;
-            newLine.end += a;
-            return newLine;
-        }
-
-        public Vector2Int dir
-        {
-            get
-            {
-                if (start.x == end.x)
-                    if (start.x == 0)
-                        return Vector2Int.left;
-                    else
-                        return Vector2Int.right;
-                else
-                    if (start.y == 0)
-                        return Vector2Int.down;
-                    else
-                        return Vector2Int.up;
-            }
-        }
-
-        public bool IsConnected(Line other)
-        {
-            float dotProduct = dir.Dot(other.dir);
-            return dotProduct == -1;
-        }
-    }
-
-    public struct Room
-    {
-        public Vector2Int size;
-        public Line[] doors;
-
-        public Room(int width, int height, int doorCount)
-        {
-            size = new Vector2Int(width, height);
-            doors = new Line[doorCount];
-        }
-
-        public void AddDoor(int index, Vector2Int pos, int length, bool isHorizontal)
-        {
-            doors[index].start = pos;
-            doors[index].end = pos + (isHorizontal ? Vector2Int.up : Vector2Int.right) * length;
-        }
-
-        public void AddSimpleDoors(int cornerOffset, int doorLength)
-        {
-            Debug.Assert(doors.Length % 4 == 0);
-            int doorsPerEdge = doors.Length / 4;
-
-            Line[] edges = {
-                new Line(Vector2Int.zero, size.x - 1, true),
-                new Line(new Vector2Int(0, size.x - 1), size.y - 1, false),
-                new Line(new Vector2Int(0, size.y - 1), size.x - 1, true),
-                new Line(Vector2Int.zero, size.y - 1, false)
-            };
-
-            for (int i = 0; i < 4; i++)
-            {
-                for (int j = 0; j < doorsPerEdge; ++j)
-                {
-                    bool isHorizontal = i % 2 == 0;
-                    int dir = j < doorsPerEdge / 2 ? 1: -1;
-                    Vector2Int pos = dir > 0 ? edges[i].start : edges[i].end;
-                    int offset = (doorLength + cornerOffset) * j;
-                    doors[i * doorsPerEdge + j] = new Line(pos, (cornerOffset + offset) * dir, doorLength * dir, isHorizontal);
-                }
-            }
-        }
-    }
-
-    public struct Door
-    {
-        public Line line;
-        public int connectedRoom;
-    }
-
-    public struct RoomInstance
-    {
-        public int roomBase;
-        //public int roomType;
-        public Vector2Int pos;
-        public Door[] doors;
-        public int doorCount;
-
-        public RoomInstance(int roomBase, Vector2Int pos, int doorCount)
-        {
-            this.roomBase = roomBase;
-            this.pos = pos;
-            doors = new Door[doorCount];
-            this.doorCount = 0;
-        }
-    }
-
-    public struct RoomCollection
-    {
-        public Room[] rooms;
-        private int roomCount;
-        public RangedInt[] roomTypes;
-
-        public RoomCollection(int roomCount, int typeCount)
-        {
-            rooms = new Room[roomCount];
-            this.roomCount = 0;
-            roomTypes = new RangedInt[typeCount];
-        }
-
-        public void AddRooms(int roomTypeIndex, params Room[] addedRooms)
-        {
-            roomTypes[roomTypeIndex] = new RangedInt(roomCount, addedRooms.Length + roomCount);
-            addedRooms.CopyTo(rooms, roomCount);
-            roomCount += addedRooms.Length;
-        }
-    }
-
-    public struct Graph
-    {
-        public RoomCollection collection;
-        public int[] nodes;
-        public Vector2Int[] edges;
-
-        public Graph(RoomCollection collection, int nodeCount, int edgeCount)
-        {
-            this.collection = collection;
-            nodes = new int[nodeCount];
-            edges = new Vector2Int[edgeCount];
-        }
-
-        public List<int> GetNeighbors(int node)
-        {
-            List<int> result = new List<int>(4);
-            foreach (Vector2Int edge in edges)
-            {
-                if (edge.x == node)
-                    result.Add(edge.y);
-                else if (edge.y == node)
-                    result.Add(edge.x);
-            }
-            return result;
-        }
-
-        public int GetNeighborCount(int node)
-        {
-            int count = 0;
-            foreach (Vector2Int edge in edges)
-                if (edge.x == node || edge.y == node)
-                    ++count;
-            return count;
-        }
-
-        public void AddNodes(int startIndex, int endIndex, int value)
-        {
-            for (int i = startIndex; i <= endIndex; ++i)
-                nodes[i] = value;
-        }
-
-        public void AddEdge(int edgeIndex, int node1, int node2)
-        {
-            edges[edgeIndex] = new Vector2Int(node1, node2);
-        }
-    }
-
-    public class Layout
-    {
-        public float energy;
-        public float similarity;
-        public RoomCollection collection;
-        public RoomInstance[] roomInstances;
-        public int roomCount;
-        public Vector2Int[] connections;
-        public int connectionCount;
-        public List<Vector2Int> unconnectedEdges;
-
-        public Layout()
-        {
-            energy = 0;
-            similarity = 0;
-            collection = new RoomCollection();
-            roomInstances = null;
-            roomCount = 0;
-            connections = null;
-            connectionCount = 0;
-        }
-
-        public Layout(RoomCollection roomCollection, int instanceCount, int connectionCount)
-        {
-            energy = 0;
-            similarity = 0;
-            collection = roomCollection;
-            roomInstances = new RoomInstance[instanceCount];
-            roomCount = 0;
-            connections = new Vector2Int[connectionCount];
-            this.connectionCount = 0;
-            unconnectedEdges = new List<Vector2Int>(4);
-        }
-
-        public RectInt GetRect(int index)
-        {
-            return new RectInt(roomInstances[index].pos, collection.rooms[index].size);
-        }
-
-        /*public void RerollRoomInstance(int roomInstance)
-        {
-            roomInstances[roomInstance].roomBase = collection.roomTypes[roomInstances[roomInstance].roomType].randomValue;
-        }*/
-
-        public void AddRoom(Chain chain, int nodeIndex, int neighbor, int roomIndex, Vector2Int pos)
-        {
-            roomInstances[roomCount] = new RoomInstance(roomIndex, pos, chain.GetEdgeCount(nodeIndex));
-
-            if (neighbor >= 0)
-            {
-                Room room = collection.rooms[roomIndex];
-                roomInstances[roomCount].doorCount = 1;
-                List<Line> doors = GetUnconnectedDoors(neighbor);
-                int i;
-                for (i = 0; i < doors.Count; ++i)
-                {
-                    Vector2Int doorPos = doors[i].start + roomInstances[neighbor].pos + doors[i].dir;
-                    if (doorPos == pos)
-                        break;
-                    Debug.Assert(i < doors.Count - 1, $"Couldn't find any doors that are connected {neighbor} to {nodeIndex}!");
-                }
-                Line line = room.doors[i];
-                roomInstances[roomCount].doors[0].line = line;
-                roomInstances[neighbor].doors[roomInstances[neighbor].doorCount++].line = line.Add(pos + line.dir);
-                connections[connectionCount++] = new Vector2Int(neighbor, roomCount);
-                Debug.Assert(unconnectedEdges.Remove(new Vector2Int(neighbor, nodeIndex)), $"The unconnected edge {new Vector2Int(neighbor, nodeIndex)} isn't exist!");
-            }
-
-            foreach (Vector2Int edge in chain.edges)
-                if (edge.x == nodeIndex)
-                    unconnectedEdges.Add(new Vector2Int(roomCount, edge.y));
-                else if (edge.y == nodeIndex)
-                    unconnectedEdges.Add(new Vector2Int(roomCount, edge.x));
-
-            ++roomCount;
-        }
-
-        public Room GetRoom(int roomInstance)
-        {
-            return collection.rooms[roomInstances[roomInstance].roomBase];
-        }
-
-        public List<int> GetNeighbors(int roomInstance)
-        {
-            List<int> neighbors = new List<int>(4);
-            for (int i = 0; i < connectionCount; ++i)
-                if (connections[i].x == roomInstance)
-                    neighbors.Add(connections[i].y);
-                else if (connections[i].y == roomInstance)
-                    neighbors.Add(connections[i].x);
-            return neighbors;
-        }
-
-        public bool WillRoomOverlap(Room room, Vector2Int pos)
-        {
-            RectInt rect = new RectInt(pos, room.size);
-            for (int i = 0; i < roomCount; i++)
-                if (rect.OverlapWithoutBorder(GetRect(i)))
-                    return false;
-            return true;
-        }
-
-        public List<Line> GetUnconnectedDoors(int roomIndex)
-        {
-            List<Line> result = new List<Line>();
-            foreach (int neighbor in GetNeighbors(roomIndex))
-            {
-                Room room = GetRoom(neighbor);
-                foreach (Line door in room.doors)
-                {
-                    foreach (Door usedDoor in roomInstances[roomIndex].doors)
-                        if ((usedDoor.line.start == door.start && usedDoor.line.end == door.end) || (usedDoor.line.start == door.end && usedDoor.line.start == door.start))
-                            goto CONTINUE;
-
-                    result.Add(door);
-                    CONTINUE:;
-                }
-            }
-
-            return result;
-        }
-
-        public Layout Clone()
-        {
-            Layout newLayout = new Layout();
-            newLayout.collection = collection;
-            newLayout.roomInstances = (RoomInstance[])roomInstances.Clone();
-            newLayout.roomCount = roomCount;
-            newLayout.connections = (Vector2Int[])connections.Clone();
-            newLayout.connectionCount = connectionCount;
-            newLayout.unconnectedEdges = unconnectedEdges;
-            return newLayout;
-        }
-
-        public Layout Clone(int dRoom, int dConnection)
-        {
-            Layout newLayout = new Layout();
-            newLayout.roomInstances = new RoomInstance[roomInstances.Length + dRoom];
-            roomInstances.CopyTo(newLayout.roomInstances, 0);
-            newLayout.connections = new Vector2Int[connections.Length + dConnection];
-            connections.CopyTo(newLayout.connections, 0);
-            return newLayout;
-        }
-    }
-
-    public class Chain
-    {
-        //public readonly Vector2Int[] connectedEdges;
-        //public readonly int startNodeIndex;
-        //public readonly int startEdgeIndex;
-        public readonly int[] nodes;
-        public readonly Vector2Int[] edges;
-        public readonly bool fullLayout;
-
-        /*public Chain(int connectedEdgeCount, int nodeCount, int edgeCount, int startNodeIndex, int startEdgeIndex, bool fullLayout)
-        {
-            //connectedEdges = new Vector2Int[connectedEdgeCount];
-            nodes = new int[nodeCount];
-            edges = new Vector2Int[edgeCount];
-            //this.startNodeIndex = startNodeIndex;
-            //this.startEdgeIndex = startEdgeIndex;
-            this.fullLayout = fullLayout;
-        }*/
-
-        public Chain(int[] nodes, Vector2Int[] edges, bool fullLayout)
-        {
-            this.nodes = nodes;
-            this.edges = edges;
-            this.fullLayout = fullLayout;
-        }
-
-        public int GetEdgeCount(int node)
-        {
-            int result = 0;
-            foreach (Vector2Int edge in edges)
-                if (edge.x == node || edge.y == node)
-                    ++result;
-            return result;
-        }
-
-        /*public List<int> GetNodeNeighbors(int node)
-        {
-            List<int> neighbors = new List<int>(4);
-            foreach (Vector2Int edge in edges)
-                if (edge.x == node)
-                    neighbors.Add(edge.y);
-                else if (edge.y == node)
-                    neighbors.Add(edge.x);
-            return neighbors;
-        }*/
-    }
     public TileBase[] tiles;
+    public TileBase doorTile;
     public Tilemap tilemap;
 
-    enum RoomType
-    {
-        Normal,
-        Treasure,
-        Hub,
-        Boss,
+    public Edgar.Unity.RoomTemplateSettings[] normalRooms;
+    public Edgar.Unity.RoomTemplateSettings[] hubRooms;
+    public Edgar.Unity.RoomTemplateSettings startingRoom;
+    public Edgar.Unity.RoomTemplateSettings bossRoom;
+    public Edgar.Unity.RoomTemplateSettings shopRoom;
 
-        Count
+    GenRoom firstRoom;
+    GenConnection firstConnection;
+    RoomCollection collection;
+
+    public static bool GenerateLayout(LevelGenerator generator, uint generationIndex)
+    {
+        Queue<GenRoom> rooms = new Queue<GenRoom>(4);
+        List<GenRoom> genRooms = new List<GenRoom>(12);
+        rooms.Enqueue(generator.firstRoom);
+        while (rooms.Count > 0)
+        {
+            GenRoom room = rooms.Dequeue();
+            if (room.generationIndex != generationIndex)
+            {
+                GenRoom firstGeneratedPrevRoom = null;
+                int connectionCount = 0;
+                for (GenRoomConnection connection = room.firstConnection; connection != null; connection = connection.next, connectionCount++)
+                {
+                    GenRoom otherRoom = room.GetOtherRoom(connection);
+                    if (otherRoom.generationIndex != generationIndex)
+                        rooms.Enqueue(otherRoom);
+                    else if (firstGeneratedPrevRoom == null)
+                        firstGeneratedPrevRoom = otherRoom;
+                }
+
+                GenRoomInfo roomInfo = generator.collection.GetRandomRoom(room.type);
+                Debug.Assert(roomInfo.doors.Count >= connectionCount);
+                // TODO: GetRandomRoom based on connectionCount
+
+                if (firstGeneratedPrevRoom != null)
+                {
+                    List<GenRoom> connectedRooms = new List<GenRoom>(1)
+                    {
+                        firstGeneratedPrevRoom
+                    };
+                    List<Vector2Int> positions = GetUnconnectedPositions(firstGeneratedPrevRoom, roomInfo);
+                    int positionCount = positions.Count;
+
+                    for (GenRoomConnection connection = room.firstConnection; connection != null; connection = connection.next)
+                    {
+                        GenRoom otherRoom = room.GetOtherRoom(connection);
+                        if (otherRoom.generationIndex == generationIndex && otherRoom != firstGeneratedPrevRoom)
+                        {
+                            connectedRooms.Add(otherRoom);
+                            List<Vector2Int> otherPositions = GetUnconnectedPositions(otherRoom, roomInfo);
+
+                            for (int i = positions.Count - 1; i >= 0; --i)
+                                if (!otherPositions.Contains(positions[i]))
+                                    positions.RemoveAt(i);
+
+                            if (positions.Count == 0)
+                            {
+                                Debug.Log($"FAILED: Couldn't find any connected positions for the room: {room.name} from the {positionCount} started positions!");
+                                return false;
+                            }
+                        }
+                    }
+
+                    RemoveCollidedPositions(genRooms, connectedRooms, positions, roomInfo.size);
+                    if (positions.Count == 0)
+                    {
+                        if (positionCount == 0)
+                            Debug.Log($"FAILED: Couldn't find any started positions for the room: {room.name} from the previous room: {firstGeneratedPrevRoom.name}");
+                        else
+                            Debug.Log($"FAILED: Couldn't find any uncollided positions  for the room: {room.name} from the {positionCount} started positions!");
+                        return false;
+                    }
+
+                    Vector2Int randomPos = positions.RandomElement();
+                    InitGenRoom(genRooms, room, roomInfo, randomPos, generationIndex);
+                    for (GenRoomConnection connection = room.firstConnection; connection != null; connection = connection.next)
+                    {
+                        GenRoom otherRoom = room.GetOtherRoom(connection);
+                        if (otherRoom.generationIndex == generationIndex)
+                        {
+                            RectInt door = GetUnconnectedMatchDoors(room, otherRoom).RandomElement();
+                            connection.connection.rect = door;
+                            Debug.Assert(room.unconnectedDoors.Remove(new RectInt(door.position - room.rect.position, door.size)));
+                            Debug.Assert(otherRoom.unconnectedDoors.Remove(new RectInt(door.position - otherRoom.rect.position, door.size)));
+                        }
+                    }
+                }
+                else
+                {
+                    InitGenRoom(genRooms, room, roomInfo, Vector2Int.zero, generationIndex);
+                }
+            }
+        }
+
+        return true;
+
+        static void InitGenRoom(List<GenRoom> genRooms, GenRoom room, GenRoomInfo info, Vector2Int pos, uint generationIndex)
+        {
+            room.info = info;
+            room.rect = new RectInt(pos, info.size);
+            room.unconnectedDoors = new List<RectInt>(info.doors);
+            room.generationIndex = generationIndex;
+            genRooms.Add(room);
+        }
+
+        static List<RectInt> GetUnconnectedMatchDoors(GenRoom a, GenRoom b)
+        {
+            List<RectInt> result = new List<RectInt>(1);
+            foreach (RectInt doorA in a.unconnectedDoors)
+                foreach (RectInt doorB in b.unconnectedDoors)
+                    if (doorA.position + a.rect.position == doorB.position + b.rect.position && doorA.size == doorB.size)
+                        result.Add(new RectInt(doorA.position + a.rect.position, doorA.size));
+            Debug.Assert(result.Count > 0);
+            return result;
+        }
+
+        static void RemoveCollidedPositions(List<GenRoom> rooms, List<GenRoom> connectedRooms, List<Vector2Int> positions, Vector2Int size)
+        {
+            foreach (GenRoom room in rooms)
+                for (int i = positions.Count - 1; i >= 0; --i)
+                    if (room.rect.OverlapWithoutBorder(new RectInt(positions[i], size), connectedRooms.Contains(room) ? 1 : 0))
+                        positions.RemoveAt(i);
+        }
+
+        static List<Vector2Int> GetUnconnectedPositions(GenRoom room, GenRoomInfo roomInfo)
+        {
+            List<Vector2Int> result = new List<Vector2Int>();
+            foreach (RectInt unconnectedDoor in room.unconnectedDoors)
+                foreach (RectInt door in roomInfo.doors)
+                    if ((door.size == unconnectedDoor.size) && (roomInfo.size - door.position != room.rect.size - unconnectedDoor.position))
+                        result.Add(unconnectedDoor.position + room.rect.position - door.position);
+
+            return result;
+        }
     }
 
     private void Start()
     {
-        Room normal1  = new Room(10, 5, 8);
+#if false
+        GenRoomInfo normal1  = new GenRoomInfo(10, 5, 8);
+        GenRoomInfo normal2  = new GenRoomInfo(8, 12, 8);
+        GenRoomInfo normal3  = new GenRoomInfo(10, 8, 8);
         normal1.AddSimpleDoors(2, 2);
-        Room normal2  = new Room(8, 12, 8);
         normal2.AddSimpleDoors(2, 2);
-        Room normal3  = new Room(10, 8, 8);
         normal3.AddSimpleDoors(2, 2);
 
-        Room treasure = new Room(4, 4, 4);
-        treasure.AddSimpleDoors(1, 2);
+        GenRoomInfo treasure = new GenRoomInfo(6, 6, 4);
+        treasure.AddSimpleDoors(2, 2);
 
-        Room hub1     = new Room(20, 10, 16);
-        hub1.AddSimpleDoors(2, 2);
-        Room hub2     = new Room(16, 24, 16);
-        hub1.AddSimpleDoors(2, 2);
+        GenRoomInfo hub1     = new GenRoomInfo(20, 10, 8);
+        hub1.AddSimpleDoors(2, 3);
+        GenRoomInfo hub2     = new GenRoomInfo(16, 24, 8);
+        hub2.AddSimpleDoors(2, 4);
 
-        Room boss     = new Room(20, 20, 3);
-        boss.AddDoor(0, Vector2Int.up * 2, 2, false);
-        boss.AddDoor(1, boss.size - Vector2Int.one - Vector2Int.down * 2, 2, false);
-        boss.AddDoor(2, new Vector2Int(5, boss.size.y - 1), 2, true);
+        GenRoomInfo boss     = new GenRoomInfo(20, 20, 3);
+        boss.AddSimpleDoors(2, 4);
 
-        RoomCollection collection = new RoomCollection(3 + 1 + 2 + 1, (int)RoomType.Count);
-        collection.AddRooms((int)RoomType.Normal, normal1, normal2, normal3);
-        collection.AddRooms((int)RoomType.Treasure, treasure);
-        collection.AddRooms((int)RoomType.Hub, hub1, hub2);
-        collection.AddRooms((int)RoomType.Boss, boss);
+        collection = new RoomCollection(3 + 1 + 2 + 1, (int)RoomType.Count);
+        collection.AddRooms(normal1, normal2, normal3);
+        collection.AddRooms(treasure);
+        collection.AddRooms(hub1, hub2);
+        collection.AddRooms(boss);
 
-#if false
-        Graph graph = new Graph(collection, 12, 13);
-        graph.AddNodes(0, 6, (int)RoomType.Normal);
-        graph.AddNodes(7, 9, (int)RoomType.Treasure);
-        graph.AddNodes(9, 10, (int)RoomType.Hub);
-        graph.nodes[11] = (int)RoomType.Boss;
+        GenRoom n2 = AddRoom((int)RoomType.Normal, "n2");
+        GenRoom n3 = AddRoom((int)RoomType.Normal, "n3");
+        GenRoom n4 = AddRoom((int)RoomType.Normal, "n4");
+        GenRoom n5 = AddRoom((int)RoomType.Normal, "n5");
+        GenRoom n6 = AddRoom((int)RoomType.Normal, "n6");
+        GenRoom n7 = AddRoom((int)RoomType.Normal, "n7");
 
-        graph.AddEdge( 0,  0, 1);
-        graph.AddEdge( 1,  1, 7);
-        graph.AddEdge( 2,  1, 9);
-        graph.AddEdge( 3,  9, 2);
-        graph.AddEdge( 4,  9, 8);
-        graph.AddEdge( 5,  9, 3);
-        graph.AddEdge( 6,  9, 4);
-        graph.AddEdge( 7, 10, 4);
-        graph.AddEdge( 8, 10, 3);
-        graph.AddEdge( 9, 10, 5);
-        graph.AddEdge(10, 10, 6);
-        graph.AddEdge(11, 11, 5);
-        graph.AddEdge(12, 11, 6);
+        GenRoom h1 = AddRoom((int)RoomType.Hub, "h1");
+        GenRoom h2 = AddRoom((int)RoomType.Hub, "h2");
 
-        Layout layout = GenerateLayout(graph);
-#else
-        Graph graph = new Graph(collection, 18, 17);
-        graph.AddNodes( 0, 8, (int)RoomType.Normal);
-        graph.AddNodes( 9, 12, (int)RoomType.Treasure);
-        graph.AddNodes(13, 16, (int)RoomType.Hub);
-        graph.nodes[17] = (int)RoomType.Boss;
+        GenRoom t1 = AddRoom((int)RoomType.Treasure, "t1");
+        GenRoom t2 = AddRoom((int)RoomType.Treasure, "t2");
 
-        graph.AddEdge( 0,  0,  1);
-        graph.AddEdge( 1,  1, 13);
-        graph.AddEdge( 2, 13,  2);
-        graph.AddEdge( 3, 13,  3);
-        graph.AddEdge( 4, 13, 15);
-        graph.AddEdge( 5, 15, 10);
-        graph.AddEdge( 6, 15,  6);
-        graph.AddEdge( 7,  6,  7);
-        graph.AddEdge( 8,  6, 14);
-        graph.AddEdge( 9, 14, 11);
-        graph.AddEdge(10, 14,  8);
-        graph.AddEdge(11,  3, 16);
-        graph.AddEdge(12,  3,  4);
-        graph.AddEdge(13, 16, 12);
-        graph.AddEdge(14, 16,  5);
-        graph.AddEdge(15,  4, 17);
-        graph.AddEdge(16,  2,  9);
+        GenRoom b1 = AddRoom((int)RoomType.Boss, "b1");
+        GenRoom n1 = AddRoom((int)RoomType.Normal, "n1");
 
-        //Layout layout = GeneratePlatformer(graph, 40, 100, 30);
+        AddEdge(n1, h1);
+        AddEdge(n2, h1);
+        AddEdge(n3, h1);
+        AddEdge(n4, h1);
+        AddEdge(n3, t1);
+        AddEdge(n4, n5);
+        AddEdge(n4, h2);
+        AddEdge(n5, b1);
+        AddEdge(h2, n6);
+        AddEdge(h2, n7);
+        AddEdge(h2, t2);
 #endif
-        /*for (int i = 0; i < layout.roomInstances.Length; i++)
+        collection = new RoomCollection(normalRooms.Length + 3 + hubRooms.Length, (int)RoomType.Count);
+        collection.AddEdgarRooms(RoomType.Normal, normalRooms);
+        collection.AddEdgarRooms(RoomType.Shop, shopRoom);
+        collection.AddEdgarRooms(RoomType.Hub, hubRooms);
+        collection.AddEdgarRooms(RoomType.Boss, bossRoom);
+        collection.AddEdgarRooms(RoomType.Starting, startingRoom);
+
+        foreach (GenRoomInfo room in collection.rooms)
         {
-            BoundsInt bounds = layout.GetRect(i).ToBoundsInt();
-            tilemap.SetTilesBlock(bounds, new TileBase[bounds.Area()].Populate(tiles[i]));
-        }*/
-    }
-
-#if false
-    int n = 50;
-    int m = 100;
-    float t0 = .6f;
-    float ratio = .2f / .6f;
-    int maxFailedAttemps = 50;
-
-    Layout GenerateLayout(Graph inputGraph)
-    {
-        Layout emptyLayout = new Layout();
-        Stack<Layout> stack = new Stack<Layout>();
-        stack.Push(emptyLayout);
-
-        while (stack.Count > 0)
-        {
-            Layout layout = stack.Pop();
-            Chain nextChain = GetNextChain(layout, inputGraph);
-            List<Layout> partialLayouts = AddChain(layout, nextChain);
-
-            if (partialLayouts != null)
+            foreach (RectInt door in room.doors)
             {
-                if (nextChain.fullLayout)
-                    return partialLayouts[0];
-                else
-                    foreach (Layout partialLayout in partialLayouts)
-                        stack.Push(partialLayout);
+                Debug.Assert(door.size == new Vector2Int(2, 1) || door.size == new Vector2Int(1, 2));
+                Debug.Assert(door.position.x >= 0 && door.position.y >= 0);
             }
         }
 
-        return null;
-    }
+        GenRoom n1 = AddRoom(RoomType.Normal, "n1");
+        GenRoom n2 = AddRoom(RoomType.Normal, "n2");
+        GenRoom n3 = AddRoom(RoomType.Normal, "n3");
+        GenRoom n4 = AddRoom(RoomType.Normal, "n4");
+        GenRoom n5 = AddRoom(RoomType.Normal, "n5");
 
-    Chain GetNextChain(Layout layout, Graph graph)
-    {
-        /*List<Chain> chains = new List<Chain>();
-        List<Chain> faces = GetFacesFromGraph(graph);
-        int depth = 0;
+        GenRoom h1 = AddRoom(RoomType.Hub, "h1");
+        GenRoom h2 = AddRoom(RoomType.Hub, "h2");
 
-        while (!IsFullChain(graph))
+        GenRoom shop = AddRoom(RoomType.Shop, "shop");
+        GenRoom boss = AddRoom(RoomType.Boss, "boss");
+        GenRoom start = AddRoom(RoomType.Starting, "start");
+
+        AddEdge(start, n1);
+        AddEdge(n1, h1);
+        AddEdge(h1, n2);
+        AddEdge(h1, n3);
+        AddEdge(n2, n4);
+        AddEdge(n3, h2);
+        AddEdge(n4, boss);
+        AddEdge(h2, n5);
+        AddEdge(h2, shop);
+
+        // NOTE: Generate level layout
         {
-            if (chains.Count == 0)
+            const int maxTry = 512;
+            bool success = false;
+            uint i;
+
+            System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
+            watch.Start();
+            for (i = 1; i < maxTry + 1; i++)
             {
-                Chain smallestFace = GetSmallestFace(faces);
-                faces.Remove(smallestFace);
-                chains.Add(smallestFace);
-                smallestFace.depth = depth;
-            }
-            else
-            {
-                Chain neighbor = GetNeighborChain(chains, faces);
-                if (neighbor)
+                if (GenerateLayout(this, i))
                 {
-                    faces.Remove(neighbor);
-                    chains.Add(neighbor);
-                    neighbor.depth = depth;
-                }
-                else
-                {
-                    int node = GetUnvisitedNeighborFromSmallestDepthChain(chains);
-                    List<int> nodes = new List<int>();
-                    nodes.Add(node);
-
-                    while (NodeHasUnvisitedNeighbors(node, chains))
-                    {
-                        int newNode = GetRandomUnvisitedNeighbor(node, chains);
-                        nodes.Add(newNode);
-
-                        if (IsThisNodeProcessed(newNode, chains))
-                            break;
-
-                        node = newNode;
-                    }
-
-                    AddNodes(nodes, chains, depth);
-                }
-            }
-
-            depth++;
-        }*/
-
-        return null;
-    }
-
-    List<Layout> AddChain(Layout layout, Chain chain)
-    {
-        Layout currentLayout = GetInitialLayout(layout, chain);
-        List<Layout> generatedLayouts = new List<Layout>();
-        generatedLayouts.Add(currentLayout);
-        float t = t0;
-        float totalDeltaE = 0;
-        int failedAttemps = 0;
-
-        for (int i = 1; i <= n; i++)
-        {
-            if (failedAttemps > maxFailedAttemps)
-                break;
-            bool iterationSuccessful = false;
-
-            for (int j = 1; j <= m; j++)
-            {
-                Layout newLayout = PerturbLayout(currentLayout, chain);
-
-                if (IsValid(newLayout))
-                    if (DifferentEnough(newLayout, generatedLayouts))
-                    {
-                        iterationSuccessful = true;
-                        generatedLayouts.Add(newLayout);
-                        if (chain.fullLayout)
-                            return generatedLayouts;
-                    }
-
-                float dE = newLayout.energy - currentLayout.energy;
-                totalDeltaE += dE;
-                float k = totalDeltaE / (i * j);
-
-                if (dE < 0)
-                    currentLayout = newLayout;
-                else if (Random.value < Mathf.Exp(dE / (k + t)))
-                    currentLayout = newLayout;
-            }
-
-            if (!iterationSuccessful)
-                ++failedAttemps;
-
-            t *= ratio;
-        }
-
-        return generatedLayouts;
-    }
-
-    Layout GetInitialLayout(Layout layout, Chain chain)
-    {
-        Layout newLayout = layout.Clone(chain.nodes.Length, chain.edges.Length + chain.connectedEdges.Length);
-        for (int edgeIndex = 0; edgeIndex < chain.edges.Length; ++edgeIndex)
-            newLayout.connections[edgeIndex + chain.startEdgeIndex] = chain.edges[edgeIndex] + Vector2Int.one * chain.startNodeIndex;
-        for (int edgeIndex = 0; edgeIndex < chain.connectedEdges.Length; ++edgeIndex)
-            newLayout.connections[edgeIndex + chain.startEdgeIndex + chain.edges.Length] = chain.connectedEdges[edgeIndex] + new Vector2Int(chain.startNodeIndex, 0);
-
-        int[] nodes = new int[chain.nodes.Length];
-        BFS(nodes, chain);
-        int i = chain.startNodeIndex;
-        foreach (int node in nodes)
-        {
-            newLayout.roomInstances[i].roomType = chain.nodes[node];
-            newLayout.RerollRoomInstance(i);
-            // Init roomInstance.doors
-
-            List<Room> neighborRooms = newLayout.GetNeighborRooms(i);
-            if (neighborRooms == null)
-                continue;
-            List<Vector2Int> allPos = GetConfigSpaces(newLayout.GetRoom(i), neighborRooms);
-            float minEnergy = 99999f;
-            Vector2Int bestPos = allPos[0];
-            foreach (Vector2Int pos in allPos)
-            {
-                newLayout.roomInstances[i].pos = pos;
-                float energy = GetLayoutEnergy(newLayout);
-                if (energy < minEnergy)
-                {
-                    minEnergy = energy;
-                    bestPos = pos;
-                }
-            }
-            // newLayout.energy += minEnergy / __some_Constant__
-            newLayout.roomInstances[i].pos = bestPos;
-
-            ++i;
-        }
-
-        newLayout.energy = GetLayoutEnergy(newLayout);
-        CenterLayout(newLayout);
-        return newLayout;
-    }
-
-    void BFS(int[] nodes, Chain chain)
-    {
-        bool[] marked = new bool[chain.nodes.Length];
-        Queue<int> queue = new Queue<int>(chain.connectedEdges.Length * 2);
-        foreach (Vector2Int connectedEdge in chain.connectedEdges)
-            queue.Enqueue(connectedEdge.x);
-
-        int i = 0;
-        while (queue.Count > 0)
-        {
-            int node = queue.Dequeue();
-            if (!marked[node])
-            {
-                nodes[i++] = node;
-                marked[node] = true;
-                foreach (int neighbor in chain.GetNodeNeighbors(node))
-                    if (!marked[neighbor])
-                        queue.Enqueue(neighbor);
-            }
-        }
-    }
-
-    Layout PerturbLayout(Layout layout, Chain chain)
-    {
-        bool changeShape = MathUtils.RandomBool(.4f);
-        int randomRoom = Random.Range(chain.startNodeIndex, layout.roomInstances.Length);
-        Layout newLayout = layout.Clone();
-
-        if (changeShape)
-            newLayout.RerollRoomInstance(randomRoom);
-        else
-            // TODO: Don't repick the same pos
-            newLayout.roomInstances[randomRoom].pos = GetConfigSpaces(newLayout.GetRoom(randomRoom), newLayout.GetNeighborRooms(randomRoom)).RandomElement();
-
-        newLayout.energy = GetLayoutEnergy(newLayout);
-        return newLayout;
-    }
-
-    bool IsValid(Layout newLayout)
-    {
-        for (int i = 0; i < newLayout.roomInstances.Length; ++i)
-            for (int j = 0; i < newLayout.roomInstances.Length; ++j)
-                if (i != j)
-                    if (MathUtils.CollideArea(newLayout.GetRect(i), newLayout.GetRect(j)) != 0f)
-                        return false;
-
-        foreach (Vector2Int edge in newLayout.connections)
-            if (!newLayout.GetRect(edge.x).Overlaps(newLayout.GetRect(edge.y)))
-                return false;
-
-        return true;
-    }
-
-    bool DifferentEnough(Layout newLayout, List<Layout> generatedLayouts)
-    {
-        CenterLayout(newLayout);
-
-        newLayout.similarity = 0;
-        for (int i = 0; i < newLayout.roomInstances.Length; i++)
-            newLayout.similarity += (newLayout.GetRect(i).position - generatedLayouts[0].GetRect(i).position).sqrMagnitude;
-
-        for (int i = 1; i < generatedLayouts.Count; ++i)
-            if (newLayout.similarity < generatedLayouts[i].similarity)
-                return false;
-
-        return true;
-    }
-
-    void CenterLayout(Layout layout)
-    {
-        RectInt rect = layout.GetRect(0);
-        for (int i = 0; i < layout.roomInstances.Length; i++)
-        {
-            rect.min = new Vector2Int(Mathf.Min(rect.min.x, layout.GetRect(i).min.x), Mathf.Min(rect.min.y, layout.GetRect(i).min.y));
-            rect.max = new Vector2Int(Mathf.Max(rect.max.x, layout.GetRect(i).max.x), Mathf.Max(rect.max.y, layout.GetRect(i).max.y));
-        }
-
-        if (rect.center == Vector2.zero)
-            return;
-
-        Vector2Int dir = (-rect.center).ToVector2Int();
-        for (int i = 0; i < layout.roomInstances.Length; ++i)
-            layout.roomInstances[i].pos += dir;
-    }
-
-    // TODO: This is a O(n2) algorithm. We can replace this by exploiting the fact that we are always perturbing only one node at a time.
-    // First, we store the energy on each indiviual node. Then we update each node's energy every time we perturb the layout.
-    float GetLayoutEnergy(Layout layout)
-    {
-        float A = 0, D = 0;
-
-        float totalArea = 0;
-        for (int i = 0; i < layout.roomInstances.Length; ++i)
-            totalArea += layout.GetRect(i).Area();
-        float w = totalArea / layout.roomInstances.Length * 100f;
-
-        for (int i = 0; i < layout.roomInstances.Length; ++i)
-            for (int j = 0; j < layout.roomInstances.Length; ++j)
-                if (i != j)
-                    A += MathUtils.CollideArea(layout.GetRect(i), layout.GetRect(j));
-
-        foreach (Vector2Int connection in layout.connections)
-        {
-            RectInt a = layout.GetRect(connection.x);
-            RectInt b = layout.GetRect(connection.y);
-            if (!a.Overlaps(b))
-                D += (a.center - b.center).sqrMagnitude;
-        }
-
-        return Mathf.Exp(A / w) * Mathf.Exp(D / w) - 1;
-    }
-
-    List<Vector2Int> GetConfigSpaces(Room room, List<Room> neighborRooms)
-    {
-        List<Vector2Int> allPos = new List<Vector2Int>(neighborRooms.Count * 2);
-        foreach (Room neighbor in neighborRooms)
-            foreach (Room.Line neighborLine in neighbor.doors)
-                foreach (Room.Line line in room.doors)
-                    if (line.IsConnected(neighborLine))
-                        allPos.Add(neighborLine.start - line.start);
-        return allPos;
-    }
-#endif
-#if false
-    public Layout GeneratePlatformer(Graph inputGraph, int maxNodesPerChain, int numberOfAttemptsTotal, int numberOfAttemptsPerNode)
-    {
-        Layout layout = new Layout(inputGraph.collection, inputGraph.nodes.Length, inputGraph.edges.Length);
-        bool[] marked = new bool[inputGraph.nodes.Length];
-
-        while (layout != null)
-        {
-            Chain nextChain = GetNextChain(layout, inputGraph, marked, maxNodesPerChain);
-            layout = EvolveChain(layout, nextChain, numberOfAttemptsTotal, numberOfAttemptsPerNode);
-            // TODO: backtrack to the previous layout if can't evolve the current chain
-            if (nextChain.fullLayout)
-                break;
-        }
-        return layout;
-    }
-
-    Chain GetNextChain(Layout layout, Graph graph, bool[] marked, int maxNodesPerChain)
-    {
-        int startNode = -1;
-
-        if (layout.unconnectedEdges.Count == 0)
-        {
-            // Find an arbitrary leaf node
-            for (int i = 0; i < graph.nodes.Length; ++i)
-            {
-                int count = graph.GetNeighborCount(i);
-                if (count == 1)
-                {
-                    startNode = i;
+                    success = true;
                     break;
                 }
-                Debug.Assert(count != 0, $"Node {i} is unconnected!");
             }
-        }
-        else
-        {
-            startNode = layout.unconnectedEdges.PopRandom().y;
-        }
+            watch.Stop();
 
-        if (startNode < 0)
-        {
-            Debug.LogError("There aren't any leaf nodes!");
-            return null;
+            string result = success ? "has been successfully" : "couldn't be";
+            Debug.Log("Layout" + result + $"generated after {i} tries in {watch.ElapsedMilliseconds} ms!");
         }
 
-        // BFS to group nodes into smaller chain
-        List<int> nodes = new List<int>(maxNodesPerChain);
-        List<Vector2Int> edges = new List<Vector2Int>(maxNodesPerChain - 1);
+        // TODO: Generate room layout
 
-        Queue<int> queue = new Queue<int>(4);
-        queue.Enqueue(startNode);
-
-        while (queue.Count > 0 && nodes.Count <= maxNodesPerChain)
+        // NOTE: Spawn rooms
         {
-            int node = queue.Dequeue();
-            if (!marked[node])
+            TileBase[] doorTiles = new TileBase[2].Populate(doorTile);
+            TileBase[] tileArray = new TileBase[4096];
+            for (GenRoom room = firstRoom; room != null; room = room.globalNext)
+                tilemap.SetTilesBlock(room.rect.ToBoundsInt(), tileArray.Populate(tiles[(int)room.type]));
+            for (GenConnection connection = firstConnection; connection != null; connection = connection.globalNext)
+                tilemap.SetTilesBlock(connection.rect.ToBoundsInt(), new TileBase[2].Populate(doorTile));
+            for (GenRoom room = firstRoom; room != null; room = room.globalNext)
             {
-                nodes.Add(node);
-                marked[node] = true;
-                foreach (int neighbor in graph.GetNeighbors(node + layout.roomCount))
-                {
-                    if (!marked[neighbor])
-                        queue.Enqueue(neighbor);
-                    if (!(edges.Contains(new Vector2Int(node, neighbor)) || edges.Contains(new Vector2Int(neighbor, node)))) // This is so bad!
-                        edges.Add(new Vector2Int(node, neighbor));
-                }
+                var basePos = room.info.prefab.GetComponent<Edgar.Unity.RoomTemplateSettings>().GetOutline().BoundingRectangle.A;
+                Vector3 pos = (Vector2)room.rect.position;
+                pos.x -= basePos.X; pos.y -= basePos.Y;
+                Instantiate(room.info.prefab, pos, Quaternion.identity);
             }
         }
-
-        Chain chain = new Chain(nodes.ToArray(), edges.ToArray(), nodes.Count + layout.roomCount == layout.roomInstances.Length);
-        return chain;
     }
 
-    public Layout EvolveChain(Layout initialLayout, Chain chain, int numberOfAttemptsTotal, int numberOfAttemptsPerNode)
+    private void Update()
     {
-        for (int i = 0; i < numberOfAttemptsTotal; i++)
+        for (GenRoom room = firstRoom; room != null; room = room.globalNext)
+            GameDebug.DrawBox(room.rect, Color.green);
+        for (GenConnection connection = firstConnection; connection != null; connection = connection.globalNext)
+            GameDebug.DrawBox(connection.rect, Color.red);
+    }
+
+    GenRoom AddRoom(RoomType type, string name)
+    {
+        GenRoom room = new GenRoom
         {
-            Layout layout = initialLayout.Clone();
-            for (int nodeIndex = 0; nodeIndex < chain.nodes.Length; nodeIndex++)
-                if (!TryLayoutNode(layout, chain, nodeIndex, numberOfAttemptsPerNode))
-                    goto CONTINUE;
-
-            return layout;
-            CONTINUE:;
-        }
-
-        return null;
+            name = name,
+            type = type,
+            globalNext = firstRoom
+        };
+        firstRoom = room;
+        return room;
     }
 
-    public bool TryLayoutNode(Layout layout, Chain chain, int nodeIndex, int numberOfAttemptsPerNode)
+    void AddEdge(GenRoom a, GenRoom b)
     {
-        if (nodeIndex == 0)
+        GenConnection con = new GenConnection(a, b)
         {
-            layout.AddRoom(chain, 0, -1, layout.collection.roomTypes[chain.nodes[nodeIndex]].randomValue, Vector2Int.zero);
-            return true;
-        }
+            globalNext = firstConnection
+        };
+        firstConnection = con;
 
-        for (int i = 0; i < numberOfAttemptsPerNode; i++)
+        GenRoomConnection aCon = new GenRoomConnection
         {
-            int room = layout.collection.roomTypes[chain.nodes[nodeIndex]].randomValue;
-            int neighbor = GetConnectedNeighbor(layout, nodeIndex);
-            Debug.Assert(neighbor >= 0, $"The node: {nodeIndex} has an invalid neighbor : {neighbor}.");
-            List<Vector2Int> validPos = GetConfigSpaces(layout.collection.rooms[room], layout, neighbor);
-            if (validPos.Count > 0)
-            {
-                Vector2Int pos = validPos.RandomElement();
-                layout.AddRoom(chain, nodeIndex, neighbor, room, pos);
-                return true;
-            }
-        }
+            next = a.firstConnection,
+            connection = con
+        };
+        a.firstConnection = aCon;
 
-        return false;
+        GenRoomConnection bCon = new GenRoomConnection
+        {
+            next = b.firstConnection,
+            connection = con
+        };
+        b.firstConnection = bCon;
     }
-
-    public int GetConnectedNeighbor(Layout layout, int nodeIndex)
-    {
-        foreach (Vector2Int edge in layout.unconnectedEdges)
-            if (edge.y == nodeIndex)
-                return edge.x;
-            else if (edge.x == nodeIndex)
-                Debug.LogError("Unconnected edges aren't initialized correctly!");
-        return -1;
-    }
-
-    public List<Vector2Int> GetConfigSpaces(Room room, Layout layout, int neighbor)
-    {
-        List<Vector2Int> result = new List<Vector2Int>(4);
-            foreach (Line neighborDoor in layout.GetUnconnectedDoors(neighbor))
-                foreach (Line door in room.doors)
-                    if (neighborDoor.IsConnected(door))
-                    {
-                        // NOTE: the neighborDoor and door may have start and end switched
-                        Vector2Int pos = layout.roomInstances[neighbor].pos + neighborDoor.start - door.start + neighborDoor.dir;
-                        if (!layout.WillRoomOverlap(room, pos))
-                            if (!result.Contains(pos))
-                                result.Add(pos);
-                    }
-
-        return result;
-    }
-#endif
 }

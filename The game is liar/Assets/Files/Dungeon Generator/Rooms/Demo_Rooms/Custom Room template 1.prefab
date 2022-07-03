@@ -20696,8 +20696,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c4bdbbf5a3651f498b2114a8a7bb97b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DistanceFromCorners: 1
-  DoorLength: 1
+  DistanceFromCorners: 10
+  DoorLength: 7
   DoorsList:
   - From: {x: 41, y: 2, z: 0}
     To: {x: 41, y: 3, z: 0}

@@ -15,7 +15,8 @@ MonoBehaviour:
   DialogueID: ShopKeeper_Hello_03
   speaker: ShopKeeper
   dialogues:
-  - You look bad. What happend?
+  - You look bad. What happend
   responses:
   - text: Nothing
     dialogueID: 
+    dialogue: {fileID: 0}

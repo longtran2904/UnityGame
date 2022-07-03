@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: StartInventory
   m_EditorClassIdentifier: 
   items:
-  - {fileID: 1243408987950801092, guid: d91ee0b0ed314134d865904ab79a9d9d, type: 3}
-  - {fileID: 225684046232235814, guid: e890c8e1016837649a0d3357bf0eefa3, type: 3}
-  defaultItems:
   - {fileID: 3631726893683871135, guid: b3444eea86a91f146aa26779539b3637, type: 3}
   - {fileID: 7956944691312929143, guid: c1757e4889f11804ebf84c5079cfa6dc, type: 3}
+  defaultItems:
+  - {fileID: 3631726893683871135, guid: b3444eea86a91f146aa26779539b3637, type: 3}
+  - {fileID: 3508144443452190079, guid: 4fff160b5f4cf6d4fa05d8ea56cdae5c, type: 3}
   currentWeapon: 0
   startWeaponIndex: 0

@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 1915952708550527434}
   - component: {fileID: 1865458717}
   - component: {fileID: 878432984807618659}
-  - component: {fileID: 5408130054535759406}
+  - component: {fileID: -5732036121699269819}
   m_Layer: 12
   m_Name: Cell
   m_TagString: Untagged
@@ -272,7 +272,7 @@ TrailRenderer:
   m_MinVertexDistance: 0.1
   m_Autodestruct: 0
   m_Emitting: 1
---- !u!114 &5408130054535759406
+--- !u!114 &-5732036121699269819
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -281,16 +281,210 @@ MonoBehaviour:
   m_GameObject: {fileID: 1915952708550527436}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c11778e9160df6a4085814643478e381, type: 3}
+  m_Script: {fileID: 11500000, guid: 21094d93c7e57864d9c440ca38612b17, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  properties:
+    serializedEnumNames:
+    - CanFlipGravity
+    - CanBeHurt
+    - OpenGameOverMenu
+    - DamageWhenCollide
+    - DieWhenCollide
+    - DieAfterMoveTime
+    - SpawnCellWhenDie
+    - SpawnDamagePopup
+    - ClampToMoveRegion
+    - StartAtMinMoveRegion
+    - IsCritical
+    - UsePooling
+    - AddMoneyWhenCollide
+    - IsGrounded
+    - AtEndOfMoveRegion
+    - HasTargetOffset
+    - Count
+    properties: 1018000000000000
+  stats:
+  - properties:
+      serializedEnumNames:
+      - AddSpeed
+      - MulSpeed
+      - AddDamage
+      - MulDamage
+      - FindNewStat
+      - Interruptible
+      - TillDeathDoUsPart
+      - DamageNearbyEntities
+      - DieAfterExecution
+      - TeleportToTarget
+      - StartFalling
+      - StartMoving
+      - FlipGraviy
+      - PlayerInRange
+      - EntityOutOfMoveRegion
+      - LowHealth
+      - EndRoom
+      properties: 1004000000000000
+    nextStat: 0
+    healthToExecute: 0
+    distanceToExecute: {x: 0, y: 0}
+    duration: 0
+    chargeTime: 0
+    groundRememberTime: 0
+    jumpRememberTime: 0
+    playerRememberTime: 0
+    affectedRange:
+      min: 0
+      max: 0
+    moveType: 4
+    targetType: 0
+    rotateType: 0
+    speed: 8
+    damage: 0
+  - properties:
+      serializedEnumNames:
+      - AddSpeed
+      - MulSpeed
+      - AddDamage
+      - MulDamage
+      - FindNewStat
+      - Interruptible
+      - TillDeathDoUsPart
+      - DamageNearbyEntities
+      - DieAfterExecution
+      - TeleportToTarget
+      - StartFalling
+      - StartMoving
+      - FlipGraviy
+      - PlayerInRange
+      - EntityOutOfMoveRegion
+      - LowHealth
+      - EndRoom
+      properties: 4028010000000000
+    nextStat: 0
+    healthToExecute: 0
+    distanceToExecute: {x: 5, y: 5}
+    duration: 0
+    chargeTime: 0
+    groundRememberTime: 0
+    jumpRememberTime: 0
+    playerRememberTime: 0
+    affectedRange:
+      min: 0
+      max: 0
+    moveType: 2
+    targetType: 2
+    rotateType: 0
+    speed: 12
+    damage: 0
+  health: 0
+  damage: 0
+  money: 10
+  collisionTags:
+  - Player
+  valueRange:
+    min: 0
+    max: 0
+  moveType: 0
+  rotateType: 0
+  targetType: 0
   speed: 12
-  addMoney:
-    useConstant: 1
-    constantValue: 10
-    variable: {fileID: 0}
-  playerMoney:
-    useConstant: 0
-    constantValue: 0
-    variable: {fileID: 11400000, guid: 18f7894f0d00c974e9002c94fb008838, type: 2}
-  audioManager: {fileID: 11400000, guid: 01443e5a6bdc47b4387217618b65db47, type: 2}
+  dRotate: 0
+  range: 5
+  offsetTarget: {x: 0, y: 0}
+  moveTime: 0
+  groundRememberTime: 0
+  jumpPressedRememberTime: 0
+  footstepAudio: 0
+  timeBtwFootsteps:
+    min: 0
+    max: 0
+  whiteMat: {fileID: 2100000, guid: a52db8d2e3bb7c84f9a724b122d7baa7, type: 2}
+  leftDust: {fileID: 0}
+  rightDust: {fileID: 0}
+  deathVFX:
+    properties:
+      serializedEnumNames:
+      - StopAnimation
+      - ChangeEffectObjBack
+      - ScaleOverTime
+      - FadeTextWhenDone
+      - ShockCamera
+      - FlashCamera
+      - StartTrailing
+      - DecreaseTrailWidth
+      - PlayParticleInOrder
+      - ChangeTextColor
+      - ChangeFontSize
+      - Count
+      properties: 0000000000000000
+    nextAnimation: 
+    effectObj: {fileID: 0}
+    particles: []
+    waitTime: 0
+    scaleTime: 0
+    trailEmitTime: 0
+    trailStayTime: 0
+    flashTime: 0
+    flashDuration: 0
+    triggerColor: {r: 0, g: 0, b: 0, a: 0}
+    textColor: {r: 0, g: 0, b: 0, a: 0}
+    newText: 
+    fontSize: 0
+    stopTime: 0
+    trauma: 0
+    shakeMode: 0
+    shockSpeed: 0
+    shockSize: 0
+    camFlashTime: 0
+    camFlashAlpha: 0
+    alpha: 0
+    fadeTime: 0
+    range: 0
+    particleType: 0
+    audio: 20
+    poolType: 0
+    scaleOffset: {x: 0, y: 0}
+  hurtVFX:
+    properties:
+      serializedEnumNames:
+      - StopAnimation
+      - ChangeEffectObjBack
+      - ScaleOverTime
+      - FadeTextWhenDone
+      - ShockCamera
+      - FlashCamera
+      - StartTrailing
+      - DecreaseTrailWidth
+      - PlayParticleInOrder
+      - ChangeTextColor
+      - ChangeFontSize
+      - Count
+      properties: 0000000000000000
+    nextAnimation: 
+    effectObj: {fileID: 0}
+    particles: []
+    waitTime: 0
+    scaleTime: 0
+    trailEmitTime: 0
+    trailStayTime: 0
+    flashTime: 0
+    flashDuration: 0
+    triggerColor: {r: 0, g: 0, b: 0, a: 0}
+    textColor: {r: 0, g: 0, b: 0, a: 0}
+    newText: 
+    fontSize: 0
+    stopTime: 0
+    trauma: 0
+    shakeMode: 0
+    shockSpeed: 0
+    shockSize: 0
+    camFlashTime: 0
+    camFlashAlpha: 0
+    alpha: 0
+    fadeTime: 0
+    range: 0
+    particleType: 0
+    audio: 0
+    poolType: 0
+    scaleOffset: {x: 0, y: 0}

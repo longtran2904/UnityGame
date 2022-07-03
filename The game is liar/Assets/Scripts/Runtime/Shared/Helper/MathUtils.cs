@@ -22,7 +22,12 @@ public static class MathUtils
         return new Bounds((Vector3)(bounds.min + bounds.max) * .5f, bounds.size);
     }
 
-    public static List<Vector3Int> GetOutlinePoints(this BoundsInt bounds)
+    public static BoundsInt ToBoundsInt(this Bounds bounds)
+    {
+        return new BoundsInt(bounds.min.ToVector3Int(), bounds.size.ToVector3Int());
+    }
+
+    public static List<Vector3Int> GetOutlinePoints(BoundsInt bounds)
     {
         List<Vector3Int> result = new List<Vector3Int>(bounds.size.x * 2 + (bounds.size.y - 2) * 2);
 
@@ -48,13 +53,15 @@ public static class MathUtils
     #endregion
 
     #region Int
+    public static bool HasFlag(long value, int bitPos)
+    {
+        return ((ulong)value & (1ul << bitPos)) != 0;
+    }
+
     public static int UnSigned(int num)
     {
         if (num < 0)
-        {
             return 0;
-        }
-
         return num;
     }
 
@@ -86,13 +93,17 @@ public static class MathUtils
     #endregion
 
     #region Float
+    public static float Sign(float a)
+    {
+        if (a > 0) return  1;
+        if (a < 0) return -1;
+        return 0;
+    }
+
     public static float UnSigned(float num)
     {
         if (num < 0)
-        {
             return 0;
-        }
-
         return num;
     }
 
@@ -104,10 +115,16 @@ public static class MathUtils
     public static bool InRange(float min, float max, float value)
     {
         if ((value >= min) && (value <= max))
-        {
             return true;
-        }
         return false;
+    }
+
+    public static bool RangeInRange(float aMin, float aRange, float bMin, float bRange)
+    {
+        float aMax = aMin + aRange;
+        float bMax = bMin + bRange;
+        return (bMin >= aMin && bMin <= aMax) ||
+            (bMax >= aMin && bMax <= aMax);
     }
 
     public static float Average(float a, float b)
@@ -180,6 +197,11 @@ public static class MathUtils
     #endregion
 
     #region Vector2
+    public static Vector3 Z(this Vector2 v, float z)
+    {
+        return new Vector3(v.x, v.y, z);
+    }
+
     public static bool InRange(Vector2 center, Vector2 pos, float range)
     {
         return (pos.x < center.x + range && pos.x > center.x - range) &&
@@ -220,6 +242,11 @@ public static class MathUtils
         return value;
     }
 
+    public static Vector2 Clamp01(Vector2 value)
+    {
+        return Clamp(value, Vector2.zero, Vector2.one);
+    }
+
     public static Vector2 Average(Vector2 a, Vector2 b)
     {
         return (a + b) / 2;
@@ -234,17 +261,7 @@ public static class MathUtils
         return a;
     }
 
-    public static Vector2 UnSigned(Vector2 v)
-    {
-        if (v.x < 0) v.x = 0;
-        if (v.y < 0) v.y = 0;
-        return v;
-    }
-
-    public static Vector2[] ToVector2(this Vector3[] v)
-    {
-        return System.Array.ConvertAll(v, x => (Vector2)x);
-    }
+    public static Vector2 OnlySignX(Vector2 v) => new Vector2(Mathf.Sign(v.x), 0);
 
     public static float DistanceLineSegmentPoint(Vector2 point, Vector2 startLine, Vector2 endLine)
     {
@@ -299,7 +316,7 @@ public static class MathUtils
         return new Vector3(a.x / b.x, a.y / b.y, a.z / b.z);
     }
 
-    public static Vector3 Clamp(Vector3 pos, Vector2 min, Vector2 max, float posZ)
+    public static Vector3 Clamp(Vector2 pos, Vector2 min, Vector2 max, float posZ)
     {
         return new Vector3(Mathf.Clamp(pos.x, min.x, max.x), Mathf.Clamp(pos.y, min.y, max.y), posZ);
     }
@@ -323,6 +340,13 @@ public static class MathUtils
     #endregion
 
     #region Rect
+    public static Rect ToRect(this Bounds bounds)
+    {
+        return new Rect(bounds.min, bounds.size);
+    }
+
+    public static Rect InfiniteRect => Rect.MinMaxRect(float.MinValue, float.MinValue, float.MaxValue, float.MaxValue);
+
     public static Vector2 TopLeft(this Rect rect)
     {
         return new Vector2(rect.xMin, rect.yMin);
@@ -392,10 +416,13 @@ public static class MathUtils
         return 0;
     }
 
-    public static bool OverlapWithoutBorder(this RectInt a, RectInt b)
+    public static bool OverlapWithoutBorder(this RectInt a, RectInt b, int maxBoundsOffset = 0)
     {
-        bool collideX = a.xMin < b.xMax && a.xMax > b.xMin;
-        bool collideY = a.yMin < b.yMax && a.yMax > b.yMin;
+        a.max -= Vector2Int.one * maxBoundsOffset;
+        b.max -= Vector2Int.one * maxBoundsOffset;
+
+        bool collideX = !(a.xMax <= b.xMin || a.xMin >= b.xMax);
+        bool collideY = !(a.yMax <= b.yMin || a.yMin >= b.yMax);
         return collideX && collideY;
     }
 
@@ -406,7 +433,7 @@ public static class MathUtils
 
     public static BoundsInt ToBoundsInt(this RectInt a)
     {
-        return new BoundsInt(a.position.ToVector3Int(), a.size.ToVector3Int());
+        return new BoundsInt(a.position.ToVector3Int(), a.size.ToVector3Int() + Vector3Int.forward);
     }
     #endregion
 
@@ -488,13 +515,13 @@ public static class MathUtils
         return output;
     }
 
-    public static Vector3 SmoothDamp(Vector2 current, Vector2 target, ref Vector2 currentVelocity, Vector2 smoothTime, float deltaTime)
+    // NOTE: The ref currentVelocity can be use for rb.velocity with some precision error (it can't move as fast as changing the position).
+    public static Vector3 SmoothDamp(Vector2 current, Vector2 target, ref Vector2 currentVelocity, Vector2 smoothTime, float deltaTime, float posZ)
     {
         return new Vector3(
             SmoothDamp(current.x, target.x, ref currentVelocity.x, smoothTime.x, deltaTime),
             SmoothDamp(current.y, target.y, ref currentVelocity.y, smoothTime.y, deltaTime),
-            0
-            );
+            posZ);
     }
     #endregion
 

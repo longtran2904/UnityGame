@@ -45,7 +45,7 @@ public abstract class Item : MonoBehaviour
     {
         Vector2 size = new Vector2(0.1f, sizeY);
         Vector3 offset = new Vector2(0, sr.bounds.extents.y + size.y);
-        ExtDebug.DrawBoxCastBox(transform.position - offset, size, Quaternion.identity, Vector2.down, size.y, Color.red);
+        GameDebug.DrawBox(transform.position - offset, size, Color.red);
         return Physics2D.BoxCast(transform.position - offset, size, 0, Vector2.down, size.y, LayerMask.GetMask("Ground"));
     }
 

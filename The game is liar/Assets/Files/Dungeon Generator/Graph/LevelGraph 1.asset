@@ -326,7 +326,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8074dc491ddc34f4e83332d9eae76980, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Position: {x: 280, y: 594}
+  Position: {x: 271.59918, y: 594.9334}
   Name: Boss
   IndividualRoomTemplates:
   - {fileID: 3540437168181244578, guid: e8b1ad23bba370e4da3e9399faa73683, type: 3}
@@ -343,7 +343,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8074dc491ddc34f4e83332d9eae76980, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Position: {x: 281.70258, y: 300.22144}
+  Position: {x: 270.5015, y: 300.22144}
   Name: Hub
   IndividualRoomTemplates: []
   RoomTemplateSets:

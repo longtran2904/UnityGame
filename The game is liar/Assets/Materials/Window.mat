@@ -38,7 +38,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - Vector1_b482d156e9454fff838c7d275f4e3d08: 0
-    - _Brightness: 3
+    - _Brightness: 4
     - _ColorNoiseScale: 0
     - _MaxBaseValue: 0.8
     - _MaxBrightness: 0.8

@@ -3,6 +3,7 @@ using UnityEngine;
 
 public enum AudioType
 {
+    None,
     Player_Jump,
     Player_Shoot,
     Player_Hurt,
@@ -11,8 +12,6 @@ public enum AudioType
     Player_Death,
     Player_DefeatBoss,
 
-    Player_Count,
-
     Turret_Shoot,
     Enemy_Explosion,
     Enemy_Death,
@@ -20,129 +19,66 @@ public enum AudioType
     Boss_Hit_Wall,
     Boss_Dash,
 
-    Enemy_Count,
-
     Weapon_Shotgun,
     Weapon_Bounce,
     Weapon_Trickshot,
     Weapon_Hit_Wall,
-
-    Weapon_Count,
 
     Game_Select,
     Game_Buy,
     Game_Pickup,
     Game_OpenChest,
 
-    Game_Count,
-
     Music_Main,
     Music_Boss,
-
-    Music_Count,
 
     Audio_Count
 }
 
-[CreateAssetMenu(menuName = "Audio/AudioManager")]
-public class AudioManager : ScriptableObject
+[Serializable]
+public struct Audio
 {
-    [Serializable]
-    public struct Audio
+    public AudioType type;
+    public AudioClip[] clips;
+    [MinMax(0f, 3f)] public RangedFloat volume;
+    [MinMax(0f, 3f)] public RangedFloat pitch;
+}
+
+public static class AudioManager
+{
+    private static AudioSource[] sources;
+    private static Audio[] audios;
+    private static AudioType firstMusic;
+
+    public static void Init(GameObject obj, Audio[] audios, AudioType firstMusic, int sourceCount)
     {
-        public AudioType type;
-        public AudioClip[] clips;
-        [MinMax(0f, 3f)] public RangedFloat volume;
-        [MinMax(0f, 3f)] public RangedFloat pitch;
+        sources = new AudioSource[sourceCount];
+        for (int i = 0; i < sourceCount; i++)
+            sources[i] = obj.AddComponent<AudioSource>();
+        AudioManager.audios = audios;
+        AudioManager.firstMusic = firstMusic;
     }
 
-    public Sound[] sounds;
-    public Audio[] audios;
-    private AudioSource sfxSource;
-
-    private int[] soundTypes = {
-        (int)AudioType.Player_Count,
-        (int)AudioType.Enemy_Count,
-        (int)AudioType.Weapon_Count,
-        (int)AudioType.Game_Count,
-        (int)AudioType.Music_Count
-    };
-
-    private AudioSource[] sources;
-
-    static AudioManager instance;
-
-    private void OnEnable()
+    public static void PlayAudio(AudioType type)
     {
-#if UNITY_EDITOR
-        if (UnityEditor.EditorApplication.isPlayingOrWillChangePlaymode) Init();
-#else
-        if (Application.isPlaying) Init();
-#endif
-    }
+        if (type == AudioType.None)
+            return;
+        Audio audio = audios[(int)type - 1];
+        Debug.Assert(audio.type == type, $"AudioType {type} isn't matched with {audio.type}!");
 
-    void Init()
-    {
-        if (!instance)
+        float pitch = audio.pitch.randomValue;
+        foreach (AudioSource source in sources)
         {
-            instance = this;
-            GameObject audioObject = new GameObject("AudioManager");
-            //audioObject.hideFlags = HideFlags.HideAndDontSave;
-            instance.sfxSource = audioObject.AddComponent<AudioSource>();
-            sources = new AudioSource[soundTypes.Length];
-            for (int i = 0; i < sources.Length; i++)
+            if (source.pitch == pitch || !source.isPlaying)
             {
-                sources[i] = audioObject.AddComponent<AudioSource>();
+                source.pitch = pitch;
+                if (type == firstMusic)
+                    source.Play(audio.clips.RandomElement(), audio.volume.randomValue);
+                else
+                    source.PlayOneShot(audio.clips.RandomElement(), audio.volume.randomValue);
+                return;
             }
         }
-    }
-
-    /// <summary>Play sound effect using the PlayOneShot method from a separate AudioSource</summary>
-    public void PlaySfx(string name)
-    {
-        Sound sound = GetSound(name);
-        if (sound != null)
-        {
-            sfxSource.pitch = sound.pitch;
-            sfxSource.PlayOneShot(sound.clip, sound.volume); 
-        }
-    }
-
-    private Sound GetSound(string name)
-    {
-        if (string.IsNullOrEmpty(name))
-            return null;
-        Sound s = Array.Find(sounds, sound => sound.name == name);
-        if (s == null)
-            InternalDebug.LogWarning("Sound: " + name + " not found!");
-        return s;
-    }
-
-    private int GetSoundType(AudioType type)
-    {
-        int t = (int)type;
-        for (int i = 0; i < soundTypes.Length; ++i)
-        {
-            if (t < soundTypes[i])
-                return i;
-        }
-        return -1;
-    }
-
-    public void PlayAudio(AudioType type)
-    {
-        int t = GetSoundType(type);
-        Audio s = audios[(int)type - t];
-        sources[t].pitch = s.pitch.randomValue;
-        if (soundTypes[t] == (int)AudioType.Music_Count)
-        {
-            sources[t].clip = s.clips.RandomElement();
-            sources[t].volume = s.volume.randomValue;
-            sources[t].Play();
-        }
-        else
-        {
-            sources[t].PlayOneShot(s.clips.RandomElement(), s.volume.randomValue);
-        }
+        Debug.LogWarning($"Can't find a valid audio source for {type}!");
     }
 }

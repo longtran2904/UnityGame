@@ -32,11 +32,9 @@ public static class SaveSystem
 
         string _path = Path.Combine(path, _roomName);
 
-        using (FileStream stream = new FileStream(_path, FileMode.Create))
-        {
-            formatter.Serialize(stream, _data);
-            InternalDebug.Log("Save");
-        }
+        using FileStream stream = new FileStream(_path, FileMode.Create);
+        formatter.Serialize(stream, _data);
+        InternalDebug.Log("Save");
     }
 
     public static T FromBinary<T>(string _roomName)
@@ -47,16 +45,14 @@ public static class SaveSystem
         {
             BinaryFormatter formatter = new BinaryFormatter();
 
-            using (FileStream stream = new FileStream(_path, FileMode.Open))
-            {
-                T _data = (T)formatter.Deserialize(stream);
-                return _data;
-            }
+            using FileStream stream = new FileStream(_path, FileMode.Open);
+            T _data = (T)formatter.Deserialize(stream);
+            return _data;
         }
         else
         {
             InternalDebug.LogError("File not found in: " + _path);
-            return default(T);
+            return default;
         }        
     }
 }
@@ -75,9 +71,7 @@ public static class JsonHelper
 
     public static string ToJson<T>(T[] array, bool prettyPrint = false)
     {
-        Wrapper<T> wrapper = new Wrapper<T>();
-        wrapper.Items = array;
-        return JsonUtility.ToJson(wrapper, prettyPrint);
+        return JsonUtility.ToJson(new Wrapper<T> { Items = array }, prettyPrint);
     }
 
     [System.Serializable]

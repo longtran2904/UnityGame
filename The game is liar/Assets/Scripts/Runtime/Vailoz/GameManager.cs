@@ -25,20 +25,26 @@ public class GameManager : MonoBehaviour
     public LevelData[] levels;
     public int currentLevel;
 
-    private List<RoomInstance> rooms;
-    private int currentRoom;
-
     [Header("Camera")]
     public Vector3Variable playerPos;
-    public CameraFollow2D follower;
+    public Entity cameraEntity;
     private Camera main;
 
     [Header("UI")]
+    public bool overrideGameUI;
     public GameUI gameUI;
     public GameMenu gameMenu;
 
-    [Header("Audio")]
-    public AudioManager audioManager;
+    [Header("Other")]
+    public Audio[] audios;
+    public AudioType firstMusic;
+    public int sourceCount;
+    public Pool[] pools;
+
+    private List<RoomInstance> rooms;
+    private int currentRoom;
+    private static Bounds defaultBounds;
+    public static Entity player;
 
     // IMPORTANT: This function only gets called in LevelInfoPostProcess.cs and its job is to:
     // 1. Add 2 rule tiles at the 2 ends of a door line.
@@ -53,6 +59,7 @@ public class GameManager : MonoBehaviour
         foreach (var room in rooms)
         {
             foreach (var door in room.Doors)
+            {
                 if (door.ConnectedRoomInstance != null)
                 {
                     Vector3Int dir = door.DoorLine.GetDirectionVector();
@@ -65,7 +72,7 @@ public class GameManager : MonoBehaviour
                         tilemap.SetTile(pos, null);
                         Remove(tilemap, pos, -(Vector3Int)door.FacingDirection);
 
-                        void Remove(Tilemap tilemap, Vector3Int pos, Vector3Int removeDir)
+                        static void Remove(Tilemap tilemap, Vector3Int pos, Vector3Int removeDir)
                         {
                             pos += removeDir;
                             if (tilemap.GetTile(pos))
@@ -76,57 +83,89 @@ public class GameManager : MonoBehaviour
                         }
                     }
                 }
+            }
         }
 
         tilemap.RefreshAllTiles();
         this.rooms = rooms;
     }
 
-    public static BoundsInt GetBoundsFromRoom(Transform roomTransform, bool compress = false)
+    public static Bounds GetBoundsFromRoom(Transform roomTransform, bool compress = false)
     {
-        Tilemap tilemap = roomTransform.GetChild(0).GetChild(2).GetComponent<Tilemap>();
-        if (compress)
+        Tilemap tilemap = roomTransform?.GetChild(0).GetChild(2).GetComponent<Tilemap>();
+        if (tilemap)
         {
-            tilemap.CompressBounds();
-            tilemap.RefreshAllTiles();
+            if (compress)
+            {
+                tilemap.CompressBounds();
+                tilemap.RefreshAllTiles();
+            }
+            Bounds bounds = tilemap.cellBounds.ToBounds();
+            //bounds.min += roomTransform.position.ToVector3Int();
+            bounds.center += roomTransform.position;
+            return bounds;
         }
-        BoundsInt bounds = tilemap.cellBounds;
-        bounds.position += roomTransform.position.ToVector3Int();
-        return bounds;
+        return defaultBounds;
     }
 
     private void Start()
     {
-        main = follower.GetComponentInChildren<Camera>();
+        ObjectPooler.Init(gameObject, pools);
+        AudioManager.Init(gameObject, audios, firstMusic, sourceCount);
+        main = Camera.main;
+        player = GameObject.FindGameObjectWithTag("Player")?.GetComponent<Entity>();
         StartGameMode(startMode);
     }
 
     private void Update()
     {
-        if (rooms != null && rooms.Count > 0)
-            ToNextRoom(rooms, ref currentRoom, playerPos);
-
-        void ToNextRoom(List<RoomInstance> roomInstances, ref int currentRoom, Vector3Variable playerPos)
+        if (rooms != null)
         {
-            int i = 0;
-            foreach (var room in roomInstances)
+            if (levels[currentLevel].moveAutomatically)
             {
-                if (i != currentRoom)
+                //if (cameraEntity.HasProperty(EntityProperty.CompleteCycle))
+                if (cameraEntity.CompleteCycle())
                 {
-                    // NOTE: This will make sure the player has already moved pass the doors
-                    BoundsInt roomBounds = GetBoundsFromRoom(room.RoomTemplateInstance.transform);
-                    roomBounds.min += (Vector3Int)(Vector2Int.one * 2);
-                    roomBounds.max -= (Vector3Int)(Vector2Int.one * 2);
-
-                    if (roomBounds.Contains(playerPos.value.ToVector3Int()))
+                    if (currentRoom < rooms.Count)
                     {
-                        GameInput.TriggerEvent(GameEventType.NextRoom, room.RoomTemplateInstance.transform);
-                        currentRoom = i;
-                        break;
+                        float aspectRatio = 16f / 9f;
+                        Transform roomTransform = rooms[currentRoom++].RoomTemplateInstance.transform;
+                        Bounds bounds = GetBoundsFromRoom(roomTransform);
+                        if (bounds.size.x / bounds.size.y <= aspectRatio)
+                            main.orthographicSize = bounds.extents.x / aspectRatio;
+                        else
+                            main.orthographicSize = bounds.extents.y;
+                        GameInput.TriggerEvent(GameEventType.NextRoom, roomTransform);
                     }
                 }
+            }
+            else
+            {
+                ToNextRoom(rooms, ref currentRoom, playerPos);
 
-                ++i;
+                static void ToNextRoom(List<RoomInstance> roomInstances, ref int currentRoom, Vector3Variable playerPos)
+                {
+                    int i = 0;
+                    foreach (var room in roomInstances)
+                    {
+                        if (i != currentRoom)
+                        {
+                            // NOTE: This will make sure the player has already moved pass the doors
+                            Bounds roomBounds = GetBoundsFromRoom(room.RoomTemplateInstance.transform);
+                            roomBounds.min += (Vector3Int)(Vector2Int.one * 2);
+                            roomBounds.max -= (Vector3Int)(Vector2Int.one * 2);
+
+                            if (roomBounds.Contains(playerPos.value.ToVector3Int()))
+                            {
+                                GameInput.TriggerEvent(GameEventType.NextRoom, room.RoomTemplateInstance.transform);
+                                currentRoom = i;
+                                break;
+                            }
+                        }
+
+                        ++i;
+                    }
+                }
             }
         }
     }
@@ -147,9 +186,12 @@ public class GameManager : MonoBehaviour
             //  - Reset all the scriptable objects
             //  - Reset all game input's events
             rooms?.Clear();
-            gameUI.displayHealthBar = gameUI.displayMoneyCount = gameUI.displayWaveCount = gameUI.displayWeaponUI = gameUI.displayMinimap = true;
-            gameUI.enabled = false;
             gameMenu.gameObject.SetActive(false);
+            if (overrideGameUI)
+            {
+                gameUI.displayHealthBar = gameUI.displayMoneyCount = gameUI.displayWaveCount = gameUI.displayWeaponUI = gameUI.displayMinimap = true;
+                gameUI.enabled = false;
+            }
 
             bool isMainMode = mode == GameMode.Main;
             // NOTE: I didn't use the ?. operator because Unity's GameObject has a custom == operator but doesn't have a custom ?. operator
@@ -162,18 +204,20 @@ public class GameManager : MonoBehaviour
         {
             case GameMode.Main:
                 {
-                    audioManager.PlayAudio(AudioType.Music_Main);
+                    AudioManager.PlayAudio(AudioType.Music_Main);
                 } break;
             case GameMode.Play:
                 {
                     {
                         for (int i = 0; i < levels.Length; i++)
-                            levels[i].gameObject.SetActive(i == currentLevel ? true : false);
-                        gameUI.enabled = levels[currentLevel].enableUI;
-                        gameUI.displayMinimap = levels[currentLevel].enableMinimap;
+                            levels[i].gameObject.SetActive(i == currentLevel);
+                        if (overrideGameUI)
+                        {
+                            gameUI.enabled = levels[currentLevel].enableUI;
+                            gameUI.displayMinimap = levels[currentLevel].enableMinimap;
+                        }
                     }
 
-                    Action<CameraFollow2D> done = null;
                     switch (levels[currentLevel].type)
                     {
                         case BoundsType.Generator:
@@ -216,50 +260,33 @@ public class GameManager : MonoBehaviour
                                     PlayerController player = FindObjectOfType<PlayerController>();
                                     if (player)
                                         Destroy(player.gameObject);
-                                    done = cam => cam.ToNextRoom(NextBounds(cam, main, 16f / 9f));
-
-                                    Bounds NextBounds(CameraFollow2D follower, Camera cam, float aspectRatio)
-                                    {
-                                        if (currentRoom == rooms.Count)
-                                            return new Bounds(Vector3.zero, Vector3.zero);
-
-                                        Bounds bounds = GetBoundsFromRoom(rooms[currentRoom++].RoomTemplateInstance.transform).ToBounds();
-                                        if (bounds.size.x / bounds.size.y <= aspectRatio)
-                                            cam.orthographicSize = bounds.extents.x / aspectRatio;
-                                        else
-                                            cam.orthographicSize = bounds.extents.y;
-                                        follower.cameraOffset = cam.HalfSize();
-                                        
-                                        return bounds;
-                                    }
                                 }
                             } break;
                     }
 
-                    InitLevel(levels[currentLevel], follower, main.HalfSize(), playerPos, done);
-                } break;
-        }
-    }
+                    InitLevel(levels[currentLevel], main.HalfSize());
 
-    static void InitLevel(LevelData level, CameraFollow2D follower, Vector2 camHalfSize, Vector3Variable playerPos, Action<CameraFollow2D> done)
-    {
-        if (level.moveAutomatically)
-            follower.InitAutomatic(camHalfSize, level.useSmoothDamp, level.cameraValue, level.waitTime, done);
-        else
-            follower.InitManual(camHalfSize, level.useSmoothDamp, level.cameraValue, playerPos);
+                    void InitLevel(LevelData level, Vector2 camHalfSize)
+                    {
+                        cameraEntity = main.GetComponentInParent<Entity>();
+                        cameraEntity.InitCamera(level.moveAutomatically, level.useSmoothDamp, level.cameraValue, level.waitTime);
 
-        switch (level.type)
-        {
-            case BoundsType.Tilemap:
-                {
-                    level.tilemap.CompressBounds();
-                    level.tilemap.RefreshAllTiles();
-                    follower.ToNextRoom(level.tilemap.cellBounds.ToBounds());
-                } break;
-            case BoundsType.Custom:
-                {
-                    Bounds bounds = new Bounds(Vector3.zero, level.boundsSize + camHalfSize * 2);
-                    follower.ToNextRoom(bounds);
+                        switch (level.type)
+                        {
+                            case BoundsType.Tilemap:
+                                {
+                                    level.tilemap.CompressBounds();
+                                    level.tilemap.RefreshAllTiles();
+                                    defaultBounds = level.tilemap.cellBounds.ToBounds();
+                                    GameInput.TriggerEvent(GameEventType.NextRoom, null);
+                                } break;
+                            case BoundsType.Custom:
+                                {
+                                    defaultBounds = new Bounds(Vector3.zero, level.boundsSize + camHalfSize * 2);
+                                    GameInput.TriggerEvent(GameEventType.NextRoom, null);
+                                } break;
+                        }
+                    }
                 } break;
         }
     }
@@ -268,13 +295,13 @@ public class GameManager : MonoBehaviour
     {
         if (lockRoom && !disableEnemies)
         {
-            EnemySpawner spawner = room.GetComponentInChildren<EnemySpawner>(true);
+            EnemySpawner spawner = room?.GetComponentInChildren<EnemySpawner>(true);
             if (!spawner)
                 return;
             spawner.enabled = true;
         }
 
-        Transform doorHolder = room.Find("Doors");
+        Transform doorHolder = room?.Find("Doors");
         if (doorHolder)
         {
             if (lockRoom)

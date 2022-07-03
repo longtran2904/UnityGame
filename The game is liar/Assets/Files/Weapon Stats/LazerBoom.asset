@@ -16,13 +16,12 @@ MonoBehaviour:
   critDamage: 0
   critChance: 0
   fireRate: 0
-  mode: 0
   ammo: 0
   knockback: 0
   price: 0
   icon: {fileID: 0}
   weaponName: LazerBoom
-  description: laser gun
+  description: laser gun is very cool
   standardReload: 0
   activeReload: 0
   perfectReload: 0

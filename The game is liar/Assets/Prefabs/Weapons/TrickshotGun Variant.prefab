@@ -24,41 +24,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 310902724418139096, guid: 5c94a61b4cfdce141b132fa7cdb697bc,
         type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 310902724418139096, guid: 5c94a61b4cfdce141b132fa7cdb697bc,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 310902724418139096, guid: 5c94a61b4cfdce141b132fa7cdb697bc,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 310902724418139096, guid: 5c94a61b4cfdce141b132fa7cdb697bc,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 310902724418139096, guid: 5c94a61b4cfdce141b132fa7cdb697bc,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 310902724418139096, guid: 5c94a61b4cfdce141b132fa7cdb697bc,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 310902724418139096, guid: 5c94a61b4cfdce141b132fa7cdb697bc,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 310902724418139096, guid: 5c94a61b4cfdce141b132fa7cdb697bc,
-        type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
       value: 0
       objectReference: {fileID: 0}
@@ -82,6 +47,16 @@ PrefabInstance:
         type: 3}
       propertyPath: canReload
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 310902724418139098, guid: 5c94a61b4cfdce141b132fa7cdb697bc,
+        type: 3}
+      propertyPath: posOffset.x
+      value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 310902724418139098, guid: 5c94a61b4cfdce141b132fa7cdb697bc,
+        type: 3}
+      propertyPath: posOffset.y
+      value: -0.2
       objectReference: {fileID: 0}
     - target: {fileID: 310902724418139099, guid: 5c94a61b4cfdce141b132fa7cdb697bc,
         type: 3}
@@ -108,11 +83,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: TrickshotGun Variant
-      objectReference: {fileID: 0}
-    - target: {fileID: 310902724418139101, guid: 5c94a61b4cfdce141b132fa7cdb697bc,
-        type: 3}
-      propertyPath: m_Enabled
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 310902724552470230, guid: 5c94a61b4cfdce141b132fa7cdb697bc,
         type: 3}

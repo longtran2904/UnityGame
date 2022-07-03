@@ -31,7 +31,6 @@ public class Turret : ElementalItem
             Vector2 size = new Vector2(.01f, .3f);
             Vector2 offset = new Vector2(sr.bounds.extents.x * transform.right.x, 0.2f);
             RaycastHit2D hitInfo = Physics2D.Raycast((Vector2)transform.position + offset, transform.right, range, LayerMask.GetMask("Enemy"));
-            ExtDebug.DrawBoxCastBox((Vector2)transform.position + offset, size/2, Quaternion.identity, transform.right, range, Color.red);
             Shoot(hitInfo);
         }
     }
@@ -42,8 +41,8 @@ public class Turret : ElementalItem
         {
             if (canShoot)
             {
-                Projectile bullet = ObjectPooler.instance.SpawnFromPool<Projectile>("TurretBullet", shootPos.position, Quaternion.identity);
-                bullet.Init(damage, 0, 0, new State(StatusType.Bleed, duration, damage, state.timeBtwHits));
+                //Projectile bullet = ObjectPooler.instance.SpawnFromPool<Projectile>("TurretBullet", shootPos.position, Quaternion.identity);
+                //bullet.Init(damage, new State(StatusType.Bleed, duration, damage, state.timeBtwHits));
             }
             timeBtwShotsValue = Time.time + timeBtwShots;
         }

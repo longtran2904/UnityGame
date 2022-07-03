@@ -16,12 +16,9 @@ MonoBehaviour:
   critDamage: 60
   critChance: 0.4
   fireRate: 2
-  mode: 2
   ammo: 6
   knockback: 0
   price: 20
-  sfx: PlayerShoot
-  projectile: PlayerBullet
   icon: {fileID: 21300000, guid: 883a45caba5291747bca7cd414d7ca49, type: 3}
   weaponName: Shougy
   description: This is a shotgun! It's very powerful

@@ -18,4 +18,7 @@ MonoBehaviour:
   - We offer high quality guns with really cheap price!
   - No one can compete with us!
   - Or maybe it just we are the only one who sell here.
-  responses: []
+  responses:
+  - text: 
+    dialogueID: 
+    dialogue: {fileID: 0}

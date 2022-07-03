@@ -16,12 +16,9 @@ MonoBehaviour:
   critDamage: 34
   critChance: 0.3
   fireRate: 3
-  mode: 2
   ammo: 12
   knockback: 0
   price: 22
-  sfx: PlayerShoot
-  projectile: PlayerBullet
   icon: {fileID: 21300000, guid: d66cee39e8c997e4b8a06e4045c4f783, type: 3}
   weaponName: Shrood
   description: powerful usp

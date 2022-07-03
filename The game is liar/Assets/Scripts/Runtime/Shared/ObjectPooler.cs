@@ -1,94 +1,99 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public interface IPooledObject
 {
+    // NOTE: Every pooled objects need to have an OnObjectInit function because they will instantly get disabled after being instantiated.
+    void OnObjectInit();
     void OnObjectSpawn();
 }
 
-[CreateAssetMenu(menuName = "Scriptable/ObjectPooler")]
-public class ObjectPooler : ScriptableObject
+public enum PoolType
 {
-    [System.Serializable]
-    public class Pool
+    None,
+
+    Enemy_Alien,
+    Enemy_Drone,
+    Enemy_Bat,
+    Enemy_Maggot,
+    Enemy_NoEye,
+    Enemy_GiantEye,
+
+    Cell,
+    Meteor,
+    DamagePopup,
+    DamagePopup_Critical,
+    Bullet_Normal,
+    Bullet_Blood,
+    Bullet_Bounce,
+
+    VFX_Spawner,
+    VFX_Destroyed_Enemy,
+    VFX_Destroyed_Bullet,
+    VFX_Destroyed_Bullet_Bounce,
+    VFX_Destroyed_Glass,
+    VFX_Destroyed_Wood,
+    VFX_Destroyed_Paper,
+
+    // Item
+
+    Count
+}
+
+[System.Serializable]
+public class Pool
+{
+    public PoolType type;
+    public GameObject prefab;
+    public int size;
+}
+
+// TODO: Currently, Instantiate only gets called in:
+// 1.TextboxHandler for spawning a single textboxCanvs at the start
+// 2.EnemySpawner for spawning enemies
+// 3.WeaponInventory for spawning weapons
+// 4.Item - related stuff
+// 5.LevelInfoPostProcess for door objects
+// 6.EqualDistribution for spawning points
+// I can remove 5) when making my generator, 4) when reworking on the item system, 2) when reworking on the enemy system.
+// Probably just leave out the remaining.
+public static class ObjectPooler
+{
+    private static Dictionary<PoolType, GameObject[]> dictionary;
+
+    public static void Init(GameObject obj, Pool[] pools)
     {
-        public string tag;
-        public GameObject prefab;
-        public int size;
-    }
-
-    public List<Pool> pools;
-    public Dictionary<string, Queue<GameObject>> poolDictionary;
-
-    public static ObjectPooler instance;
-
-    private void OnEnable()
-    {
-#if UNITY_EDITOR
-        if (UnityEditor.EditorApplication.isPlayingOrWillChangePlaymode) Init();
-#else
-        if (Application.isPlaying) Init();
-#endif
-    }
-
-    void Init()
-    {
-        if (!instance)
+        dictionary = new Dictionary<PoolType, GameObject[]>((int)PoolType.Count)
         {
-            instance = this;
-            instance.poolDictionary = new Dictionary<string, Queue<GameObject>>();
-
-            foreach (Pool pool in instance.pools)
+            [PoolType.None] = new GameObject[0]
+        };
+        foreach (Pool pool in pools)
+        {
+            dictionary[pool.type] = new GameObject[pool.size];
+            for (int i = 0; i < pool.size; i++)
             {
-                Queue<GameObject> objectToPool = new Queue<GameObject>();
-                for (int i = 0; i < pool.size; i++)
-                {
-                    GameObject gameObject = Instantiate(pool.prefab);
-                    gameObject.SetActive(false);
-                    objectToPool.Enqueue(gameObject);
-                }
-                instance.poolDictionary.Add(pool.tag, objectToPool);
+                dictionary[pool.type][i] = Object.Instantiate(pool.prefab, Vector3.zero, Quaternion.identity, obj.transform);
+                dictionary[pool.type][i].GetComponent<IPooledObject>().OnObjectInit();
+                dictionary[pool.type][i].SetActive(false);
             }
         }
     }
 
-    public GameObject SpawnFromPool(string tag, Vector3 position, Quaternion rotation, Transform parent = null, bool worldSpae = true)
+    public static GameObject Spawn(PoolType type, Vector2 pos, Quaternion rot)
     {
-        if (!poolDictionary.ContainsKey(tag))
+        foreach (GameObject instance in dictionary[type])
         {
-            InternalDebug.LogWarning("Pool with tag: " + tag + " doesn't exists.");
-            return null;
+            if (!instance.activeSelf)
+            {
+                instance.transform.SetPositionAndRotation(pos, rot);
+                instance.SetActive(true);
+                instance.GetComponent<IPooledObject>().OnObjectSpawn();
+                return instance;
+            }
         }
 
-        return SpawnAndDequeue(tag, position, rotation, parent, worldSpae);
+        return null;
     }
 
-    public T SpawnFromPool<T>(string tag, Vector3 position, Quaternion rotation, Transform parent = null, bool worldSpace = true) where T : Component
-    {
-        if (!poolDictionary.ContainsKey(tag))
-        {
-            InternalDebug.LogWarning("Pool with tag: " + tag + " doesn't exists.");
-            return default(T);
-        }
-
-        return SpawnAndDequeue(tag, position, rotation, parent, worldSpace).GetComponent<T>();
-    }
-
-    private GameObject SpawnAndDequeue(string tag, Vector3 position, Quaternion rotation, Transform parent, bool worldSpace)
-    {
-        GameObject objToSpawn = poolDictionary[tag].Dequeue();
-
-        objToSpawn.SetActive(true);
-        objToSpawn.transform.SetParent(parent);
-        if (worldSpace) objToSpawn.transform.position = position;
-        else objToSpawn.transform.localPosition = position;
-        objToSpawn.transform.rotation = rotation;
-
-        IPooledObject pooledObj = objToSpawn.GetComponent<IPooledObject>();
-        pooledObj?.OnObjectSpawn();
-
-        poolDictionary[tag].Enqueue(objToSpawn);
-        return objToSpawn;
-    }
+    public static GameObject Spawn(PoolType type, Vector2 pos) => Spawn(type, pos, Quaternion.identity);
 }

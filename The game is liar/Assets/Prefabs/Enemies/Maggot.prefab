@@ -30,7 +30,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5709645794468026846}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -13.57, y: 5.48, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 3.125, y: 3.125, z: 1}
   m_Children:
   - {fileID: 8947182557610414703}
@@ -280,7 +280,6 @@ MonoBehaviour:
   deathEffect: {fileID: 6839049992637430885, guid: 8e212a19ddbe9cb46b4ad6ad03ac4854,
     type: 3}
   audioManager: {fileID: 11400000, guid: 01443e5a6bdc47b4387217618b65db47, type: 2}
-  pooler: {fileID: 11400000, guid: 45efe5bf297d938428e78116078a92c9, type: 2}
   brain: 0
   speed: 3
   abilityCooldownTime: 0.5

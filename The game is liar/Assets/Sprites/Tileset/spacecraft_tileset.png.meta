@@ -327,6 +327,7 @@ TextureImporter:
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
   vTOnly: 0
+  ignoreMasterTextureLimit: 0
   grayScaleToAlpha: 0
   generateCubemap: 6
   cubemapConvolution: 0
@@ -1812,6 +1813,71 @@ TextureImporter:
     secondaryTextures:
     - texture: {fileID: 2800000, guid: 197dfdad5f2476044b395953adfee953, type: 3}
       name: _NormalMap
+    nameFileIdTable:
+      spacecraft_tileset_1: 8850413269198080239
+      spacecraft_tileset_22: 2253088484067835716
+      spacecraft_tileset_56: 1098119122236637485
+      spacecraft_tileset_8: 9038613968562987238
+      spacecraft_tileset_14: -3710615402038783258
+      spacecraft_tileset_58: -2838830282599354885
+      spacecraft_tileset_7: 7404376473003613611
+      spacecraft_tileset_25: -7379430224469622496
+      spacecraft_tileset_0: 5159366646252626357
+      spacecraft_tileset_36: 1495854787268492085
+      spacecraft_tileset_16: -199080502871324093
+      spacecraft_tileset_41: 166369707581343536
+      spacecraft_tileset_31: -735528829318207192
+      spacecraft_tileset_33: 5858540492619512500
+      spacecraft_tileset_29: 3127546621443638151
+      spacecraft_tileset_9: -1065672149441861520
+      spacecraft_tileset_46: -7697608926468406245
+      spacecraft_tileset_51: -5951379218890109455
+      spacecraft_tileset_34: 6959151424881392730
+      spacecraft_tileset_57: 6881155370671487302
+      spacecraft_tileset_20: 8373938375150063504
+      spacecraft_tileset_15: 6253339637617790991
+      spacecraft_tileset_30: -8850853889098251108
+      spacecraft_tileset_40: -1950379207867837728
+      spacecraft_tileset_50: -4317544318155929823
+      spacecraft_tileset_55: -3115700165880809121
+      spacecraft_tileset_63: 291282631847626850
+      spacecraft_tileset_49: -879970656376653753
+      spacecraft_tileset_17: -1366696353822808282
+      spacecraft_tileset_10: 2486997761880429853
+      spacecraft_tileset_35: -1537156772443317409
+      spacecraft_tileset_43: -2021850598436975545
+      spacecraft_tileset_5: -7815220893663634045
+      spacecraft_tileset_53: 2941304839033968973
+      spacecraft_tileset_3: -1275787576289370410
+      spacecraft_tileset_42: 7645076287700350358
+      spacecraft_tileset_28: 2389277570198361553
+      spacecraft_tileset_23: -7997046371764358591
+      spacecraft_tileset_45: -8907799301073133264
+      spacecraft_tileset_54: 7110143261191098040
+      spacecraft_tileset_62: -1910237192045468360
+      spacecraft_tileset_47: 3098503979980846346
+      spacecraft_tileset_24: 6886029275248449733
+      spacecraft_tileset_6: -4768592376195236077
+      spacecraft_tileset_26: 767472513587168173
+      spacecraft_tileset_48: 4480942048051369700
+      spacecraft_tileset_11: -2067519411412958357
+      spacecraft_tileset_44: 8527469552350913771
+      spacecraft_tileset_21: -5038815645698033226
+      spacecraft_tileset_59: 321902710503117883
+      spacecraft_tileset_37: 912429666613243552
+      spacecraft_tileset_39: -838181955580156914
+      spacecraft_tileset_2: -4326946263317868179
+      spacecraft_tileset_4: -7565955656093572482
+      spacecraft_tileset_60: 7668035823025121850
+      spacecraft_tileset_38: 6435385604052209506
+      spacecraft_tileset_32: -2044222535130456021
+      spacecraft_tileset_13: -2433841173457000895
+      spacecraft_tileset_61: 2055448044297749234
+      spacecraft_tileset_12: 549334181778951492
+      spacecraft_tileset_18: 5424468704737987483
+      spacecraft_tileset_52: -2352036100784368750
+      spacecraft_tileset_27: -5381292551194407783
+      spacecraft_tileset_19: -5861263671631050709
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

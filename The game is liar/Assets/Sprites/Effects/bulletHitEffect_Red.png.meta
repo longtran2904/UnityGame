@@ -42,6 +42,7 @@ TextureImporter:
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
   vTOnly: 0
+  ignoreMasterTextureLimit: 0
   grayScaleToAlpha: 0
   generateCubemap: 6
   cubemapConvolution: 0
@@ -292,6 +293,13 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
+    nameFileIdTable:
+      bulletHitEffect_Red_0: -2529154461535250836
+      bulletHitEffect_Red_1: 5653723244420574003
+      bulletHitEffect_Red_4: 5160141394468099222
+      bulletHitEffect_Red_5: -7090228412299069926
+      bulletHitEffect_Red_2: -6259510616087688915
+      bulletHitEffect_Red_3: 527822418834715965
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

@@ -16,7 +16,6 @@ MonoBehaviour:
   critDamage: 65
   critChance: 0.32
   fireRate: 11
-  mode: 0
   ammo: 30
   knockback: 0
   price: 72

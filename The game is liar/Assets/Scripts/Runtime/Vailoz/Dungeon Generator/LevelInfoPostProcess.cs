@@ -35,17 +35,24 @@ public class LevelInfoPostProcess : DungeonGeneratorPostProcessBase
 
     static void AddLevelMap(RoomInstance room, TileBase[] tiles, TileBase wallTile, TileBase backgroundTile)
     {
-        BoundsInt currentBounds = GameManager.GetBoundsFromRoom(room.RoomTemplateInstance.transform, true);
+        BoundsInt currentBounds = GameManager.GetBoundsFromRoom(room.RoomTemplateInstance.transform, true).ToBoundsInt();
         currentBounds.min += (Vector3Int)Vector2Int.one;
         currentBounds.max -= (Vector3Int)Vector2Int.one;
         List<Vector3Int> wallTiles = MathUtils.GetOutlinePoints(currentBounds);
         Tilemap tilemap = CreateGameObject(room.RoomTemplateInstance.transform.GetChild(0).transform,
             "Level Map", "LevelMap", true, typeof(Tilemap), typeof(TilemapRenderer)).GetComponent<Tilemap>();
+        GameDebug.DrawBounds(currentBounds.ToBounds(), Color.cyan);
 
         foreach (DoorInstance door in room.Doors)
         {
-            Debug.Assert(wallTiles.Remove(room.Position + door.DoorLine.From - door.FacingDirection.ToVector3Int()));
-            Debug.Assert(wallTiles.Remove(room.Position + door.DoorLine.To - door.FacingDirection.ToVector3Int()));
+            Vector3Int doorOrigin = room.Position - door.FacingDirection.ToVector3Int();
+            Vector3Int doorFrom = doorOrigin + door.DoorLine.From;
+            Vector3Int doorTo = doorOrigin + door.DoorLine.To;
+            bool successFrom = wallTiles.Remove(doorFrom);
+            bool successTo = wallTiles.Remove(doorTo);
+            GameDebug.DrawBoxMinMax(doorFrom.ToVector2Int(), doorTo.ToVector2Int(), Color.red);
+            Debug.Assert(successFrom, doorFrom + " " + door.FacingDirection + " " + room.RoomTemplateInstance.name);
+            Debug.Assert(successTo, doorTo + " " + door.FacingDirection + " " + room.RoomTemplateInstance.name);
             Debug.Assert((door.DoorLine.From.x <= door.DoorLine.To.x) && (door.DoorLine.From.y <= door.DoorLine.To.y),
                 "From: " + door.DoorLine.From + " To: " + door.DoorLine.To);
 
@@ -55,8 +62,8 @@ public class LevelInfoPostProcess : DungeonGeneratorPostProcessBase
         }
         tilemap.SetTiles(wallTiles.ToArray(), tiles.Populate(wallTile));
 
-        currentBounds.min += Vector3Int.one;
-        currentBounds.max -= Vector3Int.one;
+        currentBounds.min += (Vector3Int)Vector2Int.one;
+        currentBounds.max -= (Vector3Int)Vector2Int.one;
         tilemap.SetTilesBlock(currentBounds, tiles.Populate(backgroundTile));
 
         // NOTE: There will be some duplications with the previous room's doors, but I don't care.

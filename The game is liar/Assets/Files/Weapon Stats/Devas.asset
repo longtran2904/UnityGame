@@ -16,12 +16,9 @@ MonoBehaviour:
   critDamage: 72
   critChance: 0.3
   fireRate: 10
-  mode: 0
   ammo: 25
   knockback: 0
   price: 72
-  sfx: PlayerShoot
-  projectile: PlayerBullet
   icon: {fileID: 21300000, guid: 5ba391a0a230e6846934a0c3e6fd17f0, type: 3}
   weaponName: Devas
   description: AK

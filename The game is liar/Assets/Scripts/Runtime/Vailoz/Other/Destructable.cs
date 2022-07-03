@@ -5,22 +5,27 @@ using UnityEngine;
 public class Destructable : MonoBehaviour
 {
     [Range(0, 1)] public float particleScaleMultipler = 1f;
-    public GameObject destroyParticle;
-    public GameObject remainParticle;
-    public RangedFloat dropRange;
+    public PoolType[] particles;
+    [MinMax(0, 10)] public RangedInt dropRange;
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("Player"))
         {
-            if (destroyParticle) Instantiate(destroyParticle, transform.position, Quaternion.identity).transform.localScale *= particleScaleMultipler;
-            if (remainParticle) Instantiate(remainParticle, transform.position, Quaternion.identity).transform.localScale *= particleScaleMultipler;
-            for (int i = 0; i < dropRange.randomValue; i++)
-            {
-                Vector3 offset = new Vector3(Random.Range(-.5f, .5f), Random.Range(-.5f, .5f));
-                ObjectPooler.instance.SpawnFromPool("Money", transform.position + offset, Quaternion.identity);
-            }
+            foreach (PoolType particle in particles)
+                ObjectPooler.Spawn(particle, transform.position);
+            Drop();
             Destroy(gameObject);
+        }
+    }
+
+    [EasyButtons.Button]
+    void Drop()
+    {
+        for (int i = 0; i < dropRange.randomValue; i++)
+        {
+            Vector3 offset = new Vector3(Random.Range(-.5f, .5f), Random.Range(-.5f, .5f));
+            ObjectPooler.Spawn(PoolType.Cell, transform.position + offset);
         }
     }
 }

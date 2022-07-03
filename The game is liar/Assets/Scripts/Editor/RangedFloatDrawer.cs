@@ -9,8 +9,7 @@ public class RangedFloatDrawer : PropertyDrawer
     private static MinMaxAttribute defaultRange = new MinMaxAttribute(0, 1);
     public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
     {
-        MinMaxAttribute limits = attribute as MinMaxAttribute;
-        if (limits == null)
+        if (!(attribute is MinMaxAttribute limits))
             limits = defaultRange;
         var minProp = property.FindPropertyRelative("min");
         var maxProp = property.FindPropertyRelative("max");

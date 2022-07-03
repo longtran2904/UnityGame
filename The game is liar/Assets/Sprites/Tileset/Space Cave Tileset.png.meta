@@ -216,7 +216,7 @@ TextureImporter:
       213: -5307882567218831103
     second: Space Cave Tileset_70
   externalObjects: {}
-  serializedVersion: 10
+  serializedVersion: 11
   mipmaps:
     mipMapMode: 0
     enableMipMap: 0
@@ -236,6 +236,8 @@ TextureImporter:
   isReadable: 0
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMasterTextureLimit: 0
   grayScaleToAlpha: 0
   generateCubemap: 6
   cubemapConvolution: 0
@@ -245,8 +247,8 @@ TextureImporter:
   textureSettings:
     serializedVersion: 2
     filterMode: 0
-    aniso: -1
-    mipBias: -100
+    aniso: 1
+    mipBias: 0
     wrapU: 1
     wrapV: 1
     wrapW: 1
@@ -267,9 +269,13 @@ TextureImporter:
   textureType: 8
   textureShape: 1
   singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
   maxTextureSizeSet: 0
   compressionQualitySet: 0
   textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 1
   platformSettings:
   - serializedVersion: 3
     buildTarget: DefaultTexturePlatform
@@ -1847,6 +1853,78 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
+    nameFileIdTable:
+      Space Cave Tileset_44: 994297650799714084
+      Space Cave Tileset_2: -3418344585512391543
+      Space Cave Tileset_59: -2568320721151051804
+      Space Cave Tileset_28: 6840270795565997876
+      Space Cave Tileset_42: 7791372388564765006
+      Space Cave Tileset_32: 1557730062352956188
+      Space Cave Tileset_46: 2977984607457333594
+      Space Cave Tileset_53: -6313037297676316864
+      Space Cave Tileset_27: 2261270711527356498
+      Space Cave Tileset_67: -6070302603343276770
+      Space Cave Tileset_23: -6686549440126759501
+      Space Cave Tileset_48: -5974799712769465577
+      Space Cave Tileset_62: -8512399789048740469
+      Space Cave Tileset_49: -5800976968535517315
+      Space Cave Tileset_6: -2137818242380907433
+      Space Cave Tileset_54: -7393909959076120958
+      Space Cave Tileset_61: -780680568047105732
+      Space Cave Tileset_3: 836902235226444191
+      Space Cave Tileset_7: -645574642448742750
+      Space Cave Tileset_26: 7418607954375061047
+      Space Cave Tileset_47: 8053140738149436259
+      Space Cave Tileset_35: -1485051466863817620
+      Space Cave Tileset_64: 4322366589967588877
+      Space Cave Tileset_57: 3733422680887997391
+      Space Cave Tileset_55: -7148207461706098051
+      Space Cave Tileset_69: -6305462817938982538
+      Space Cave Tileset_68: 3603720693654224908
+      Space Cave Tileset_13: 8582720492838186583
+      Space Cave Tileset_21: -1341323624550528849
+      Space Cave Tileset_70: -5307882567218831103
+      Space Cave Tileset_36: -8878918107901252813
+      Space Cave Tileset_18: 3880399164681373714
+      Space Cave Tileset_34: 7257052253657953460
+      Space Cave Tileset_66: -1902077125622006422
+      Space Cave Tileset_63: -2464519698199614294
+      Space Cave Tileset_14: -5125588827173397455
+      Space Cave Tileset_0: -5805206854572937799
+      Space Cave Tileset_20: -7423376405782011328
+      Space Cave Tileset_12: 6687227863795220383
+      Space Cave Tileset_56: -3198744640974233004
+      Space Cave Tileset_33: -8673031854868408444
+      Space Cave Tileset_38: -7484390185930661818
+      Space Cave Tileset_16: -145781856341720978
+      Space Cave Tileset_29: -4841562394486509160
+      Space Cave Tileset_1: -3336527578693584336
+      Space Cave Tileset_9: -4500404762489791114
+      Space Cave Tileset_40: 9155562967095647306
+      Space Cave Tileset_5: -4081440091950250386
+      Space Cave Tileset_58: 7456158730388754336
+      Space Cave Tileset_50: 3342905161086627260
+      Space Cave Tileset_65: 7801528157181051504
+      Space Cave Tileset_15: 4639868063390451110
+      Space Cave Tileset_51: -9128290173292820583
+      Space Cave Tileset_4: 4730391172172159614
+      Space Cave Tileset_31: -4354917370658284653
+      Space Cave Tileset_60: -8465774077699147387
+      Space Cave Tileset_45: 7713630657717816440
+      Space Cave Tileset_8: -3602920801670911690
+      Space Cave Tileset_11: 1494697943329233578
+      Space Cave Tileset_17: 4315085139527061273
+      Space Cave Tileset_39: 3163594853768053918
+      Space Cave Tileset_10: 4793732687134084479
+      Space Cave Tileset_19: 7361111147097651863
+      Space Cave Tileset_37: 4443113175675704972
+      Space Cave Tileset_25: 8436865838369249041
+      Space Cave Tileset_24: 8820097710994128693
+      Space Cave Tileset_41: 5523065122005574127
+      Space Cave Tileset_52: -1519537011893762901
+      Space Cave Tileset_22: 1842745551428836908
+      Space Cave Tileset_43: -682458542052995509
+      Space Cave Tileset_30: -6048013980645434578
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 1640786741930137888}
   - component: {fileID: 8883796787604040116}
   - component: {fileID: 1903307575871816147}
-  - component: {fileID: 4749275045796047229}
+  - component: {fileID: 6893767153626458296}
   m_Layer: 2
   m_Name: Shockwave
   m_TagString: Bullet
@@ -132,7 +132,7 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
---- !u!114 &4749275045796047229
+--- !u!114 &6893767153626458296
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -141,12 +141,186 @@ MonoBehaviour:
   m_GameObject: {fileID: 1881379494382640149}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1cf41cb090b23a84f8c584abaa4a6ed3, type: 3}
+  m_Script: {fileID: 11500000, guid: 21094d93c7e57864d9c440ca38612b17, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  properties:
+    serializedEnumNames:
+    - CanFlipGravity
+    - CanBeHurt
+    - OpenGameOverMenu
+    - DamageWhenCollide
+    - DieWhenCollide
+    - DieAfterMoveTime
+    - SpawnCellWhenDie
+    - SpawnDamagePopup
+    - ClampToMoveRegion
+    - StartAtMinMoveRegion
+    - IsCritical
+    - UsePooling
+    - FallingOnSpawn
+    - MoveWhenClearRoom
+    - MoveToNearPlayer
+    - AddMoneyWhenCollide
+    - IsGrounded
+    - AtEndOfMoveRegion
+    - HasTargetOffset
+    - Count
+    properties: 3008000000000000
+  stats: []
+  health: 0
+  damage: 0
+  money: 0
+  collisionTags: []
+  valueRange:
+    min: 0
+    max: 0
+  moveType: 1
+  rotateType: 0
+  targetType: 0
   speed: 20
-  timer: 5
-  hitEffect: {fileID: 0}
-  canTouchGround: 1
-  canTouchPlayer: 1
-  audioManager: {fileID: 11400000, guid: 01443e5a6bdc47b4387217618b65db47, type: 2}
+  dRotate: 0
+  range: 0
+  offsetTarget: {x: 0, y: 0}
+  moveTime: 5
+  groundRememberTime: 0
+  jumpPressedRememberTime: 0
+  footstepAudio: 0
+  timeBtwFootsteps:
+    min: 0
+    max: 0
+  whiteMat: {fileID: 2100000, guid: a52db8d2e3bb7c84f9a724b122d7baa7, type: 2}
+  leftDust: {fileID: 0}
+  rightDust: {fileID: 0}
+  spawnVFX:
+    properties: 0000000000000000
+    properties2:
+      serializedEnumNames:
+      - StopAnimation
+      - ChangeEffectObjBack
+      - ScaleOverTime
+      - FadeTextWhenDone
+      - ShockCamera
+      - FlashCamera
+      - StartTrailing
+      - DecreaseTrailWidth
+      - PlayParticleInOrder
+      - ChangeTextColor
+      - ChangeFontSize
+      - Count
+      properties: 0000000000000000
+    nextAnimation: 
+    effectObj: {fileID: 0}
+    particles: []
+    waitTime: 0
+    scaleTime: 0
+    trailEmitTime: 0
+    trailStayTime: 0
+    flashTime: 0
+    flashDuration: 0
+    triggerColor: {r: 0, g: 0, b: 0, a: 0}
+    textColor: {r: 0, g: 0, b: 0, a: 0}
+    newText: 
+    fontSize: 0
+    stopTime: 0
+    trauma: 0
+    shakeMode: 0
+    shockSpeed: 0
+    shockSize: 0
+    camFlashTime: 0
+    camFlashAlpha: 0
+    alpha: 0
+    fadeTime: 0
+    range: 0
+    particleType: 0
+    audio: 0
+    poolType: 0
+    scaleOffset: {x: 0, y: 0}
+  deathVFX:
+    properties: 0000000000000000
+    properties2:
+      serializedEnumNames:
+      - StopAnimation
+      - ChangeEffectObjBack
+      - ScaleOverTime
+      - FadeTextWhenDone
+      - ShockCamera
+      - FlashCamera
+      - StartTrailing
+      - DecreaseTrailWidth
+      - PlayParticleInOrder
+      - ChangeTextColor
+      - ChangeFontSize
+      - Count
+      properties: 0000000000000000
+    nextAnimation: 
+    effectObj: {fileID: 0}
+    particles: []
+    waitTime: 0
+    scaleTime: 0
+    trailEmitTime: 0
+    trailStayTime: 0
+    flashTime: 0
+    flashDuration: 0
+    triggerColor: {r: 0, g: 0, b: 0, a: 0}
+    textColor: {r: 0, g: 0, b: 0, a: 0}
+    newText: 
+    fontSize: 0
+    stopTime: 0
+    trauma: 0
+    shakeMode: 0
+    shockSpeed: 0
+    shockSize: 0
+    camFlashTime: 0
+    camFlashAlpha: 0
+    alpha: 0
+    fadeTime: 0
+    range: 0
+    particleType: 0
+    audio: 0
+    poolType: 0
+    scaleOffset: {x: 0, y: 0}
+  hurtVFX:
+    properties: 0000000000000000
+    properties2:
+      serializedEnumNames:
+      - StopAnimation
+      - ChangeEffectObjBack
+      - ScaleOverTime
+      - FadeTextWhenDone
+      - ShockCamera
+      - FlashCamera
+      - StartTrailing
+      - DecreaseTrailWidth
+      - PlayParticleInOrder
+      - ChangeTextColor
+      - ChangeFontSize
+      - Count
+      properties: 0000000000000000
+    nextAnimation: 
+    effectObj: {fileID: 0}
+    particles: []
+    waitTime: 0
+    scaleTime: 0
+    trailEmitTime: 0
+    trailStayTime: 0
+    flashTime: 0
+    flashDuration: 0
+    triggerColor: {r: 0, g: 0, b: 0, a: 0}
+    textColor: {r: 0, g: 0, b: 0, a: 0}
+    newText: 
+    fontSize: 0
+    stopTime: 0
+    trauma: 0
+    shakeMode: 0
+    shockSpeed: 0
+    shockSize: 0
+    camFlashTime: 0
+    camFlashAlpha: 0
+    alpha: 0
+    fadeTime: 0
+    range: 0
+    particleType: 0
+    audio: 0
+    poolType: 0
+    scaleOffset: {x: 0, y: 0}

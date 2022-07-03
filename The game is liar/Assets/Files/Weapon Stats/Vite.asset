@@ -16,12 +16,9 @@ MonoBehaviour:
   critDamage: 32
   critChance: 0.32
   fireRate: 12.5
-  mode: 0
   ammo: 25
   knockback: 0
   price: 30
-  sfx: PlayerShoot
-  projectile: PlayerBullet
   icon: {fileID: 21300000, guid: b7c094e03baf3d748a7bde58fd30f04b, type: 3}
   weaponName: Vite
   description: Smg

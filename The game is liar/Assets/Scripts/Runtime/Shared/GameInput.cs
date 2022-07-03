@@ -85,14 +85,19 @@ public static class GameInput
         return platformInput.GetMousePos();
     }
 
+    public static Vector2 GetMouseWorldPos()
+    {
+        return platformInput.GetMouseWorldPos();
+    }
+
     public static Vector2 GetDirToMouse(Vector2 pos, int level = 0)
     {
         return platformInput.GetDirToMouse(pos, level);
     }
 
-    public static Vector2 GetMouseDir()
+    public static Vector2 GetMouseDir(int level = 0)
     {
-        return platformInput.GetMouseDir();
+        return platformInput.GetMouseDir(level);
     }
 
     public static float GetMouseWheel()

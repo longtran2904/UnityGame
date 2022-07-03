@@ -21,8 +21,6 @@ public class Tweener : MonoBehaviour
     public bool loop;
     public bool pingpong;
 
-    private Vector2 defaultValue;
-
     [ShowWhen("tweenType", new object[] { TweenType.MoveX, TweenType.ScaleX })]
     public float toX;
     [ShowWhen("tweenType", new object[] { TweenType.MoveY, TweenType.ScaleY })]
@@ -37,10 +35,6 @@ public class Tweener : MonoBehaviour
     void Start()
     {
         Execute();
-    }
-
-    void Tween()
-    {
     }
 
     public void Execute()

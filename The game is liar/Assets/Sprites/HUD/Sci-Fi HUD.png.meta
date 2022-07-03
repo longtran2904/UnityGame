@@ -48,7 +48,7 @@ TextureImporter:
       213: 7614389292151488614
     second: Sci-Fi HUD_14
   externalObjects: {}
-  serializedVersion: 10
+  serializedVersion: 11
   mipmaps:
     mipMapMode: 0
     enableMipMap: 0
@@ -68,6 +68,8 @@ TextureImporter:
   isReadable: 0
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMasterTextureLimit: 0
   grayScaleToAlpha: 0
   generateCubemap: 6
   cubemapConvolution: 0
@@ -77,8 +79,8 @@ TextureImporter:
   textureSettings:
     serializedVersion: 2
     filterMode: 0
-    aniso: -1
-    mipBias: -100
+    aniso: 1
+    mipBias: 0
     wrapU: 1
     wrapV: 1
     wrapW: 1
@@ -99,9 +101,13 @@ TextureImporter:
   textureType: 8
   textureShape: 1
   singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
   maxTextureSizeSet: 0
   compressionQualitySet: 0
   textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 1
   platformSettings:
   - serializedVersion: 3
     buildTarget: DefaultTexturePlatform
@@ -503,6 +509,22 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
+    nameFileIdTable:
+      Sci-Fi HUD_13: 7943772250103009750
+      Sci-Fi HUD_10: -3921684407679551594
+      Sci-Fi HUD_4: 9221614700900685534
+      Sci-Fi HUD_14: 7614389292151488614
+      Sci-Fi HUD_7: 420789363286186658
+      Sci-Fi HUD_12: 5839744932533285024
+      Sci-Fi HUD_1: 7447185121246766245
+      Sci-Fi HUD_6: -7752283559603292580
+      Sci-Fi HUD_9: 7112263717153070906
+      Sci-Fi HUD_3: -4317208041337158160
+      Sci-Fi HUD_11: -7445496486368551078
+      Sci-Fi HUD_8: -5617815056097841549
+      Sci-Fi HUD_5: 2027475820091137379
+      Sci-Fi HUD_0: 1718179087025770814
+      Sci-Fi HUD_2: -4585896881649526162
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

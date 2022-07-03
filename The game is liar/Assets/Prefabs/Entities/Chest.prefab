@@ -173,7 +173,7 @@ MonoBehaviour:
           m_BoolArgument: 1
         m_CallState: 2
   dialogues: []
-  dropData:
+  chestData:
     inventory: {fileID: 11400000, guid: 6863bfacb89a0eb49a079d06a26e8af5, type: 2}
     dropIndex:
       min: 0
