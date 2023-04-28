@@ -1,0 +1,772 @@
+Date: [10/14/2022 11:41:42 AM]
+
+
+-------- -------- -------- -------- {Prefab}:    7 -------- -------- -------- --------
+-- Damage Popup Entity (21480) --
+    Properties of -- Damage Popup Entity (21480) --: 2007999999640592, 111001000100100001111101110101100000000010000010000
+    All set flags of -- Damage Popup Entity (21480) --: 2
+        [0]: DieAfterMoveTime, 
+        [1]: UsePooling
+    Serialized names of -- Damage Popup Entity (21480) --: 18
+        [0]: CanFlipGravity: 0, 
+        [1]: CanBeHurt: 0, 
+        [2]: DamageWhenCollide: 0, 
+        [3]: DieWhenCollide: 0, 
+        [4]: DieAfterMoveTime: 1, 
+        [5]: SpawnCellWhenDie: 0, 
+        [6]: SpawnDamagePopup: 0, 
+        [7]: ClampToMoveRegion: 0, 
+        [8]: StartAtMinMoveRegion: 0, 
+        [9]: IsCritical: 0, 
+        [10]: UsePooling: 1, 
+        [11]: CustomInit: 0, 
+        [12]: AddMoneyWhenCollide: 0, 
+        [13]: FallingOnSpawn: 0, 
+        [14]: HasTargetOffset: 0, 
+        [15]: IsGrounded: 0, 
+        [16]: AtEndOfMoveRegion: 0, 
+        [17]: Count: 0
+    deathVFX
+        Properties of deathVFX: 0, 0
+        All set flags of deathVFX: 0
+        Serialized names of deathVFX: 9
+            [0]: StopAnimation: 0, 
+            [1]: ChangeEffectObjBack: 0, 
+            [2]: ScaleOverTime: 0, 
+            [3]: FadeTextWhenDone: 0, 
+            [4]: ShockCamera: 0, 
+            [5]: StartTrailing: 0, 
+            [6]: DecreaseTrailWidth: 0, 
+            [7]: PlayParticleInOrder: 0, 
+            [8]: Count: 0
+    hurtVFX
+        Properties of hurtVFX: 0, 0
+        All set flags of hurtVFX: 0
+        Serialized names of hurtVFX: 9
+            [0]: StopAnimation: 0, 
+            [1]: ChangeEffectObjBack: 0, 
+            [2]: ScaleOverTime: 0, 
+            [3]: FadeTextWhenDone: 0, 
+            [4]: ShockCamera: 0, 
+            [5]: StartTrailing: 0, 
+            [6]: DecreaseTrailWidth: 0, 
+            [7]: PlayParticleInOrder: 0, 
+            [8]: Count: 0
+
+-- CameraHolder (26054) --
+    Properties of -- CameraHolder (26054) --: 999999668352, 1110100011010100101000000000000010000000
+    All set flags of -- CameraHolder (26054) --: 1
+        [0]: ClampToMoveRegion
+    Serialized names of -- CameraHolder (26054) --: 18
+        [0]: CanFlipGravity: 0, 
+        [1]: CanBeHurt: 0, 
+        [2]: DamageWhenCollide: 0, 
+        [3]: DieWhenCollide: 0, 
+        [4]: DieAfterMoveTime: 0, 
+        [5]: SpawnCellWhenDie: 0, 
+        [6]: SpawnDamagePopup: 0, 
+        [7]: ClampToMoveRegion: 1, 
+        [8]: StartAtMinMoveRegion: 0, 
+        [9]: IsCritical: 0, 
+        [10]: UsePooling: 0, 
+        [11]: CustomInit: 0, 
+        [12]: AddMoneyWhenCollide: 0, 
+        [13]: FallingOnSpawn: 0, 
+        [14]: HasTargetOffset: 0, 
+        [15]: IsGrounded: 0, 
+        [16]: AtEndOfMoveRegion: 0, 
+        [17]: Count: 0
+    abilities[0]
+        Properties of abilities[0]: 0, 0
+        All set flags of abilities[0]: 0
+        Serialized names of abilities[0]: 9
+            [0]: Interuptible: 0, 
+            [1]: AwayFromPlayer: 0, 
+            [2]: LockOnPlayerForEternity: 0, 
+            [3]: ExecuteWhenLowHealth: 0, 
+            [4]: ExecuteWhenInRange: 0, 
+            [5]: ExecuteWhenInRangeY: 0, 
+            [6]: ExecuteWhenOutOfMoveRegion: 0, 
+            [7]: OrCombine: 0, 
+            [8]: CanExecute: 0
+            vfx
+                Properties of vfx: 0, 0
+                All set flags of vfx: 0
+                Serialized names of vfx: 9
+                    [0]: StopAnimation: 0, 
+                    [1]: ChangeEffectObjBack: 0, 
+                    [2]: ScaleOverTime: 0, 
+                    [3]: FadeTextWhenDone: 0, 
+                    [4]: ShockCamera: 0, 
+                    [5]: StartTrailing: 0, 
+                    [6]: DecreaseTrailWidth: 0, 
+                    [7]: PlayParticleInOrder: 0, 
+                    [8]: Count: 0
+    deathVFX
+        Properties of deathVFX: 0, 0
+        All set flags of deathVFX: 0
+        Serialized names of deathVFX: 9
+            [0]: StopAnimation: 0, 
+            [1]: ChangeEffectObjBack: 0, 
+            [2]: ScaleOverTime: 0, 
+            [3]: FadeTextWhenDone: 0, 
+            [4]: ShockCamera: 0, 
+            [5]: StartTrailing: 0, 
+            [6]: DecreaseTrailWidth: 0, 
+            [7]: PlayParticleInOrder: 0, 
+            [8]: Count: 0
+    hurtVFX
+        Properties of hurtVFX: 0, 0
+        All set flags of hurtVFX: 0
+        Serialized names of hurtVFX: 9
+            [0]: StopAnimation: 0, 
+            [1]: ChangeEffectObjBack: 0, 
+            [2]: ScaleOverTime: 0, 
+            [3]: FadeTextWhenDone: 0, 
+            [4]: ShockCamera: 0, 
+            [5]: StartTrailing: 0, 
+            [6]: DecreaseTrailWidth: 0, 
+            [7]: PlayParticleInOrder: 0, 
+            [8]: Count: 0
+
+-- Player Entity (20720) --
+    Properties of -- Player Entity (20720) --: 3, 11
+    All set flags of -- Player Entity (20720) --: 2
+        [0]: CanFlipGravity, 
+        [1]: CanBeHurt
+    Serialized names of -- Player Entity (20720) --: 18
+        [0]: CanFlipGravity: 1, 
+        [1]: CanBeHurt: 1, 
+        [2]: DamageWhenCollide: 0, 
+        [3]: DieWhenCollide: 0, 
+        [4]: DieAfterMoveTime: 0, 
+        [5]: SpawnCellWhenDie: 0, 
+        [6]: SpawnDamagePopup: 0, 
+        [7]: ClampToMoveRegion: 0, 
+        [8]: StartAtMinMoveRegion: 0, 
+        [9]: IsCritical: 0, 
+        [10]: UsePooling: 0, 
+        [11]: CustomInit: 0, 
+        [12]: AddMoneyWhenCollide: 0, 
+        [13]: FallingOnSpawn: 0, 
+        [14]: HasTargetOffset: 0, 
+        [15]: IsGrounded: 0, 
+        [16]: AtEndOfMoveRegion: 0, 
+        [17]: Count: 0
+    deathVFX
+        Properties of deathVFX: 0, 0
+        All set flags of deathVFX: 0
+        Serialized names of deathVFX: 9
+            [0]: StopAnimation: 0, 
+            [1]: ChangeEffectObjBack: 0, 
+            [2]: ScaleOverTime: 0, 
+            [3]: FadeTextWhenDone: 0, 
+            [4]: ShockCamera: 0, 
+            [5]: StartTrailing: 0, 
+            [6]: DecreaseTrailWidth: 0, 
+            [7]: PlayParticleInOrder: 0, 
+            [8]: Count: 0
+    hurtVFX
+        Properties of hurtVFX: 300000000000003, 1000100001101100100110001011011101100000000000011
+        All set flags of hurtVFX: 2
+            [0]: StopAnimation, 
+            [1]: ChangeEffectObjBack
+        Serialized names of hurtVFX: 9
+            [0]: StopAnimation: 1, 
+            [1]: ChangeEffectObjBack: 1, 
+            [2]: ScaleOverTime: 0, 
+            [3]: FadeTextWhenDone: 0, 
+            [4]: ShockCamera: 0, 
+            [5]: StartTrailing: 0, 
+            [6]: DecreaseTrailWidth: 0, 
+            [7]: PlayParticleInOrder: 0, 
+            [8]: Count: 0
+
+-- Bullet (21506) --
+    Properties of -- Bullet (21506) --: 1116, 10001011100
+    All set flags of -- Bullet (21506) --: 5
+        [0]: DamageWhenCollide, 
+        [1]: DieWhenCollide, 
+        [2]: DieAfterMoveTime, 
+        [3]: SpawnDamagePopup, 
+        [4]: UsePooling
+    Serialized names of -- Bullet (21506) --: 18
+        [0]: CanFlipGravity: 0, 
+        [1]: CanBeHurt: 0, 
+        [2]: DamageWhenCollide: 1, 
+        [3]: DieWhenCollide: 1, 
+        [4]: DieAfterMoveTime: 1, 
+        [5]: SpawnCellWhenDie: 0, 
+        [6]: SpawnDamagePopup: 1, 
+        [7]: ClampToMoveRegion: 0, 
+        [8]: StartAtMinMoveRegion: 0, 
+        [9]: IsCritical: 0, 
+        [10]: UsePooling: 1, 
+        [11]: CustomInit: 0, 
+        [12]: AddMoneyWhenCollide: 0, 
+        [13]: FallingOnSpawn: 0, 
+        [14]: HasTargetOffset: 0, 
+        [15]: IsGrounded: 0, 
+        [16]: AtEndOfMoveRegion: 0, 
+        [17]: Count: 0
+    deathVFX
+        Properties of deathVFX: 0, 0
+        All set flags of deathVFX: 0
+        Serialized names of deathVFX: 9
+            [0]: StopAnimation: 0, 
+            [1]: ChangeEffectObjBack: 0, 
+            [2]: ScaleOverTime: 0, 
+            [3]: FadeTextWhenDone: 0, 
+            [4]: ShockCamera: 0, 
+            [5]: StartTrailing: 0, 
+            [6]: DecreaseTrailWidth: 0, 
+            [7]: PlayParticleInOrder: 0, 
+            [8]: Count: 0
+    hurtVFX
+        Properties of hurtVFX: 0, 0
+        All set flags of hurtVFX: 0
+        Serialized names of hurtVFX: 9
+            [0]: StopAnimation: 0, 
+            [1]: ChangeEffectObjBack: 0, 
+            [2]: ScaleOverTime: 0, 
+            [3]: FadeTextWhenDone: 0, 
+            [4]: ShockCamera: 0, 
+            [5]: StartTrailing: 0, 
+            [6]: DecreaseTrailWidth: 0, 
+            [7]: PlayParticleInOrder: 0, 
+            [8]: Count: 0
+
+-- Cell (21462) --
+    Properties of -- Cell (21462) --: 1037999999562760, 11101100000000111000110101010000000011010000001000
+    All set flags of -- Cell (21462) --: 4
+        [0]: DieWhenCollide, 
+        [1]: UsePooling, 
+        [2]: AddMoneyWhenCollide, 
+        [3]: FallingOnSpawn
+    Serialized names of -- Cell (21462) --: 18
+        [0]: CanFlipGravity: 0, 
+        [1]: CanBeHurt: 0, 
+        [2]: DamageWhenCollide: 0, 
+        [3]: DieWhenCollide: 1, 
+        [4]: DieAfterMoveTime: 0, 
+        [5]: SpawnCellWhenDie: 0, 
+        [6]: SpawnDamagePopup: 0, 
+        [7]: ClampToMoveRegion: 0, 
+        [8]: StartAtMinMoveRegion: 0, 
+        [9]: IsCritical: 0, 
+        [10]: UsePooling: 1, 
+        [11]: CustomInit: 0, 
+        [12]: AddMoneyWhenCollide: 1, 
+        [13]: FallingOnSpawn: 1, 
+        [14]: HasTargetOffset: 0, 
+        [15]: IsGrounded: 0, 
+        [16]: AtEndOfMoveRegion: 0, 
+        [17]: Count: 0
+    testProperties[0]
+        Properties of testProperties[0]: 160, 10100000
+        All set flags of testProperties[0]: 2
+            [0]: StartTrailing, 
+            [1]: PlayParticleInOrder
+        Serialized names of testProperties[0]: 9
+            [0]: StopAnimation: 0, 
+            [1]: ChangeEffectObjBack: 0, 
+            [2]: ScaleOverTime: 0, 
+            [3]: FadeTextWhenDone: 0, 
+            [4]: ShockCamera: 0, 
+            [5]: StartTrailing: 1, 
+            [6]: DecreaseTrailWidth: 0, 
+            [7]: PlayParticleInOrder: 1, 
+            [8]: Count: 0
+    abilities[0]
+        Properties of abilities[0]: 1401000000000276, 100111110100011001110111011010101001001000100010100
+        All set flags of abilities[0]: 3
+            [0]: LockOnPlayerForEternity, 
+            [1]: ExecuteWhenInRange, 
+            [2]: CanExecute
+        Serialized names of abilities[0]: 9
+            [0]: Interuptible: 0, 
+            [1]: AwayFromPlayer: 0, 
+            [2]: LockOnPlayerForEternity: 1, 
+            [3]: ExecuteWhenLowHealth: 0, 
+            [4]: ExecuteWhenInRange: 1, 
+            [5]: ExecuteWhenInRangeY: 0, 
+            [6]: ExecuteWhenOutOfMoveRegion: 0, 
+            [7]: OrCombine: 0, 
+            [8]: CanExecute: 1
+            vfx
+                Properties of vfx: 0, 0
+                All set flags of vfx: 0
+                Serialized names of vfx: 9
+                    [0]: StopAnimation: 0, 
+                    [1]: ChangeEffectObjBack: 0, 
+                    [2]: ScaleOverTime: 0, 
+                    [3]: FadeTextWhenDone: 0, 
+                    [4]: ShockCamera: 0, 
+                    [5]: StartTrailing: 0, 
+                    [6]: DecreaseTrailWidth: 0, 
+                    [7]: PlayParticleInOrder: 0, 
+                    [8]: Count: 0
+    deathVFX
+        Properties of deathVFX: 0, 0
+        All set flags of deathVFX: 0
+        Serialized names of deathVFX: 9
+            [0]: StopAnimation: 0, 
+            [1]: ChangeEffectObjBack: 0, 
+            [2]: ScaleOverTime: 0, 
+            [3]: FadeTextWhenDone: 0, 
+            [4]: ShockCamera: 0, 
+            [5]: StartTrailing: 0, 
+            [6]: DecreaseTrailWidth: 0, 
+            [7]: PlayParticleInOrder: 0, 
+            [8]: Count: 0
+    hurtVFX
+        Properties of hurtVFX: 0, 0
+        All set flags of hurtVFX: 0
+        Serialized names of hurtVFX: 9
+            [0]: StopAnimation: 0, 
+            [1]: ChangeEffectObjBack: 0, 
+            [2]: ScaleOverTime: 0, 
+            [3]: FadeTextWhenDone: 0, 
+            [4]: ShockCamera: 0, 
+            [5]: StartTrailing: 0, 
+            [6]: DecreaseTrailWidth: 0, 
+            [7]: PlayParticleInOrder: 0, 
+            [8]: Count: 0
+
+-- Meteor (21470) --
+    Properties of -- Meteor (21470) --: 2007999999640592, 111001000100100001111101110101100000000010000010000
+    All set flags of -- Meteor (21470) --: 2
+        [0]: DieAfterMoveTime, 
+        [1]: UsePooling
+    Serialized names of -- Meteor (21470) --: 18
+        [0]: CanFlipGravity: 0, 
+        [1]: CanBeHurt: 0, 
+        [2]: DamageWhenCollide: 0, 
+        [3]: DieWhenCollide: 0, 
+        [4]: DieAfterMoveTime: 1, 
+        [5]: SpawnCellWhenDie: 0, 
+        [6]: SpawnDamagePopup: 0, 
+        [7]: ClampToMoveRegion: 0, 
+        [8]: StartAtMinMoveRegion: 0, 
+        [9]: IsCritical: 0, 
+        [10]: UsePooling: 1, 
+        [11]: CustomInit: 0, 
+        [12]: AddMoneyWhenCollide: 0, 
+        [13]: FallingOnSpawn: 0, 
+        [14]: HasTargetOffset: 0, 
+        [15]: IsGrounded: 0, 
+        [16]: AtEndOfMoveRegion: 0, 
+        [17]: Count: 0
+    deathVFX
+        Properties of deathVFX: 0, 0
+        All set flags of deathVFX: 0
+        Serialized names of deathVFX: 9
+            [0]: StopAnimation: 0, 
+            [1]: ChangeEffectObjBack: 0, 
+            [2]: ScaleOverTime: 0, 
+            [3]: FadeTextWhenDone: 0, 
+            [4]: ShockCamera: 0, 
+            [5]: StartTrailing: 0, 
+            [6]: DecreaseTrailWidth: 0, 
+            [7]: PlayParticleInOrder: 0, 
+            [8]: Count: 0
+    hurtVFX
+        Properties of hurtVFX: 0, 0
+        All set flags of hurtVFX: 0
+        Serialized names of hurtVFX: 9
+            [0]: StopAnimation: 0, 
+            [1]: ChangeEffectObjBack: 0, 
+            [2]: ScaleOverTime: 0, 
+            [3]: FadeTextWhenDone: 0, 
+            [4]: ShockCamera: 0, 
+            [5]: StartTrailing: 0, 
+            [6]: DecreaseTrailWidth: 0, 
+            [7]: PlayParticleInOrder: 0, 
+            [8]: Count: 0
+
+-- Shockwave (33286) --
+    Properties of -- Shockwave (33286) --: 3007999999737884, 1010101011111100001010010011011110000000000000011100
+    All set flags of -- Shockwave (33286) --: 3
+        [0]: DamageWhenCollide, 
+        [1]: DieWhenCollide, 
+        [2]: DieAfterMoveTime
+    Serialized names of -- Shockwave (33286) --: 18
+        [0]: CanFlipGravity: 0, 
+        [1]: CanBeHurt: 0, 
+        [2]: DamageWhenCollide: 1, 
+        [3]: DieWhenCollide: 1, 
+        [4]: DieAfterMoveTime: 1, 
+        [5]: SpawnCellWhenDie: 0, 
+        [6]: SpawnDamagePopup: 0, 
+        [7]: ClampToMoveRegion: 0, 
+        [8]: StartAtMinMoveRegion: 0, 
+        [9]: IsCritical: 0, 
+        [10]: UsePooling: 0, 
+        [11]: CustomInit: 0, 
+        [12]: AddMoneyWhenCollide: 0, 
+        [13]: FallingOnSpawn: 0, 
+        [14]: HasTargetOffset: 0, 
+        [15]: IsGrounded: 0, 
+        [16]: AtEndOfMoveRegion: 0, 
+        [17]: Count: 0
+    deathVFX
+        Properties of deathVFX: 0, 0
+        All set flags of deathVFX: 0
+        Serialized names of deathVFX: 9
+            [0]: StopAnimation: 0, 
+            [1]: ChangeEffectObjBack: 0, 
+            [2]: ScaleOverTime: 0, 
+            [3]: FadeTextWhenDone: 0, 
+            [4]: ShockCamera: 0, 
+            [5]: StartTrailing: 0, 
+            [6]: DecreaseTrailWidth: 0, 
+            [7]: PlayParticleInOrder: 0, 
+            [8]: Count: 0
+    hurtVFX
+        Properties of hurtVFX: 0, 0
+        All set flags of hurtVFX: 0
+        Serialized names of hurtVFX: 9
+            [0]: StopAnimation: 0, 
+            [1]: ChangeEffectObjBack: 0, 
+            [2]: ScaleOverTime: 0, 
+            [3]: FadeTextWhenDone: 0, 
+            [4]: ShockCamera: 0, 
+            [5]: StartTrailing: 0, 
+            [6]: DecreaseTrailWidth: 0, 
+            [7]: PlayParticleInOrder: 0, 
+            [8]: Count: 0
+
+
+-------- -------- -------- -------- {Object}:    4 -------- -------- -------- --------
+-- CameraHolder (-1764) --
+    Properties of -- CameraHolder (-1764) --: 999999668352, 1110100011010100101000000000000010000000
+    All set flags of -- CameraHolder (-1764) --: 1
+        [0]: ClampToMoveRegion
+    Serialized names of -- CameraHolder (-1764) --: 18
+        [0]: CanFlipGravity: 0, 
+        [1]: CanBeHurt: 0, 
+        [2]: DamageWhenCollide: 0, 
+        [3]: DieWhenCollide: 0, 
+        [4]: DieAfterMoveTime: 0, 
+        [5]: SpawnCellWhenDie: 0, 
+        [6]: SpawnDamagePopup: 0, 
+        [7]: ClampToMoveRegion: 1, 
+        [8]: StartAtMinMoveRegion: 0, 
+        [9]: IsCritical: 0, 
+        [10]: UsePooling: 0, 
+        [11]: CustomInit: 0, 
+        [12]: AddMoneyWhenCollide: 0, 
+        [13]: FallingOnSpawn: 0, 
+        [14]: HasTargetOffset: 0, 
+        [15]: IsGrounded: 0, 
+        [16]: AtEndOfMoveRegion: 0, 
+        [17]: Count: 0
+    abilities[0]
+        Properties of abilities[0]: 0, 0
+        All set flags of abilities[0]: 0
+        Serialized names of abilities[0]: 9
+            [0]: Interuptible: 0, 
+            [1]: AwayFromPlayer: 0, 
+            [2]: LockOnPlayerForEternity: 0, 
+            [3]: ExecuteWhenLowHealth: 0, 
+            [4]: ExecuteWhenInRange: 0, 
+            [5]: ExecuteWhenInRangeY: 0, 
+            [6]: ExecuteWhenOutOfMoveRegion: 0, 
+            [7]: OrCombine: 0, 
+            [8]: CanExecute: 0
+            vfx
+                Properties of vfx: 0, 0
+                All set flags of vfx: 0
+                Serialized names of vfx: 9
+                    [0]: StopAnimation: 0, 
+                    [1]: ChangeEffectObjBack: 0, 
+                    [2]: ScaleOverTime: 0, 
+                    [3]: FadeTextWhenDone: 0, 
+                    [4]: ShockCamera: 0, 
+                    [5]: StartTrailing: 0, 
+                    [6]: DecreaseTrailWidth: 0, 
+                    [7]: PlayParticleInOrder: 0, 
+                    [8]: Count: 0
+    deathVFX
+        Properties of deathVFX: 0, 0
+        All set flags of deathVFX: 0
+        Serialized names of deathVFX: 9
+            [0]: StopAnimation: 0, 
+            [1]: ChangeEffectObjBack: 0, 
+            [2]: ScaleOverTime: 0, 
+            [3]: FadeTextWhenDone: 0, 
+            [4]: ShockCamera: 0, 
+            [5]: StartTrailing: 0, 
+            [6]: DecreaseTrailWidth: 0, 
+            [7]: PlayParticleInOrder: 0, 
+            [8]: Count: 0
+    hurtVFX
+        Properties of hurtVFX: 0, 0
+        All set flags of hurtVFX: 0
+        Serialized names of hurtVFX: 9
+            [0]: StopAnimation: 0, 
+            [1]: ChangeEffectObjBack: 0, 
+            [2]: ScaleOverTime: 0, 
+            [3]: FadeTextWhenDone: 0, 
+            [4]: ShockCamera: 0, 
+            [5]: StartTrailing: 0, 
+            [6]: DecreaseTrailWidth: 0, 
+            [7]: PlayParticleInOrder: 0, 
+            [8]: Count: 0
+
+-- Player Entity (-1346) --
+    Properties of -- Player Entity (-1346) --: 32771, 1000000000000011
+    All set flags of -- Player Entity (-1346) --: 3
+        [0]: CanFlipGravity, 
+        [1]: CanBeHurt, 
+        [2]: IsGrounded
+    Serialized names of -- Player Entity (-1346) --: 18
+        [0]: CanFlipGravity: 1, 
+        [1]: CanBeHurt: 1, 
+        [2]: DamageWhenCollide: 0, 
+        [3]: DieWhenCollide: 0, 
+        [4]: DieAfterMoveTime: 0, 
+        [5]: SpawnCellWhenDie: 0, 
+        [6]: SpawnDamagePopup: 0, 
+        [7]: ClampToMoveRegion: 0, 
+        [8]: StartAtMinMoveRegion: 0, 
+        [9]: IsCritical: 0, 
+        [10]: UsePooling: 0, 
+        [11]: CustomInit: 0, 
+        [12]: AddMoneyWhenCollide: 0, 
+        [13]: FallingOnSpawn: 0, 
+        [14]: HasTargetOffset: 0, 
+        [15]: IsGrounded: 1, 
+        [16]: AtEndOfMoveRegion: 0, 
+        [17]: Count: 0
+    deathVFX
+        Properties of deathVFX: 0, 0
+        All set flags of deathVFX: 0
+        Serialized names of deathVFX: 9
+            [0]: StopAnimation: 0, 
+            [1]: ChangeEffectObjBack: 0, 
+            [2]: ScaleOverTime: 0, 
+            [3]: FadeTextWhenDone: 0, 
+            [4]: ShockCamera: 0, 
+            [5]: StartTrailing: 0, 
+            [6]: DecreaseTrailWidth: 0, 
+            [7]: PlayParticleInOrder: 0, 
+            [8]: Count: 0
+    hurtVFX
+        Properties of hurtVFX: 300000000000003, 1000100001101100100110001011011101100000000000011
+        All set flags of hurtVFX: 2
+            [0]: StopAnimation, 
+            [1]: ChangeEffectObjBack
+        Serialized names of hurtVFX: 9
+            [0]: StopAnimation: 1, 
+            [1]: ChangeEffectObjBack: 1, 
+            [2]: ScaleOverTime: 0, 
+            [3]: FadeTextWhenDone: 0, 
+            [4]: ShockCamera: 0, 
+            [5]: StartTrailing: 0, 
+            [6]: DecreaseTrailWidth: 0, 
+            [7]: PlayParticleInOrder: 0, 
+            [8]: Count: 0
+
+-- Maggot Entity (20628) --
+    Properties of -- Maggot Entity (20628) --: 0, 0
+    All set flags of -- Maggot Entity (20628) --: 0
+    Serialized names of -- Maggot Entity (20628) --: 18
+        [0]: CanFlipGravity: 0, 
+        [1]: CanBeHurt: 0, 
+        [2]: DamageWhenCollide: 0, 
+        [3]: DieWhenCollide: 0, 
+        [4]: DieAfterMoveTime: 0, 
+        [5]: SpawnCellWhenDie: 0, 
+        [6]: SpawnDamagePopup: 0, 
+        [7]: ClampToMoveRegion: 0, 
+        [8]: StartAtMinMoveRegion: 0, 
+        [9]: IsCritical: 0, 
+        [10]: UsePooling: 0, 
+        [11]: CustomInit: 0, 
+        [12]: AddMoneyWhenCollide: 0, 
+        [13]: FallingOnSpawn: 0, 
+        [14]: HasTargetOffset: 0, 
+        [15]: IsGrounded: 0, 
+        [16]: AtEndOfMoveRegion: 0, 
+        [17]: Count: 0
+    abilities[0]
+        Properties of abilities[0]: 0, 0
+        All set flags of abilities[0]: 0
+        Serialized names of abilities[0]: 9
+            [0]: Interuptible: 0, 
+            [1]: AwayFromPlayer: 0, 
+            [2]: LockOnPlayerForEternity: 0, 
+            [3]: ExecuteWhenLowHealth: 0, 
+            [4]: ExecuteWhenInRange: 0, 
+            [5]: ExecuteWhenInRangeY: 0, 
+            [6]: ExecuteWhenOutOfMoveRegion: 0, 
+            [7]: OrCombine: 0, 
+            [8]: CanExecute: 0
+            vfx
+                Properties of vfx: 0, 0
+                All set flags of vfx: 0
+                Serialized names of vfx: 9
+                    [0]: StopAnimation: 0, 
+                    [1]: ChangeEffectObjBack: 0, 
+                    [2]: ScaleOverTime: 0, 
+                    [3]: FadeTextWhenDone: 0, 
+                    [4]: ShockCamera: 0, 
+                    [5]: StartTrailing: 0, 
+                    [6]: DecreaseTrailWidth: 0, 
+                    [7]: PlayParticleInOrder: 0, 
+                    [8]: Count: 0
+    abilities[1]
+        Properties of abilities[1]: 0, 0
+        All set flags of abilities[1]: 0
+        Serialized names of abilities[1]: 9
+            [0]: Interuptible: 0, 
+            [1]: AwayFromPlayer: 0, 
+            [2]: LockOnPlayerForEternity: 0, 
+            [3]: ExecuteWhenLowHealth: 0, 
+            [4]: ExecuteWhenInRange: 0, 
+            [5]: ExecuteWhenInRangeY: 0, 
+            [6]: ExecuteWhenOutOfMoveRegion: 0, 
+            [7]: OrCombine: 0, 
+            [8]: CanExecute: 0
+            vfx
+                Properties of vfx: 0, 0
+                All set flags of vfx: 0
+                Serialized names of vfx: 9
+                    [0]: StopAnimation: 0, 
+                    [1]: ChangeEffectObjBack: 0, 
+                    [2]: ScaleOverTime: 0, 
+                    [3]: FadeTextWhenDone: 0, 
+                    [4]: ShockCamera: 0, 
+                    [5]: StartTrailing: 0, 
+                    [6]: DecreaseTrailWidth: 0, 
+                    [7]: PlayParticleInOrder: 0, 
+                    [8]: Count: 0
+    deathVFX
+        Properties of deathVFX: 0, 0
+        All set flags of deathVFX: 0
+        Serialized names of deathVFX: 9
+            [0]: StopAnimation: 0, 
+            [1]: ChangeEffectObjBack: 0, 
+            [2]: ScaleOverTime: 0, 
+            [3]: FadeTextWhenDone: 0, 
+            [4]: ShockCamera: 0, 
+            [5]: StartTrailing: 0, 
+            [6]: DecreaseTrailWidth: 0, 
+            [7]: PlayParticleInOrder: 0, 
+            [8]: Count: 0
+    hurtVFX
+        Properties of hurtVFX: 0, 0
+        All set flags of hurtVFX: 0
+        Serialized names of hurtVFX: 9
+            [0]: StopAnimation: 0, 
+            [1]: ChangeEffectObjBack: 0, 
+            [2]: ScaleOverTime: 0, 
+            [3]: FadeTextWhenDone: 0, 
+            [4]: ShockCamera: 0, 
+            [5]: StartTrailing: 0, 
+            [6]: DecreaseTrailWidth: 0, 
+            [7]: PlayParticleInOrder: 0, 
+            [8]: Count: 0
+
+-- No Eye Entity (20652) --
+    Properties of -- No Eye Entity (20652) --: 0, 0
+    All set flags of -- No Eye Entity (20652) --: 0
+    Serialized names of -- No Eye Entity (20652) --: 18
+        [0]: CanFlipGravity: 0, 
+        [1]: CanBeHurt: 0, 
+        [2]: DamageWhenCollide: 0, 
+        [3]: DieWhenCollide: 0, 
+        [4]: DieAfterMoveTime: 0, 
+        [5]: SpawnCellWhenDie: 0, 
+        [6]: SpawnDamagePopup: 0, 
+        [7]: ClampToMoveRegion: 0, 
+        [8]: StartAtMinMoveRegion: 0, 
+        [9]: IsCritical: 0, 
+        [10]: UsePooling: 0, 
+        [11]: CustomInit: 0, 
+        [12]: AddMoneyWhenCollide: 0, 
+        [13]: FallingOnSpawn: 0, 
+        [14]: HasTargetOffset: 0, 
+        [15]: IsGrounded: 0, 
+        [16]: AtEndOfMoveRegion: 0, 
+        [17]: Count: 0
+    abilities[0]
+        Properties of abilities[0]: 0, 0
+        All set flags of abilities[0]: 0
+        Serialized names of abilities[0]: 9
+            [0]: Interuptible: 0, 
+            [1]: AwayFromPlayer: 0, 
+            [2]: LockOnPlayerForEternity: 0, 
+            [3]: ExecuteWhenLowHealth: 0, 
+            [4]: ExecuteWhenInRange: 0, 
+            [5]: ExecuteWhenInRangeY: 0, 
+            [6]: ExecuteWhenOutOfMoveRegion: 0, 
+            [7]: OrCombine: 0, 
+            [8]: CanExecute: 0
+            vfx
+                Properties of vfx: 0, 0
+                All set flags of vfx: 0
+                Serialized names of vfx: 9
+                    [0]: StopAnimation: 0, 
+                    [1]: ChangeEffectObjBack: 0, 
+                    [2]: ScaleOverTime: 0, 
+                    [3]: FadeTextWhenDone: 0, 
+                    [4]: ShockCamera: 0, 
+                    [5]: StartTrailing: 0, 
+                    [6]: DecreaseTrailWidth: 0, 
+                    [7]: PlayParticleInOrder: 0, 
+                    [8]: Count: 0
+    abilities[1]
+        Properties of abilities[1]: 0, 0
+        All set flags of abilities[1]: 0
+        Serialized names of abilities[1]: 9
+            [0]: Interuptible: 0, 
+            [1]: AwayFromPlayer: 0, 
+            [2]: LockOnPlayerForEternity: 0, 
+            [3]: ExecuteWhenLowHealth: 0, 
+            [4]: ExecuteWhenInRange: 0, 
+            [5]: ExecuteWhenInRangeY: 0, 
+            [6]: ExecuteWhenOutOfMoveRegion: 0, 
+            [7]: OrCombine: 0, 
+            [8]: CanExecute: 0
+            vfx
+                Properties of vfx: 0, 0
+                All set flags of vfx: 0
+                Serialized names of vfx: 9
+                    [0]: StopAnimation: 0, 
+                    [1]: ChangeEffectObjBack: 0, 
+                    [2]: ScaleOverTime: 0, 
+                    [3]: FadeTextWhenDone: 0, 
+                    [4]: ShockCamera: 0, 
+                    [5]: StartTrailing: 0, 
+                    [6]: DecreaseTrailWidth: 0, 
+                    [7]: PlayParticleInOrder: 0, 
+                    [8]: Count: 0
+    deathVFX
+        Properties of deathVFX: 0, 0
+        All set flags of deathVFX: 0
+        Serialized names of deathVFX: 9
+            [0]: StopAnimation: 0, 
+            [1]: ChangeEffectObjBack: 0, 
+            [2]: ScaleOverTime: 0, 
+            [3]: FadeTextWhenDone: 0, 
+            [4]: ShockCamera: 0, 
+            [5]: StartTrailing: 0, 
+            [6]: DecreaseTrailWidth: 0, 
+            [7]: PlayParticleInOrder: 0, 
+            [8]: Count: 0
+    hurtVFX
+        Properties of hurtVFX: 0, 0
+        All set flags of hurtVFX: 0
+        Serialized names of hurtVFX: 9
+            [0]: StopAnimation: 0, 
+            [1]: ChangeEffectObjBack: 0, 
+            [2]: ScaleOverTime: 0, 
+            [3]: FadeTextWhenDone: 0, 
+            [4]: ShockCamera: 0, 
+            [5]: StartTrailing: 0, 
+            [6]: DecreaseTrailWidth: 0, 
+            [7]: PlayParticleInOrder: 0, 
+            [8]: Count: 0
+

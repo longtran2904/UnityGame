@@ -40,10 +40,6 @@ public class SecondOrder : MonoBehaviour
 
     public void UpdateStep(float t, Vector2 x, Vector2 dx)
     {
-        k1 = z / (Mathf.PI * f);
-        k2 = 1 / ((2 * Mathf.PI * f) * (2 * Mathf.PI * f));
-        k3 = r * z / (2 * Mathf.PI * f);
-
         /*
          * The second order system works like this:
          * | y [n+1] | = |   1              T          | * | y  |   +   |  0       0    | * | x [n+1] |
@@ -69,8 +65,8 @@ public class SecondOrder : MonoBehaviour
         */
         float k2_stable = Mathf.Max(k2, t*t/2 + t*k1/2, t*k1);
 
-        y = y + t * dy;
-        dy = dy + t * (x + k3*dx - y - k1*dy) / k2_stable;
+        y += t * dy;
+        dy += t * (x + k3*dx - y - k1*dy) / k2_stable;
 
         transform.position = y;
     }

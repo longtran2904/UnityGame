@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,6 +11,7 @@ public class FallingStar : MonoBehaviour
     [MinMax(100, 800)] public RangedFloat maxTimeNoiseScale;
 
     [Header("Meteor")]
+    public bool disableMeteor;
     [MinMax(1, 20)] public RangedFloat speed;
     [MinMax(0, 30)] public RangedFloat timeBtwMeteors;
 
@@ -28,6 +28,8 @@ public class FallingStar : MonoBehaviour
         sr = GetComponent<SpriteRenderer>();
         canvas = GetComponentInChildren<RectTransform>();
 
+        // NOTE: The flickering bloom bug happens because Unity URP's bloom effect works on a half resolution
+        // Increasing it to full-res and the render scale to 1.5 fix the problem
         GameUtils.SetMaterialBlock(sr, block =>
         {
             block.SetFloat("_NoiseScale", noiseScale.randomValue);
@@ -54,10 +56,14 @@ public class FallingStar : MonoBehaviour
             camera.targetTexture = renderTex;
 
             image = GetComponentInChildren<RawImage>();
-            image.texture = renderTex;
-            image.canvas.worldCamera = camera;
+            if (image)
+            {
+                image.texture = renderTex;
+                image.canvas.worldCamera = camera;
+            }
 
-            StartCoroutine(SpawnMeteor());
+            if (!disableMeteor)
+                StartCoroutine(SpawnMeteor());
         }
     }
 
@@ -74,16 +80,12 @@ public class FallingStar : MonoBehaviour
         while (true)
         {
             yield return new WaitForSeconds(timeBtwMeteors.randomValue);
-            Vector3 pos = MathUtils.RandomVector2(sr.bounds.extents, sr.bounds.extents * 2);
-            Vector2 dir = -MathUtils.MakeVector2(Random.Range(30, 60));
-            if (MathUtils.RandomBool())
-            {
-                pos.x = -pos.x;
-                dir.x = -dir.x;
-            }
-            GameObject meteor = ObjectPooler.Spawn(PoolType.Meteor, pos + sr.bounds.center);
-            meteor.transform.right = dir;
-            meteor.GetComponent<Entity>().speed = speed.randomValue;
+            Vector3 pos = (Vector3)MathUtils.RandomPoint(new Vector2(-sr.bounds.size.x, sr.bounds.extents.y), sr.bounds.size) + sr.bounds.center;
+            RangedFloat rot = new RangedFloat(pos.x < sr.bounds.min.x ? 280f : 210f, pos.x > sr.bounds.max.x ? 260f : 330f);
+
+            Entity meteor = ObjectPooler.Spawn<Entity>(PoolType.Meteor, pos);
+            meteor.transform.right = MathUtils.MakeVector2(rot.randomValue);
+            meteor.speed = speed.randomValue;
             meteor.GetComponent<TrailRenderer>().startWidth = transform.lossyScale.x / sr.sharedMaterial.GetFloat("_PixelateAmount") * 2;
         }
     }

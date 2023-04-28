@@ -150,3 +150,21 @@ The following packages were updated:
   com.unity.recorder from version 2.5.7 to 3.0.3
   com.unity.shadergraph from version 10.9.0 to 12.1.7
   com.unity.timeline from version 1.4.8 to 1.6.4
+
+=== Fri Jul 22 16:04:32 2022
+
+Packages were changed.
+Update Mode: updateDependencies
+
+The following packages were updated:
+  com.unity.collab-proxy from version 1.15.18 to 1.17.0
+  com.unity.ide.visualstudio from version 2.0.15 to 2.0.16
+  com.unity.shadergraph from version 10.5.0 to 10.9.0
+
+=== Mon Aug 22 13:32:27 2022
+
+Packages were changed.
+Update Mode: updateDependencies
+
+The following packages were updated:
+  com.unity.shadergraph from version 10.9.0 to 10.10.0

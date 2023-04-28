@@ -29,6 +29,16 @@ public class GameUI : MonoBehaviour
     private WeaponController weaponController;
     private TextType ammoText;
 
+    [Header("Reload UI")]
+    public RangedFloat perfectBarPos;
+    public Color failedColor;
+    public Color perfectColor;
+    public GameObject reloadCanvas;
+
+    private Slider reloadSlider;
+    private Image reloadHandle;
+    private RectTransform perfectBar;
+
     [Header("Minimap")]
     [ShowWhen("displayMinimap")] public RawImage minimap;
     [ShowWhen("displayMinimap")] public RawImage map;
@@ -66,6 +76,12 @@ public class GameUI : MonoBehaviour
             ammoText = weaponImage.GetComponentInChildren<TextType>();
         }
 
+        reloadCanvas = Instantiate(reloadCanvas);
+        reloadCanvas.SetActive(false);
+        reloadSlider = reloadCanvas.GetComponentInChildren<Slider>(true);
+        reloadHandle = reloadSlider.transform.Find("Handle").GetComponent<Image>();
+        perfectBar = (RectTransform)reloadSlider.transform.Find("Perfect");
+
         minimap.gameObject.SetActive(displayMinimap);
         map.gameObject.SetActive(false);
         GameInput.BindEvent(GameEventType.NextRoom, room => room.GetChild(0).FindChildWithLayer("LevelMap").SetActive(true));
@@ -73,7 +89,8 @@ public class GameUI : MonoBehaviour
         textboxCanvas = Instantiate(textboxCanvas);
         textboxCanvas.SetActive(false);
         textbox = textboxCanvas.GetComponentInChildren<DialogueBox>();
-        weaponHolder = GameObject.FindGameObjectWithTag("Player")?.transform.GetChild(0);
+        //weaponHolder = GameObject.FindGameObjectWithTag("Player")?.transform.GetChild(0);
+        weaponHolder = GameObject.FindGameObjectWithTag("Player").transform;
     }
 
     // Update is called once per frame
@@ -109,6 +126,13 @@ public class GameUI : MonoBehaviour
         {
             weaponImage.sprite = weaponController.inventory.current.stat.icon;
             ammoText.text = $"{weaponController.inventory.current.currentAmmo}/{weaponController.inventory.current.stat.ammo}";
+        }
+
+        if (GameManager.player)
+        {
+            reloadCanvas.transform.position = GameManager.player.transform.position;
+            if (GameManager.player.transform.up != reloadCanvas.transform.up)
+                reloadCanvas.transform.Rotate(180, 0, 0);
         }
 
         if (displayMinimap && GameInput.GetInput(InputType.Map))
@@ -159,7 +183,7 @@ public class GameUI : MonoBehaviour
                     case TextboxType.Chest:
                         {
                             int randomWeapon = Random.Range(0, trigger.chestData.inventory.items.Count);
-                            trigger.chestData.inventory.SpawnAndDropWeapon(randomWeapon, trigger.transform.position, trigger.GetRandomDir());
+                            trigger.chestData.inventory.SpawnAndDropWeapon(randomWeapon, trigger.transform.position, trigger.GetRandomDir(), weaponHolder);
                             closestObj.layer = 0;
                             Destroy(trigger);
                             textboxCanvas.SetActive(false);
@@ -206,5 +230,30 @@ public class GameUI : MonoBehaviour
 
         textboxCanvas.SetActive(trigger);
         return true;
+    }
+
+    public void EnableReload(bool enable, float reloadTime)
+    {
+        reloadCanvas.gameObject.SetActive(enable);
+        if (enable)
+        {
+            reloadSlider.maxValue = reloadTime;
+            reloadSlider.value = 0;
+            reloadHandle.color = Color.white;
+            perfectBar.anchoredPosition = new Vector2(perfectBarPos.randomValue * ((RectTransform)reloadSlider.transform).sizeDelta.x, 0);
+        }
+    }
+
+    public bool UpdateReload(float value, bool hasReloaded)
+    {
+        reloadSlider.value = value;
+        bool isPerfect = false;
+        if (hasReloaded)
+        {
+            float t = reloadSlider.normalizedValue * ((RectTransform)reloadSlider.transform).sizeDelta.x;
+            isPerfect = MathUtils.RangeInRange(perfectBar.anchoredPosition.x, perfectBar.sizeDelta.x, t, reloadHandle.rectTransform.sizeDelta.x);
+            reloadHandle.color = isPerfect ? perfectColor : failedColor;
+        }
+        return isPerfect;
     }
 }

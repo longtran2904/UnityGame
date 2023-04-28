@@ -2,17 +2,17 @@ using UnityEngine;
 
 public class EffectManager : MonoBehaviour, IPooledObject
 {
-    public System.Action done;
+    //public System.Action done;
     private Animator anim;
     private ParticleSystem particle;
-
+    
     public void OnObjectInit()
     {
         anim = GetComponentInChildren<Animator>();
         particle = GetComponentInChildren<ParticleSystem>();
     }
-
-    public void OnObjectSpawn()
+    
+    public void OnObjectSpawn(GameObject defaultObject)
     {
         if (anim)
         {
@@ -21,7 +21,7 @@ public class EffectManager : MonoBehaviour, IPooledObject
             anim.Play(state.shortNameHash);
             this.InvokeAfter(state.length, () => anim.gameObject.SetActive(false));
         }
-
+        
         if (particle)
         {
             particle?.gameObject.SetActive(true);
@@ -29,7 +29,7 @@ public class EffectManager : MonoBehaviour, IPooledObject
             // NOTE: The particle always automatically disabling itself.
         }
     }
-
+    
     void Update()
     {
         bool doneAnimation = !(anim && anim.gameObject.activeSelf);
@@ -37,7 +37,7 @@ public class EffectManager : MonoBehaviour, IPooledObject
         if (doneAnimation && doneParticle)
         {
             gameObject.SetActive(false);
-            done?.Invoke();
+            //done?.Invoke();
         }
     }
 }

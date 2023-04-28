@@ -12,6 +12,7 @@ public class WeaponInventory : ScriptableObject
 
     public Weapon current { get => items[currentIndex]; set => items[currentIndex] = value; }
 
+#if UNITY_EDITOR
     void OnEnable()
     {
         if (UnityEditor.EditorApplication.isPlayingOrWillChangePlaymode)
@@ -22,31 +23,41 @@ public class WeaponInventory : ScriptableObject
             currentIndex = startWeaponIndex;
         }
     }
+#endif
 
     public void InitAllWeapons(Transform parent)
     {
         for (int i = 0; i < items.Count; ++i)
         {
-            Weapon gun = Instantiate(items[i], parent.position, Quaternion.identity);
-            gun.Init().Pickup(parent, i);
+            Weapon gun = Instantiate(items[i]);//, parent.position, Quaternion.identity);
+            gun.Init().Pickup(parent);
             gun.transform.gameObject.SetActive(i == currentIndex);
             items[i] = gun;
 
-#if UNITY_EDITOR
-            Debug.Assert(!UnityEditor.PrefabUtility.IsPartOfAnyPrefab(gun), $"{gun.name}: {gun.GetHashCode()} is part of a prefab!");
-#endif
+            GameDebug.Assert(!UnityEditor.PrefabUtility.IsPartOfAnyPrefab(gun), $"{gun.name}: {gun.GetHashCode()} is part of a prefab!");
         }
     }
 
-    public void SpawnAndDropWeapon(int weapon, Vector3 pos, Vector2 dropDir)
+    public void SpawnAndDropWeapon(int weapon, Vector3 pos, Vector2 dropDir, Transform holder)
     {
-        Instantiate(items[weapon], pos, Quaternion.identity).Init().Drop(dropDir);
+        Instantiate(items[weapon], pos, Quaternion.identity).Init().Drop(holder, dropDir);
     }
 
-    public void SwapCurrent(Vector2 dropDir, Weapon weapon, Transform parent)
+    public void SwapCurrent(Vector2 dropDir, Weapon weapon, Transform holder)
     {
-        current.Drop(dropDir);
+        current.Drop(holder, dropDir);
         current = weapon;
-        current.Pickup(parent, currentIndex);
+        current.Pickup(holder);
+    }
+
+    public void SwitchCurrent(int newIndex, Transform holder)
+    {
+        if (newIndex != currentIndex)
+        {
+            current.gameObject.SetActive(false);
+            currentIndex = newIndex;
+            current.gameObject.SetActive(true);
+            current.ResetPosToTransform(holder);
+        }
     }
 }

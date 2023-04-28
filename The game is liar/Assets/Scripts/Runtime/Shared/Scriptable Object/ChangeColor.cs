@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 [CreateAssetMenu(menuName = "Scriptable/ChangeColor")]
 public class ChangeColor : ScriptableObject
@@ -21,8 +19,10 @@ public class ChangeColor : ScriptableObject
         if (autoIncrement)
         {
             current++;
-            if (repeat) current = (int)Mathf.Repeat(current, colors.Length - 1);
-            else current = Mathf.Clamp(current, 0, colors.Length - 1);
+            if (repeat)
+                current = (int)Mathf.Repeat(current, colors.Length - 1);
+            else
+                current = Mathf.Clamp(current, 0, colors.Length - 1);
         }
     }
 }

@@ -1,35 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &1328484484
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1328484485}
-  m_Layer: 0
-  m_Name: Curve_point
-  m_TagString: Untagged
-  m_Icon: {fileID: 5132851093641282708, guid: 0000000000000000d000000000000000, type: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1328484485
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1328484484}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -5, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 3270666049824074841}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1934969704
 GameObject:
   m_ObjectHideFlags: 0
@@ -59,7 +29,7 @@ Transform:
   m_LocalScale: {x: 9.375, y: 9.375, z: 1}
   m_Children: []
   m_Father: {fileID: 3270666049824074841}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &1934969706
 SpriteRenderer:
@@ -142,7 +112,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 3270666049824074841}
-  m_RootOrder: 7
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!198 &2567035129618393966
 ParticleSystem:
@@ -5018,7 +4988,7 @@ Transform:
   - {fileID: 6313924654468512555}
   - {fileID: 5567357656118865305}
   m_Father: {fileID: 3270666049824074841}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &6234650065211202880
 SpriteRenderer:
@@ -5375,7 +5345,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa7180f238cd0c74cb535f944fc7b629, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  audioManager: {fileID: 11400000, guid: 01443e5a6bdc47b4387217618b65db47, type: 2}
   inventory: {fileID: 11400000, guid: 01a0cbb5762d92743ac349c7b330e0b2, type: 2}
   loop: 1
   slider: {fileID: 8052034217208114418}
@@ -5423,7 +5392,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 7600181959274961601}
-  - {fileID: 1328484485}
   - {fileID: 9135796832434396556}
   - {fileID: 4637181998479717510}
   - {fileID: 3011585080514793363}
@@ -5543,7 +5511,6 @@ MonoBehaviour:
   position: {fileID: 11400000, guid: de549abf0dae22842898ee569e51421b, type: 2}
   leftDust: {fileID: 7374823657885153856}
   rightDust: {fileID: 5286134598029306777}
-  audioManager: {fileID: 11400000, guid: 01443e5a6bdc47b4387217618b65db47, type: 2}
   timeBtwFootsteps:
     min: 0.24662815
     max: 0.30443162
@@ -5634,7 +5601,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 3270666049824074841}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!198 &7374823657885153856
 ParticleSystem:
@@ -10767,7 +10734,7 @@ RectTransform:
   m_Children:
   - {fileID: 5877318307324407007}
   m_Father: {fileID: 3270666049824074841}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -10842,7 +10809,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 3270666049824074841}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!198 &5286134598029306777
 ParticleSystem:
@@ -15658,7 +15625,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 3270666049824074841}
-  m_RootOrder: 8
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
 --- !u!198 &6956781952609800969
 ParticleSystem:

@@ -15,11 +15,20 @@ public enum InputType
     Interact,
     NextDialogue,
 
-    Debug_LeftAlt,
-    Debug_LeftCtrl,
-    Debug_LeftShift,
-    Debug_X,
-    Debug_T,
+    Debug_CameraShake,
+    Debug_ShakeIncrease,
+    Debug_ShakeDecrease,
+    Debug_CameraShock,
+
+    Debug_ToggleLog,
+    Debug_ClearLog,
+
+    Debug_ResetTime,
+    Debug_SlowTime,
+    Debug_FastTime,
+
+    Debug_SpawnParticle,
+    Debug_TestPlayerVFX,
 
     Count
 }
@@ -40,6 +49,7 @@ public static class GameInput
 {
     private static UnityInput platformInput;
     private static Dictionary<GameEventType, System.Action<Transform>> events;
+    private static Property<GameEventType> flags;
 
     public static void Init(UnityInput input)
     {
@@ -120,6 +130,15 @@ public static class GameInput
 
     public static void TriggerEvent(GameEventType type, Transform room)
     {
+        Debug.Assert(!flags.HasProperty(type));
         events[type]?.Invoke(room);
+        flags.SetProperty(type, true);
+        // NOTE: This only works if TriggerEvent is called at the beginning of the frame. Currently, most of the calls are from GameManager which run first.
+        platformInput.InvokeAfterFrames(-1, () => flags.SetProperty(type, false));
+    }
+
+    public static bool GetEvent(GameEventType type)
+    {
+        return flags.HasProperty(type);
     }
 }

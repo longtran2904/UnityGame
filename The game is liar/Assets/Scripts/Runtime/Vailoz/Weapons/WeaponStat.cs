@@ -22,4 +22,6 @@ public class WeaponStat : ScriptableObject
     public float activeReload = 2.25f;
     public float perfectReload = 1.8f;
     public float failedReload = 4.1f;
+
+    public float timeBtwShots => 1f / fireRate;
 }

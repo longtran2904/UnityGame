@@ -1,4 +1,4 @@
-﻿using UnityEditor;
+using UnityEditor;
 using UnityEngine;
 using System.IO;
 using System;
@@ -6,17 +6,17 @@ using System;
 public class EditorGUIHelper
 {
     public static GUIStyle boxStyle;
-
+    
     public static void DrawRect(float x, float y, float width, float height, Color color, string text = null)
     {
         DrawRect(new Rect(x, y, width, height), color, text);
     }
-
+    
     public static void DrawRect(Rect rect, Color color, string text = null)
     {
         DrawRect(rect, color, new GUIContent(text));
     }
-
+    
     public static void DrawRect(Rect rect, Color color, GUIContent content = null)
     {
         if (boxStyle == null)
@@ -29,7 +29,7 @@ public class EditorGUIHelper
         GUI.Box(rect, content ?? GUIContent.none, boxStyle);
         GUI.backgroundColor = backgroundColor;
     }
-
+    
     public static void DrawOutline(Rect rect, float outlineSize, Color color)
     {
         DrawRect(rect.x, rect.y, rect.width, outlineSize, color);
@@ -39,7 +39,7 @@ public class EditorGUIHelper
     }
 }
 
-public static class SerializedPropertyExt
+public static class EditorUtils
 {
     public static SerializedProperty GetParent(this SerializedProperty aProperty)
     {
@@ -49,7 +49,7 @@ public static class SerializedPropertyExt
             return null;
         return aProperty.serializedObject.FindProperty(path.Substring(0, i));
     }
-
+    
     public static SerializedProperty FindSiblingProperty(this SerializedProperty aProperty, string aPath)
     {
         var parent = aProperty.GetParent();
@@ -57,10 +57,7 @@ public static class SerializedPropertyExt
             return aProperty.serializedObject.FindProperty(aPath);
         return parent.FindPropertyRelative(aPath) ?? aProperty.serializedObject.FindProperty(aPath);
     }
-}
-
-public static class EditorUtils
-{
+    
     public static void ReadAndProcessFile<T>(string name, char separator, string folderName, Func<string[], T> action, Func<T, string> getObjectName) where T : UnityEngine.Object
     {
         try
@@ -79,7 +76,7 @@ public static class EditorUtils
                     Debug.Log($"Done creating at {path}!");
                 }
             }
-
+            
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
             EditorUtility.FocusProjectWindow();

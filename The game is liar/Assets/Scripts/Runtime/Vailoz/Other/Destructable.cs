@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class Destructable : MonoBehaviour
 {
@@ -22,10 +20,11 @@ public class Destructable : MonoBehaviour
     [EasyButtons.Button]
     void Drop()
     {
-        for (int i = 0; i < dropRange.randomValue; i++)
+        if (Application.isPlaying)
         {
-            Vector3 offset = new Vector3(Random.Range(-.5f, .5f), Random.Range(-.5f, .5f));
-            ObjectPooler.Spawn(PoolType.Cell, transform.position + offset);
+            int range = dropRange.randomValue;
+            for (int i = 0; i < range; i++)
+                ObjectPooler.Spawn(PoolType.Cell, transform.position + new Vector3(Random.Range(-.5f, .5f), Random.Range(-.5f, .5f)));
         }
     }
 }

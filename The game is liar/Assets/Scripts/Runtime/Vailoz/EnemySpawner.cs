@@ -1,5 +1,5 @@
 ﻿#if UNITY_EDITOR
-//#define DEBUG_SEARCH
+#define DEBUG_SEARCH
 #endif
 
 using System.Collections.Generic;
@@ -38,9 +38,7 @@ public class EnemySpawner : MonoBehaviour
 #endif
 
         for (int i = 0; i < spawnPos.Length; i++)
-        {
             spawnPos[i] = new List<Vector3Int>();
-        }
 
         for (int y = 0; y <= tilemap.cellBounds.size.y - 3; y++)
         {
@@ -49,23 +47,16 @@ public class EnemySpawner : MonoBehaviour
                 Vector3Int pos = tilemap.cellBounds.min + new Vector3Int(x, y, 0);
                 int pattern = 0;
                 for (int j = 0; j < 3; j++)
-                {
                     for (int i = 0; i < 3; i++)
-                    {
                         if (tilemap.HasTile(pos + new Vector3Int(i, j, 0)))
-                        {
                             pattern |= 1 << (i + j * 3);
-                        }
-                    }
-                }
 
                 Vector3Int offset = new Vector3Int(1, 1, 0);
                 TileBase debugTile = debugFailTile;
                 if (pattern == 0b000000111)
                 {
                     spawnPos[(int)SpawnLocation.Ground].Add(pos + offset);
-                    debugTile = debugGroundTile;
-                    
+                    debugTile = debugGroundTile;                    
                 }
                 else if (pattern == 0)
                 {
@@ -106,7 +97,7 @@ public class EnemySpawner : MonoBehaviour
                 Debug.Assert(false, "All enemies are disabled");
                 return;
             }
-            else if (spawner.info[i].enabled)
+            if (spawner.info[i].enabled)
                 break;
         }
 
@@ -140,8 +131,7 @@ public class EnemySpawner : MonoBehaviour
 
     private IEnumerator StartSpawnVFX(Enemy enemy)
     {
-        float vfxTime = ObjectPooler.Spawn(PoolType.VFX_Spawner, enemy.transform.position)
-            .GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).length;
+        float vfxTime = ObjectPooler.Spawn<Animator>(PoolType.VFX_Spawner, enemy.transform.position).GetCurrentAnimatorStateInfo(0).length;
         enemy.gameObject.SetActive(false);
         yield return new WaitForSeconds(vfxTime);
         enemy.gameObject.SetActive(true);

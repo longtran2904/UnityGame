@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class KeyInput // This is a class because I hate C# (Dictionary/List can't modify a struct)
+public class KeyInput // RANT: This is a class because I hate C# (Dictionary/List can't modify a struct)
 {
     public KeyCode code;
     public KeyTriggerType trigger;
@@ -25,7 +25,7 @@ public enum KeyTriggerType
 }
 
 [System.Serializable]
-public struct InputKey // Because Unity is stupid and can't serialize a fucking dictionary
+public struct InputKey // RANT: Because Unity is stupid and can't serialize a fucking dictionary
 {
     public InputType type;
     public KeyCode code;
@@ -60,7 +60,7 @@ public class UnityInput : MonoBehaviour
 
     public void EnableMouseInput(bool enable, int level)
     {
-        Debug.Assert(MathUtils.InRange(0, maxLevelInput - 1, level));
+        Debug.Assert(MathUtils.InRange(level, 0, maxLevelInput - 1));
         disableMouseInputs[level] = !enable;
     }
 
@@ -76,6 +76,7 @@ public class UnityInput : MonoBehaviour
 
     public bool GetInput(InputType type)
     {
+        GameDebug.Assert(inputs.ContainsKey(type), type);
         if (disableAllInputs || !inputs[type].enable)
             return false;
         return GetRawInput(type);

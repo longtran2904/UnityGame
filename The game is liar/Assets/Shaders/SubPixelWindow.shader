@@ -15,6 +15,7 @@ Shader "Unlit/SubPixelWindow"
         _BackgroundColor ("BackgroundColor", Color) = (0, 0.09803922, 0.1647059, 1)
         _Brightness ("Brightness", Float) = 1
         _Ratio ("Ratio", Float) = 1
+        _Mode ("Mode", Int) = 0
     }
     SubShader
     {
@@ -96,6 +97,32 @@ Shader "Unlit/SubPixelWindow"
                 Out = t;
             }
 
+            float2 unity_gradientNoise_dir(float2 p)
+            {
+                p = p % 289;
+                float x = (34 * p.x + 1) * p.x % 289 + p.y;
+                x = (34 * x + 1) * x % 289;
+                x = frac(x / 41) * 2 - 1;
+                return normalize(float2(x - floor(x + 0.5), abs(x) - 0.5));
+            }
+
+            float unity_gradientNoise(float2 p)
+            {
+                float2 ip = floor(p);
+                float2 fp = frac(p);
+                float d00 = dot(unity_gradientNoise_dir(ip), fp);
+                float d01 = dot(unity_gradientNoise_dir(ip + float2(0, 1)), fp - float2(0, 1));
+                float d10 = dot(unity_gradientNoise_dir(ip + float2(1, 0)), fp - float2(1, 0));
+                float d11 = dot(unity_gradientNoise_dir(ip + float2(1, 1)), fp - float2(1, 1));
+                fp = fp * fp * fp * (fp * (fp * 6 - 15) + 10);
+                return lerp(lerp(d00, d01, fp.y), lerp(d10, d11, fp.y), fp.x);
+            }
+
+            void Unity_GradientNoise_float(float2 UV, float Scale, out float Out)
+            {
+                Out = unity_gradientNoise(UV * Scale) + 0.5;
+            }
+
             sampler2D _MainTex;
             float4 _MainTex_TexelSize;
 
@@ -110,6 +137,7 @@ Shader "Unlit/SubPixelWindow"
             float4 _BackgroundColor;
             float _Brightness;
             float _Ratio;
+            int _Mode;
 
             float GetNoise(float2 uv, float noiseScale)
             {
@@ -118,15 +146,16 @@ Shader "Unlit/SubPixelWindow"
                 return result;
             }
 
-            float4 Sampling(float2 uv)
+            float2 Pixelate(float2 uv)
             {
-                uv.x *= _Ratio;
-
-                // Pixelate the texture
                 uv *= _PixelateAmount;
                 uv = floor(uv);
                 uv /= _PixelateAmount;
+                return uv;
+            }
 
+            float4 Sampling(float2 uv)
+            {
                 // Star generation
                 float star = GetNoise(uv, _NoiseScale);
                 star = smoothstep(_MinBaseValue, _MaxBaseValue, star);
@@ -136,6 +165,19 @@ Shader "Unlit/SubPixelWindow"
                 col += _BackgroundColor; // This will make black pixels have background color (it also make normal stars a little brighter but I don't care)
 
                 return col;
+            }
+
+            float4 LinearSampling(float2 uv)
+            {
+                float2 pixel = floor(uv * _PixelateAmount);
+                float2 diff = uv * _PixelateAmount - pixel;
+
+                float4 texel00 = Sampling((pixel               ) / _PixelateAmount);
+                float4 texel10 = Sampling((pixel + float2(1, 0)) / _PixelateAmount);
+                float4 texel01 = Sampling((pixel + float2(0, 1)) / _PixelateAmount);
+                float4 texel11 = Sampling((pixel + 1           ) / _PixelateAmount);
+
+                return lerp(lerp(texel00, texel10, diff.x), lerp(texel01, texel11, diff.x), diff.y);
             }
 
             float2 InigoQuilez(float2 uv, float2 texelSize)
@@ -161,7 +203,19 @@ Shader "Unlit/SubPixelWindow"
 
             fixed4 frag(v2f i) : SV_Target
             {
-                fixed4 col = Sampling(i.uv);
+                //fixed4 col = Sampling(i.uv);
+                //fixed4 col = Sampling(InigoQuilez(i.uv, _MainTex_TexelSize.zw));
+
+                float2 uv = i.uv;
+                uv.x *= _Ratio;
+                if (_Mode == 1)
+                    uv = Pixelate(uv);
+                else if (_Mode == 2)
+                    uv = InigoQuilez(uv, float2(_PixelateAmount, _PixelateAmount));
+                fixed4 col = LinearSampling(uv);
+                //fixed4 col = fixed4(uv.x >= 1, uv.y >= 1, 0, 1);
+                //fixed4 col = Sampling(uv);
+
                 return col;
             }
             ENDCG

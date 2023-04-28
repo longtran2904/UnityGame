@@ -35,31 +35,25 @@ public class LevelData : MonoBehaviour
     [ShowWhen("enableUI")] public bool enableMinimap;
 
     [System.Diagnostics.Conditional("UNITY_EDITOR")]
-    [ContextMenu("Set this level to current")]
+    [EasyButtons.Button]
     // TODO: Move this function to GameManager so that other code can change current level
     void SetCurrent()
     {
         GameManager manager = FindObjectOfType<GameManager>();
-        if (manager)
+        GameDebug.Assert(manager, "Can't find the game manager", () =>
         {
             int i = 0;
             foreach (LevelData level in manager.levels)
             {
                 if (level == this)
-                    goto SUCCESS;
-                else
-                    ++i;
+                    manager.currentLevel = i;
+                level.gameObject.SetActive(false);
+                ++i;
             }
 
-            Debug.LogError("This level hasn't been added to the game manager yet!");
-            return;
-
-            SUCCESS:
-            manager.levels[manager.currentLevel].gameObject.SetActive(false);
-            manager.levels[i].gameObject.SetActive(true);
-            manager.currentLevel = i;
-        }
-        else
-            Debug.LogError("Can't find the game manager!");
+            if (manager.levels[manager.currentLevel] != this)
+                Debug.LogWarning("This level hasn't been added to the game manager yet!"); // TODO: Just add the level if it's not already in the list
+            manager.levels[manager.currentLevel].gameObject.SetActive(true);
+        });
     }
 }

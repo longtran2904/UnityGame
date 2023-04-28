@@ -259,7 +259,7 @@ public partial class Enemy : MonoBehaviour
                             } break;
                         case EnemyState.Cooldown:
                             {
-                                rb.velocity = new Vector2(-Mathf.Sign(player.transform.position.x - transform.position.x), Mathf.Sign(player.transform.position.y - transform.position.y)) * speed * speedAfterDashScale;
+                                rb.velocity = MathUtils.Sign(player.transform.position - transform.position) * speed * speedAfterDashScale * Vector2.left;
                                 StartCoroutine(StartState(EnemyState.Charge, abilityCooldownTime));
                             } break;
                     }
@@ -348,7 +348,9 @@ public partial class Enemy : MonoBehaviour
                                         RaycastHit2D hitInfo = Physics2D.Raycast(spriteOrigin, targetDir, magnitude, LayerMask.GetMask("Ground"));
                                         Debug.DrawRay(spriteOrigin, targetDir * magnitude, Color.white);
 
-                                        if (hitInfo) // NOTE: Sometime the enemy stop right before actually touching the ground (because of the raycast's length) so I will need this check.
+                                        // NOTE: Sometime the enemy stop right before actually touching the ground (because of the raycast's length)
+                                        // so I will need this check.
+                                        if (hitInfo)
                                         {
                                             transform.position -= (Vector3)dir * (magnitude - hitInfo.distance);
                                             GameDebug.DrawBox(spriteOrigin - dir * (magnitude - hitInfo.distance), spriteSize, Color.white);
@@ -371,8 +373,7 @@ public partial class Enemy : MonoBehaviour
                                         Vector3 euler = new Vector3(0, 0, Vector2.SignedAngle(Vector2.right, pos - center));
                                         if (euler.z > 90 || euler.z < -90)
                                             euler = new Vector3(0, 180f, 180f - euler.z);
-                                        ObjectPooler.Spawn(PoolType.Bullet_Blood, pos, Quaternion.Euler(euler)).GetComponent<MovingEntity>().InitBullet(bulletDamage, false, true);
-                                        
+                                        ObjectPooler.Spawn<MovingEntity>(PoolType.Bullet_Blood, pos, euler).InitBullet(bulletDamage, false, true);
                                     }
                                 }
 
@@ -482,8 +483,7 @@ public partial class Enemy : MonoBehaviour
         AudioManager.PlayAudio(abilitySound);
         CameraSystem.instance.Shake(cameraShakeMode, MathUtils.SmoothStart3);
         CameraSystem.instance.Shock(2);
-        // TODO: Change ParticleEffect to a singleton
-        FindObjectOfType<ParticleEffect>().SpawnParticle(ParticleType.Explosion, transform.position, explodeRange);
+        ParticleEffect.instance.SpawnParticle(ParticleType.Explosion, transform.position, explodeRange);
         if (IsInRange(explodeRange))
             player.Hurt(abilityDamage);
         Die(true);

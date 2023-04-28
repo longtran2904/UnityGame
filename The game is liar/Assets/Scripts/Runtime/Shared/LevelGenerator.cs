@@ -280,7 +280,7 @@ public class LevelGenerator : MonoBehaviour
         {
             foreach (GenRoom room in rooms)
                 for (int i = positions.Count - 1; i >= 0; --i)
-                    if (room.rect.OverlapWithoutBorder(new RectInt(positions[i], size), connectedRooms.Contains(room) ? 1 : 0))
+                    if (room.rect.OverlapsWithoutBorder(new RectInt(positions[i], size), connectedRooms.Contains(room) ? 1 : 0))
                         positions.RemoveAt(i);
         }
 
@@ -390,14 +390,17 @@ public class LevelGenerator : MonoBehaviour
         AddEdge(h2, n5);
         AddEdge(h2, shop);
 
+        System.Diagnostics.Stopwatch levelWatch = new System.Diagnostics.Stopwatch();
+        levelWatch.Start();
+
         // NOTE: Generate level layout
         {
             const int maxTry = 512;
             bool success = false;
             uint i;
 
-            System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
-            watch.Start();
+            System.Diagnostics.Stopwatch layoutWatch = new System.Diagnostics.Stopwatch();
+            layoutWatch.Start();
             for (i = 1; i < maxTry + 1; i++)
             {
                 if (GenerateLayout(this, i))
@@ -406,16 +409,21 @@ public class LevelGenerator : MonoBehaviour
                     break;
                 }
             }
-            watch.Stop();
+            layoutWatch.Stop();
 
             string result = success ? "has been successfully" : "couldn't be";
-            Debug.Log("Layout" + result + $"generated after {i} tries in {watch.ElapsedMilliseconds} ms!");
+            Debug.Log("Layout" + result + $"generated after {i} tries in {layoutWatch.ElapsedMilliseconds} ms!");
         }
 
         // TODO: Generate room layout
 
         // NOTE: Spawn rooms
         {
+            // RANT: The unity tilemap system is so stupid. The SetTiles and Set(Get)TilesBlock function only take in a single array.
+            // Unity doesn't understand that what the user wants sometimes (or most of the time) is to set a bunch of tiles to a single value (e.g delete all the tiles).
+            // These functions can also take in a lambda when you have a more complicated situation.
+            // The lambda can take in a Vector3Int and return a tile, or take in a tile in the case of GetTilesBlock.
+            // I have a Populate function to create an array with the same value, and I never use that for anything else except tilemap.
             TileBase[] doorTiles = new TileBase[2].Populate(doorTile);
             TileBase[] tileArray = new TileBase[4096];
             for (GenRoom room = firstRoom; room != null; room = room.globalNext)
@@ -430,14 +438,17 @@ public class LevelGenerator : MonoBehaviour
                 Instantiate(room.info.prefab, pos, Quaternion.identity);
             }
         }
+
+        levelWatch.Stop();
+        Debug.Log($"Level generated in {levelWatch.ElapsedMilliseconds}ms");
     }
 
     private void Update()
     {
         for (GenRoom room = firstRoom; room != null; room = room.globalNext)
-            GameDebug.DrawBox(room.rect, Color.green);
+            GameDebug.DrawBox(room.rect.ToRect(), Color.green);
         for (GenConnection connection = firstConnection; connection != null; connection = connection.globalNext)
-            GameDebug.DrawBox(connection.rect, Color.red);
+            GameDebug.DrawBox(connection.rect.ToRect(), Color.red);
     }
 
     GenRoom AddRoom(RoomType type, string name)

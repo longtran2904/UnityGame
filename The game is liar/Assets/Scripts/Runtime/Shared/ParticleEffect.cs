@@ -81,6 +81,8 @@ public class ParticleEffect : MonoBehaviour
     public SpriteRenderer prefab;
     public GameObject explodeEffect;
 
+    public static ParticleEffect instance;
+
     private SpriteRenderer[] renderers = new SpriteRenderer[MAX_PARTICLES];
     private MaterialPropertyBlock block;
     private int radiusID;
@@ -119,13 +121,17 @@ public class ParticleEffect : MonoBehaviour
         thicknessTimerID = Shader.PropertyToID("_ThicknessTimer");
         fadeOutTimerID = Shader.PropertyToID("_FadeOutTimer");
         colorID = Shader.PropertyToID("_Color");
+        if (!instance)
+            instance = this;
+        else
+            GameDebug.Log("Instance is already existed: " + instance, logType: LogType.Error);
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (GameInput.GetInput(InputType.Debug_X))
-            SpawnParticle(ParticleType.Explosion, Vector2.zero, 1);
+        /*if (GameInput.GetInput(InputType.Debug_X))
+            SpawnParticle(ParticleType.Explosion, Vector2.zero, 1);*/
 
         for (int i = 0; i < particleCount; ++i)
         {

@@ -25,23 +25,20 @@ public class LevelInfoPostProcess : DungeonGeneratorPostProcessBase
                 AddDoor(room, door);
         }
 
-        Tilemap tilemap = level.GetSharedTilemaps()[2];
-        tilemap.CompressBounds();
-        tilemap.RefreshAllTiles();
-
         GameManager manager = FindObjectOfType<GameManager>();
-        manager.InitTilemap(roomInstances, tilemap, ruleTile);
+        manager.InitTilemap(roomInstances, level.GetSharedTilemaps()[2].CompressAndRefresh(), ruleTile);
     }
 
     static void AddLevelMap(RoomInstance room, TileBase[] tiles, TileBase wallTile, TileBase backgroundTile)
     {
-        BoundsInt currentBounds = GameManager.GetBoundsFromRoom(room.RoomTemplateInstance.transform, true).ToBoundsInt();
+        Tilemap roomTilemap = GameManager.GetTilemapFromRoom(room.RoomTemplateInstance.transform).CompressAndRefresh();
+        BoundsInt currentBounds = GameManager.GetBoundsFromTilemap(roomTilemap).ToBoundsInt();
         currentBounds.min += (Vector3Int)Vector2Int.one;
         currentBounds.max -= (Vector3Int)Vector2Int.one;
         List<Vector3Int> wallTiles = MathUtils.GetOutlinePoints(currentBounds);
         Tilemap tilemap = CreateGameObject(room.RoomTemplateInstance.transform.GetChild(0).transform,
             "Level Map", "LevelMap", true, typeof(Tilemap), typeof(TilemapRenderer)).GetComponent<Tilemap>();
-        GameDebug.DrawBounds(currentBounds.ToBounds(), Color.cyan);
+        GameDebug.DrawBox(currentBounds.ToBounds().ToRect(), Color.cyan);
 
         foreach (DoorInstance door in room.Doors)
         {

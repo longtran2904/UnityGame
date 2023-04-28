@@ -83,13 +83,13 @@ public class GameMenu : MonoBehaviour
                 {
                     case SwipeSetting.Resolution:
                         {
-                            menu.InitSwipeMenu(Screen.resolutions, r => r.ToString().FormatCamelCase(),
+                            menu.InitSwipeMenu(Screen.resolutions, r => r.CamelCase(),
                                 i => tempSettings.resolution = Screen.resolutions[i], r => GameSettings.CompareResolution(r, Screen.currentResolution));
                         }
                         break;
                     case SwipeSetting.ScreenMode:
                         {
-                            menu.InitSwipeMenu<FullScreenMode>(GameSettings.fullScreenModeCount, mode => mode.ToString().FormatCamelCase(),
+                            menu.InitSwipeMenu<FullScreenMode>(GameSettings.fullScreenModeCount, mode => mode.CamelCase(),
                                 i => tempSettings.mode = (FullScreenMode)i, mode => mode == Screen.fullScreenMode);
                         }
                         break;

@@ -258,9 +258,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   properties:
     serializedEnumNames:
-    - CanFlipGravity
+    - CanJump
     - CanBeHurt
-    - OpenGameOverMenu
     - DamageWhenCollide
     - DieWhenCollide
     - DieAfterMoveTime
@@ -270,29 +269,112 @@ MonoBehaviour:
     - StartAtMinMoveRegion
     - IsCritical
     - UsePooling
+    - CustomInit
     - AddMoneyWhenCollide
+    - FallingOnSpawn
     - IsGrounded
+    - IsReloading
     - AtEndOfMoveRegion
-    - HasTargetOffset
     - Count
-    properties: 0003000000000000
-  stats: []
+    properties: 999999668352
+  testProperties: []
+  abilities:
+  - flags:
+      serializedEnumNames:
+      - Interuptible
+      - AwayFromPlayer
+      - LockOnPlayerForEternity
+      - ExecuteWhenLowHealth
+      - ExecuteWhenInRange
+      - ExecuteWhenInRangeY
+      - ExecuteWhenOutOfMoveRegion
+      - OrCombine
+      - CanExecute
+      properties: 0
+    vfx:
+      properties:
+        serializedEnumNames:
+        - StopAnimation
+        - ChangeEffectObjBack
+        - ScaleOverTime
+        - FadeTextWhenDone
+        - StartTrailing
+        - DecreaseTrailWidth
+        - PlayParticleInOrder
+        - FlipX
+        - FlipY
+        - FlipZ
+        properties: 0
+      nextAnimation: 
+      effectObj: {fileID: 0}
+      particles: []
+      waitTime: 0
+      scaleTime: 0
+      rotateTime: 0
+      trailEmitTime: 0
+      trailStayTime: 0
+      flashTime: 0
+      flashDuration: 0
+      triggerColor: {r: 0, g: 0, b: 0, a: 0}
+      textColor: {r: 0, g: 0, b: 0, a: 0}
+      fontSize: 0
+      stopTime: 0
+      trauma: 0
+      shakeMode: 0
+      shockSpeed: 0
+      shockSize: 0
+      camFlashTime: 0
+      camFlashAlpha: 0
+      alpha: 0
+      fadeTime: 0
+      range: 0
+      particleType: 0
+      audio: 0
+      poolType: 0
+      scaleOffset: {x: 0, y: 0}
+    type: 0
+    healthToExecute: 0
+    distanceToExecute: 0
+    distanceToExecuteY: 0
+    cooldownTime: 0
+    interuptibleTime: 0
+    chargeTime: 0
+    duration: 0
+    range: 0
+    damage: 0
   health: 0
   damage: 0
   money: 0
+  ammo: 0
   collisionTags: []
   valueRange:
     min: 0
     max: 0
+  stat: {fileID: 0}
+  attackTrigger: 0
   moveType: 0
   rotateType: 0
   targetType: 0
   speed: 0
   dRotate: 0
   range: 0
-  offsetTarget: {x: 7, y: 4}
+  maxFallingSpeed: 0
+  offsetType: 0
+  targetOffset: {x: 0, y: 0}
+  spring:
+    f: 0
+    z: 0
+    r: 0
+    prevX: 0
+    dy: 0
+  fallDir:
+    min: 0
+    max: 0
+  regionType: 0
+  verticalHeight: 0
   moveTime: 0
   groundRememberTime: 0
+  fallRememberTime: 0
   jumpPressedRememberTime: 0
   footstepAudio: 0
   timeBtwFootsteps:
@@ -301,6 +383,48 @@ MonoBehaviour:
   whiteMat: {fileID: 0}
   leftDust: {fileID: 0}
   rightDust: {fileID: 0}
+  vfx: {fileID: 0}
+  spawnVFX:
+    properties:
+      serializedEnumNames:
+      - StopAnimation
+      - ChangeEffectObjBack
+      - ScaleOverTime
+      - FadeTextWhenDone
+      - StartTrailing
+      - DecreaseTrailWidth
+      - PlayParticleInOrder
+      - FlipX
+      - FlipY
+      - FlipZ
+      properties: 0
+    nextAnimation: 
+    effectObj: {fileID: 0}
+    particles: []
+    waitTime: 0
+    scaleTime: 0
+    rotateTime: 0
+    trailEmitTime: 0
+    trailStayTime: 0
+    flashTime: 0
+    flashDuration: 0
+    triggerColor: {r: 0, g: 0, b: 0, a: 0}
+    textColor: {r: 0, g: 0, b: 0, a: 0}
+    fontSize: 0
+    stopTime: 0
+    trauma: 0
+    shakeMode: 0
+    shockSpeed: 0
+    shockSize: 0
+    camFlashTime: 0
+    camFlashAlpha: 0
+    alpha: 0
+    fadeTime: 0
+    range: 0
+    particleType: 0
+    audio: 0
+    poolType: 0
+    scaleOffset: {x: 0, y: 0}
   deathVFX:
     properties:
       serializedEnumNames:
@@ -308,27 +432,25 @@ MonoBehaviour:
       - ChangeEffectObjBack
       - ScaleOverTime
       - FadeTextWhenDone
-      - ShockCamera
-      - FlashCamera
       - StartTrailing
       - DecreaseTrailWidth
       - PlayParticleInOrder
-      - ChangeTextColor
-      - ChangeFontSize
-      - Count
-      properties: 0000000000000000
+      - FlipX
+      - FlipY
+      - FlipZ
+      properties: 0
     nextAnimation: 
     effectObj: {fileID: 0}
     particles: []
     waitTime: 0
     scaleTime: 0
+    rotateTime: 0
     trailEmitTime: 0
     trailStayTime: 0
     flashTime: 0
     flashDuration: 0
     triggerColor: {r: 0, g: 0, b: 0, a: 0}
     textColor: {r: 0, g: 0, b: 0, a: 0}
-    newText: 
     fontSize: 0
     stopTime: 0
     trauma: 0
@@ -351,27 +473,25 @@ MonoBehaviour:
       - ChangeEffectObjBack
       - ScaleOverTime
       - FadeTextWhenDone
-      - ShockCamera
-      - FlashCamera
       - StartTrailing
       - DecreaseTrailWidth
       - PlayParticleInOrder
-      - ChangeTextColor
-      - ChangeFontSize
-      - Count
-      properties: 0000000000000000
+      - FlipX
+      - FlipY
+      - FlipZ
+      properties: 0
     nextAnimation: 
     effectObj: {fileID: 0}
     particles: []
     waitTime: 0
     scaleTime: 0
+    rotateTime: 0
     trailEmitTime: 0
     trailStayTime: 0
     flashTime: 0
     flashDuration: 0
     triggerColor: {r: 0, g: 0, b: 0, a: 0}
     textColor: {r: 0, g: 0, b: 0, a: 0}
-    newText: 
     fontSize: 0
     stopTime: 0
     trauma: 0
@@ -524,10 +644,19 @@ MonoBehaviour:
   - {x: 5, y: 5, z: 15}
   - {x: 10, y: 10, z: 20}
   - {x: 3, y: 3, z: 4}
+  - {x: 6, y: 6, z: 15}
   shakeSpeeds:
   - 0
   - 10
   - 15
   - 20
   - 8
+  - 18
+  traumas:
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 0.6
   shockMat: {fileID: 2100000, guid: f36032d656289ff408d483b5a699328b, type: 2}

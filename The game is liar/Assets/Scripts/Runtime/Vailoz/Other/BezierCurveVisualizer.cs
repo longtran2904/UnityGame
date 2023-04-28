@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class BezierCurveVisualizer : MonoBehaviour
@@ -22,17 +20,13 @@ public class BezierCurveVisualizer : MonoBehaviour
         Vector2 p1 = end   - new Vector2(bX.randomValue, bY.randomValue * yMutiplier) * (end - start).magnitude / 2;
         points = new Vector2[numberOfPointsBetween + 2];
         for (int i = 0; i < numberOfPointsBetween + 2; i++)
-        {
             points[i] = MathUtils.CubicCurve(delta * i, start, p0, p1, end);
-        }
     }
 
     public void OnDrawGizmos()
     {
         if (points.Length == 0) return;
         for (int i = 1; i < points.Length; i++)
-        {
-            Gizmos.DrawLine(points[i - 1], points[i]);
-        }
+            GameUtils.DrawGizmosLine(points[i - 1], points[i], Color.white);
     }
 }

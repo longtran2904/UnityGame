@@ -158,19 +158,20 @@ MonoBehaviour:
     - StartAtMinMoveRegion
     - IsCritical
     - UsePooling
-    - FallingOnSpawn
-    - MoveWhenClearRoom
-    - MoveToNearPlayer
+    - CustomInit
     - AddMoneyWhenCollide
+    - FallingOnSpawn
+    - HasTargetOffset
     - IsGrounded
     - AtEndOfMoveRegion
-    - HasTargetOffset
     - Count
-    properties: 3008000000000000
-  stats: []
+    properties: 3007999999737912
+  testProperties: []
+  abilities: []
   health: 0
   damage: 0
   money: 0
+  inventory: {fileID: 0}
   collisionTags: []
   valueRange:
     min: 0
@@ -181,7 +182,14 @@ MonoBehaviour:
   speed: 20
   dRotate: 0
   range: 0
+  maxFallingSpeed: 0
   offsetTarget: {x: 0, y: 0}
+  spring:
+    f: 0
+    z: 0
+    r: 0
+    prevX: 0
+    dy: 0
   moveTime: 5
   groundRememberTime: 0
   jumpPressedRememberTime: 0
@@ -192,67 +200,19 @@ MonoBehaviour:
   whiteMat: {fileID: 2100000, guid: a52db8d2e3bb7c84f9a724b122d7baa7, type: 2}
   leftDust: {fileID: 0}
   rightDust: {fileID: 0}
-  spawnVFX:
-    properties: 0000000000000000
-    properties2:
-      serializedEnumNames:
-      - StopAnimation
-      - ChangeEffectObjBack
-      - ScaleOverTime
-      - FadeTextWhenDone
-      - ShockCamera
-      - FlashCamera
-      - StartTrailing
-      - DecreaseTrailWidth
-      - PlayParticleInOrder
-      - ChangeTextColor
-      - ChangeFontSize
-      - Count
-      properties: 0000000000000000
-    nextAnimation: 
-    effectObj: {fileID: 0}
-    particles: []
-    waitTime: 0
-    scaleTime: 0
-    trailEmitTime: 0
-    trailStayTime: 0
-    flashTime: 0
-    flashDuration: 0
-    triggerColor: {r: 0, g: 0, b: 0, a: 0}
-    textColor: {r: 0, g: 0, b: 0, a: 0}
-    newText: 
-    fontSize: 0
-    stopTime: 0
-    trauma: 0
-    shakeMode: 0
-    shockSpeed: 0
-    shockSize: 0
-    camFlashTime: 0
-    camFlashAlpha: 0
-    alpha: 0
-    fadeTime: 0
-    range: 0
-    particleType: 0
-    audio: 0
-    poolType: 0
-    scaleOffset: {x: 0, y: 0}
   deathVFX:
-    properties: 0000000000000000
-    properties2:
+    properties:
       serializedEnumNames:
       - StopAnimation
       - ChangeEffectObjBack
       - ScaleOverTime
       - FadeTextWhenDone
       - ShockCamera
-      - FlashCamera
       - StartTrailing
       - DecreaseTrailWidth
       - PlayParticleInOrder
-      - ChangeTextColor
-      - ChangeFontSize
       - Count
-      properties: 0000000000000000
+      properties: 0
     nextAnimation: 
     effectObj: {fileID: 0}
     particles: []
@@ -281,22 +241,18 @@ MonoBehaviour:
     poolType: 0
     scaleOffset: {x: 0, y: 0}
   hurtVFX:
-    properties: 0000000000000000
-    properties2:
+    properties:
       serializedEnumNames:
       - StopAnimation
       - ChangeEffectObjBack
       - ScaleOverTime
       - FadeTextWhenDone
       - ShockCamera
-      - FlashCamera
       - StartTrailing
       - DecreaseTrailWidth
       - PlayParticleInOrder
-      - ChangeTextColor
-      - ChangeFontSize
       - Count
-      properties: 0000000000000000
+      properties: 0
     nextAnimation: 
     effectObj: {fileID: 0}
     particles: []

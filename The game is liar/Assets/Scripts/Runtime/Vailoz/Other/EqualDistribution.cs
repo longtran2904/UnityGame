@@ -24,9 +24,7 @@ public class EqualDistribution : MonoBehaviour
     void ResetObject()
     {
         foreach (Transform child in transform)
-        {
             StartCoroutine(GameUtils.DestroyInEditor(child.gameObject));
-        }
     }
 
     void SpawnObjects()

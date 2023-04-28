@@ -116,7 +116,7 @@ public class PlayerController : MonoBehaviour
 
     void StartJumpEffect(bool isJumping)
     {
-        CameraSystem.instance.Shake(ShakeMode.Medium, trauma: .4f);
+        CameraSystem.instance.Shake(ShakeMode.PlayerJump);
         PlayDust(-moveInput);
         AudioManager.PlayAudio(isJumping ? AudioType.Player_Jump : AudioType.Player_Land);
 

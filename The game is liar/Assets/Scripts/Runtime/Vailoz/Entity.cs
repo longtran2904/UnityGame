@@ -1,73 +1,84 @@
+//#define SCRIPTABLE_VFX
 using System.Collections;
 using UnityEngine;
 
-[System.Serializable]
-public struct Property<T>
-{
-#if UNITY_EDITOR
-    public string[] serializedEnumNames;
-#endif
-    public ulong[] properties;
-
-    public Property(params T[] properties) : this()
-    {
-        this.properties = new ulong[(System.Enum.GetNames(typeof(T)).Length + 63) / 64];
-        SetProperties(properties);
-    }
-
-    public void Init()
-    {
-        properties = new ulong[(System.Enum.GetNames(typeof(T)).Length + 63) / 64];
-    }
-
-    public bool HasProperty(T property)
-    {
-        int p = System.Convert.ToInt32(property);
-        return (properties[p / 64] & (1ul << (p % 64))) != 0;
-    }
-
-    public void SetProperty(T property, bool set)
-    {
-        int p = System.Convert.ToInt32(property);
-        if (set)
-            properties[p / 64] |= 1ul << (p % 64);
-        else
-            properties[p / 64] &= ~(1ul << (p % 64));
-    }
-
-    public void SetProperties(params T[] properties)
-    {
-        foreach (T property in properties)
-            SetProperty(property, true);
-    }
-}
-
 public enum EntityProperty
 {
-    CanFlipGravity,
+    CanJump,
     CanBeHurt,
-    OpenGameOverMenu,
     DamageWhenCollide,
     DieWhenCollide,
     DieAfterMoveTime,
+    DieAfterEffect,
     SpawnCellWhenDie,
     SpawnDamagePopup,
     ClampToMoveRegion,
     StartAtMinMoveRegion,
     IsCritical,
     UsePooling,
+    CustomInit, // TODO: Maybe collapse this and UsePooling into one
     AddMoneyWhenCollide,
-
+    FallingOnSpawn,
+    
     // Don't show in the inspector
     IsGrounded,
+    IsReloading,
     AtEndOfMoveRegion,
-    HasTargetOffset,
-
+    
     Count
+}
+
+public enum EntityState
+{
+    None,
+    
+    Jumping,
+    Falling,
+    Landing,
+    
+    StartMoving,
+    StopMoving,
+    
+    StartAttack,
+    StartCooldown,
+    
+    OnSpawn,
+    OnHit,
+    OnDeath,
 }
 
 public class Entity : MonoBehaviour, IPooledObject
 {
+#region Ability
+    /*
+     * RUNNING
+     * - Turn speed
+     * - Acceleration
+     * - Decceleration
+     * - Max speed
+     * JUMPING
+     * - Duration
+     * - Jump height
+     * - Down gravity
+     * - Air acceleration (what about air decceleration?)
+     * - Air control (movement in air/can the player change direction in air?/The equivalent of turn speed but in air)
+     * - Air brake (does the player still move forward when he stop pressing?)
+     * CAMERA
+     * - Damping (X/Y/Jump)
+     * - Lookahead
+     * - Zoom
+     * ASSISTS
+     * - Coyote time
+     * - Jump buffer
+     * - Terminal velocity
+     * - Rounded corners
+     * JUICE
+     * - Particles (run/jump/land)
+     * - Squash and stretch (jump/land)
+     * - Trail
+     * - Lean (angle and speed)
+     */
+    
     // Move horizontally based on input
     // Jump
     // Flip gravity based on input
@@ -75,266 +86,270 @@ public class Entity : MonoBehaviour, IPooledObject
     // explode when near/died
     // Teleport when player is far away
     // Move towards the player, teleport when hit a cliff
-
-    public enum EntityStatProperty
+    
+    public enum AbilityType
     {
-        AddSpeed,
-        MulSpeed,
-        AddDamage,
-        MulDamage,
-
-        //AimAtNextPos,
-        FindNewStat,
-        Interruptible,
-        TillDeathDoUsPart,
-        DamageNearbyEntities,
-        DieAfterExecution,
-        TeleportToTarget,
-        StartFalling,
-        StartMoving,
-        FlipGraviy,
-
-        PlayerInRange,
-        EntityOutOfMoveRegion,
-        LowHealth,
-        EndRoom,
+        None,
+        Move,
+        Teleport,
+        Explode,
+        Jump,
     }
-
+    
+    public enum AbilityFlag
+    {
+        Interuptible,
+        AwayFromPlayer,
+        LockOnPlayerForEternity,
+        
+        ExecuteWhenLowHealth,
+        ExecuteWhenInRange,
+        ExecuteWhenInRangeY,
+        ExecuteWhenOutOfMoveRegion,
+        OrCombine,
+        
+        CanExecute,
+    }
+    
     [System.Serializable]
-    public class EntityStat
+    public class EntityAbility
     {
-        public Property<EntityStatProperty> properties;
-        public int nextStat;
-
-        [Header("Condition")]
+        public Property<AbilityFlag> flags;
+        public EntityVFX vfx;
+        public AbilityType type;
+        
         public int healthToExecute;
-        public Vector2 distanceToExecute;
-
-        [Header("Execution")]
-        public float duration;
+        public float distanceToExecute;
+        public float distanceToExecuteY;
+        public float cooldownTime;
+        public float interuptibleTime;
+        
         public float chargeTime;
-        public float groundRememberTime;
-        public float jumpRememberTime;
-        public float playerRememberTime;
-        public RangedFloat affectedRange;
-
-        public MoveType moveType;
-        public TargetType targetType;
-        public RotateType rotateType;
-        public float speed;
-        public float damage;
+        public float duration;
+        public float range;
+        public int damage;
     }
-
-    bool CanExecute(EntityStat stat)
+    
+    public bool CanUseAbility(EntityAbility ability)
     {
-        bool canExecute = true;
-        if (GameManager.player)
-            canExecute &= stat.properties.HasProperty(EntityStatProperty.PlayerInRange) == IsInRange(stat.distanceToExecute, GameManager.player.transform.position);
-        if (stat.properties.HasProperty(EntityStatProperty.EntityOutOfMoveRegion))
-            canExecute &= HasProperty(EntityProperty.AtEndOfMoveRegion);
-        if (stat.properties.HasProperty(EntityStatProperty.LowHealth))
-            canExecute &= health <= stat.healthToExecute;
-
-        return canExecute;
-    }
-
-    float MulAdd(float a, float b, bool mul, bool add)
-    {
-        if (mul && add)
-            return a + a * b;
-        else if (mul)
-            return a * b;
-        else if (add)
-            return a + b;
-        else
-            return b;
-    }
-
-    IEnumerator ExecuteStat(EntityStat stat, float defaultSpeed, float defaultDamage)
-    {
-        if (stat == null)
-            yield break;
-        if (stat.properties.properties == null)
-            stat.properties.Init();
-
-        rotateType = stat.rotateType;
-        targetType = stat.targetType;
-
-        // vfx.Play();
-        float timer = 0;
-        moveType = MoveType.None;
-        while (timer < stat.playerRememberTime)
+        Property<AbilityFlag> flags = ability.flags;
+        Vector2 pos = GameManager.player?.transform.position ?? (transform.position + Vector3.one);
+        
+        bool lowHealth  = flags.HasProperty(AbilityFlag.ExecuteWhenLowHealth) == (health < ability.healthToExecute);
+        bool isInRange  = flags.HasProperty(AbilityFlag.ExecuteWhenInRange) == IsInRange(ability.distanceToExecute, pos);
+        bool isInRangeY = flags.HasProperty(AbilityFlag.ExecuteWhenInRangeY) == IsInRangeY(ability.distanceToExecuteY, pos);
+        bool moveRegion = flags.HasProperty(AbilityFlag.ExecuteWhenOutOfMoveRegion) == HasProperty(EntityProperty.AtEndOfMoveRegion);
+        
+        bool result = Check(ability.flags.HasProperty(AbilityFlag.OrCombine), lowHealth, isInRange, isInRangeY, moveRegion);
+        return result;
+        
+        static bool Check(bool condition, params bool[] values)
         {
-            if (stat.properties.HasProperty(EntityStatProperty.Interruptible))
-                if (!CanExecute(stat))
-                    goto END;
+            foreach (bool b in values)
+                if (b == condition)
+                return condition;
+            return !condition;
+        }
+    }
+    
+    public IEnumerator UseAbility(EntityAbility ability, MoveType moveType, TargetType targetType, float speed)
+    {
+        Debug.Log(ability.type);
+        ability.flags.SetProperty(AbilityFlag.CanExecute, false);
+        float cooldownTime = 0;
+        this.moveType = MoveType.None;
+        float timer = 0;
+        ability.vfx.canStop = () => ability.flags.HasProperty(AbilityFlag.CanExecute);
+        PlayVFX(ability.vfx);
+        while (timer < ability.interuptibleTime)
+        {
+            if (ability.flags.HasProperty(AbilityFlag.Interuptible))
+                if (!CanUseAbility(ability))
+                goto END;
             yield return null;
             timer += Time.deltaTime;
         }
-        yield return new WaitForSeconds(stat.chargeTime - stat.playerRememberTime);
-
-        moveType = stat.moveType;
-        speed = MulAdd(defaultSpeed, stat.speed, stat.properties.HasProperty(EntityStatProperty.MulSpeed), stat.properties.HasProperty(EntityStatProperty.AddSpeed));
-        damage = (int)MulAdd(defaultDamage, stat.damage, stat.properties.HasProperty(EntityStatProperty.MulDamage), stat.properties.HasProperty(EntityStatProperty.AddDamage));
-
-
-        if (stat.properties.HasProperty(EntityStatProperty.StartFalling))
+        
+        this.targetType = TargetType.None;
+        yield return new WaitForSeconds(ability.chargeTime - ability.interuptibleTime);
+        
+        switch (ability.type)
         {
-            rb.velocity = new Vector2(Random.Range(0f, 1f) * (MathUtils.RandomBool() ? 1f : -1f), Random.Range(0.5f, 1f)).normalized * speed;
-            cd.isTrigger = false;
-            rb.bodyType = RigidbodyType2D.Dynamic;
-        }
-        else if (stat.properties.HasProperty(EntityStatProperty.StartMoving))
-        {
-            cd.isTrigger = true;
-            rb.bodyType = RigidbodyType2D.Kinematic;
-        }
-        /*else if (stat.properties.HasProperty(EntityStatProperty.FlipGraviy))
-        {
-            while (true)
+            case AbilityType.Move:
             {
-                float groundTime = 0;
-                float jumpTime = 0;
-                do
+                this.moveType = moveType;
+                this.speed = ability.range / ability.duration;
+                this.targetType = targetType;
+                damage = ability.damage;
+                if (ability.flags.HasProperty(AbilityFlag.AwayFromPlayer))
+                    targetDir = MathUtils.Sign(targetPos - (Vector2)transform.position) * new Vector2(-1, 1);
+                if (ability.flags.HasProperty(AbilityFlag.LockOnPlayerForEternity))
                 {
-                    yield return null;
-                    groundTime -= Time.deltaTime;
-                    jumpTime -= Time.deltaTime;
-                    if (GroundCheck())
-                        groundTime = stat.groundRememberTime;
-                    if (GameInput.GetInput(InputType.Jump))
-                        jumpTime = stat.jumpRememberTime;
-                } while (groundTime < 0 || jumpTime < 0);
-                rb.gravityScale *= -1;
-            }
-        }*/
-
-        if (stat.properties.HasProperty(EntityStatProperty.TeleportToTarget))
-        {
-            float playerUp = GameManager.player.transform.up.y;
-            Vector3 destination;
-            {
-                destination = targetPos;
-                destination.y += (spriteExtents.y - GameManager.player.spriteExtents.y) * playerUp;
-
-                float playerToEntityX = Mathf.Sign(targetPos.x - transform.position.x);
-                float randomDistance = stat.affectedRange.randomValue * playerToEntityX;
-                float minX = stat.affectedRange.min * playerToEntityX;
-
-                // TODO: Maybe teleport opposite to where the player is heading or teleport to nearby platform
-                if (!IsPosValid(randomDistance))
-                    if (!IsPosValid(minX))
-                        if (!IsPosValid(-randomDistance))
-                            if (!IsPosValid(-minX))
-                                yield break;
-
-                bool IsPosValid(float offsetX)
-                {
-                    Vector3 offset = new Vector3(offsetX, 0);
-                    bool onGround = BoxCast(destination + offset - new Vector3(0, spriteExtents.y * playerUp), new Vector2(spriteExtents.x, .1f), Color.yellow);
-                    bool insideWall = BoxCast(destination + offset + new Vector3(0, .1f * playerUp), sr.bounds.size, Color.green);
-                    if (onGround && !insideWall)
-                    {
-                        destination.x += offsetX;
-                        return true;
-                    }
-                    return false;
+                    testProperties[0].SetProperty(VFXProperty.StartTrailing, false);
+                    StartFalling(false);
+                    yield break;
                 }
-            }
-
-            if (playerUp != transform.up.y)
-                transform.Rotate(new Vector3(180, 0, 0), Space.World);
-
-            yield return null;
-            transform.position = destination;
-            // TODO: Recalculate the moveRegion here or at the default stat
-        }
-
-        yield return new WaitForSeconds(stat.duration);
-
-        if (stat.properties.HasProperty(EntityStatProperty.DamageNearbyEntities))
-        {
-            if (IsInRange(stat.affectedRange.randomValue, GameManager.player.transform.position))
-                GameManager.player.Hurt(damage);
-            // TODO: Setup deathVFX for explosion
-        }
-
-        if (stat.properties.HasProperty(EntityStatProperty.DieAfterExecution))
-            Hurt(health);
-        if (stat.properties.HasProperty(EntityStatProperty.TillDeathDoUsPart))
-            yield break;
-
-        END:
-        currentStat = stat.nextStat;
-        if (stat.properties.HasProperty(EntityStatProperty.FindNewStat))
-        {
-            int nextStat = currentStat;
-            while (currentStat == nextStat)
+            } break;
+            case AbilityType.Teleport:
             {
+                float playerUp = GameManager.player.transform.up.y;
+                Vector3 destination;
+                {
+                    destination = GameManager.player.transform.position;
+                    destination.y += (spriteExtents.y - GameManager.player.spriteExtents.y) * playerUp;
+                    float distance = ability.range * Mathf.Sign(GameManager.player.transform.position.x - transform.position.x);
+                    
+                    // TODO: Maybe teleport opposite to where the player is heading or teleport to nearby platform
+                    if (!IsPosValid(distance))
+                        if (!IsPosValid(-distance))
+                        goto END;
+                    
+                    bool IsPosValid(float offsetX)
+                    {
+                        Vector3 offset = new Vector3(offsetX, 0);
+                        bool onGround = GameUtils.BoxCast(destination + offset - new Vector3(0, spriteExtents.y * playerUp),
+                                                          new Vector2(spriteExtents.x, .1f), Color.yellow);
+                        bool insideWall = GameUtils.BoxCast(destination + offset + new Vector3(0, .1f * playerUp), sr.bounds.size, Color.green);
+                        if (onGround && !insideWall)
+                        {
+                            destination.x += offsetX;
+                            return true;
+                        }
+                        return false;
+                    }
+                }
+                
+                if (playerUp != transform.up.y)
+                    transform.Rotate(180, 0, 0);
+                
                 yield return null;
-                for (int i = 0; i < stats.Length; i++)
-                    if (i != currentStat)
-                        if (CanExecute(stats[i]))
-                            currentStat = i;
+                transform.position = destination;
+                CalculateMoveRegion();
             }
+            break;
+            case AbilityType.Explode:
+            {
+                // NOTE: If the enemy die then it will be handled by the vfx system
+                if (IsInRange(ability.range, GameManager.player.transform.position))
+                    GameManager.player.Hurt(ability.damage);
+            } break;
+            case AbilityType.Jump:
+            {
+                
+            } break;
         }
+        
+        yield return new WaitForSeconds(ability.duration);
+        cooldownTime = ability.cooldownTime;
+        
+        END:
+        this.speed = speed;
+        this.targetType = targetType;
+        this.moveType = moveType;
+        
+        yield return null;
+        currentAbility = MathUtils.LoopIndex(currentAbility + 1, abilities.Length, true);
+        
+        yield return new WaitForSeconds(cooldownTime);
+        ability.flags.SetProperty(AbilityFlag.CanExecute, true);
     }
-
+#endregion
+    
+    public enum TargetOffsetType
+    {
+        None,
+        Mouse,
+        Player,
+    }
+    
+    public enum MoveRegionType
+    {
+        None,
+        Ground,
+        Vertical,
+    }
+    
+    public enum AttackTrigger
+    {
+        None,
+        MouseInput,
+    }
+    
     [Header("Stat")]
     public Property<EntityProperty> properties;
-    public EntityStat[] stats;
+    public Property<VFXProperty>[] testProperties;
+    public EntityAbility[] abilities;
+    private int currentAbility;
+    
     public int health;
     public int damage;
     public int money;
+    public int ammo;
+    
     public string[] collisionTags;
     [MinMax(0, 10)] public RangedInt valueRange;
-    private int currentStat;
-    private int prevStat;
-
+    
+    [Header("Attack")]
+    public WeaponStat stat;
+    public AttackTrigger attackTrigger;
+    private RangedFloat attackDuration;
+    
     [Header("Movement")]
     public MoveType moveType;
     public RotateType rotateType;
     public TargetType targetType;
-    public float speed;
+    [Range(0f, 50f)] public float speed;
     public float dRotate;
     public float range;
-    public Vector2 offsetTarget;
-
+    public float maxFallingSpeed;
+    public TargetOffsetType offsetType;
+    public Vector2 targetOffset;
+    public SpringData spring;
+    [MinMax(-1, 1)] public RangedFloat fallDir;
+    
+    public MoveRegionType regionType;
+    [ShowWhen("regionType", MoveRegionType.Vertical)] public float verticalHeight;
+    private Rect moveRegion;
+    
     public float moveTime;
-    private float moveTimeValue;
-
+    private float aliveTime;
+    private float showTime;
+    
     public float groundRememberTime;
     private float groundRemember;
-
+    
+    public float fallRememberTime;
+    private float fallRemember;
+    
     public float jumpPressedRememberTime;
     private float jumpPressedRemember;
-
+    
     public AudioType footstepAudio;
     public RangedFloat timeBtwFootsteps;
     private float timeBtwFootstepsValue;
-
+    
+    private Vector2 velocity;
     private Rigidbody2D rb;
     private Collider2D cd;
-    private Rect moveRegion;
-    private Vector2 velocity;
     private float speedY;
     private Vector2 targetDir;
     private Vector2 targetPos;
-
+    private Vector2 offsetDir;
+    private EntityState state;
+    
     [Header("Effects")]
     public Material whiteMat;
     public ParticleSystem leftDust;
     public ParticleSystem rightDust;
-    public EntityVFX deathVFX, hurtVFX;
-
-    private ParticleEffect particle;
-    private Camera cam;
-
+    public VFXCollection vfx;
+    public EntityVFX spawnVFX, deathVFX, hurtVFX;
+    
+    private TMPro.TextMeshPro text;
     private TrailRenderer trail;
     private Animator anim;
     private SpriteRenderer sr;
     private Vector2 spriteExtents;
-
+    
     public void OnObjectInit()
     {
         if (HasProperty(EntityProperty.UsePooling))
@@ -343,255 +358,665 @@ public class Entity : MonoBehaviour, IPooledObject
             deathVFX.done += () => gameObject.SetActive(false);
         }
     }
-
-    public void OnObjectSpawn()
+    
+    public void CustomInit()
     {
-        InitOnSpawn();
+        Init();
+        OnObjectSpawn(null);
+        // TODO: Figure out whether we need to disable or destroy the object
     }
-
+    
+    public void OnObjectSpawn(GameObject defaultObject)
+    {
+        Entity entity = defaultObject?.GetComponent<Entity>();
+        if (entity)
+        {
+            properties = entity.properties;
+            // TODO: testProperties
+            Debug.Assert(entity.abilities?.Length == abilities?.Length);
+            currentAbility = 0;
+            for (int i = 0; i < entity.abilities.Length; ++i)
+            {
+                abilities[i].flags = entity.abilities[i].flags;
+                abilities[i].vfx.properties = entity.abilities[i].vfx.properties;
+            }
+            
+            health = entity.health;
+            damage = entity.damage;
+            money = entity.money;
+            ammo = entity.ammo;
+            valueRange = entity.valueRange;
+            
+            attackTrigger = entity.attackTrigger;
+            attackDuration = entity.attackDuration;
+            
+            moveType = entity.moveType;
+            rotateType = entity.rotateType;
+            targetType = entity.targetType;
+            speed = entity.speed;
+            range = entity.range;
+            offsetType = entity.offsetType;
+            
+            moveTime = entity.moveTime;
+            aliveTime = 0;
+            
+            groundRememberTime = entity.groundRememberTime;
+            groundRemember = 0;
+            
+            fallRememberTime = entity.fallRememberTime;
+            fallRemember = 0;
+            
+            jumpPressedRememberTime = entity.jumpPressedRememberTime;
+            jumpPressedRemember = 0;
+            
+            timeBtwFootstepsValue = 0;
+            
+            velocity = Vector2.zero;
+            speedY = 0;
+            state = EntityState.OnSpawn;
+            
+            // NOTE: weaponStat, collisionTags, dRotate, maxFallingSPeed, spring, fallDir?
+        }
+        
+        CalculateMoveRegion();
+        if (HasProperty(EntityProperty.FallingOnSpawn))
+            StartFalling(true);
+        
+        if (HasProperty(EntityProperty.DieAfterEffect))
+        {
+            float animTime = 0;
+            if (anim)
+            {
+                sr.enabled = true;
+                AnimatorStateInfo state = anim.GetCurrentAnimatorStateInfo(0);
+                anim.Play(state.shortNameHash);
+                animTime = state.length;
+            }
+            
+            float particleTime = 0;
+            ParticleSystem particle = GetComponent<ParticleSystem>();
+            if (particle)
+            {
+                particle.Play();
+                particleTime = particle.main.duration; // TODO: Check if this is the correct duration
+            }
+            
+            aliveTime = Mathf.Max(animTime, particleTime);
+        }
+        aliveTime = Mathf.Max(aliveTime, HasProperty(EntityProperty.DieAfterMoveTime) ? moveTime : 0);
+    }
+    
     // Start is called before the first frame update
     void Start()
     {
-        if (!HasProperty(EntityProperty.UsePooling))
+        if (!HasProperty(EntityProperty.UsePooling) && !HasProperty(EntityProperty.CustomInit))
         {
             Init();
-            InitOnSpawn();
+            OnObjectSpawn(null);
             deathVFX.done += () => Destroy(this);
         }
     }
-
+    
 #region Initialize
-    void InitOnSpawn()
-    {
-        prevStat = -1;
-        currentStat = 0;
-        moveTimeValue = moveTime + Time.time;
-        /*if (HasProperty(EntityProperty.FallingOnSpawn))
-        {
-            velocity = new Vector2(Random.Range(-1, 1), Random.value).normalized * speed;
-            StartMoving(false);
-        }*/
-    }
-
     void Init()
     {
         rb = GetComponent<Rigidbody2D>();
         cd = GetComponent<Collider2D>();
+        text = GetComponent<TMPro.TextMeshPro>();
         trail = GetComponent<TrailRenderer>();
         anim = GetComponent<Animator>();
         sr = GetComponent<SpriteRenderer>();
+        
+        if (rb && maxFallingSpeed != 0)
+        {
+            float drag = MathUtils.GetDragFromAcceleration(Mathf.Abs(Physics2D.gravity.y * rb.gravityScale), maxFallingSpeed);
+            Debug.Assert(drag > 0, drag);
+            rb.drag = drag;
+        }
         if (whiteMat)
             whiteMat = Instantiate(whiteMat);
         if (sr)
             spriteExtents = sr.bounds.extents;
-
-        particle = FindObjectOfType<ParticleEffect>();
-        cam = Camera.main;
-
-        if (HasProperty(EntityProperty.OpenGameOverMenu))
-            deathVFX.done += () => { /* TODO: Open Game over menu after vfx */ };
+        
         if (HasProperty(EntityProperty.SpawnCellWhenDie))
             deathVFX.done += () =>
-            {
-                int dropValue = valueRange.randomValue;
-                for (int i = 0; i < dropValue; i++)
-                    ObjectPooler.Spawn(PoolType.Cell, transform.position);
-            };
-
-        SetProperty(EntityProperty.CanBeHurt, true);
+        {
+            int dropValue = valueRange.randomValue;
+            for (int i = 0; i < dropValue; i++)
+                ObjectPooler.Spawn(PoolType.Cell, transform.position);
+        };
+        
+        MoveType move = moveType;
+        RotateType rotate = rotateType;
         hurtVFX.done += () =>
         {
             SetProperty(EntityProperty.CanBeHurt, true);
-            prevStat = -1;
+            moveType = move;
+            rotateType = rotate;
         };
-
-        /*if (HasProperty(EntityProperty.MoveWhenClearRoom))
-            GameInput.BindEvent(GameEventType.EndRoom, _ => StartMoving(true));*/
-
-        for (int i = 0; i < stats.Length; ++i)
-            if (stats[i].properties.HasProperty(EntityStatProperty.EndRoom))
-                GameInput.BindEvent(GameEventType.EndRoom, _ => currentStat = i);
+        
+        ammo = stat?.ammo ?? 0;
+        if (spring != null && spring.f != 0)
+            spring.Init(GameManager.player.transform.position.y);
+        
+        state = EntityState.OnSpawn;
     }
-
+    
     public void InitCamera(bool automatic, bool useSmoothDamp, Vector2 value, float waitTime)
     {
-        if (stats == null || stats.Length < 2)
-            stats = new EntityStat[2];
-
-        SetProperty(EntityProperty.HasTargetOffset, !automatic);
-        stats[0] = new EntityStat
-        {
-            properties = new Property<EntityStatProperty>(EntityStatProperty.FindNewStat),
-            targetType = automatic ? TargetType.MoveRegion : TargetType.Player,
-            speed = value.magnitude,
-            moveType = useSmoothDamp ? MoveType.SmoothDamp : MoveType.Fly,
-        };
-        prevStat = -1;
-        //targetType = automatic ? TargetType.MoveRegion : TargetType.Player;
-        //speed = value.magnitude;
-        //moveType = useSmoothDamp ? MoveType.SmoothDamp : MoveType.Fly;
-
+        //SetProperty(EntityProperty.HasTargetOffset, !automatic);
+        SetProperty(EntityProperty.StartAtMinMoveRegion, automatic);
+        offsetType = automatic ? TargetOffsetType.None : TargetOffsetType.Mouse;
+        targetType = automatic ? TargetType.MoveRegion : TargetType.Player;
+        
+        speed = value.magnitude;
+        moveType = useSmoothDamp ? MoveType.SmoothDamp : MoveType.Fly;
         speed = value.x;
         speedY = value.y;
-
-        stats[1] = new EntityStat { properties = new Property<EntityStatProperty>(EntityStatProperty.EntityOutOfMoveRegion), chargeTime = waitTime };
+        
+        // NOTE: This ability only executes when the camera has TargetType.MoveRegion
+        abilities[0].flags = new Property<AbilityFlag>(AbilityFlag.ExecuteWhenOutOfMoveRegion, AbilityFlag.CanExecute);
+        abilities[0].chargeTime = waitTime;
+        
         GameInput.BindEvent(GameEventType.NextRoom, room => ToNextRoom(GameManager.GetBoundsFromRoom(room).ToRect()));
-
         void ToNextRoom(Rect roomRect)
         {
             moveRegion = roomRect;
-            moveRegion.min += cam.HalfSize();
-            moveRegion.max -= cam.HalfSize();
-            if (automatic)
-            {
-                transform.position = moveRegion.min.Z(transform.position.z);
-                SwitchTargetToMax(true, false);
-            }
+            moveRegion.min += GameManager.mainCam.HalfSize();
+            moveRegion.max -= GameManager.mainCam.HalfSize();
             Debug.Assert((moveRegion.xMin <= moveRegion.xMax) && (moveRegion.yMin <= moveRegion.yMax),
-                $"Camera's limit is wrong: (Move region: {moveRegion}, Rect: {roomRect})");
+                         $"Camera's limit is wrong: (Move region: {moveRegion}, Rect: {roomRect})");
         }
     }
-
-    public void InitBullet(WeaponStat stat, bool isCritical, bool hitPlayer)
+    
+    public void InitBullet(int damage, bool isCritical, bool hitPlayer)
     {
-        stats[0].damage = isCritical ? stat.critDamage : stat.damage;
-        //damage = isCritical ? stat.critDamage : stat.damage;
+        this.damage = damage;
         SetProperty(EntityProperty.IsCritical, isCritical);
         collisionTags[1] = hitPlayer ? "Player" : "Enemy";
     }
-
+    
     public void InitDamagePopup(int damage, bool isCritical)
     {
         targetDir = Vector2.one;
-        EntityVFX vfx = new EntityVFX
+        text.text = damage.ToString();
+        spawnVFX = new EntityVFX
         {
-            properties = new Property<VFXProperty>(VFXProperty.ScaleOverTime, VFXProperty.FadeTextWhenDone, VFXProperty.ChangeFontSize, VFXProperty.ChangeTextColor),
-            scaleTime = moveTime / 2,
-            scaleOffset = Vector2.one / 2,
-            fadeTime = 1f / 3f,
-            newText = damage.ToString(),
-            fontSize = isCritical ? 3f : 2.5f,
-            textColor = isCritical ? Color.red : Color.white,
+            properties = new Property<VFXProperty>(VFXProperty.ScaleOverTime, VFXProperty.FadeTextWhenDone),
+            scaleTime = moveTime / 2, scaleOffset = Vector2.one / 2, fadeTime = 1f / 3f,
+            fontSize = isCritical ? 3f : 2.5f, textColor = isCritical ? Color.red : Color.white,
         };
-        PlayVFX(vfx);
+        PlayVFX(spawnVFX);
     }
-
-    /*void StartMoving(bool startMoving)
+    
+    [EasyButtons.Button]
+    public void Pickup()
     {
-        moveType = startMoving ? MoveType.Fly : MoveType.Custom;
-        cd.isTrigger = startMoving;
-        rb.bodyType = startMoving ? RigidbodyType2D.Kinematic : RigidbodyType2D.Dynamic;
-    }*/
+        if (GameManager.player)
+            spring.Init(GameManager.player.transform.position.y);
+        offsetType = TargetOffsetType.Player;
+        moveType = MoveType.Spring;
+        targetType = TargetType.Player;
+        rotateType = RotateType.Weapon;
+        attackTrigger = AttackTrigger.MouseInput;
+    }
+    
+    public void Shoot(bool isCritical)
+    {
+        Entity bullet = ObjectPooler.Spawn<Entity>(PoolType.Bullet_Normal, transform.position, transform.eulerAngles);
+        bullet.InitBullet(isCritical ? stat.damage : stat.critDamage, isCritical, false);
+    }
 #endregion
-
+    
+    /*struct EntityTrigger
+    {
+        public Property<TriggerFlag> flags;
+        public int healthToExecute;
+        public Vector2 distanceToExecute;
+        
+        public float bufferTime;
+    };
+    
+    enum ActionState
+    {
+        None,
+        Charge,
+        Execute,
+        //Exit,
+        Cooldown,
+    }
+    
+    class EntityAction
+    {
+        public EntityTrigger trigger;
+        public Property<ActionFlag> flags;
+        
+        public ActionState state;
+        public ActionType type; // None, Move, Jump, Flip, Teleport, Explode
+        
+        public float chargeTime;
+        public float duration;
+        //public float exitTime;
+        public float cooldownTime;
+        
+        public int damage;
+        public float range;
+        public float speed
+        {
+            get => duration / range;
+            set => range = duration / value;
+        }
+    };
+    
+    EntityAction[] actions;
+    private int currentAction;
+    
+    void UpdateAction()
+    {
+        foreach (EntityAction action in actions)
+        {
+            
+        }
+    }*/
+    
     // Update is called once per frame
     void Update()
     {
-        RotateEnemy(rotateType, dRotate, velocity.x);
-        Vector2 prevVelocity = velocity;
-        /*if (HasProperty(EntityProperty.MoveToNearPlayer))
-            if (IsInRange(range, GameManager.player.transform.position))
-                StartMoving(true);*/
-        if (Time.time > moveTimeValue)
-            if (HasProperty(EntityProperty.DieAfterMoveTime))
-                Hurt(health);
-        MoveEntity();
-
-        if (prevStat != currentStat && currentStat < stats.Length)
+        // TODO: Test if this is actually working
+        if (Time.deltaTime == 0)
+            return;
+        
+        bool wasGrounded = HasProperty(EntityProperty.IsGrounded);
+        // NOTE: We're passing -transform.up.y rather than -rb.gravityScale because:
+        // 1. Some objects don't have a rigidbody. It's also in my roadmap to replace the rigidbody system entirely.
+        // 2. The isGrounded only equals false if and only if the down velocity isn't zero.
+        bool isGrounded = SetProperty(EntityProperty.IsGrounded, GameUtils.GroundCheck(transform.position, spriteExtents, -transform.up.y, Color.red));
+        
+        if (abilities.Length > 0 &&
+            abilities[currentAbility].flags.HasProperty(AbilityFlag.CanExecute) &&
+            CanUseAbility(abilities[currentAbility]))
+            StartCoroutine(UseAbility(abilities[currentAbility], moveType, targetType, speed));
+        
+        groundRemember -= Time.deltaTime;
+        if (isGrounded)
+            groundRemember = groundRememberTime;
+        
+        fallRemember -= Time.deltaTime;
+        if (!isGrounded)
+            fallRemember = fallRememberTime;
+        
+        jumpPressedRemember -= Time.deltaTime;
+        if (HasProperty(EntityProperty.CanJump) && GameInput.GetInput(InputType.Jump))
+            jumpPressedRemember = jumpPressedRememberTime;
+        
+        if (HasProperty(EntityProperty.FallingOnSpawn) && !isGrounded)
+            return;
+        
         {
-            StartCoroutine(ExecuteStat(stats[currentStat], speed, damage));
-            prevStat = currentStat;
-        }
-
-        bool isGrounded = HasProperty(EntityProperty.IsGrounded);
-
-        if (HasProperty(EntityProperty.CanFlipGravity))
-        {
-            bool wasGrounded = isGrounded;
-
-            groundRemember -= Time.deltaTime;
-            if (SetProperty(EntityProperty.IsGrounded, isGrounded = GroundCheck()))
-                groundRemember = groundRememberTime;
-
-            jumpPressedRemember -= Time.deltaTime;
-            if (GameInput.GetInput(InputType.Jump))
-                jumpPressedRemember = jumpPressedRememberTime;
-
-            EntityVFX verticalVFX = new EntityVFX
+            bool canShoot = false;
+            bool canReload = false;
+            switch (attackTrigger)
             {
-                shakeMode = ShakeMode.Medium,
+                case AttackTrigger.MouseInput:
+                {
+                    if (!HasProperty(EntityProperty.IsReloading))
+                    {
+                        canShoot  = ammo > 0         && GameInput.GetInput(InputType.Shoot);
+                        canReload = ammo < stat.ammo && GameInput.GetInput(InputType.Reload);
+                    }
+                } break;
+            }
+            
+            if (canShoot && Time.time > attackDuration.max)
+            {
+                ammo--;
+                attackDuration.max = Time.time + stat.timeBtwShots;
+                state = EntityState.StartAttack;
+                
+                bool isCritical = Random.value < stat.critChance;
+                float rot = attackDuration.range > 0 ? (Mathf.PerlinNoise(0, attackDuration.range) * 2f - 1f) * 15f : 0;
+                Shoot(isCritical);
+            }
+            else if ((ammo == 0 && canShoot) || canReload)
+            {
+                StartCoroutine(Reloading(stat, GameManager.gameUI.UpdateReload,
+                                         enable =>
+                                         {
+                                             GameManager.gameUI.EnableReload(enable, stat.standardReload);
+                                             GameInput.EnableInput(InputType.Interact, !enable);
+                                             SetProperty(EntityProperty.IsReloading, enable);
+                                             ammo = enable ? 0 : stat.ammo;
+                                         }));
+                
+                IEnumerator Reloading(WeaponStat stat, System.Func<float, bool, bool> updateUI, System.Action<bool> enable)
+                {
+                    enable(true);
+                    yield return null;
+                    
+                    float maxTime = stat.standardReload;
+                    float t = 0;
+                    bool hasReloaded = false;
+                    while (t <= maxTime)
+                    {
+                        yield return null;
+                        t += Time.deltaTime;
+                        if (!hasReloaded)
+                        {
+                            bool isPerfect = updateUI(t, hasReloaded = GameInput.GetInput(InputType.Reload));
+                            if (hasReloaded)
+                                maxTime = isPerfect ? stat.perfectReload : stat.failedReload;
+                        }
+                    }
+                    
+                    enable(false);
+                }
+            }
+            else if (!canShoot)
+                attackDuration.min = attackDuration.max;
+        }
+        
+        if (aliveTime != 0 && Time.time > aliveTime)
+            Die();
+        
+        RotateEntity(transform, rotateType, dRotate, velocity.x);
+        Vector2 prevVelocity = velocity;
+        MoveEntity();
+        
+        if (HasProperty(EntityProperty.ClampToMoveRegion))
+            transform.position = MathUtils.Clamp(transform.position, moveRegion.min, moveRegion.max, transform.position.z);
+        //GameDebug.DrawBox(moveRegion, Color.green);
+        
+        
+        bool startJumping = jumpPressedRemember >= 0 && groundRemember >= 0;
+        {
+            EntityVFX playerVFX = new EntityVFX
+            {
+                shakeMode = ShakeMode.PlayerJump,
                 waitTime = .25f,
-                trauma = .5f,
                 particles = new ParticleSystem[] { velocity.x >= 0 ? leftDust : null, velocity.x <= 0 ? rightDust : null },
             };
-
-            // Jumping
-            if (jumpPressedRemember >= 0 && groundRemember >= 0)
+            // Start jumping
+            if (startJumping)
             {
+                state = EntityState.Jumping;
                 jumpPressedRemember = 0;
                 groundRemember = 0;
+                SetProperty(EntityProperty.IsGrounded, false);
                 rb.gravityScale *= -1;
-
-                verticalVFX.audio = AudioType.Player_Jump;
-                verticalVFX.scaleOffset = new Vector2(-.25f, .25f);
-                this.InvokeAfter(.2f, () => transform.Rotate(180, 0, 0));
-                PlayVFX(verticalVFX);
+                
+                {
+                    playerVFX.audio = AudioType.Player_Jump;
+                    playerVFX.scaleOffset = new Vector2(-.25f, .25f);
+                    playerVFX.rotateTime = .2f;
+                    playerVFX.properties.SetProperty(VFXProperty.FlipX, true);
+                }
             }
             // Landing
             else if (!wasGrounded && isGrounded)
             {
-                verticalVFX.audio = AudioType.Player_Land;
-                verticalVFX.scaleOffset = new Vector2(.25f, -.25f);
-                if (velocity.x != 0)
-                    verticalVFX.nextAnimation = "Move";
-                PlayVFX(verticalVFX);
+                state = EntityState.Landing;
+                if (HasProperty(EntityProperty.FallingOnSpawn))
+                    StartFalling(false);
+                
+                {
+                    playerVFX.audio = AudioType.Player_Land;
+                    playerVFX.scaleOffset = new Vector2(.25f, -.25f);
+                    velocity.x = 0; // NOTE: This's for resetting the delta velocity for start/stop moving
+                    
+                    CapsuleCollider2D capsule = cd as CapsuleCollider2D;
+                    if (capsule)
+                    {
+                        capsule.direction = CapsuleDirection2D.Horizontal;
+                        playerVFX.done = () => capsule.direction = CapsuleDirection2D.Vertical;
+                    }
+                }
             }
             // Start falling
             else if (wasGrounded && !isGrounded)
             {
-                PlayVFX(new EntityVFX
-                {
-                    // TODO: Has a falling animation rather than the first frame of the idle one.
-                    properties = new Property<VFXProperty>(VFXProperty.StopAnimation),
-                    nextAnimation = "Idle"
-                });
+                state = EntityState.Falling;
+                // TODO: Has a falling animation rather than the first frame of the idle one
+                playerVFX = new EntityVFX { properties = new Property<VFXProperty>(VFXProperty.StopAnimation), nextAnimation = "Idle" };
             }
-        }
-
-        if (isGrounded)
-        {
-            Vector2 deltaVelocity = velocity - prevVelocity;
-            if (velocity.x != 0 && Time.time > timeBtwFootstepsValue)
+            else
             {
-                timeBtwFootstepsValue = Time.time + timeBtwFootsteps.randomValue;
-                AudioManager.PlayAudio(footstepAudio);
-            }
-
-            if (deltaVelocity.x != 0)
-            {
-                EntityVFX moveVFX = new EntityVFX
+                playerVFX = null;
+                if (isGrounded)
                 {
-                    particles = new ParticleSystem[] { deltaVelocity.x > 0 ? leftDust : rightDust },
-                };
-                if (prevVelocity.x == 0)
-                    moveVFX.nextAnimation = "Move";
-                else if (velocity.x == 0)
-                    moveVFX.nextAnimation = "Idle";
-                PlayVFX(moveVFX);
+                    Vector2 deltaVelocity = velocity - prevVelocity;
+                    if (velocity.x != 0 && Time.time > timeBtwFootstepsValue)
+                    {
+                        timeBtwFootstepsValue = Time.time + timeBtwFootsteps.randomValue;
+                        playerVFX = new EntityVFX() { audio = footstepAudio };
+                    }
+                    
+                    if (deltaVelocity.x != 0)
+                    {
+                        if (playerVFX == null)
+                            playerVFX = new EntityVFX();
+                        playerVFX.particles = new ParticleSystem[] { deltaVelocity.x > 0 ? leftDust : rightDust };
+                        if (prevVelocity.x == 0)
+                        {
+                            state = EntityState.StartMoving;
+                            playerVFX.nextAnimation = "Move";
+                        }
+                        else if (velocity.x == 0)
+                        {
+                            state = EntityState.StopMoving;
+                            playerVFX.nextAnimation = "Idle";
+                        }
+                    }
+                }
             }
+            
+#if !SCRIPTABLE_VFX
+            // NOTE: Currently, only the player has a jumping/landing/falling VFX, but that will probably change soon.
+            // When that happens, remember to abstract this code out. Currently, we have a check that only the player can call PlayVFX here.
+            if (GameManager.player == this)
+                PlayVFX(playerVFX);
+#else
+            if (vfx)
+                foreach (var effect in vfx.items[state])
+                StartCoroutine(PlayVFX(effect));
+#endif
+            state = EntityState.None;
         }
-
-        if (HasProperty(EntityProperty.ClampToMoveRegion))
-            transform.position = MathUtils.Clamp(transform.position, moveRegion.min, moveRegion.max, transform.position.z);
     }
-
-    bool GroundCheck()
+    
+    public IEnumerator PlayVFX(VFX vfx)
     {
-        Vector2 boxSize = new Vector2(spriteExtents.x / 1.5f, 0.02f);
-        Vector2 boxPos = transform.position - new Vector3(0, spriteExtents.y + boxSize.y + .075f) * Mathf.Sign(rb.gravityScale);
-        return BoxCast(boxPos, boxSize, Color.red);
+        if (vfx == null)
+            yield break;
+        Debug.Log(vfx.name);
+        
+        if (vfx.timeline.min > 0)
+            yield return new WaitForSeconds(vfx.timeline.min);
+        System.Action after = () => { };
+        IEnumerator[] enumerators = new IEnumerator[4];
+        int enumeratorCount = 0;
+        
+        // Position/Scale
+        {
+            float duration = vfx.flags.HasProperty(VFXFlag.OverTime) ? vfx.timeline.range : 0;
+            if (vfx.flags.HasProperty(VFXFlag.OffsetPosition))
+                Offset(() => transform.position, p => transform.position = p);
+            if (vfx.flags.HasProperty(VFXFlag.OffsetScale) && vfx.type != VFXType.Trail)
+                Offset(() => transform.localScale, s => transform.localScale = s);
+            
+            void Offset(System.Func<Vector3> getter, System.Action<Vector3> setter)
+            {
+                StartCoroutine(ChangeOverTime(p => setter(p), getter(), getter() + (Vector3)vfx.offset, duration));
+                after += () => StartCoroutine(ChangeOverTime(p => setter(p), getter(), getter() - (Vector3)vfx.offset, vfx.stayTime));
+                //enumerators[enumeratorCount++] = ChangeOverTime(p => setter(p), getter(), getter() - (Vector3)vfx.offset, vfx.stayTime);
+                
+                static IEnumerator ChangeOverTime(System.Action<Vector3> setValue, Vector3 startValue, Vector3 endValue, float decreaseTime)
+                {
+                    if (decreaseTime > 0)
+                    {
+                        float t = 0;
+                        while (t <= 1)
+                        {
+                            setValue(Vector3.Lerp(startValue, endValue, t));
+                            t += Time.deltaTime / decreaseTime;
+                            yield return null;
+                        }
+                    }
+                    setValue(endValue);
+                    //Debug.Log($"{vfx.name}: {Time.frameCount}, {startValue}, {endValue}");
+                }
+            }
+        }
+        
+        // Rotation
+        after += () =>
+        {
+            Vector3 rotation = Vector3.zero;
+            if (vfx.flags.HasProperty(VFXFlag.FlipX))
+                rotation.x = 180;
+            if (vfx.flags.HasProperty(VFXFlag.FlipY))
+                rotation.y = 180;
+            if (vfx.flags.HasProperty(VFXFlag.FlipZ))
+                rotation.z = 180;
+            transform.Rotate(rotation);
+        };
+        
+        // Animation
+        if (anim)
+        {
+            if (!string.IsNullOrEmpty(vfx.animation))
+                anim.Play(vfx.animation);
+            if (vfx.flags.HasProperty(VFXFlag.StopAnimation))
+                anim.speed = 0;
+            if (vfx.flags.HasProperty(VFXFlag.ResumeAnimation))
+                after += () => anim.speed = 1; // NOTE: Maybe resume animation instantly
+        }
+        
+        // Other
+        {
+            if (vfx.flags.HasProperty(VFXFlag.StopTime))
+                StartCoroutine(GameUtils.StopTime(vfx.timeline.range));
+            if (vfx.flags.HasProperty(VFXFlag.ToggleCurrent))
+                gameObject.SetActive(!gameObject.activeSelf);
+            
+            ParticleEffect.instance.SpawnParticle(vfx.particleType, transform.position, vfx.size);
+            AudioManager.PlayAudio(vfx.audio);
+            CameraSystem.instance.Shake(vfx.shakeMode);
+            CameraSystem.instance.Shock(vfx.speed, vfx.size);
+            
+            if (vfx.pools != null)
+                foreach (PoolType pool in vfx.pools)
+                ObjectPooler.Spawn(pool, transform.position);
+        }
+        
+        switch (vfx.type)
+        {
+            case VFXType.Camera:
+            {
+                StartCoroutine(CameraSystem.instance.Flash(vfx.timeline.range, vfx.color.a));
+            }
+            break;
+            case VFXType.Flash:
+            {
+                StartCoroutine(Flashing(sr, whiteMat, vfx.color, vfx.timeline.range, vfx.stayTime));
+                
+                static IEnumerator Flashing(SpriteRenderer sr, Material whiteMat, Color color, float duration, float flashTime)
+                {
+                    if (whiteMat == null)
+                        yield break;
+                    
+                    whiteMat.color = color;
+                    Debug.Log("Start flashing");
+                    
+                    while (duration > 0)
+                    {
+                        float currentTime = Time.time;
+                        Material defMat = sr.material;
+                        sr.material = whiteMat;
+                        yield return new WaitForSeconds(flashTime);
+                        
+                        sr.material = defMat;
+                        yield return new WaitForSeconds(flashTime);
+                        duration -= Time.time - currentTime;
+                    }
+                    
+                    whiteMat.color = Color.white;
+                    Debug.Log("End flashing");
+                }
+            }
+            break;
+            case VFXType.Fade:
+            {
+                StartCoroutine(DecreaseOverTime(alpha => sr.color += new Color(0, 0, 0, alpha - sr.color.a), vfx.color.a, vfx.timeline.range));
+            }
+            break;
+            case VFXType.Trail:
+            {
+                StartCoroutine(EnableTrail(trail, vfx.timeline.range, vfx.stayTime));
+                if (vfx.flags.HasProperty(VFXFlag.OffsetScale))
+                    after += () => StartCoroutine(DecreaseOverTime(width => trail.widthMultiplier = width, trail.widthMultiplier, vfx.stayTime));
+                //enumerators[enumeratorCount++] = DecreaseOverTime(width => trail.widthMultiplier = width, trail.widthMultiplier, vfx.stayTime);
+                if (vfx.flags.HasProperty(VFXFlag.FadeOut))
+                {
+                    // TODO: Fade trail
+                }
+                
+                static IEnumerator EnableTrail(TrailRenderer trail, float emitTime, float stayTime)
+                {
+                    trail.enabled = true;
+                    trail.emitting = true;
+                    yield return new WaitForSeconds(emitTime);
+                    
+                    trail.emitting = false;
+                    yield return new WaitForSeconds(stayTime);
+                    
+                    trail.Clear();
+                    trail.emitting = true;
+                    trail.enabled = false;
+                }
+            }
+            break;
+            case VFXType.Text:
+            {
+                TMPro.TextMeshPro text = GetComponent<TMPro.TextMeshPro>();
+                if (vfx.color != Color.clear)
+                    text.color = vfx.color;
+                if (vfx.size != 0)
+                    text.fontSize = vfx.size;
+                if (vfx.flags.HasProperty(VFXFlag.FadeOut))
+                    after += () => StartCoroutine(DecreaseOverTime(alpha => text.alpha = alpha, text.alpha, vfx.stayTime));
+                //enumerators[enumeratorCount++] = DecreaseOverTime(alpha => text.alpha = alpha, text.alpha, vfx.stayTime);
+            }
+            break;
+        }
+        
+        yield return new WaitForSeconds(vfx.timeline.range);
+        after();
+        /*Coroutine[] coroutines = new Coroutine[enumeratorCount];
+        for (int i = 0; i < enumeratorCount; i++)
+            coroutines[i] = StartCoroutine(enumerators[i]);
+        foreach (Coroutine coroutine in coroutines)
+        {
+            yield return coroutine;
+        }*/
+        
+        // TODO: Maybe change this to an offset-based
+        static IEnumerator DecreaseOverTime(System.Action<float> setValue, float startValue, float decreaseTime)
+        {
+            if (decreaseTime > 0)
+            {
+                float t = 0;
+                while (t <= 1)
+                {
+                    setValue(Mathf.Lerp(startValue, 0, t));
+                    t += Time.deltaTime / decreaseTime;
+                    yield return null;
+                }
+                yield return new WaitForEndOfFrame();
+                setValue(startValue);
+            }
+        }
     }
-
+    
     public enum TargetType
     {
         None,
@@ -601,10 +1026,10 @@ public class Entity : MonoBehaviour, IPooledObject
         MoveDir,
         MoveRegion,
         Target,
-
+        
         Count
     }
-
+    
     public enum MoveType
     {
         None,
@@ -612,170 +1037,230 @@ public class Entity : MonoBehaviour, IPooledObject
         Fly,
         SmoothDamp,
         Custom,
-
+        Spring,
+        
         Count
     }
-
+    
     void MoveEntity()
     {
         SetProperty(EntityProperty.AtEndOfMoveRegion, false);
         switch (targetType)
         {
             case TargetType.Input:
-                {
-                    targetDir = new Vector2(GameInput.GetAxis(AxisType.Horizontal), GameInput.GetAxis(AxisType.Vertical));
-                } break;
+            {
+                targetDir = new Vector2(GameInput.GetAxis(AxisType.Horizontal), GameInput.GetAxis(AxisType.Vertical));
+            } break;
             case TargetType.Player:
-                {
-                    targetPos = GameManager.player.transform.position;
-                } goto case TargetType.Target;
+            {
+                targetPos = GameManager.player.transform.position;
+            } goto case TargetType.Target;
             case TargetType.Random:
-                {
-                    targetDir = MathUtils.RandomVector2();
-                } break;
+            {
+                targetDir = MathUtils.RandomVector2();
+            } break;
             case TargetType.MoveDir:
-                {
-                    targetDir = transform.right;
-                } break;
+            {
+                targetDir = transform.right;
+            } break;
             case TargetType.MoveRegion:
+            {
+                if (targetPos != moveRegion.max && targetPos != moveRegion.min)
+                    SwitchTargetToMax(true, false);
+                else if (targetPos == moveRegion.max && MathUtils.IsApproximate(transform.position, moveRegion.max, .001f, +1))
+                    SwitchTargetToMax(false, true);
+                else if (targetPos == moveRegion.min && MathUtils.IsApproximate(transform.position, moveRegion.min, .001f, -1))
+                    SwitchTargetToMax(true, true);
+                
+                void SwitchTargetToMax(bool toMax, bool atEndOfMoveRegion)
                 {
-                    if (targetPos == moveRegion.max && IsInRange(.1f, moveRegion.max))
-                        SwitchTargetToMax(false, true);
-                    else if (targetPos == moveRegion.min && IsInRange(.1f, moveRegion.min))
-                        SwitchTargetToMax(true, true);
-                } goto case TargetType.Target;
+                    targetPos = toMax ? moveRegion.max : moveRegion.min;
+                    velocity = Vector2.zero;
+                    SetProperty(EntityProperty.AtEndOfMoveRegion, atEndOfMoveRegion);
+                    if (!atEndOfMoveRegion && HasProperty(EntityProperty.StartAtMinMoveRegion))
+                        transform.position = moveRegion.min.Z(transform.position.z);
+                }
+            } goto case TargetType.Target;
             case TargetType.Target:
+            {
+                switch (offsetType)
                 {
-                    if (HasProperty(EntityProperty.HasTargetOffset))
-                        targetPos += GameInput.GetMouseDir() * offsetTarget;
-                    targetDir = targetPos - (Vector2)transform.position;
-                } break;
+                    case TargetOffsetType.Mouse:  { offsetDir = GameInput.GetMouseDir();                  } break;
+                    case TargetOffsetType.Player: { offsetDir = GameManager.player.transform.Direction(); } break;
+                }
+                targetPos += offsetDir * targetOffset;
+                targetDir = targetPos - (Vector2)transform.position;
+            } break;
         }
-
+        
         switch (moveType)
         {
             case MoveType.None:
-                {
-                    velocity = Vector2.zero;
-                } break;
+            {
+                velocity = Vector2.zero;
+            } break;
             case MoveType.Run:
-                {
-                    targetDir.x = MathUtils.Sign(targetDir.x);
-                    targetDir.y = 0;
-                    velocity = new Vector2(targetDir.x * speed, rb.velocity.y);
-                } break;
+            {
+                targetDir.x = MathUtils.Sign(targetDir.x);
+                targetDir.y = 0;
+                velocity = new Vector2(targetDir.x * speed, rb.velocity.y);
+            } break;
             case MoveType.Fly:
-                {
-                    velocity = targetDir.normalized * speed;
-                } break;
-            case MoveType.SmoothDamp:
-                {
-                    transform.position = MathUtils.SmoothDamp(transform.position, targetPos, ref velocity, new Vector2(speed, speedY), Time.deltaTime, transform.position.z);
-                } return;
-            case MoveType.Custom:
-                return;
+            {
+                velocity = targetDir.normalized * speed;
+            } break;
+            case MoveType.SmoothDamp: // TODO: Do we still need SmoothDamp? MoveType.Spring seems to also include this already.
+            {
+                transform.position = MathUtils.SmoothDamp(transform.position, targetPos, ref velocity, new Vector2(speed, speedY),
+                                                          Time.deltaTime, transform.position.z);
+            } return;
+            case MoveType.Spring:
+            {
+                Vector2 newPos = targetPos;
+                newPos.y = MathUtils.SecondOrder(Time.deltaTime, targetPos.y, transform.position.y, spring);
+                //transform.SetPositionAndRotation(newPos, GameManager.player.transform.rotation);
+                transform.position = newPos;
+            } return;
+            case MoveType.Custom: return;
         }
-
+        
         if (rb)
             rb.velocity = velocity;
         else
             transform.position += (Vector3)velocity * Time.deltaTime;
     }
-
-    void SwitchTargetToMax(bool toMax, bool atEndOfMoveRegion)
-    {
-        targetPos = toMax ? moveRegion.max : moveRegion.min;
-        velocity = Vector2.zero;
-        SetProperty(EntityProperty.AtEndOfMoveRegion, atEndOfMoveRegion);
-    }
-
-    public bool CompleteCycle()
-    {
-        return HasProperty(EntityProperty.AtEndOfMoveRegion) && targetPos == moveRegion.max;
-    }
-
+    
     public enum RotateType
     {
         None,
-        Player,
-        MoveDir,
-        Mouse,
+        PlayerX,
+        MoveDirX,
+        Weapon,
         MouseX,
         Linear,
-        EndRotation,
-
+        
         Count
     }
-
-    void RotateEnemy(RotateType rotateType, float dRotate, float velocityX)
+    
+    static void RotateEntity(Transform transform, RotateType rotateType, float dRotate, float velocityX)
     {
         float dirX = 0;
+        Transform player = GameManager.player.transform;
+        Vector2 mouseDir = GameInput.GetDirToMouse(transform.position);
         switch (rotateType)
         {
-            case RotateType.Player:
-                {
-                    dirX = GameManager.player.transform.position.x - transform.position.x;
-                } break;
-            case RotateType.MoveDir:
-                {
-                    dirX = velocityX;
-                } break;
-            case RotateType.Mouse:
-                {
-                    Vector2 difference = GameInput.GetDirToMouse(transform.position);
-                    float rotZ = difference == Vector2.zero ? 0 : Mathf.Atan2(difference.y, difference.x) * Mathf.Rad2Deg;
-                    transform.localRotation = Quaternion.Euler(0f, 0f, (difference.x >= 0 ? rotZ : 180f - rotZ) * transform.up.y);
-                } break;
+            case RotateType.PlayerX:
+            {
+                dirX = player.position.x - transform.position.x;
+            } break;
+            case RotateType.MoveDirX:
+            {
+                dirX = velocityX;
+            } break;
             case RotateType.MouseX:
-                {
-                    dirX = GameInput.GetDirToMouse(transform.position).x;
-                } break;
+            {
+                dirX = mouseDir.x;
+            } break;
+            case RotateType.Weapon:
+            {
+                transform.rotation = GameManager.player.fallRemember > 0 ? player.rotation : MathUtils.GetQuaternionFlipY(mouseDir, player.up.y);
+            } break;
             case RotateType.Linear:
-                {
-                    transform.Rotate(0, 0, dRotate * Time.deltaTime);
-                } break;
+            {
+                transform.Rotate(0, 0, dRotate * Time.deltaTime);
+            } break;
         }
         
         if (dirX != 0 && Mathf.Sign(dirX) != Mathf.Sign(transform.right.x))
             transform.Rotate(0, 180, 0);
     }
-
+    
+    void StartFalling(bool startFalling)
+    {
+        rb.velocity = startFalling ? new Vector2(fallDir.randomValue, Random.value).normalized * speed : Vector2.zero;
+        moveType = startFalling ? MoveType.Custom : MoveType.Fly;
+        cd.isTrigger = !startFalling;
+        rb.bodyType = startFalling ? RigidbodyType2D.Dynamic : RigidbodyType2D.Kinematic;
+        SetProperty(EntityProperty.FallingOnSpawn, startFalling);
+        if (!startFalling)
+            CalculateMoveRegion();
+    }
+    
+    public bool CompleteCycle()
+    {
+        return HasProperty(EntityProperty.AtEndOfMoveRegion) && targetPos == moveRegion.max;
+    }
+    
+    public void TestPlayerVFX()
+    {
+#if !SCRIPTABLE_VFX
+        Hurt(0);
+#else
+        VFX vfx1 = CreateTestVFX("vfx1", new RangedFloat(.0f, .5f), new Vector2(-.25f, .25f));
+        VFX vfx2 = CreateTestVFX("vfx2", new RangedFloat(.3f, .8f), new Vector2(.25f, -.25f));
+        
+        StartCoroutine(PlayVFX(vfx1));
+        StartCoroutine(PlayVFX(vfx2));
+        
+        static VFX CreateTestVFX(string name, RangedFloat timeline, Vector2 offset)
+        {
+            VFX vfx = ScriptableObject.CreateInstance<VFX>();
+            vfx.name = name;
+            vfx.offset = offset;
+            vfx.flags.SetProperty(VFXFlag.OffsetScale, true);
+            vfx.timeline = timeline;
+            return vfx;
+        }
+#endif
+    }
+    
     public void Hurt(int damage)
     {
         if (HasProperty(EntityProperty.CanBeHurt))
         {
             health -= damage;
-            SetProperty(EntityProperty.CanBeHurt, false);
-
+            
             // TODO: Replace this with a stat
             moveType = MoveType.None;
             rotateType = RotateType.None;
-            PlayVFX(health <= 0 ? deathVFX : hurtVFX);
+            SetProperty(EntityProperty.CanBeHurt, false);
+            if (health > 0)
+            {
+                state = EntityState.OnHit;
+                //PlayVFX(hurtVFX);
+            }
+            else
+                Die();
         }
     }
-
+    
+    void Die()
+    {
+        state = EntityState.OnDeath;
+        PlayVFX(deathVFX);
+    }
+    
     public bool HasProperty(EntityProperty property)
     {
-        //return (properties[(int)property / 64] & (1ul << ((int)property % 64))) != 0;
         return properties.HasProperty(property);
     }
-
+    
     bool SetProperty(EntityProperty property, bool set)
     {
         properties.SetProperty(property, set);
         return set;
     }
-
+    
     private void OnTriggerEnter2D(Collider2D collision)
     {
         OnHitEnter(collision);
     }
-
+    
     private void OnCollisionEnter2D(Collision2D collision)
     {
         OnHitEnter(collision.collider);
     }
-
+    
     void OnHitEnter(Collider2D collision)
     {
         foreach (string tag in collisionTags)
@@ -791,30 +1276,49 @@ public class Entity : MonoBehaviour, IPooledObject
                         entity.money += money;
                 }
                 if (HasProperty(EntityProperty.DieWhenCollide))
-                    PlayVFX(deathVFX);
+                    Die();
                 if (HasProperty(EntityProperty.SpawnDamagePopup))
-                    ObjectPooler.Spawn(PoolType.DamagePopup, transform.position).GetComponent<Entity>().InitDamagePopup(damage, HasProperty(EntityProperty.IsCritical));
+                    ObjectPooler.Spawn<Entity>(PoolType.DamagePopup, transform.position).InitDamagePopup(damage, HasProperty(EntityProperty.IsCritical));
             }
         }
     }
-
+    
     bool IsInRange(float range, Vector2 targetPos)
     {
         return (targetPos - (Vector2)transform.position).sqrMagnitude < range * range;
     }
-
+    
     public bool IsInRange(Vector2 range, Vector2 targetPos)
     {
         Vector2 targetDir = MathUtils.Abs(targetPos - (Vector2)transform.position);
         return targetDir.x < range.x && targetDir.y < range.y;
     }
-
-    bool BoxCast(Vector2 pos, Vector2 size, Color color)
+    
+    public bool IsInRangeY(float range, Vector2 targetPos)
     {
-        GameDebug.DrawBox(pos, size, color);
-        return Physics2D.BoxCast(pos, size, 0, Vector2.zero, 0, LayerMask.GetMask("Ground"));
+        return Mathf.Abs(targetPos.y - transform.position.y) < range;
     }
-
+    
+    void CalculateMoveRegion()
+    {
+        switch (regionType)
+        {
+            case MoveRegionType.Ground:
+            {
+                moveRegion = GameManager.CalculateMoveRegion(transform.position, spriteExtents, -transform.up.y);
+            } break;
+            case MoveRegionType.Vertical:
+            {
+                Debug.Assert(transform.up.y == 1);
+                if (GameManager.GetGroundPos(transform.position, spriteExtents, -1f, out _, out Vector3Int groundPos))
+                {
+                    moveRegion = new Rect(new Vector2(transform.position.x, groundPos.y + spriteExtents.y), Vector2.up * verticalHeight);
+                    GameDebug.DrawBox(new Rect((Vector3)groundPos, spriteExtents), Color.red);
+                }
+            } break;
+        }
+    }
+    
 #region VFX
     public enum VFXProperty
     {
@@ -822,94 +1326,87 @@ public class Entity : MonoBehaviour, IPooledObject
         ChangeEffectObjBack,
         ScaleOverTime,
         FadeTextWhenDone,
-        ShockCamera,
-        FlashCamera,
         StartTrailing,
         DecreaseTrailWidth,
         PlayParticleInOrder,
-        ChangeTextColor,
-        ChangeFontSize,
-
-        Count
+        FlipX,
+        FlipY,
+        FlipZ,
     }
-
+    
     [System.Serializable]
     public class EntityVFX
     {
         public Property<VFXProperty> properties;
-
+        
         public System.Action done;
+        public System.Func<bool> canStop;
         public string nextAnimation;
         public GameObject effectObj;
         public ParticleSystem[] particles;
-
+        
         [Header("Time")]
         public float waitTime;
         public float scaleTime;
-
+        public float rotateTime;
+        
         [Header("Trail Effect")]
         public float trailEmitTime;
         public float trailStayTime;
-
+        
         [Header("Flashing")]
         public float flashTime;
         public float flashDuration;
         public Color triggerColor;
-
+        
         [Header("Text Effect")]
         public Color textColor;
-        public string newText;
         public float fontSize;
-
+        
         [Header("Camera Effect")]
         public float stopTime;
         public float trauma;
         public ShakeMode shakeMode;
-        public SmoothFunc smoothFunc;
         public float shockSpeed;
         public float shockSize;
         public float camFlashTime;
         public float camFlashAlpha;
-
+        
         [Header("After Fade")]
         public float alpha;
         public float fadeTime;
-
+        
         [Header("Explode Particle")]
         public float range;
         public ParticleType particleType;
-
+        
         [Header("Other")]
         public AudioType audio;
         public PoolType poolType;
         public Vector2 scaleOffset;
     }
-
+    
     void PlayVFX(EntityVFX vfx)
     {
         if (vfx == null)
             return;
-        if (vfx.properties.properties == null || vfx.properties.properties.Length < 1)
-            vfx.properties.Init();
-
+        Debug.Log(name + ": " + state, this);
+        
         if (vfx.properties.HasProperty(VFXProperty.ScaleOverTime))
-            StartCoroutine(ScaleOverTime());
+            StartCoroutine(ScaleOverTime(transform, vfx.scaleTime, vfx.scaleOffset));
         else
             transform.localScale += (Vector3)vfx.scaleOffset;
-
+        
         if (!string.IsNullOrEmpty(vfx.nextAnimation))
             anim.Play(vfx.nextAnimation);
         if (vfx.properties.HasProperty(VFXProperty.StopAnimation))
             anim.speed = 0;
-
-        TMPro.TextMeshPro text = GetComponent<TMPro.TextMeshPro>();
-        if (!string.IsNullOrEmpty(vfx.newText))
-            text.text = vfx.newText;
-        if (vfx.properties.HasProperty(VFXProperty.ChangeTextColor))
+        
+        if (vfx.textColor != Color.clear)
             text.color = vfx.textColor;
-        if (vfx.properties.HasProperty(VFXProperty.ChangeFontSize))
+        if (vfx.fontSize != 0)
             text.fontSize = vfx.fontSize;
-
+        
         float totalParticleTime = 0;
         float particleCount = vfx.particles?.Length ?? 0;
         for (int i = 0; i < particleCount; ++i)
@@ -921,108 +1418,116 @@ public class Entity : MonoBehaviour, IPooledObject
                     totalParticleTime += vfx.particles[i].main.duration;
             }
         }
-
+        
         if (vfx.effectObj)
-            vfx.effectObj.SetActive(vfx.effectObj.activeSelf);
-
+            vfx.effectObj.SetActive(!vfx.effectObj.activeSelf);
+        
         StartCoroutine(CameraSystem.instance.Flash(vfx.camFlashTime, vfx.camFlashAlpha));
-        CameraSystem.instance.Shake(vfx.shakeMode, vfx.smoothFunc, vfx.trauma == 0 ? 1 : vfx.trauma);
-        if (vfx.properties.HasProperty(VFXProperty.ShockCamera))
-            CameraSystem.instance.Shock(vfx.shockSpeed, vfx.shockSize);
-
+        CameraSystem.instance.Shake(vfx.shakeMode, null);//, vfx.trauma == 0 ? 1 : vfx.trauma);
+        CameraSystem.instance.Shock(vfx.shockSpeed, vfx.shockSize);
+        
         AudioManager.PlayAudio(vfx.audio);
         ObjectPooler.Spawn(vfx.poolType, transform.position);
-        particle.SpawnParticle(vfx.particleType, transform.position, vfx.range);
-
+        ParticleEffect.instance.SpawnParticle(vfx.particleType, transform.position, vfx.range);
+        
         StartCoroutine(GameUtils.StopTime(vfx.stopTime));
-        StartCoroutine(Flashing(whiteMat, vfx.triggerColor, vfx.flashDuration, vfx.flashTime));
-
-        this.InvokeAfter(Mathf.Max(vfx.flashDuration, totalParticleTime, vfx.scaleTime) - vfx.flashDuration, () =>
-        {
-            if (vfx.properties.HasProperty(VFXProperty.FadeTextWhenDone))
-                StartCoroutine(FadeText());
-            else
-                StartCoroutine(Flashing(whiteMat, new Color(1, 1, 1, vfx.alpha), vfx.fadeTime, vfx.fadeTime));
-
-            if (vfx.properties.HasProperty(VFXProperty.StartTrailing))
-                StartCoroutine(EnableTrail(trail, vfx.trailEmitTime, vfx.trailStayTime));
-            if (vfx.properties.HasProperty(VFXProperty.DecreaseTrailWidth))
-                this.InvokeAfter(vfx.trailEmitTime, () => StartCoroutine(DecreaseTrailWidth(trail, vfx.trailStayTime)));
-
-            this.InvokeAfter(Mathf.Max(vfx.fadeTime, vfx.trailEmitTime + vfx.trailStayTime) + vfx.waitTime, () =>
-            {
-                if (!vfx.properties.HasProperty(VFXProperty.ScaleOverTime))
-                    transform.localScale -= (Vector3)vfx.scaleOffset;
-                if (vfx.properties.HasProperty(VFXProperty.ChangeEffectObjBack))
-                    vfx.effectObj.SetActive(!vfx.effectObj.activeSelf);
-                if (anim)
-                    anim.speed = 1;
-                vfx.done?.Invoke();
-            });
-        });
-
-        IEnumerator Flashing(Material whiteMat, Color color, float duration, float flashTime)
+        StartCoroutine(Flashing(sr, whiteMat, vfx.triggerColor, vfx.flashDuration, vfx.flashTime, vfx.canStop));
+        float x = vfx.properties.HasProperty(VFXProperty.FlipX) ? 180 : 0;
+        float y = vfx.properties.HasProperty(VFXProperty.FlipY) ? 180 : 0;
+        float z = vfx.properties.HasProperty(VFXProperty.FlipZ) ? 180 : 0;
+        if (x != 0 || y != 0 || z != 0)
+            this.InvokeAfter(vfx.rotateTime, () => transform.Rotate(new Vector3(x, y, z)));
+        
+        this.InvokeAfter(Mathf.Max(vfx.flashDuration, totalParticleTime, vfx.scaleTime), () =>
+                         {
+                             if (vfx.properties.HasProperty(VFXProperty.FadeTextWhenDone))
+                                 StartCoroutine(FadeText(text, vfx.alpha, vfx.fadeTime));
+                             else
+                                 StartCoroutine(Flashing(sr, whiteMat, new Color(1, 1, 1, vfx.alpha), vfx.fadeTime, vfx.fadeTime, vfx.canStop));
+                             
+                             if (vfx.properties.HasProperty(VFXProperty.StartTrailing))
+                                 StartCoroutine(EnableTrail(trail, vfx.trailEmitTime, vfx.trailStayTime));
+                             if (vfx.properties.HasProperty(VFXProperty.DecreaseTrailWidth))
+                                 this.InvokeAfter(vfx.trailEmitTime, () => StartCoroutine(DecreaseTrailWidth(trail, vfx.trailStayTime)));
+                             
+                             this.InvokeAfter(Mathf.Max(vfx.fadeTime, vfx.trailEmitTime + vfx.trailStayTime) + vfx.waitTime, () =>
+                                              {
+                                                  if (!vfx.properties.HasProperty(VFXProperty.ScaleOverTime))
+                                                      transform.localScale -= (Vector3)vfx.scaleOffset;
+                                                  if (vfx.properties.HasProperty(VFXProperty.ChangeEffectObjBack))
+                                                      vfx.effectObj.SetActive(!vfx.effectObj.activeSelf);
+                                                  if (anim)
+                                                      anim.speed = 1;
+                                                  vfx.done?.Invoke();
+                                              });
+                         });
+        
+        static IEnumerator Flashing(SpriteRenderer sr, Material whiteMat, Color color, float duration, float flashTime, System.Func<bool> canStop)
         {
             if (whiteMat == null)
                 yield break;
+            
             whiteMat.color = color;
+            
             while (duration > 0)
             {
+                if (canStop?.Invoke() ?? false)
+                    break;
+                
                 float currentTime = Time.time;
-
                 Material defMat = sr.material;
                 sr.material = whiteMat;
                 yield return new WaitForSeconds(flashTime);
+                
                 sr.material = defMat;
                 yield return new WaitForSeconds(flashTime);
-
                 duration -= Time.time - currentTime;
             }
+            
             whiteMat.color = Color.white;
         }
-
-        IEnumerator ScaleOverTime()
+        
+        static IEnumerator ScaleOverTime(Transform transform, float duration, Vector3 scaleOffset)
         {
-            float duration = vfx.scaleTime;
             while (duration > 0)
             {
                 duration -= Time.deltaTime;
-                transform.localScale += (Vector3)vfx.scaleOffset * Time.deltaTime;
+                transform.localScale += scaleOffset * Time.deltaTime;
                 yield return null;
             }
-
-            while (gameObject.activeSelf)
+            
+            while (transform.gameObject.activeSelf)
             {
-                transform.localScale -= (Vector3)vfx.scaleOffset * Time.deltaTime;
+                transform.localScale -= scaleOffset * Time.deltaTime;
                 yield return null;
             }
         }
-
-        IEnumerator FadeText()
+        
+        static IEnumerator FadeText(TMPro.TextMeshPro text, float alpha, float fadeTime)
         {
-            float dAlpha = (text.alpha - vfx.alpha) / vfx.fadeTime;
-            while (text.alpha > vfx.alpha)
+            float dAlpha = (text.alpha - alpha) / fadeTime;
+            while (text.alpha > alpha)
             {
                 text.alpha -= dAlpha * Time.deltaTime;
                 yield return null;
             }
         }
-
-        IEnumerator EnableTrail(TrailRenderer trail, float emitTime, float stayTime)
+        
+        static IEnumerator EnableTrail(TrailRenderer trail, float emitTime, float stayTime)
         {
             trail.enabled = true;
             trail.emitting = true;
             yield return new WaitForSeconds(emitTime);
-
+            
             trail.emitting = false;
             yield return new WaitForSeconds(stayTime);
-
+            
             trail.Clear();
             trail.emitting = true;
             trail.enabled = false;
         }
-
-        IEnumerator DecreaseTrailWidth(TrailRenderer trail, float decreaseTime)
+        
+        static IEnumerator DecreaseTrailWidth(TrailRenderer trail, float decreaseTime)
         {
             float startWidth = trail.widthMultiplier;
             float startTime = decreaseTime;
@@ -1129,7 +1634,7 @@ public class Entity : MonoBehaviour, IPooledObject
         triggerColor = hurtColor,
     };
 
-    // Damage popu
+    // Damage popup
     vfx = new EntityVFX
     {
         duration = 1,
@@ -1201,7 +1706,8 @@ public class Entity : MonoBehaviour, IPooledObject
 
     Vector3 GetPosOnGround()
     {
-        float groundHeight = Physics2D.BoxCast(transform.position, new Vector2(spriteExtents.x / 2, 0.01f), 0, -transform.up, spriteExtents.y * 2, LayerMask.GetMask("Ground")).distance;
+        float groundHeight = Physics2D.BoxCast(transform.position, new Vector2(spriteExtents.x / 2, 0.01f), 0, -transform.up, spriteExtents.y * 2,
+                LayerMask.GetMask("Ground")).distance;
         Vector3 offset = new Vector3(0, groundHeight - spriteExtents.y * transform.localScale.y) * transform.up.y;
         Debug.DrawRay(transform.position, -transform.up * groundHeight, Color.blue);
         return offset;

@@ -22,7 +22,7 @@ public class ShopKeeper : MonoBehaviour
                 weapon = Random.Range(0, inventory.items.Count);
             } while (weapons.Contains(weapon));
             weapons.Add(weapon);
-            inventory.SpawnAndDropWeapon(weapon, sellPos[i].position, Vector2.zero);
+            inventory.SpawnAndDropWeapon(weapon, sellPos[i].position, Vector2.zero, null);
         }
 
         if (table)

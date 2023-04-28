@@ -100,11 +100,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stat: {fileID: 0}
-  shootPos: {fileID: 310902724552470230}
   muzzleFlash: {fileID: 3426736245321656768}
-  muzzelFlashTime: 0.04
-  currentAmmo: 0
   posOffset: {x: 0, y: 0}
+  currentAmmo: 0
+  shootPos: {fileID: 0}
   moveUpAndDownWhenDrop: 1
   speed: 0.3
   halfDistance: 0.15
