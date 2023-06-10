@@ -1,11 +1,58 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Edgar.Unity;
 using UnityEngine.Tilemaps;
-using StringBuilder = System.Text.StringBuilder;
 using System.Reflection;
 using System.Collections.ObjectModel;
+
+#if true
+using StringBuilder = System.Text.StringBuilder;
+#else
+class StringBuilder
+{
+    public StringBuilder Append(object o)
+    {
+        return this;
+    }
+    public StringBuilder Append(char c)
+    {
+        return this;
+    }
+    public StringBuilder Append(string str)
+    {
+        return this;
+    }
+    
+    public void AppendIndent(string str, int indent)
+    {
+        
+    }
+    
+    public void AppendIndentLine(string str, int indent)
+    {
+        
+    }
+    
+    public void Insert(int pos, char c)
+    {
+        
+    }
+    
+    public StringBuilder(string str, int cap = 0)
+    {
+        
+    }
+    
+    public StringBuilder(int cap)
+    {
+        
+    }
+    
+    public int Length => 1;
+    //public string ToString(int a, int b) { return null; }
+}
+#endif
 
 public enum GameMode
 {
@@ -22,66 +69,66 @@ public class GameManager : MonoBehaviour
 {
     [Header("Game Mode")]
     public GameMode startMode;
-
+    
     public GameObject mainMode;
     public GameObject playMode;
     public LevelData[] levels;
     public int currentLevel;
-
+    
     [Header("Camera")]
     public Vector3Variable playerPos;
     public Entity cameraEntity;
-
+    
     [Header("UI")]
     public bool overrideGameUI;
     public GameMenu gameMenu;
-
+    
     [Header("Other")]
     public Audio[] audios;
     public AudioType firstMusic;
     public int sourceCount;
     public Pool[] pools;
-
+    
     private List<RoomInstance> rooms;
     private int currentRoom;
-
+    
     public static Entity player;
     public static Camera mainCam;
     public static GameUI gameUI;
-
+    
     private static Bounds defaultBounds;
     private static Tilemap tilemap;
-
+    
 #if UNITY_EDITOR
     [EasyButtons.Button]
     private static void FindAllEntityProperties(bool generateFile)
     {
         var watch = new System.Diagnostics.Stopwatch();
         watch.Start();
-        StringBuilder builder = new StringBuilder("Date: [" + DateTime.Now.ToString() + "]\n\n", 1024 * 128);
-
+        System.Text.StringBuilder builder = new System.Text.StringBuilder("Date: [" + DateTime.Now.ToString() + "]\n\n", 1024 * 128);
+        
         SaveEntityProperties(builder, "Prefab", () =>
-        {
-            string[] assets = UnityEditor.AssetDatabase.FindAssets("t:Prefab");
-            List<Entity> entities = new List<Entity>(assets.Length);
-            foreach (string asset in assets)
-            {
-                string path = UnityEditor.AssetDatabase.GUIDToAssetPath(asset);
-                Entity entity = UnityEditor.AssetDatabase.LoadAssetAtPath<Entity>(path);
-                if (entity)
-                    entities.Add(entity);
-            }
-            return entities;
-        });
-
+                             {
+                                 string[] assets = UnityEditor.AssetDatabase.FindAssets("t:Prefab");
+                                 List<Entity> entities = new List<Entity>(assets.Length);
+                                 foreach (string asset in assets)
+                                 {
+                                     string path = UnityEditor.AssetDatabase.GUIDToAssetPath(asset);
+                                     Entity entity = UnityEditor.AssetDatabase.LoadAssetAtPath<Entity>(path);
+                                     if (entity)
+                                         entities.Add(entity);
+                                 }
+                                 return entities;
+                             });
+        
         SaveEntityProperties(builder, "Object", () =>
-        {
-            Entity[] assets = FindObjectsOfType<Entity>(true);
-            List<Entity> entities = new List<Entity>(assets.Length + 1);
-            entities.AddRange(assets);
-            return entities;
-        });
-
+                             {
+                                 Entity[] assets = FindObjectsOfType<Entity>(true);
+                                 List<Entity> entities = new List<Entity>(assets.Length + 1);
+                                 entities.AddRange(assets);
+                                 return entities;
+                             });
+        
         string message = "Search complete";
         UnityEngine.Object context = null;
         if (generateFile)
@@ -95,12 +142,11 @@ public class GameManager : MonoBehaviour
         }
         watch.Stop();
         Debug.Log(message + $" after {watch.ElapsedMilliseconds}ms", context);
-
-        static void SaveEntityProperties(StringBuilder builder, string title, Func<List<Entity>> getEntities)
+        static void SaveEntityProperties(System.Text.StringBuilder builder, string title, Func<List<Entity>> getEntities)
         {
             List<Entity> entities = getEntities();
             entities.Insert(0, null);
-
+            
             builder.Append("\n");
             foreach (Entity entity in entities)
             {
@@ -112,65 +158,65 @@ public class GameManager : MonoBehaviour
                 builder.Append("\n");
             }
         }
-
-        static void PrintProperty(object obj, string fieldName, StringBuilder builder, int indentLevel)
+        
+        static void PrintProperty(object obj, string fieldName, System.Text.StringBuilder builder, int indentLevel)
         {
             ulong property = GameUtils.GetValueFromObject<ulong>(obj, "properties");
             string[] names = GameUtils.GetValueFromObject<string[]>(obj, "serializedEnumNames", true);
-
+            
             builder.AppendIndentLine(fieldName, indentLevel);
             builder.AppendIndentFormat("Properties of {0}: ", indentLevel + 1, fieldName).Append(property.ToString()).Append(", ")
                 .AppendLine(Convert.ToString((long)property, 2));
-
+            
             List<string> setNames = new List<string>(names.Length);
             for (int i = 0; i < names.Length; i++)
                 if (MathUtils.HasFlag(property, i))
-                    setNames.Add(names[i]);
+                setNames.Add(names[i]);
             GameUtils.GetAllString(setNames, $"All set flags of {fieldName}: ", "\n", indentLevel + 1, builder: builder);
-
+            
             GameUtils.GetAllString(names, $"Serialized names of {fieldName}: ", "\n", indentLevel + 1,
                                    toString: (name, i) => name + ": " + (MathUtils.HasFlag(property, i) ? "1" : "0"), builder: builder);
         }
-
+        
         // NOTE: This doesn't work if the obj is already an Property
-        static void SerializeType(object obj, StringBuilder builder, string fieldName)
+        static void SerializeType(object obj, System.Text.StringBuilder builder, string fieldName)
         {
             GameUtils.SerializeType(new object[] { obj },
-                data => (data.type?.IsGenericType ?? false) && (data.type?.GetGenericTypeDefinition() == typeof(Property<>)), data =>
-                {
-                    object property = data.objs[0];
-                    string name = fieldName;
-
-                    if (data.parent?.parent != null)
-                    {
-                        // TODO: I only handle the case when the current or parent is an element from an array. Hanlde the remaining cases.
-                        bool isArrayElement = data.parent.type.IsArray;
-                        bool isParentArrayElement = data.parent.parent.type.IsArray;
-                        // TODO: Handle array of serializable type contains array of serializable type contains array of...
-                        Debug.Assert(!(isArrayElement && isParentArrayElement));
-
-                        if (isParentArrayElement)
-                            data = data.parent;
-                        name = data.parent.field.Name;
-                        if (isArrayElement || isParentArrayElement)
-                            name += $"[{data.index}]";
-                    }
-                    PrintProperty(property, name, builder, data.parent.depth);
-                }, data => data.type != null && !GameUtils.IsSerializableType(data.type), (data, recursive) => recursive());
+                                    data => (data.type?.IsGenericType ?? false) && (data.type?.GetGenericTypeDefinition() == typeof(Property<>)), data =>
+                                    {
+                                        object property = data.objs[0];
+                                        string name = fieldName;
+                                        
+                                        if (data.parent?.parent != null)
+                                        {
+                                            // TODO: I only handle the case when the current or parent is an element from an array. Hanlde the remaining cases.
+                                            bool isArrayElement = data.parent.type.IsArray;
+                                            bool isParentArrayElement = data.parent.parent.type.IsArray;
+                                            // TODO: Handle array of serializable type contains array of serializable type contains array of...
+                                            Debug.Assert(!(isArrayElement && isParentArrayElement));
+                                            
+                                            if (isParentArrayElement)
+                                                data = data.parent;
+                                            name = data.parent.field.Name;
+                                            if (isArrayElement || isParentArrayElement)
+                                                name += $"[{data.index}]";
+                                        }
+                                        PrintProperty(property, name, builder, data.parent.depth);
+                                    }, data => data.type != null && !GameUtils.IsSerializableType(data.type), (data, recursive) => recursive());
         }
     }
-
+    
     class NameCollisionData
     {
         static Dictionary<string, List<Type>> types;
         public static System.Collections.Concurrent.ConcurrentDictionary<int, NameCollisionData> database;
         public static List<Type> unusedAttributes;
         static List<Type> usedAttributes;
-
+        
         Type currentType;
         public List<string> currentNamespaces;
         public List<Type> debugNamespaces;
-
+        
         public static void Init(Assembly[] assemblies, int typeCap)
         {
             unusedAttributes = new List<Type>();
@@ -181,33 +227,33 @@ public class GameManager : MonoBehaviour
             {
                 foreach (Assembly assembly in assemblies)
                     foreach (Type type in assembly.GetTypes())
-                        if (!type.IsGenericParameter)
-                            if (types.ContainsKey(type.Name))
-                                types[type.Name].Add(type);
-                            else
-                                types.Add(type.Name, new List<Type>() { type });
+                    if (!type.IsGenericParameter)
+                    if (types.ContainsKey(type.Name))
+                    types[type.Name].Add(type);
+                else
+                    types.Add(type.Name, new List<Type>() { type });
             }
             catch (ReflectionTypeLoadException e)
             {
-                Debug.Log(e.LoaderExceptions.Length + " " + e.Types.Length); 
+                Debug.Log(e.LoaderExceptions.Length + " " + e.Types.Length);
                 foreach (Exception exception in e.LoaderExceptions)
                     Debug.Log(exception);
             }
         }
-
+        
         public static void ScopeCollision(Type currentType, Action<NameCollisionData> initNamespace, Action<NameCollisionData> action)
         {
             database.TryAdd(System.Threading.Tasks.Task.CurrentId ?? -1, new NameCollisionData()
-            {
-                currentNamespaces = new List<string>(16),
-                debugNamespaces = new List<Type>(16),
-            });
+                            {
+                                currentNamespaces = new List<string>(16),
+                                debugNamespaces = new List<Type>(16),
+                            });
             if (data != null) initNamespace(data);
             ScopeType(currentType, () => action(data));
             data?.currentNamespaces.Clear();
             data?.debugNamespaces.Clear();
         }
-
+        
         public static void ScopeType(Type type, Action action)
         {
             Debug.Assert(NameCollisionData.data != null, System.Threading.Tasks.Task.CurrentId);
@@ -216,30 +262,30 @@ public class GameManager : MonoBehaviour
             action();
             MathUtils.Swap(ref data.currentType, ref type);
         }
-
+        
         private static NameCollisionData data => database?[System.Threading.Tasks.Task.CurrentId ?? -1];
-
+        
         public static IList<Type> GetCollideTypes(string name) => types[name];
         public static Type GetCurrentType() => data.currentType;
         public static bool Contains(Type type) => types.ContainsKey(type.Name) && types[type.Name].Contains(type);
         public static bool CheckNamespace(string _namespace, bool emptyResult = false) =>
             data.currentNamespaces.Contains(_namespace) || (data.currentNamespaces.Count == 0 && emptyResult);
-
+        
         public static void GetUnusedAttributes(MemberInfo member, IList<CustomAttributeData> data)
         {
-            /*Attribute[] atts = Array.ConvertAll(member.GetCustomAttributes(false), att => (Attribute)att);
+            Attribute[] atts = Array.ConvertAll(member.GetCustomAttributes(false), att => (Attribute)att);
             for (int i = 0; i < data.Count; ++i)
                 if (atts[i].GetType() != data[i].AttributeType)
-                    Debug.Log("Attribute: " + atts[i].GetType() + " Data: " + data[i].AttributeType);
-                else
-                    usedAttributes.Add(data[i].AttributeType);
-
+                Debug.Log("Attribute: " + atts[i].GetType() + " Data: " + data[i].AttributeType);
+            else
+                usedAttributes.Add(data[i].AttributeType);
+            
             for (int i = data.Count; i < atts.Length; ++i)
                 if (!unusedAttributes.Contains(atts[i].GetType()))
-                    unusedAttributes.Add(atts[i].GetType());*/
+                unusedAttributes.Add(atts[i].GetType());
         }
     }
-
+    
     // https://learn.microsoft.com/en-us/dotnet/csharp/programming-guide/classes-and-structs/access-modifiers
     // NOTE: This is in decreased restrictive level order (protected and internal have the same level)
     enum AccessModifier
@@ -252,7 +298,7 @@ public class GameManager : MonoBehaviour
         PrivateProtected,   // (since C# 7.2)
         Private,            // Default for members (including nested types)
     }
-
+    
     enum MemberNameMode
     {
         Default,
@@ -261,20 +307,9 @@ public class GameManager : MonoBehaviour
         IsDecl,
         BaseType,
     }
-
-    enum ProfileType
-    {
-        InitDatabase,
-        InitNamespaces,
-        FilterType,
-        SortType,
-        InsertNewline,
-        Count,
-    }
-
-    static Dictionary<ProfileType, float> timers;
+    
     static System.Diagnostics.Stopwatch watch;
-
+    
     // Because classes can't have base classes or members types (field's type, method argument and return type, etc)
     // that have lower restrictive level (public classes can't inherit from internal classes, or have a field of a internal type)
     // So Visual Studio only displays public, protected internal, and protected types/members
@@ -283,11 +318,11 @@ public class GameManager : MonoBehaviour
     // So Visual Studio only displays definition of public/internal global types or usage of non-displayble nested types
     const BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static | BindingFlags.DeclaredOnly;
     const AccessModifier maxAccess = AccessModifier.Protected;
-
+    
     const string unmanagedAttribute = "System.Runtime.CompilerServices.IsUnmanagedAttribute";
-    const string refAttribute       = "System.Runtime.CompilerServices.IsByRefLikeAttribute";
-    const string readonlyAttribute  = "System.Runtime.CompilerServices.IsReadOnlyAttribute";
-    const string paramAttribute     = "System.ParamArrayAttribute";
+    const string refAttribute = "System.Runtime.CompilerServices.IsByRefLikeAttribute";
+    const string readonlyAttribute = "System.Runtime.CompilerServices.IsReadOnlyAttribute";
+    const string paramAttribute = "System.ParamArrayAttribute";
     const string extensionAttribute = "System.Runtime.CompilerServices.ExtensionAttribute";
     // NOTE: Check for the name because some types don't exist in .NET Standard 2.0
     static readonly string[] ignoredTypes = new string[]
@@ -301,48 +336,67 @@ public class GameManager : MonoBehaviour
         "System.Runtime.CompilerServices.NullableAttribute",
         "System.Runtime.CompilerServices.NullableContextAttribute",
     };
-
+    
     enum ThreadType
     {
         None,
         Assembly,
         Type,
+        Load,
         All,
-        Ultimate,
+        Partition_Assembly,
+        Partition_Type,
+        Partion_Load,
+        Partition_All,
     }
-
+    
     [EasyButtons.Button]
-    void GenerateHeaderFileTest()
+    void GenerateHeaderFileTest(int count)
     {
-        for (ThreadType threadType = ThreadType.None; threadType <= ThreadType.Ultimate; ++threadType)
+        int length = Enum.GetValues(typeof(ThreadType)).Length;
+        for (ThreadType threadType = ThreadType.None; (int)threadType < length; ++threadType)
         {
-            //GameDebug.logEnabled = false;
             System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
             watch.Start();
-            int count = 10;
             for (int i = 0; i < count; ++i)
-                GenerateHeaderFile(false, false, threadType);
+                GenerateHeaderFile(false, false, false, threadType);
             watch.Stop();
-            //GameDebug.logEnabled = true;
-            Debug.Log($"Type: {threadType}, Total: {watch.ElapsedMilliseconds}, Average: {watch.ElapsedMilliseconds / count}");
+            Debug.Log($"Type: {threadType}, Total: {watch.ElapsedMilliseconds}, Average: {(count != 0 ? watch.ElapsedMilliseconds / count : 0)}");
         }
     }
-
-    [EasyButtons.Button]
-    void GenerateHeaderFile(bool generateFile, bool debugNamespace, ThreadType threadType)
+    
+    static System.Threading.Tasks.Task<T> RunTask<T>(Func<T> action)
     {
-        timers = new Dictionary<ProfileType, float>();
-        for (ProfileType profiler = 0; profiler < ProfileType.Count; ++profiler)
-            timers.Add(profiler, 0);
-        static void StartTimer(ProfileType profiler) {}//=> timers[profiler] = watch.ElapsedMilliseconds - timers[profiler];
-        static void EndTimer  (ProfileType profiler) {}//=> timers[profiler] = watch.ElapsedMilliseconds - timers[profiler];
+        return System.Threading.Tasks.Task.Run(() =>
+                                               {
+                                                   UnityEngine.Profiling.Profiler.BeginThreadProfiling("Task Threads", "Thread " + System.Threading.Tasks.Task.CurrentId);
+                                                   var result = action();
+                                                   UnityEngine.Profiling.Profiler.EndThreadProfiling();
+                                                   return result;
+                                               });
+    }
+    
+    static System.Threading.Tasks.Task RunTask(Action action)
+    {
+        return System.Threading.Tasks.Task.Run(action);
+    }
+    
+    static System.Threading.Tasks.Task<T> RunTask<T>(int index, Func<int, T> action)
+    {
+        return RunTask(() => action(index));
+    }
+    
+    [EasyButtons.Button]
+    void GenerateHeaderFile(bool generateFile, bool writeToFolder, bool debugNamespace, ThreadType threadType)
+    {
+        UnityEngine.Profiling.Profiler.BeginSample("Header File");
         watch = new System.Diagnostics.Stopwatch();
         watch.Start();
-
+        
         Assembly[] assemblies;
         {
             Assembly[] _assemblies = AppDomain.CurrentDomain.GetAssemblies();
-            bool exist = Array.Exists(_assemblies, assembly => assembly.GetName().Name == "DLL");
+            bool exist = Array.Exists(_assemblies, assembly => GetName(assembly) == "DLL");
             assemblies = new Assembly[_assemblies.Length + (exist ? 0 : 1)];
             if (!exist)
             {
@@ -352,145 +406,243 @@ public class GameManager : MonoBehaviour
             Array.Copy(_assemblies, assemblies, _assemblies.Length);
         }
         StringBuilder builder = new StringBuilder(assemblies.Length * 256 * 16);
-
-        Func<string, bool> filterAssembly = name => name == "UnityEngine.CoreModule" || name == "DLL";
-        filterAssembly = name => string.Compare(name, 0, "Unity", 0, "Unity".Length) == 0 || name == "DLL";
-
-        StartTimer(ProfileType.InitDatabase);
+        
+        Func<Assembly, bool> filterAssembly = assembly => string.Compare(GetName(assembly), 0, "Unity", 0, "Unity".Length) == 0;
+        if (!writeToFolder)
+            filterAssembly = assembly => string.Compare(GetName(assembly), 0, "Unity", 0, "Unity".Length) == 0 || GetName(assembly) == "DLL";
+        
         NameCollisionData.Init(assemblies, 32768);
-        EndTimer(ProfileType.InitDatabase);
-
+        
         List<System.Threading.Tasks.Task<string>> tasks = new List<System.Threading.Tasks.Task<string>>(assemblies.Length);
-        bool perAssembly = threadType == ThreadType.Assembly || threadType == ThreadType.All;
-        bool perType = threadType == ThreadType.Type || threadType == ThreadType.All;
         var fileTasks = new System.Collections.Concurrent.ConcurrentBag<System.Threading.Tasks.Task>();
-        foreach (Assembly assembly in assemblies)
+        
+        static string GetName(Assembly assembly) => assembly.GetName().Name;
+        
+        static string GetAssemblyTitle(Assembly assembly, Type[] types)
         {
-            if (filterAssembly(assembly.GetName().Name))
+            return $"-------- {{{GetName(assembly)}({assembly.Location})}}: {types.Length - 1,4} --------\n";
+        }
+        
+        static string AppendAssembly(Assembly assembly, StringBuilder builder, Action<Type[], StringBuilder> callback)
+        {
+            Type[] types = assembly.GetTypes();
+            if (builder == null)
+                builder = new StringBuilder(256 * 16);
+            builder.Append(GetAssemblyTitle(assembly, types));
+            callback(types, builder);
+            return builder.ToString();
+        }
+        
+        static void ForEach(int min, int max, Action<Tuple<int, int>> callback)
+        {
+            System.Threading.Tasks.Parallel.ForEach(System.Collections.Concurrent.Partitioner.Create(min, max), (range, state) => callback(range));
+        }
+        
+        string AppendType(Assembly assembly, StringBuilder builder)
+        {
+            return AppendAssembly(assembly, builder, (types, builder) =>
+                                  {
+                                      foreach (Type type in types)
+                                          AppendGlobalType(builder, type, GetGlobalType(type, debugNamespace));
+                                  });
+        }
+        
+        string AppendTypeWithTask(Assembly assembly, StringBuilder builder)
+        {
+            return AppendAssembly(assembly, builder, (types, builder) =>
+                                  {
+                                      System.Threading.Tasks.Task<string>[] tasks = new System.Threading.Tasks.Task<string>[types.Length];
+                                      for (int i = 0; i < types.Length; ++i)
+                                          tasks[i] = RunTask(i, i => GetGlobalType(types[i], debugNamespace));
+                                      for (int i = 0; i < tasks.Length; ++i)
+                                          AppendGlobalType(builder, types[i], tasks[i].Result);
+                                  });
+        }
+        
+        string AppendTypeWithPartition(Assembly assembly, StringBuilder builder)
+        {
+            return AppendAssembly(assembly, builder, (types, builder) =>
+                                  {
+                                      if (types.Length > 0)
+                                      {
+                                          string[] data = new string[types.Length];
+                                          ForEach(0, types.Length, range =>
+                                                  {
+                                                      for (int i = range.Item1; i < range.Item2; i++)
+                                                          data[i] = GetGlobalType(types[i], debugNamespace);
+                                                  });
+                                          for (int i = 0; i < data.Length; ++i)
+                                              AppendGlobalType(builder, types[i], data[i]);
+                                      }
+                                  });
+        }
+        
+        void IterateAssemblies(Action<Assembly> callback)
+        {
+            foreach (Assembly assembly in assemblies)
+                if (filterAssembly(assembly))
+                callback(assembly);
+        }
+        
+        T[] IteratePartitionAssemblies<T>(Func<Assembly, T> callback)
+        {
+            T[] data = new T[assemblies.Length];
+            ForEach(0, assemblies.Length, range =>
+                    {
+                        for (int i = range.Item1; i < range.Item2; i++)
+                            if (filterAssembly(assemblies[i]))
+                            data[i] = callback(assemblies[i]);
+                    });
+            return data;
+        }
+        
+        void AppendGlobalType(StringBuilder builder, Type type, string data)
+        {
+            if (data != null)
             {
-                if (threadType == ThreadType.Ultimate)
-                    tasks.Add(System.Threading.Tasks.Task.Run(() =>
-                    {
-                        Type[] types = assembly.GetTypes();
-                        System.Threading.Tasks.Task<string>[] works = new System.Threading.Tasks.Task<string>[types.Length];
-                        for (int i = 0; i < works.Length; ++i)
-                        {
-                            int j = i;
-                            works[i] = System.Threading.Tasks.Task.Run(() => GetGlobalType(types[j]));
-                        }
-
-                        StringBuilder builder = new StringBuilder(
-                            $"-------- {{{assembly.GetName().Name}({assembly.Location})}}: {types.Length - 1,4} --------\n", 256 * 16);
-                        for (int i = 0; i < works.Length; ++i)
-                            AppendGlobalType(builder, types[i], works[i].Result);
-                        return builder.ToString();
-                    }));
-                else if (perAssembly)
-                    tasks.Add(System.Threading.Tasks.Task.Run(() => AppendAssemblyTypes(assembly)));
-                else
-                    builder.Append(AppendAssemblyTypes(assembly));
-                string AppendAssemblyTypes(Assembly assembly)
+                if (writeToFolder)
                 {
-                    Type[] types = assembly.GetTypes();
-                    StringBuilder builder = new StringBuilder($"-------- {{{assembly.GetName().Name}({assembly.Location})}}: {types.Length - 1,4} --------\n", 256 * 16);
-                    if (perType)
-                    {
-                        System.Threading.Tasks.Task<string>[] tasks = new System.Threading.Tasks.Task<string>[types.Length];
-                        for (int i = 0; i < types.Length; ++i)
-                        {
-                            int j = i;
-                            tasks[j] = System.Threading.Tasks.Task.Run(() => GetGlobalType(types[j]));
-                        }
-                        for (int i = 0; i < tasks.Length; ++i)
-                            AppendGlobalType(builder, types[i], tasks[i].Result);
-                    }
-                    else
-                        foreach (Type type in types)
-                            AppendGlobalType(builder, type, GetGlobalType(type));
-
-                    return builder.ToString();
+                    fileTasks.Add(RunTask(() =>
+                                          {
+                                              string path = "D:/Documents/Unity/Decompile/Temp/";
+                                              if (type.Namespace != null)
+                                                  path += type.Namespace + "/";
+                                              System.IO.Directory.CreateDirectory(path);
+                                              path += GetNameWithoutGeneric(type.Name);
+                                              int genericCount = type.GetGenericArguments().Length;
+                                              if (genericCount > 0)
+                                                  path += "`" + genericCount;
+                                              System.IO.File.WriteAllText(path + ".cs", data);
+                                          }));
                 }
-
-                void AppendGlobalType(StringBuilder builder, Type type, string data)
+                builder.Append(data);
+            }
+        }
+        
+        switch (threadType)
+        {
+            case ThreadType.None:
+            IterateAssemblies(assembly => AppendType(assembly, builder));
+            break;
+            case ThreadType.Assembly:
+            IterateAssemblies(assembly => tasks.Add(RunTask(() => AppendType(assembly, null))));
+            break;
+            case ThreadType.Type:
+            IterateAssemblies(assembly => AppendTypeWithTask(assembly, builder));
+            break;
+            case ThreadType.Load:
+            {
+                var loadingTasks = new List<System.Threading.Tasks.Task<(Type[], Assembly)>>(assemblies.Length);
+                IterateAssemblies(assembly => loadingTasks.Add(RunTask(() => (assembly.GetTypes(), assembly))));
+                
+                int typeCount = 0;
+                foreach (var loadingTask in loadingTasks)
+                    typeCount += loadingTask.Result.Item1.Length;
+                tasks.Capacity += typeCount;
+                
+                foreach (var loadingTask in loadingTasks)
                 {
-                    if (data != null)
+                    (Type[] types, Assembly assembly) = loadingTask.Result;
+                    
+                    tasks.Add(RunTask(() => GetAssemblyTitle(assembly, types)));
+                    foreach (Type _type in types)
                     {
-                        if (generateFile)
-                        {
-                            fileTasks.Add(System.Threading.Tasks.Task.Run(() =>
-                            {
-                                string path = "D:/Documents/Unity/Decompile/Temp/";
-                                if (type.Namespace != null)
-                                    path += type.Namespace + "/";
-                                System.IO.Directory.CreateDirectory(path);
-                                path += GetNameWithoutGeneric(type.Name);
-                                int genericCount = type.GetGenericArguments().Length;
-                                if (genericCount > 0)
-                                    path += "`" + genericCount;
-                                System.IO.File.WriteAllText(path + ".txt", data);
-                            }));
-                        }
-                        builder.Append(data);
+                        Type type = _type;
+                        tasks.Add(RunTask(() => GetGlobalType(type, debugNamespace)));
                     }
                 }
             }
+            break;
+            case ThreadType.All:
+            IterateAssemblies(assembly => tasks.Add(RunTask(() => AppendTypeWithTask(assembly, null))));
+            break;
+            case ThreadType.Partition_Assembly:
+            {
+                foreach (string data in IteratePartitionAssemblies(assembly => AppendType(assembly, null)))
+                    builder.Append(data);
+            }
+            break;
+            case ThreadType.Partition_Type:
+            IterateAssemblies(assembly => tasks.Add(RunTask(() => AppendTypeWithPartition(assembly, null))));
+            break;
+            case ThreadType.Partion_Load:
+            {
+                Type[][] allTypes = IteratePartitionAssemblies(assembly => assembly.GetTypes());
+                for (int i = 0; i < allTypes.Length; ++i)
+                    if (allTypes[i] != null)
+                    tasks.Add(RunTask(i, i => AppendTypeWithPartition(assemblies[i], null)));
+            }
+            break;
+            case ThreadType.Partition_All:
+            {
+                foreach (string data in IteratePartitionAssemblies(assembly => AppendTypeWithPartition(assembly, null)))
+                    builder.Append(data);
+            }
+            break;
         }
-
-        if (perAssembly || threadType == ThreadType.Ultimate)
-            foreach (var task in tasks)
-                builder.Append(task.Result);
+        
+        foreach (var task in tasks)
+            builder.Append(task.Result);
         System.Threading.Tasks.Task.WaitAll(fileTasks.ToArray());
-
-        string GetGlobalType(Type type)
+        
+        string message = "Search complete";
+        UnityEngine.Object context = null;
+        if (generateFile)
+        {
+            string path = "Assets/Files/types.txt";
+            System.IO.File.WriteAllText(path, builder.ToString());
+            UnityEditor.AssetDatabase.SaveAssets();
+            UnityEditor.AssetDatabase.Refresh();
+            message = "File is created at " + path;
+            context = UnityEditor.AssetDatabase.LoadAssetAtPath<TextAsset>(path);
+        }
+        message += $" after {watch.ElapsedMilliseconds}ms";
+        message += GameUtils.GetAllString(NameCollisionData.unusedAttributes, "\nUnused Attribtes: ");
+        Debug.Log(message, context);
+        UnityEngine.Profiling.Profiler.EndSample();
+        
+        static string GetGlobalType(Type type, bool debugNamespace)
         {
             string result = null;
             if (type.IsPublic)
             {
-                NameCollisionData.ScopeCollision(type, data =>
-                {
-                    StartTimer(ProfileType.InitNamespaces);
-                    AddAllTypes(data, type);
-                    EndTimer(ProfileType.InitNamespaces);
-                }, data =>
-                {
-                    StringBuilder builder = new StringBuilder(256);
-                    if (data != null)
-                    {
-                        if (!debugNamespace)
-                            data.currentNamespaces.Sort();
-                        int i = 0;
-                        foreach (string _namespace in data.currentNamespaces)
-                        {
-                            if (_namespace != type.Namespace && type.Namespace?.StartsWith(_namespace + ".") != true)
-                            {
-                                builder.Append("using ").Append(_namespace);
-                                if (debugNamespace)
-                                    builder.Append($"({data.debugNamespaces[i]} from {data.debugNamespaces[i].Assembly})");
-                                builder.Append(";\n");
-                            }
-                            ++i;
-                        }
-                        if (builder.Length != 0)
-                            builder.Append('\n');
-                    }
-
-                    int indent = type.Namespace != null ? 1 : 0;
-                    if (indent != 0)
-                        builder.Append("namespace ").Append(type.Namespace).Append("\n{\n");
-
-                    //builder.Append('\n');
-                    AppendMemberDefinition(builder, type, indent);
-
-                    if (indent != 0)
-                        builder.Append("}\n");
-
-                    Debug.Assert(builder.Length != 0, type);
-                    result = builder.ToString();
-                });
+                NameCollisionData.ScopeCollision(type, data => AddAllTypes(data, type), data =>
+                                                 {
+                                                     StringBuilder builder = new StringBuilder(256);
+                                                     if (data != null)
+                                                     {
+                                                         if (!debugNamespace)
+                                                             data.currentNamespaces.Sort();
+                                                         int i = 0;
+                                                         foreach (string _namespace in data.currentNamespaces)
+                                                         {
+                                                             if (_namespace != type.Namespace && type.Namespace?.StartsWith(_namespace + ".") != true)
+                                                             {
+                                                                 builder.Append("using ").Append(_namespace);
+                                                                 if (debugNamespace)
+                                                                     builder.Append($"({data.debugNamespaces[i]} from {data.debugNamespaces[i].Assembly})");
+                                                                 builder.Append(";\n");
+                                                             }
+                                                             ++i;
+                                                         }
+                                                         if (builder.Length != 0)
+                                                             builder.Append('\n');
+                                                     }
+                                                     
+                                                     int indent = type.Namespace != null ? 1 : 0;
+                                                     if (indent != 0)
+                                                         builder.Append("namespace ").Append(type.Namespace).Append("\n{\n");
+                                                     AppendMemberDefinition(builder, type, indent);
+                                                     if (indent != 0)
+                                                         builder.Append("}\n");
+                                                     
+                                                     Debug.Assert(builder.Length != 0, type);
+                                                     result = builder.ToString();
+                                                 });
             }
             return result;
         }
-
+        
         static void AddAllTypes(NameCollisionData database, MemberInfo member)
         {
             FieldInfo field = member as FieldInfo;
@@ -499,7 +651,7 @@ public class GameManager : MonoBehaviour
             Type type = member as Type;
             MethodBase method = member as MethodBase;
             bool isDelegate = type != null && typeof(Delegate).IsAssignableFrom(type);
-
+            
             bool skip = false;
             switch (member.MemberType)
             {
@@ -507,46 +659,46 @@ public class GameManager : MonoBehaviour
                 case MemberTypes.Field: skip = ((FieldInfo)member).IsSpecialName; break;
             }
             if (skip) return;
-
+            
             AddMember(database, member, true);
-
+            
             MethodInfo getter = null, setter = null;
             {
                 switch (member.MemberType)
                 {
                     case MemberTypes.Property:
-                        {
-                            getter = property.GetGetMethod(true);
-                            setter = property.GetSetMethod(true);
-                            if (getter != null && setter != null)
-                                method = GetMethodAccess(getter) <= GetMethodAccess(setter) ? getter : setter;
-                            else
-                                method = getter ?? setter;
-                        }
-                        break;
+                    {
+                        getter = property.GetGetMethod(true);
+                        setter = property.GetSetMethod(true);
+                        if (getter != null && setter != null)
+                            method = GetMethodAccess(getter) <= GetMethodAccess(setter) ? getter : setter;
+                        else
+                            method = getter ?? setter;
+                    }
+                    break;
                     case MemberTypes.Event: method = eventInfo.GetAddMethod(true); break;
                     case MemberTypes.NestedType: goto case MemberTypes.TypeInfo;
                     case MemberTypes.TypeInfo:
-                        {
-                            if (isDelegate)
-                                method = type.GetMethod("Invoke");
-                        }
-                        break;
+                    {
+                        if (isDelegate)
+                            method = type.GetMethod("Invoke");
+                    }
+                    break;
                 }
             }
             MethodInfo methodInfo = method as MethodInfo;
-
+            
             AccessModifier access = AccessModifier.None;
             {
                 if (type != null)
                 {
                     // NOTE: Global types can only have public or internal modifier
                     if (!type.IsNested) access = type.IsPublic ? AccessModifier.Public : AccessModifier.Internal;
-
+                    
                     else if (type.IsNestedPublic) access = AccessModifier.Public;
                     else if (type.IsNestedAssembly) access = AccessModifier.Internal;
                     else if (type.IsNestedPrivate) access = AccessModifier.Private;
-
+                    
                     // NOTE: Struct types and members don't have the below modifiers
                     else if (type.IsNestedFamily) access = AccessModifier.Protected;
                     else if (type.IsNestedFamORAssem) access = AccessModifier.ProtectedInternal;
@@ -564,16 +716,16 @@ public class GameManager : MonoBehaviour
                 }
                 else if (method != null)
                     access = GetMethodAccess(method);
-
+                
                 if (access > maxAccess)
                     return;
             }
-
+            
             // Attributes
             AddAttributeTypes(database, member.GetCustomAttributesData());
             if (member.MemberType == MemberTypes.Method)
                 AddAttributeTypes(database, methodInfo.ReturnParameter.GetCustomAttributesData());
-
+            
             // Declare/return type
             {
                 Type declareType = null;
@@ -583,65 +735,65 @@ public class GameManager : MonoBehaviour
                     case MemberTypes.Field: declareType = field.FieldType; break;
                     case MemberTypes.Event: declareType = eventInfo.EventHandlerType; break;
                     case MemberTypes.Property:
-                        {
-                            if (getter != null)
-                                returnParam = getter.ReturnParameter;
-                            else
-                                declareType = property.PropertyType;
-                        }
-                        break;
+                    {
+                        if (getter != null)
+                            returnParam = getter.ReturnParameter;
+                        else
+                            declareType = property.PropertyType;
+                    }
+                    break;
                 }
-
+                
                 if (returnParam != null && declareType == null)
                     declareType = returnParam.ParameterType;
                 if (declareType != null)
                     AddType(database, declareType);
             }
-
+            
             // Generic constraint + Parameters/Base Types-Members
             switch (member.MemberType)
             {
                 case MemberTypes.Constructor: goto case MemberTypes.Method;
                 case MemberTypes.TypeInfo: goto case MemberTypes.NestedType;
-
+                
                 case MemberTypes.Property: AddArrayType(property.GetIndexParameters(), AddParameter); break;
                 case MemberTypes.Method: AddArrayType(method.GetParameters(), AddParameter); break;
                 case MemberTypes.NestedType:
-                    {
-                        if (isDelegate)
-                            goto case MemberTypes.Method;
-                        AddArrayType(GetBaseTypes(type), AddType);
-                        foreach (MemberInfo mem in type.GetMembers(flags))
-                            AddAllTypes(database, mem);
-                    }
-                    break;
-
-                    void AddArrayType<T>(T[] array, Action<NameCollisionData, T> each)
-                    {
-                        Iterate(array, item => each(database, item));
-                        // TODO: Move generic constraints to AddMember with isDecl
-                        GetGenericConstraints(GetGenericArguments(member),
-                            (constraintTypes, parameter) => Iterate(constraintTypes, constraint =>
-                            {
-                                if (constraint != typeof(ValueType))
-                                    AddType(database, constraint);
-                            }));
-                    }
-
-                    static void AddParameter(NameCollisionData data, ParameterInfo param)
-                    {
-                        AddAttributeTypes(data, param.GetCustomAttributesData());
-                        AddType(data, param.ParameterType.IsByRef ? param.ParameterType.GetElementType() : param.ParameterType);
-                    }
+                {
+                    if (isDelegate)
+                        goto case MemberTypes.Method;
+                    AddArrayType(GetBaseTypes(type), AddType);
+                    foreach (MemberInfo mem in type.GetMembers(flags))
+                        AddAllTypes(database, mem);
+                }
+                break;
+                
+                void AddArrayType<T>(T[] array, Action<NameCollisionData, T> each)
+                {
+                    Iterate(array, item => each(database, item));
+                    // TODO: Move generic constraints to AddMember with isDecl
+                    GetGenericConstraints(GetGenericArguments(member),
+                                          (constraintTypes, parameter) => Iterate(constraintTypes, constraint =>
+                                                                                  {
+                                                                                      if (constraint != typeof(ValueType))
+                                                                                          AddType(database, constraint);
+                                                                                  }));
+                }
+                
+                static void AddParameter(NameCollisionData data, ParameterInfo param)
+                {
+                    AddAttributeTypes(data, param.GetCustomAttributesData());
+                    AddType(data, param.ParameterType.IsByRef ? param.ParameterType.GetElementType() : param.ParameterType);
+                }
             }
-
+            
             static void AddType(NameCollisionData database, Type type) => AddMember(database, type);
-
+            
             static void AddMember(NameCollisionData database, MemberInfo member, bool isDecl = false)
             {
                 Type type = member as Type;
                 MethodInfo method = member as MethodInfo;
-
+                
                 if (method != null)
                 {
                     if (!method.IsSpecialName)
@@ -649,7 +801,7 @@ public class GameManager : MonoBehaviour
                     else if (member.Name == "op_Implicit") type = method.ReturnType;
                     else if (member.Name == "op_Explicit") type = method.ReturnType;
                 }
-
+                
                 if (type != null)
                 {
                     Type definitionType = GetElementType(type, out _, out _, out Type elementType);
@@ -667,7 +819,7 @@ public class GameManager : MonoBehaviour
                         }
                     }
                 }
-
+                
                 static void AddGenericArgument(NameCollisionData database, Type type, bool isDecl)
                 {
                     if (type.IsGenericParameter && isDecl)
@@ -676,33 +828,33 @@ public class GameManager : MonoBehaviour
                         AddMember(database, type, isDecl);
                 }
             }
-
+            
             static void Iterate<T>(IList<T> list, Action<T> action)
             {
                 foreach (T item in list)
                     action(item);
             }
-
+            
             static void AddAttributeTypes(NameCollisionData database, IList<CustomAttributeData> attributes)
             {
                 Iterate(attributes, att => AddType(database, att.AttributeType));
                 foreach (CustomAttributeData attribute in attributes)
                 {
                     Iterate(GetAttributeArguments(attribute), arg =>
-                    {
-                        if (arg.Value != null)
-                        {
-                            if (arg.ArgumentType == typeof(Type))
-                                AddType(database, (Type)arg.Value);
-                            else if (arg.Value is ReadOnlyCollection<CustomAttributeTypedArgument> argArray)
-                                if (argArray.Count > 0 && argArray[0].ArgumentType == typeof(Type))
-                                    Iterate(argArray, item => AddType(database, (Type)item.Value));
-                        }
-                    });
+                            {
+                                if (arg.Value != null)
+                                {
+                                    if (arg.ArgumentType == typeof(Type))
+                                        AddType(database, (Type)arg.Value);
+                                    else if (arg.Value is ReadOnlyCollection<CustomAttributeTypedArgument> argArray)
+                                        if (argArray.Count > 0 && argArray[0].ArgumentType == typeof(Type))
+                                        Iterate(argArray, item => AddType(database, (Type)item.Value));
+                                }
+                            });
                 }
             }
         }
-
+        
         // TODO: Cleanup and combine AddAllTypes and AppendMemberDefinition into one
         static void AppendMemberDefinition(StringBuilder _builder, MemberInfo member, int indent)
         {
@@ -711,100 +863,103 @@ public class GameManager : MonoBehaviour
             EventInfo eventInfo = member as EventInfo;
             Type type = member as Type;
             MethodBase method = member as MethodBase;
-
+            
             bool skip = false;
             switch (member.MemberType)
             {
                 case MemberTypes.Method: skip = method.IsSpecialName && !member.Name.StartsWith("op_"); break;
                 case MemberTypes.Field: skip = ((FieldInfo)member).IsSpecialName; break;
-
+                
                 // NOTE: Can't know if an empty constructor was declared or auto-generated, VS also doesn't know
                 // https://stackoverflow.com/questions/3190575/detect-compiler-generated-default-constructor-using-reflection-in-c-sharp
                 case MemberTypes.Constructor: break;
             }
             if (skip) return;
-
+            
             string name = GetMemberName(member, MemberNameMode.IsDecl);
-
+            
             // https://codeblog.jonskeet.uk/2014/08/22/when-is-a-constant-not-a-constant-when-its-a-decimal/
             var decimalConst = field?.GetCustomAttribute<System.Runtime.CompilerServices.DecimalConstantAttribute>();
             bool isDelegate = type != null && typeof(Delegate).IsAssignableFrom(type);
-
+            
             MethodInfo getter = null, setter = null;
             {
                 switch (member.MemberType)
                 {
                     case MemberTypes.Property:
-                        {
-                            getter = property.GetGetMethod(true);
-                            setter = property.GetSetMethod(true);
-                            // NOTE:
-                            // 1. Property's accessors can only have higher restrictive access level than the property
-                            // 2. A property must have _both_ a getter and a setter so that _one_ of them can have a custom access modifier
-                            // Which means a property has the lower access modify between the two accessors or it has the only access level 
-                            if (getter != null && setter != null)
-                                method = GetMethodAccess(getter) <= GetMethodAccess(setter) ? getter : setter;
-                            else
-                                method = getter ?? setter;
-                            Debug.Assert(method != null, member.Name + " of " + member.DeclaringType.FullName);
-                        } break;
+                    {
+                        getter = property.GetGetMethod(true);
+                        setter = property.GetSetMethod(true);
+                        // NOTE:
+                        // 1. Property's accessors can only have higher restrictive access level than the property
+                        // 2. A property must have _both_ a getter and a setter so that _one_ of them can have a custom access modifier
+                        // Which means a property has the lower access modify between the two accessors or it has the only access level 
+                        if (getter != null && setter != null)
+                            method = GetMethodAccess(getter) <= GetMethodAccess(setter) ? getter : setter;
+                        else
+                            method = getter ?? setter;
+                        Debug.Assert(method != null, member.Name + " of " + member.DeclaringType.FullName);
+                    }
+                    break;
                     case MemberTypes.Event:
-                        {
-                            // NOTE: C# events always have both add and remove method, but never raise method
-                            method = eventInfo.GetAddMethod(true);
-                            Debug.Assert(eventInfo.GetRemoveMethod(true) != null && method != null, name);
-                            Debug.Assert(eventInfo.GetRaiseMethod(true) == null, name + " " + eventInfo.GetRaiseMethod(true)?.Name);
-                        } break;
+                    {
+                        // NOTE: C# events always have both add and remove method, but never raise method
+                        method = eventInfo.GetAddMethod(true);
+                        Debug.Assert(eventInfo.GetRemoveMethod(true) != null && method != null, name);
+                        Debug.Assert(eventInfo.GetRaiseMethod(true) == null, name + " " + eventInfo.GetRaiseMethod(true)?.Name);
+                    }
+                    break;
                     case MemberTypes.NestedType: goto case MemberTypes.TypeInfo;
                     case MemberTypes.TypeInfo:
-                        {
-                            if (isDelegate)
-                                method = type.GetMethod("Invoke");
-                        } break;
+                    {
+                        if (isDelegate)
+                            method = type.GetMethod("Invoke");
+                    }
+                    break;
                 }
             }
             MethodInfo methodInfo = method as MethodInfo;
-
+            
             AccessModifier access = AccessModifier.None;
             {
                 if (type != null)
                 {
                     // NOTE: Global types can only have public or internal modifier
-                    if (!type.IsNested               ) access = type.IsPublic ? AccessModifier.Public : AccessModifier.Internal;
-
-                    else if (type.IsNestedPublic     ) access = AccessModifier.Public;
-                    else if (type.IsNestedAssembly   ) access = AccessModifier.Internal;
-                    else if (type.IsNestedPrivate    ) access = AccessModifier.Private;
-
+                    if (!type.IsNested) access = type.IsPublic ? AccessModifier.Public : AccessModifier.Internal;
+                    
+                    else if (type.IsNestedPublic) access = AccessModifier.Public;
+                    else if (type.IsNestedAssembly) access = AccessModifier.Internal;
+                    else if (type.IsNestedPrivate) access = AccessModifier.Private;
+                    
                     // NOTE: Struct types and members don't have the below modifiers
-                    else if (type.IsNestedFamily     ) access = AccessModifier.Protected;
-                    else if (type.IsNestedFamORAssem ) access = AccessModifier.ProtectedInternal;
+                    else if (type.IsNestedFamily) access = AccessModifier.Protected;
+                    else if (type.IsNestedFamORAssem) access = AccessModifier.ProtectedInternal;
                     else if (type.IsNestedFamANDAssem) access = AccessModifier.PrivateProtected;
                 }
                 else if (field != null)
                 {
                     if (false) { }
-                    else if (field.IsPublic           ) access = AccessModifier.Public;
-                    else if (field.IsFamilyOrAssembly ) access = AccessModifier.ProtectedInternal;
-                    else if (field.IsFamily           ) access = AccessModifier.Protected;
-                    else if (field.IsAssembly         ) access = AccessModifier.Internal;
+                    else if (field.IsPublic) access = AccessModifier.Public;
+                    else if (field.IsFamilyOrAssembly) access = AccessModifier.ProtectedInternal;
+                    else if (field.IsFamily) access = AccessModifier.Protected;
+                    else if (field.IsAssembly) access = AccessModifier.Internal;
                     else if (field.IsFamilyAndAssembly) access = AccessModifier.PrivateProtected;
-                    else if (field.IsPrivate          ) access = AccessModifier.Private;
+                    else if (field.IsPrivate) access = AccessModifier.Private;
                 }
                 else if (method != null)
                     access = GetMethodAccess(method);
-
+                
                 if (access > maxAccess)
                     return;
             }
-
+            
             string attributes = null;
             {
                 IList<CustomAttributeData> data = member.GetCustomAttributesData();
                 IList<CustomAttributeData> returnAtts = new List<CustomAttributeData>();
                 if (member.MemberType == MemberTypes.Method)
                     returnAtts = methodInfo.ReturnParameter.GetCustomAttributesData();
-
+                
                 StringBuilder attributeBuider = new StringBuilder((data.Count + returnAtts.Count) * 16);
                 AppendAttributes(attributeBuider, data, indent);
                 AppendAttributes(attributeBuider, returnAtts, indent, "return");
@@ -813,11 +968,11 @@ public class GameManager : MonoBehaviour
                 // NOTE: I can do the same for [field], [property], [event], and delegate's return param, but VS doesn't display those so why bother
                 // The same goes for [assembly] and [module] attributes, but I never ever care about those
                 attributes = attributeBuider.ToString();
-
+                
                 // TESTING
                 NameCollisionData.GetUnusedAttributes(member, data);
             }
-
+            
             // The abstract modifier can be used on a        class, method, property, indexer,                        or event
             // The static   modifier can be used on a field, class, method, property,          operator, constructor, or event
             // The virtual  modifier can be used on a               method, property, indexer,                        or event
@@ -880,7 +1035,7 @@ public class GameManager : MonoBehaviour
                     }
                 }
             }
-
+            
             string declare = null;
             {
                 Type declareType = null;
@@ -889,217 +1044,221 @@ public class GameManager : MonoBehaviour
                 {
                     case MemberTypes.Field: declareType = field.FieldType; break;
                     case MemberTypes.Event:
-                        {
-                            declare = "event ";
-                            declareType = eventInfo.EventHandlerType;
-                        } break;
+                    {
+                        declare = "event ";
+                        declareType = eventInfo.EventHandlerType;
+                    }
+                    break;
                     case MemberTypes.Property:
-                        {
-                            if (getter != null)
-                                returnParam = getter.ReturnParameter;
-                            else
-                                declareType = property.PropertyType;
-                        } break;
+                    {
+                        if (getter != null)
+                            returnParam = getter.ReturnParameter;
+                        else
+                            declareType = property.PropertyType;
+                    }
+                    break;
                     case MemberTypes.Method:
+                    {
+                        if (method.IsSpecialName && (method.Name == "op_Implicit" || method.Name == "op_Explicit"))
                         {
-                            if (method.IsSpecialName && (method.Name == "op_Implicit" || method.Name == "op_Explicit"))
-                            {
-                                declare = (method.Name == "op_Implicit" ? "implicit" : "explicit") + " operator";
-                                returnParam = null;
-                            }
-                        } break;
+                            declare = (method.Name == "op_Implicit" ? "implicit" : "explicit") + " operator";
+                            returnParam = null;
+                        }
+                    }
+                    break;
                     case MemberTypes.TypeInfo: goto case MemberTypes.NestedType;
                     case MemberTypes.NestedType:
-                        {
-                            if (isDelegate)
-                                declare = "delegate ";
-                            else if (type.IsClass)
-                                declare = "class";
-                            else if (type.IsInterface)
-                                declare = "interface";
-                            else if (type.IsEnum)
-                                declare = "enum";
-                            else if (type.IsValueType)
-                                declare = "struct";
-                        } break;
+                    {
+                        if (isDelegate)
+                            declare = "delegate ";
+                        else if (type.IsClass)
+                            declare = "class";
+                        else if (type.IsInterface)
+                            declare = "interface";
+                        else if (type.IsEnum)
+                            declare = "enum";
+                        else if (type.IsValueType)
+                            declare = "struct";
+                    }
+                    break;
                 }
-
+                
                 if (returnParam != null && declareType == null)
                 {
                     declare += GetParameterModifier(returnParam, returnParam.GetCustomAttributesData());
                     declareType = returnParam.ParameterType;
                 }
-
+                
                 if (declareType != null)
                     declare += GetMemberName(declareType, tupleNames: GetTupleNames((ICustomAttributeProvider)field ?? returnParam));
             }
-
+            
             string value = null;
             {
                 StringBuilder valueBuilder = new StringBuilder(256);
                 switch (member.MemberType)
                 {
                     case MemberTypes.Field:
-                        {
-                            if (modifier == "const")
-                                AppendDefaultValue(valueBuilder.Append(" = "), field.FieldType,
-                                    decimalConst != null ? decimalConst.Value : field.GetRawConstantValue());
-                        } break;
+                    {
+                        if (modifier == "const")
+                            AppendDefaultValue(valueBuilder.Append(" = "), field.FieldType,
+                                               decimalConst != null ? decimalConst.Value : field.GetRawConstantValue());
+                    }
+                    break;
                     case MemberTypes.Property:
+                    {
+                        AppendArrayValue(property.GetIndexParameters(), "[", "]", AppendParameter);
+                        valueBuilder.Append(" {");
+                        AccessModifier methodAccess = GetMethodAccess(method);
+                        AppendAccessor(getter, "get");
+                        AppendAccessor(setter, "set");
+                        valueBuilder.Append(" }");
+                        
+                        void AppendAccessor(MethodInfo accessorMethod, string accessorName)
                         {
-                            AppendArrayValue(property.GetIndexParameters(), "[", "]", AppendParameter);
-                            valueBuilder.Append(" {");
-                            AccessModifier methodAccess = GetMethodAccess(method);
-                            AppendAccessor(getter, "get");
-                            AppendAccessor(setter, "set");
-                            valueBuilder.Append(" }");
-
-                            void AppendAccessor(MethodInfo accessorMethod, string accessorName)
+                            if (accessorMethod != null)
                             {
-                                if (accessorMethod != null)
+                                AccessModifier _access = GetMethodAccess(accessorMethod);
+                                if (_access <= maxAccess)
                                 {
-                                    AccessModifier _access = GetMethodAccess(accessorMethod);
-                                    if (_access <= maxAccess)
-                                    {
-                                        valueBuilder.Append(' ');
-                                        if (_access > methodAccess)
-                                            AppendAccessModifier(valueBuilder, _access);
-                                        valueBuilder.Append(accessorName).Append(';');
-                                    }
+                                    valueBuilder.Append(' ');
+                                    if (_access > methodAccess)
+                                        AppendAccessModifier(valueBuilder, _access);
+                                    valueBuilder.Append(accessorName).Append(';');
                                 }
                             }
-                        } break;
-
+                        }
+                    }
+                    break;
+                    
                     case MemberTypes.Constructor: goto case MemberTypes.Method;
                     case MemberTypes.Method:
-                        {
-                            ParameterInfo[] parameters = method.GetParameters();
-                            if (parameters.Length == 0)
-                                valueBuilder.Append("()");
-                            AppendArrayValue(parameters, "(", ")", AppendParameter);
-                        } break;
-
+                    {
+                        ParameterInfo[] parameters = method.GetParameters();
+                        if (parameters.Length == 0)
+                            valueBuilder.Append("()");
+                        AppendArrayValue(parameters, "(", ")", AppendParameter);
+                    }
+                    break;
+                    
                     case MemberTypes.TypeInfo: goto case MemberTypes.NestedType;
                     case MemberTypes.NestedType:
+                    {
+                        if (isDelegate)
+                            goto case MemberTypes.Method;
+                        
+                        AppendArrayValue(GetBaseTypes(type), " : ", null, (builder, baseType) =>
+                                         AppendMemberName(builder, baseType, baseType.IsInterface ? null : type, MemberNameMode.BaseType));
+                        
+                        valueBuilder.Append('\n');
+                        valueBuilder.AppendIndentLine("{", indent);
+                        
+                        // NOTE: Group order (newline): fields -> constructors -> finalizers -> properties -> events -> methods
+                        // -> operators -> conversion operators -> nested types -> delegates
+                        // TODO: Element order (no newline): const -> static readonly -> static -> readonly, indexers -> properties
+                        Func<MemberInfo, bool>[] groupTable = new Func<MemberInfo, bool>[]
                         {
-                            if (isDelegate)
-                                goto case MemberTypes.Method;
-
-                            AppendArrayValue(GetBaseTypes(type), " : ", null, (builder, baseType) =>
-                            AppendMemberName(builder, baseType, baseType.IsInterface ? null : type, MemberNameMode.BaseType));
-
-                            valueBuilder.Append('\n');
-                            valueBuilder.AppendIndentLine("{", indent);
-
-                            // NOTE: Group order (newline): fields -> constructors -> finalizers -> properties -> events -> methods
-                            // -> operators -> conversion operators -> nested types -> delegates
-                            // TODO: Element order (no newline): const -> static readonly -> static -> readonly, indexers -> properties
-                            Func<MemberInfo, bool>[] groupTable = new Func<MemberInfo, bool>[]
+                            member => member.MemberType == MemberTypes.Field,
+                            member => member.MemberType == MemberTypes.Constructor,
+                            member => member.MemberType == MemberTypes.Method && member.Name == "Finalize",
+                            member => member.MemberType == MemberTypes.Property &&  IsIndexer((PropertyInfo)member),
+                            member => member.MemberType == MemberTypes.Property && !IsIndexer((PropertyInfo)member),
+                            member => member.MemberType == MemberTypes.Event,
+                            member => IsMethodSpecial(member, special: false, equal: false, "Finalize"),
+                            member => IsMethodSpecial(member, special: true , equal: false, "op_Implicit", "op_Explicit"),
+                            member => IsMethodSpecial(member, special: true , equal: true , "op_Implicit", "op_Explicit"),
+                            member => member.MemberType == MemberTypes.NestedType
+                        };
+                        int noBlankLineIndex = 4; // NOTE: This is for removing blank line between indexers and properties
+                        
+                        static bool IsMethodSpecial(MemberInfo member, bool special, bool equal, params string[] names)
+                        {
+                            MethodInfo method = member as MethodInfo;
+                            if (method == null || method.IsSpecialName != special)
+                                return false;
+                            
+                            foreach (string name in names)
+                                if (name == method.Name)
+                                return equal;
+                            return !equal;
+                        }
+                        
+                        // NOTE: After some profiling, iterating through the array multiple times is slightly faster than sorting
+                        MemberInfo[] members = type.GetMembers(flags);
+                        bool isPreviousEmpty = true;
+                        int oldIndex = -1;
+                        for (int i = 0; i < groupTable.Length; ++i)
+                        {
+                            bool isEmpty = true;
+                            foreach (MemberInfo mem in members)
                             {
-                                member => member.MemberType == MemberTypes.Field,
-                                member => member.MemberType == MemberTypes.Constructor,
-                                member => member.MemberType == MemberTypes.Method && member.Name == "Finalize",
-                                member => member.MemberType == MemberTypes.Property &&  IsIndexer((PropertyInfo)member),
-                                member => member.MemberType == MemberTypes.Property && !IsIndexer((PropertyInfo)member),
-                                member => member.MemberType == MemberTypes.Event,
-                                member => IsMethodSpecial(member, special: false, equal: false, "Finalize"),
-                                member => IsMethodSpecial(member, special: true , equal: false, "op_Implicit", "op_Explicit"),
-                                member => IsMethodSpecial(member, special: true , equal: true , "op_Implicit", "op_Explicit"),
-                                member => member.MemberType == MemberTypes.NestedType
-                            };
-                            int noBlankLineIndex = 4; // NOTE: This is for removing blank line between indexers and properties
-
-                            static bool IsMethodSpecial(MemberInfo member, bool special, bool equal, params string[] names)
-                            {
-                                MethodInfo method = member as MethodInfo;
-                                if (method == null || method.IsSpecialName != special)
-                                    return false;
-
-                                foreach (string name in names)
-                                    if (name == method.Name)
-                                        return equal;
-                                return !equal;
-                            }
-
-                            // NOTE: After some profiling, iterating through the array multiple times is slightly faster than sorting
-                            MemberInfo[] members = type.GetMembers(flags);
-                            bool isPreviousEmpty = true;
-                            int oldIndex = -1;
-                            for (int i = 0; i < groupTable.Length; ++i)
-                            {
-                                bool isEmpty = true;
-                                foreach (MemberInfo mem in members)
+                                bool success = groupTable[i](mem);
+                                if (success)
                                 {
-                                    StartTimer(ProfileType.SortType);
-                                    bool success = groupTable[i](mem);
-                                    EndTimer(ProfileType.SortType);
-                                    if (success)
+                                    int length = valueBuilder.Length;
+                                    Type currentType = mem.MemberType == MemberTypes.NestedType ? (Type)mem : type;
+                                    NameCollisionData.ScopeType(currentType, () => AppendMemberDefinition(valueBuilder, mem, indent + 1));
+                                    if (isEmpty && valueBuilder.Length > length)
                                     {
-                                        int length = valueBuilder.Length;
-                                        Type currentType = mem.MemberType == MemberTypes.NestedType ? (Type)mem : type;
-                                        NameCollisionData.ScopeType(currentType, () => AppendMemberDefinition(valueBuilder, mem, indent + 1));
-                                        StartTimer(ProfileType.InsertNewline);
-                                        if (isEmpty && valueBuilder.Length > length)
-                                        {
-                                            if (!isPreviousEmpty && !(noBlankLineIndex == i && oldIndex == i - 1))
-                                                valueBuilder.Insert(length, '\n');
-                                            isPreviousEmpty = isEmpty = false;
-                                            oldIndex = i;
-                                        }
-                                        EndTimer(ProfileType.InsertNewline);
+                                        if (!isPreviousEmpty && !(noBlankLineIndex == i && oldIndex == i - 1))
+                                            valueBuilder.Insert(length, '\n');
+                                        isPreviousEmpty = isEmpty = false;
+                                        oldIndex = i;
                                     }
                                 }
                             }
-
-                            valueBuilder.AppendIndent("}", indent);
-                        } break;
+                        }
+                        
+                        valueBuilder.AppendIndent("}", indent);
+                    }
+                    break;
                 }
-
+                
                 value = valueBuilder.ToString();
-
+                
                 void AppendArrayValue<T>(T[] array, string start, string end, Action<StringBuilder, T> each)
                 {
                     AppendArray(valueBuilder, array, start, end, element => each(valueBuilder, element));
                     GetGenericConstraints(GetGenericArguments(member), (constraintTypes, parameter) =>
-                    {
-                        List<string> constraints = new List<string>(constraintTypes.Length + 2);
-                        bool hasStruct = false;
-                        bool hasUnmanaged = HasAttribute(parameter.CustomAttributes, unmanagedAttribute);
-
-                        foreach (Type constraint in constraintTypes)
-                        {
-                            if (constraint == typeof(ValueType))
-                                hasStruct = true;
-                            else
-                                constraints.Add(GetMemberName(constraint));
-                        }
-
-                        // NOTE: class, struct, unmanaged, notnull, and default can't be combined (C# 9 has `default` constraint)
-                        // unmanaged is also struct, struct is also new() and NotNullableValueTypeConstraint
-                        // https://learn.microsoft.com/en-us/dotnet/csharp/programming-guide/generics/constraints-on-type-parameters
-                        if (hasUnmanaged)
-                            constraints.Add("unmanaged");
-                        else if (hasStruct)
-                            constraints.Add("struct");
-                        else
-                        {
-                            GenericParameterAttributes attribute = parameter.GenericParameterAttributes;
-                            if ((attribute & GenericParameterAttributes.ReferenceTypeConstraint) != 0)
-                                constraints.Add("class");
-                            if ((attribute & GenericParameterAttributes.DefaultConstructorConstraint) != 0)
-                                constraints.Add("new()");
-                        }
-
-                        // NOTE: This doesn't handle the `notnull` constraint
-                        // because the documentation is fuzzy and I don't ever use nor care about nullable context
-
-                        AppendArray(valueBuilder, constraints, $" where {parameter.Name} : ", null, str => valueBuilder.Append(str));
-                    });
+                                          {
+                                              List<string> constraints = new List<string>(constraintTypes.Length + 2);
+                                              bool hasStruct = false;
+                                              bool hasUnmanaged = HasAttribute(parameter.CustomAttributes, unmanagedAttribute);
+                                              
+                                              foreach (Type constraint in constraintTypes)
+                                              {
+                                                  if (constraint == typeof(ValueType))
+                                                      hasStruct = true;
+                                                  else
+                                                      constraints.Add(GetMemberName(constraint));
+                                              }
+                                              
+                                              // NOTE: class, struct, unmanaged, notnull, and default can't be combined (C# 9 has `default` constraint)
+                                              // unmanaged is also struct, struct is also new() and NotNullableValueTypeConstraint
+                                              // https://learn.microsoft.com/en-us/dotnet/csharp/programming-guide/generics/constraints-on-type-parameters
+                                              if (hasUnmanaged)
+                                                  constraints.Add("unmanaged");
+                                              else if (hasStruct)
+                                                  constraints.Add("struct");
+                                              else
+                                              {
+                                                  GenericParameterAttributes attribute = parameter.GenericParameterAttributes;
+                                                  if ((attribute & GenericParameterAttributes.ReferenceTypeConstraint) != 0)
+                                                      constraints.Add("class");
+                                                  if ((attribute & GenericParameterAttributes.DefaultConstructorConstraint) != 0)
+                                                      constraints.Add("new()");
+                                              }
+                                              
+                                              // NOTE: This doesn't handle the `notnull` constraint
+                                              // because the documentation is fuzzy and I don't ever use nor care about nullable context
+                                              
+                                              AppendArray(valueBuilder, constraints, $" where {parameter.Name} : ", null, str => valueBuilder.Append(str));
+                                          });
                 }
             }
-
+            
             StringBuilder builder = _builder;
-
+            
             builder.Append(attributes);
             builder.AppendIndent(null, indent);
             bool isFinalizer = name[0] == '~';
@@ -1111,14 +1270,14 @@ public class GameManager : MonoBehaviour
                 if (modifier != null)
                     builder.Append(modifier).Append(' ');
             }
-
+            
             if (!isParentEnum && !isFinalizer && declare != null)
                 builder.Append(declare).Append(' ');
-
+            
             builder.Append(name);
             if (value != null)
                 builder.Append(value);
-
+            
             if (member.MemberType != MemberTypes.Property && (type == null || isDelegate))
             {
                 if (!isParentEnum)
@@ -1127,38 +1286,38 @@ public class GameManager : MonoBehaviour
                     builder.Append(',');
             }
             builder.Append('\n');
-
+            
             static void AppendAccessModifier(StringBuilder builder, AccessModifier access) => builder.Append(access.CamelCase().ToLower()).Append(' ');
         }
-
+        
         static AccessModifier GetMethodAccess(MethodBase method)
         {
-            if (method.IsPublic)            return AccessModifier.Public;
-            if (method.IsFamilyOrAssembly)  return AccessModifier.ProtectedInternal;
-            if (method.IsFamily)            return AccessModifier.Protected;
-            if (method.IsAssembly)          return AccessModifier.Internal;
+            if (method.IsPublic) return AccessModifier.Public;
+            if (method.IsFamilyOrAssembly) return AccessModifier.ProtectedInternal;
+            if (method.IsFamily) return AccessModifier.Protected;
+            if (method.IsAssembly) return AccessModifier.Internal;
             if (method.IsFamilyAndAssembly) return AccessModifier.PrivateProtected;
-            if (method.IsPrivate)           return AccessModifier.Private;
+            if (method.IsPrivate) return AccessModifier.Private;
             return AccessModifier.None;
         }
         static string GetPrimitiveTypeName(Type type)
         {
-            if (type == typeof(bool   )) return "bool";
-            if (type == typeof(byte   )) return "byte";
-            if (type == typeof(sbyte  )) return "sbyte";
-            if (type == typeof(short  )) return "short";
-            if (type == typeof(ushort )) return "ushort";
-            if (type == typeof(int    )) return "int";
-            if (type == typeof(uint   )) return "uint";
-            if (type == typeof(long   )) return "long";
-            if (type == typeof(ulong  )) return "ulong";
-            if (type == typeof(char   )) return "char";
+            if (type == typeof(bool)) return "bool";
+            if (type == typeof(byte)) return "byte";
+            if (type == typeof(sbyte)) return "sbyte";
+            if (type == typeof(short)) return "short";
+            if (type == typeof(ushort)) return "ushort";
+            if (type == typeof(int)) return "int";
+            if (type == typeof(uint)) return "uint";
+            if (type == typeof(long)) return "long";
+            if (type == typeof(ulong)) return "ulong";
+            if (type == typeof(char)) return "char";
             if (type == typeof(decimal)) return "decimal";
-            if (type == typeof(double )) return "double";
-            if (type == typeof(float  )) return "float";
-            if (type == typeof(string )) return "string";
-            if (type == typeof(object )) return "object";
-            if (type == typeof(void   )) return "void";
+            if (type == typeof(double)) return "double";
+            if (type == typeof(float)) return "float";
+            if (type == typeof(string)) return "string";
+            if (type == typeof(object)) return "object";
+            if (type == typeof(void)) return "void";
             return null;
         }
         static string GetNameWithoutGeneric(string name)
@@ -1168,36 +1327,36 @@ public class GameManager : MonoBehaviour
                 name = name.Substring(0, index);
             return name;
         }
-
-        static Type     GetElementType(Type type, out int arrayCount, out int pointerCount, out Type elementType)
+        
+        static Type GetElementType(Type type, out int arrayCount, out int pointerCount, out Type elementType)
         {
             if (type.IsByRef)
                 type = type.GetElementType();
-
+            
             // NOTE: int*[] is valid, while int[]* is not
             for (arrayCount = 0; type.IsArray; ++arrayCount)
                 type = type.GetElementType();
             for (pointerCount = 0; type.IsPointer; ++pointerCount)
                 type = type.GetElementType();
-
+            
             elementType = type;
             if (type.IsGenericType)
                 type = type.GetGenericTypeDefinition();
             return type;
         }
-        static Type[]   GetBaseTypes(Type type)
+        static Type[] GetBaseTypes(Type type)
         {
             Type[] interfaces = type.IsEnum ? new Type[0] : type.GetInterfaces();
             bool hasBaseType = type.BaseType != null && type.BaseType != typeof(object) && !type.IsValueType;
             List<Type> types = new List<Type>(interfaces.Length + (hasBaseType ? 1 : 0));
-
+            
             if (hasBaseType)
                 types.Add(type.BaseType);
-
+            
             Type[] baseInterfaces = hasBaseType ? type.BaseType.GetInterfaces() : new Type[0];
             Func<Type, bool> match = itf => !Array.Exists(baseInterfaces, t => t == itf);
             Array.Sort(baseInterfaces, (a, b) => string.Compare(a.Name, b.Name));
-
+            
             // NOTE: This only display "implemented" interfaces, not "declared" interfaces
             // Because of that, it won't work for inherit/empty interfaces and inherit classes that don't override the interface's members
             // Afaik, C# reflection isn't powerful enough to do that
@@ -1206,17 +1365,17 @@ public class GameManager : MonoBehaviour
             /*if (!type.IsInterface)
                 match = itf => Array.Exists(type.GetInterfaceMap(itf).TargetMethods,
                         method => method.DeclaringType == type && !(method.IsVirtual && method.GetBaseDefinition() != method));*/
-
+            
             foreach (Type itf in interfaces)
                 if (match(itf))
-                    types.Add(itf);
-
+                types.Add(itf);
+            
             return types.ToArray();
         }
-        static Type[]   GetGenericArguments(MemberInfo member)
+        static Type[] GetGenericArguments(MemberInfo member)
         {
             Type[] args = new Type[0];
-
+            
             Type type = member as Type;
             if (type?.IsGenericType == true)
             {
@@ -1231,7 +1390,7 @@ public class GameManager : MonoBehaviour
                     args = nestedArgs;
                 }
             }
-
+            
             // void DoA<T>() { }             definition-generic-containsParameters
             // DoA<int>();                   generic (but nested members will never have this case)
             // class A<T> { void DoA() { } } containsParameters (The Invoke method of a delegate type is this case)
@@ -1240,7 +1399,7 @@ public class GameManager : MonoBehaviour
             MethodBase method = member as MethodBase;
             if (method?.IsGenericMethod == true)
                 args = method.GetGenericArguments();
-
+            
             return args;
         }
         static Type[][] GetGenericConstraints(Type[] parameters, Action<Type[], Type> callback = null)
@@ -1256,74 +1415,76 @@ public class GameManager : MonoBehaviour
             }
             return constraints;
         }
-
+        
         static string GetMemberName(MemberInfo member, MemberNameMode mode = MemberNameMode.Default, IList<string> tupleNames = null)
         {
             string name = member.Name;
             Type type = member as Type;
-
+            
             Debug.Assert(mode == MemberNameMode.IsDecl || type != null, member + ": " + mode);
-
+            
             // https://stackoverflow.com/questions/19788010/which-c-sharp-type-names-are-special
             switch (member.MemberType)
             {
                 case MemberTypes.Constructor: name = GetNameWithoutGeneric(member.DeclaringType.Name); break;
                 case MemberTypes.Method:
+                {
+                    MethodBase method = (MethodBase)member;
+                    if (!method.IsSpecialName)
                     {
-                        MethodBase method = (MethodBase)member;
-                        if (!method.IsSpecialName)
-                        {
-                            if (method.Name == "Finalize" && IsMethodOverride((MethodInfo)method))
-                                name = "~" + GetNameWithoutGeneric(member.DeclaringType.Name);
-                            else if (method.IsGenericMethod) // NOTE: operators, accessors, finalizer, and constructors can't be generic
-                                name = GetGenericMethodName(method);
-                        }
-
-                        // https://stackoverflow.com/questions/11113259/how-to-call-custom-operator-with-reflection
-                        else if (member.Name == "op_UnaryPlus"         ) name = "operator +";
-                        else if (member.Name == "op_UnaryNegation"     ) name = "operator -";
-                        else if (member.Name == "op_Increment"         ) name = "operator ++";
-                        else if (member.Name == "op_Decrement"         ) name = "operator --";
-                        else if (member.Name == "op_LogicalNot"        ) name = "operator !";
-                        else if (member.Name == "op_Addition"          ) name = "operator +";
-                        else if (member.Name == "op_Subtraction"       ) name = "operator -";
-                        else if (member.Name == "op_Multiply"          ) name = "operator *";
-                        else if (member.Name == "op_Division"          ) name = "operator /";
-                        else if (member.Name == "op_BitwiseAnd"        ) name = "operator &";
-                        else if (member.Name == "op_BitwiseOr"         ) name = "operator |";
-                        else if (member.Name == "op_ExclusiveOr"       ) name = "operator ^";
-                        else if (member.Name == "op_OnesComplement"    ) name = "operator ~";
-                        else if (member.Name == "op_Equality"          ) name = "operator ==";
-                        else if (member.Name == "op_Inequality"        ) name = "operator !=";
-                        else if (member.Name == "op_LessThan"          ) name = "operator <";
-                        else if (member.Name == "op_GreaterThan"       ) name = "operator >";
-                        else if (member.Name == "op_LessThanOrEqual"   ) name = "operator <=";
-                        else if (member.Name == "op_GreaterThanOrEqual") name = "operator >=";
-                        else if (member.Name == "op_LeftShift"         ) name = "operator <<";
-                        else if (member.Name == "op_RightShift"        ) name = "operator >>";
-                        else if (member.Name == "op_Modulus"           ) name = "operator %";
-                        else if (member.Name == "op_True"              ) name = "operator true";
-                        else if (member.Name == "op_False"             ) name = "operator false";
-
-                        else if (member.Name == "op_Implicit" || member.Name == "op_Explicit")
-                        {
-                            type = ((MethodInfo)method).ReturnType;
-                            mode = MemberNameMode.Default;
-                        }
-                    } break;
+                        if (method.Name == "Finalize" && IsMethodOverride((MethodInfo)method))
+                            name = "~" + GetNameWithoutGeneric(member.DeclaringType.Name);
+                        else if (method.IsGenericMethod) // NOTE: operators, accessors, finalizer, and constructors can't be generic
+                            name = GetGenericMethodName(method);
+                    }
+                    
+                    // https://stackoverflow.com/questions/11113259/how-to-call-custom-operator-with-reflection
+                    else if (member.Name == "op_UnaryPlus") name = "operator +";
+                    else if (member.Name == "op_UnaryNegation") name = "operator -";
+                    else if (member.Name == "op_Increment") name = "operator ++";
+                    else if (member.Name == "op_Decrement") name = "operator --";
+                    else if (member.Name == "op_LogicalNot") name = "operator !";
+                    else if (member.Name == "op_Addition") name = "operator +";
+                    else if (member.Name == "op_Subtraction") name = "operator -";
+                    else if (member.Name == "op_Multiply") name = "operator *";
+                    else if (member.Name == "op_Division") name = "operator /";
+                    else if (member.Name == "op_BitwiseAnd") name = "operator &";
+                    else if (member.Name == "op_BitwiseOr") name = "operator |";
+                    else if (member.Name == "op_ExclusiveOr") name = "operator ^";
+                    else if (member.Name == "op_OnesComplement") name = "operator ~";
+                    else if (member.Name == "op_Equality") name = "operator ==";
+                    else if (member.Name == "op_Inequality") name = "operator !=";
+                    else if (member.Name == "op_LessThan") name = "operator <";
+                    else if (member.Name == "op_GreaterThan") name = "operator >";
+                    else if (member.Name == "op_LessThanOrEqual") name = "operator <=";
+                    else if (member.Name == "op_GreaterThanOrEqual") name = "operator >=";
+                    else if (member.Name == "op_LeftShift") name = "operator <<";
+                    else if (member.Name == "op_RightShift") name = "operator >>";
+                    else if (member.Name == "op_Modulus") name = "operator %";
+                    else if (member.Name == "op_True") name = "operator true";
+                    else if (member.Name == "op_False") name = "operator false";
+                    
+                    else if (member.Name == "op_Implicit" || member.Name == "op_Explicit")
+                    {
+                        type = ((MethodInfo)method).ReturnType;
+                        mode = MemberNameMode.Default;
+                    }
+                }
+                break;
                 case MemberTypes.Property:
-                    {
-                        // NOTE: For some reason, C# doesn't mark a indexer name as special, even thought it's always "Item"
-                        if (IsIndexer((PropertyInfo)member))
-                            name = "this";
-                    } break;
+                {
+                    // NOTE: For some reason, C# doesn't mark a indexer name as special, even thought it's always "Item"
+                    if (IsIndexer((PropertyInfo)member))
+                        name = "this";
+                }
+                break;
             }
-
+            
             if (type != null) // NOTE: Only true for conversion operators and (nested)types
             {
                 Debug.Assert(name == member.Name, "Name: " + name + " Member: " + member.Name + " Type: " + type);
                 Type definitionType = GetElementType(type, out int arrayCount, out int pointerCount, out Type elementType);
-
+                
                 if (mode == MemberNameMode.IsDecl)
                 {
                     if (elementType.IsGenericType)
@@ -1340,12 +1501,10 @@ public class GameManager : MonoBehaviour
                     else
                     {
                         name = elementType.Name;
-
-                        StartTimer(ProfileType.FilterType);
+                        
                         if (NameCollisionData.Contains(definitionType) == true)
                             name = HandleNameCollision(elementType.GetGenericArguments(), definitionType, mode == MemberNameMode.BaseType);
-                        EndTimer(ProfileType.FilterType);
-
+                        
                         // NOTE: Currently, mode only equals to NoAttributePostfix when the type is an attribute
                         // If I ever run this codepath in other cases, I need to check if the type is an attribute here
                         if (mode == MemberNameMode.NoAttributePostfix && name.EndsWith("Attribute"))
@@ -1365,15 +1524,15 @@ public class GameManager : MonoBehaviour
                     name = builder.ToString();
                 }
             }
-
+            
             return name;
-
+            
             static string HandleNameCollision(Type[] currentArgs, Type definitionType, bool isBaseType)
             {
                 string name = definitionType.FullName.Replace('+', '.');
                 Type targetType = NameCollisionData.GetCurrentType();
                 Type[] targetArgs = targetType.GetGenericArguments();
-
+                
                 // NOTE: The base types of the current class are searched from the outer class first,
                 // while all its members (including its attributes) start from itself.
                 // class A
@@ -1387,7 +1546,7 @@ public class GameManager : MonoBehaviour
                 // So set the target type to its parent here (if it's nested) AFTER getting the correct arguments
                 if (isBaseType && targetType.IsNested)
                     targetType = targetType.DeclaringType;
-
+                
                 definitionType = GetSharedParentType(definitionType, targetType, out Type sharedParent);
                 if (sharedParent != null)
                 {
@@ -1397,11 +1556,11 @@ public class GameManager : MonoBehaviour
                         int startIndex = endIndex - GetGenericArguments(sharedParent).Length;
                         for (int i = startIndex; i < endIndex && definitionType != sharedParent; ++i)
                             if (currentArgs[i] != targetArgs[i])
-                                definitionType = sharedParent;
+                            definitionType = sharedParent;
                         endIndex = startIndex;
                     }
                 }
-
+                
                 for (; definitionType != null; definitionType = definitionType.DeclaringType)
                 {
                     if (!HasNameCollision(definitionType, targetType))
@@ -1411,24 +1570,24 @@ public class GameManager : MonoBehaviour
                         break;
                     }
                 }
-
+                
                 return name;
-
+                
                 static Type GetSharedParentType(Type type, Type currentType, out Type parentType)
                 {
                     Type result = type;
                     int i = 0;
                     string[] names = type.FullName.Substring((type.Namespace?.Length ?? -1) + 1).Split('+');
-
+                    
                     if (type.Namespace == currentType.Namespace)
                     {
                         string[] currentNames = currentType.FullName.Substring((type.Namespace?.Length ?? -1) + 1).Split('+');
                         int length = Mathf.Min(names.Length, currentNames.Length);
                         for (; i < length; ++i)
                             if (names[i] != currentNames[i])
-                                break;
+                            break;
                     }
-
+                    
                     // NOTE: result will be null if i == 0 (when the two types don't share the same parent)
                     Type oneBeforeFinalType = null;
                     for (; i < names.Length; ++i)
@@ -1437,15 +1596,15 @@ public class GameManager : MonoBehaviour
                             oneBeforeFinalType = result;
                         result = result.DeclaringType;
                     }
-
+                    
                     parentType = result;
                     if (result != type)
                         result = oneBeforeFinalType;
-
+                    
                     Debug.Assert(result != null);
                     return result;
                 }
-
+                
                 static bool HasNameCollision(Type type, Type targetType)
                 {
                     bool collide = false;
@@ -1453,14 +1612,14 @@ public class GameManager : MonoBehaviour
                     int score = GetNamespaceScore(type, targetType);
                     Debug.Assert(targetType != null, "Target type is null for " + type);
                     const int failedDistanceValue = 1 << 16; // Some high number
-
+                    
                     if (currentDistance != 0)
                     {
                         foreach (Type testType in NameCollisionData.GetCollideTypes(type.Name))
                         {
                             // NOTE: Sometimes the types are the same but was referenced from different assemblies so check for fullname instead
                             if (testType.FullName == type.FullName) continue;
-
+                            
                             if (NameCollisionData.CheckNamespace(testType.Namespace, true))
                             {
                                 int testDistance = GetDistanceScore(testType, targetType);
@@ -1468,33 +1627,33 @@ public class GameManager : MonoBehaviour
                                 else if (testDistance == currentDistance)
                                 {
                                     Debug.Assert(testDistance == failedDistanceValue,
-                                        $"{type.FullName}: {currentDistance}, {testType.FullName}, Target: {targetType}");
+                                                 $"{type.FullName}: {currentDistance}, {testType.FullName}, Target: {targetType}");
                                     if (!testType.IsNested)
                                     {
                                         int testScore = GetNamespaceScore(testType, targetType);
                                         if (testScore >= score)
                                             collide = true;
                                         Debug.Assert(score != testScore || score == 0,
-                                            $"{type.FullName}: {score}, {testType.FullName}: {testScore}, Target: {targetType}");
+                                                     $"{type.FullName}: {score}, {testType.FullName}: {testScore}, Target: {targetType}");
                                     }
                                 }
                             }
-
+                            
                             if (collide)
                                 break;
                         }
                     }
-
+                    
                     return collide;
-
+                    
                     static int GetDistanceScore(Type type, Type targetType)
                     {
                         for (int i = 0; targetType != null; ++i, targetType = targetType.DeclaringType)
                             if (targetType == type || targetType == type.DeclaringType)
-                                return i;
+                            return i;
                         return failedDistanceValue;
                     }
-
+                    
                     static int GetNamespaceScore(Type type, Type targetType)
                     {
                         int score = 0;
@@ -1504,25 +1663,25 @@ public class GameManager : MonoBehaviour
                         string[] targetNamespaces = targetType.Namespace?.Split('.');
                         if (namespaces != null && targetNamespaces != null && namespaces.Length <= targetNamespaces.Length)
                             for (; score < namespaces.Length; ++score)
-                                if (namespaces[score] != targetNamespaces[score])
-                                    return 0;
+                            if (namespaces[score] != targetNamespaces[score])
+                            return 0;
                         return score;
                     }
                 }
             }
-
+            
             static string GetGenericName(IList<Type> args, string name, Action<StringBuilder, Type> action, string open = "<", string close = ">")
             {
                 StringBuilder builder = new StringBuilder(name);
                 AppendArray(builder, args, open, close, type => action(builder, type));
                 return builder.ToString();
             }
-
+            
             string GetGenericMethodName(MethodBase method) => GetGenericName(GetGenericArguments(method), method.Name,
-                (builder, parameter) => AppendGenericParameter(builder, parameter, tupleNames));
-
+                                                                             (builder, parameter) => AppendGenericParameter(builder, parameter, tupleNames));
+            
             string GetNullabeTypeName(Type type) => GetMemberName(GetGenericArguments(type)[0], mode) + "?";
-
+            
             string GetTupleTypeName(Type type)
             {
                 Action<StringBuilder, Type> action = (sb, t) => AppendMemberName(sb, t);
@@ -1539,7 +1698,7 @@ public class GameManager : MonoBehaviour
                         IList<string> names = nestedTupleNames.GetRange(argumentIndex, count);
                         AppendTupleName(builder, parameter, names);
                         argumentIndex += count;
-
+                        
                         if (currentTupleNames[parameterIndex] != null)
                             builder.Append(' ').Append(currentTupleNames[parameterIndex]);
                         ++parameterIndex;
@@ -1547,16 +1706,16 @@ public class GameManager : MonoBehaviour
                 }
                 return GetGenericName(GetGenericArguments(type), null, action, "(", ")");
             }
-
+            
             string GetGenericTypeName(Type type, string name)
             {
                 string[] names = name.Split('.');
                 Type[] genericArgs = type.GetGenericArguments();
-
+                
                 int i = names.Length - 1;
                 int genericIndex = genericArgs.Length;
                 int tupleIndex = tupleNames?.Count ?? 0;
-
+                
                 for (Type parent = type; i >= 0 && genericIndex >= 0; parent = parent.DeclaringType, --i)
                 {
                     if (parent == null)
@@ -1566,7 +1725,7 @@ public class GameManager : MonoBehaviour
                     }
                     ArraySegment<Type> args = (ArraySegment<Type>)genericArgs.AdvanceRange(ref genericIndex, GetGenericArguments(parent).Length);
                     IList<string> typeTupleNames = tupleIndex > 0 ? tupleNames.AdvanceRange(ref tupleIndex, GetTupleCount(args)) : null;
-
+                    
                     int parameterTupleIndex = 0;
                     Action<StringBuilder, Type> action = (builder, parameter) =>
                     {
@@ -1575,16 +1734,16 @@ public class GameManager : MonoBehaviour
                             parameterTupleNames = typeTupleNames.AdvanceRange(ref parameterTupleIndex, GetTupleCount(new Type[] { parameter }), true);
                         AppendGenericParameter(builder, parameter, parameterTupleNames);
                     };
-
+                    
                     if (mode == MemberNameMode.NoGenericParameter)
                         action = (sb, t) => { if (!t.IsGenericParameter) AppendMemberName(sb, t); };
-
+                    
                     // NOTE: Generic methods never have ` in their names, but generic types do (probably because of method overloading)
                     names[i] = GetGenericName(args, GetNameWithoutGeneric(names[i]), action);
                 }
                 return string.Join(".", names);
             }
-
+            
             static int GetTupleCount(IList<Type> genericArgs)
             {
                 int count = 0;
@@ -1598,12 +1757,12 @@ public class GameManager : MonoBehaviour
                 }
                 return count;
             }
-
+            
             void AppendGenericParameter(StringBuilder builder, Type type, IList<string> tupleNames)
             {
                 if (mode == MemberNameMode.IsDecl && type.IsGenericParameter)
                     if (AppendAttributes(builder, type.GetCustomAttributesData(), -1))
-                        builder.Append(' ');
+                    builder.Append(' ');
                 AppendTupleName(builder, type, tupleNames, mode);
             }
         }
@@ -1618,7 +1777,7 @@ public class GameManager : MonoBehaviour
                 modifier = "in ";
             else if (param.ParameterType.IsByRef)
                 modifier = "ref " + (HasAttribute(attributes, readonlyAttribute) ? "readonly " : "");
-
+            
             if (HasAttribute(param.Member.CustomAttributes, extensionAttribute) && param.Position == 0)
                 modifier += "this ";
             return modifier;
@@ -1633,19 +1792,19 @@ public class GameManager : MonoBehaviour
         {
             return provider?.GetCustomAttribute<System.Runtime.CompilerServices.TupleElementNamesAttribute>()?.TransformNames;
         }
-
+        
         static void AppendMemberName(StringBuilder builder, Type type, ICustomAttributeProvider provider = null,
                                      MemberNameMode mode = MemberNameMode.Default) => AppendTupleName(builder, type, GetTupleNames(provider), mode);
         static void AppendTupleName(StringBuilder builder, Type type, IList<string> tupleNames, MemberNameMode mode = MemberNameMode.Default) =>
-                                    builder.Append(GetMemberName(type, mode, tupleNames));
-
+            builder.Append(GetMemberName(type, mode, tupleNames));
+        
         static void AppendParameter(StringBuilder builder, ParameterInfo param)
         {
             IList<CustomAttributeData> attributes = param.GetCustomAttributesData();
             if (AppendAttributes(builder, attributes, -1))
                 builder.Append(' ');
             builder.Append(GetParameterModifier(param, attributes));
-
+            
             Type paramType = param.ParameterType.IsByRef ? param.ParameterType.GetElementType() : param.ParameterType;
             AppendMemberName(builder, paramType, param);
             builder.Append(' ').Append(param.Name);
@@ -1660,33 +1819,33 @@ public class GameManager : MonoBehaviour
                 indent = 0;
                 terminator = null;
             }
-
+            
             bool hasAtt = false;
             foreach (CustomAttributeData attribute in data)
             {
                 if (Array.Exists(ignoredTypes, ignore => ignore == attribute.AttributeType.FullName))
                     continue;
-
+                
                 builder.AppendIndent("[", indent);
                 if (target != null)
                     builder.Append(target).Append(": ");
                 builder.Append(GetMemberName(attribute.AttributeType, MemberNameMode.NoAttributePostfix));
-
+                
                 List<CustomAttributeTypedArgument> arguments = GetAttributeArguments(attribute);
                 int constructorCount = attribute.ConstructorArguments.Count;
                 int index = 0;
                 AppendArray(builder, arguments, "(", ")", arg =>
-                {
-                    if (index >= constructorCount)
-                        builder.Append(attribute.NamedArguments[index - constructorCount].MemberName).Append(" = ");
-                    AppendDefaultValue(builder, arg.ArgumentType, arg.Value);
-                    ++index;
-                });
-
+                            {
+                                if (index >= constructorCount)
+                                    builder.Append(attribute.NamedArguments[index - constructorCount].MemberName).Append(" = ");
+                                AppendDefaultValue(builder, arg.ArgumentType, arg.Value);
+                                ++index;
+                            });
+                
                 builder.Append(']').Append(terminator);
                 hasAtt = true;
             }
-
+            
             return hasAtt;
         }
         static void AppendDefaultValue(StringBuilder builder, Type valueType, object value)
@@ -1701,8 +1860,8 @@ public class GameManager : MonoBehaviour
                 if (value is ReadOnlyCollection<CustomAttributeTypedArgument> argArray)
                 {
                     builder.Append($"new[] {{");
-                    AppendArray(builder, argArray, null, null, arg => AppendDefaultValue(builder, arg.ArgumentType, arg.Value));
-                    builder.Append(" }");
+                                                                                                                                            AppendArray(builder, argArray, null, null, arg => AppendDefaultValue(builder, arg.ArgumentType, arg.Value));
+                                                                                                                                            builder.Append(" }");
                 }
                 else if (valueType == typeof(string))
                     builder.Append($"\"{GameUtils.EscapeString(str, "\'")}\"");
@@ -1712,10 +1871,10 @@ public class GameManager : MonoBehaviour
                     builder.Append($"typeof({GetMemberName((Type)value, MemberNameMode.NoGenericParameter)})");
                 else
                     builder.Append(str);
-
+                
                 float? flt = null;
                 try { flt = Convert.ToSingle(value); } catch (Exception) { }
-
+                
                 if (flt == null || Math.Abs((float)flt % 1) <= float.Epsilon) { }
                 else if (valueType == typeof(float))
                     builder.Append("F");
@@ -1736,7 +1895,7 @@ public class GameManager : MonoBehaviour
             }
             builder.Append(end);
         }
-
+        
         static bool IsMethodOverride(MethodInfo method) => method.GetBaseDefinition() != method;
         static bool IsIndexer(PropertyInfo property) => property.GetIndexParameters().Length > 0;
         static bool IsTuple(Type type) => GetNameWithoutGeneric(type.Name) == "ValueTuple" && type.Namespace == "System" && type.IsGenericType;
@@ -1744,49 +1903,12 @@ public class GameManager : MonoBehaviour
         {
             foreach (var attribute in attributes)
                 if (attribute.AttributeType.FullName == fullname)
-                    return true;
+                return true;
             return false;
-        }
-
-        string message = "Search complete";
-        UnityEngine.Object context = null;
-        if (generateFile)
-        {
-            string path = "Assets/Files/types.txt";
-            System.IO.File.WriteAllText(path, builder.ToString());
-            UnityEditor.AssetDatabase.SaveAssets();
-            UnityEditor.AssetDatabase.Refresh();
-            message = "File is created at " + path;
-            context = UnityEditor.AssetDatabase.LoadAssetAtPath<TextAsset>(path);
-        }
-        message += " after";
-        float total = watch.ElapsedMilliseconds;
-        foreach (ProfileType profiler in timers.Keys)
-            message += $" {profiler.CamelCase()}: {timers[profiler]}";
-        float collision = timers[ProfileType.InitDatabase] + timers[ProfileType.InitNamespaces] + timers[ProfileType.FilterType];
-        message += $" Total: {total}ms, Handle Collision: {collision / total * 100f}%, Sort: {timers[ProfileType.SortType] / total * 100f}%, " +
-            $"Type: {NameCollisionData.database.Count}";
-        message += GameUtils.GetAllString(NameCollisionData.unusedAttributes, "\nUnused Attribtes: ");
-        Debug.Log(message, context);
-
-        static void SaveArray<T>(StringBuilder builder, string title, T[] array, Func<T, string> each)
-        {
-            int startIndex = builder.Length;
-            builder.Append($"-------- {{{title}}}: {array.Length - 1,4} --------\n");
-            //System.Threading.Tasks.Task<string>[] tasks = new System.Threading.Tasks.Task<string>[array.Length];
-            for (int i = 0; i < array.Length; ++i)
-            {
-                //int j = i;
-                //tasks[j] = System.Threading.Tasks.Task.Run(() => each(array[j]));
-                builder.Append(each(array[i]));
-            }
-            //System.Threading.Tasks.Task.WaitAll(tasks);
-            //foreach (var task in tasks)
-            //    builder.Append(task.Result);
         }
     }
 #endif
-
+    
     // RANT: This function only gets called in LevelInfoPostProcess.cs and its job is to:
     // 1. Add 2 rule tiles at the 2 ends of a door line.
     // 2. Delete all the tiles that are at the door's tiles.
@@ -1806,13 +1928,13 @@ public class GameManager : MonoBehaviour
                     Vector3Int dir = door.DoorLine.GetDirectionVector();
                     tilemap.SetTile(door.DoorLine.From + room.Position - dir, ruleTile);
                     tilemap.SetTile(door.DoorLine.To + room.Position + dir, ruleTile);
-
+                    
                     foreach (Vector3Int doorTile in door.DoorLine.GetPoints())
                     {
                         Vector3Int pos = doorTile + room.Position;
                         tilemap.SetTile(pos, null);
                         Remove(tilemap, pos, -(Vector3Int)door.FacingDirection);
-
+                        
                         static void Remove(Tilemap tilemap, Vector3Int pos, Vector3Int removeDir)
                         {
                             pos += removeDir;
@@ -1826,13 +1948,13 @@ public class GameManager : MonoBehaviour
                 }
             }
         }
-
+        
         tilemap.CompressAndRefresh();
         this.rooms = rooms;
         GameManager.tilemap = tilemap;
         Debug.Log(tilemap);
     }
-
+    
     public static Tilemap GetTilemapFromRoom(Transform roomTransform)
     {
         return roomTransform.GetChild(0).GetChild(2).GetComponent<Tilemap>();
@@ -1854,13 +1976,13 @@ public class GameManager : MonoBehaviour
     {
         RaycastHit2D hitInfo = GameUtils.GroundCheck(pos, extents, dirY, Color.cyan);
         groundPos = Vector3Int.zero;
-        emptyPos  = Vector3Int.zero;
+        emptyPos = Vector3Int.zero;
         if (hitInfo)
         {
-            Vector3Int hitPosCeil  = QueryTiles(tilemap, hitInfo.point.ToVector2Int(true ).ToVector3Int(), true, 0, (int)dirY);
+            Vector3Int hitPosCeil = QueryTiles(tilemap, hitInfo.point.ToVector2Int(true).ToVector3Int(), true, 0, (int)dirY);
             Vector3Int hitPosFloor = QueryTiles(tilemap, hitInfo.point.ToVector2Int(false).ToVector3Int(), true, 0, (int)dirY);
             groundPos = Mathf.Abs(hitPosFloor.y - hitInfo.point.y) < Mathf.Abs(hitPosCeil.y - hitInfo.point.y) ? hitPosFloor : hitPosCeil;
-            emptyPos  = groundPos + new Vector3Int(0, -(int)dirY, 0);
+            emptyPos = groundPos + new Vector3Int(0, -(int)dirY, 0);
         }
         return hitInfo;
     }
@@ -1874,8 +1996,8 @@ public class GameManager : MonoBehaviour
             Vector3Int minGroundPos = QueryTiles(tilemap, hitPos, false, -1, 0);
             Vector3Int maxGroundPos = QueryTiles(tilemap, hitPos, false, +1, 0);
             
-            Vector3Int minWallPos   = QueryTiles(tilemap, empPos, true , -1, 0);
-            Vector3Int maxWallPos   = QueryTiles(tilemap, empPos, true , +1, 0);
+            Vector3Int minWallPos = QueryTiles(tilemap, empPos, true, -1, 0);
+            Vector3Int maxWallPos = QueryTiles(tilemap, empPos, true, +1, 0);
             
             if (dirY < 0)
             {
@@ -1916,31 +2038,36 @@ public class GameManager : MonoBehaviour
         mainCam = Camera.main;
         cameraEntity = mainCam.GetComponentInParent<Entity>();
         StartGameMode(startMode);
-
+        
         // Camera
         GameDebug.BindInput(new DebugInput
-        {
-            trigger = InputType.Debug_CameraShake, increase = InputType.Debug_ShakeIncrease, decrease = InputType.Debug_ShakeDecrease,
-            range = new RangedFloat(0, Enum.GetValues(typeof(ShakeMode)).Length - 1),
-            updateValue = (value, dir) => value + dir,
-            callback = mode => { GameDebug.Log((ShakeMode)mode); CameraSystem.instance.Shake((ShakeMode)mode, MathUtils.SmoothStart3); },
-        });
+                            {
+                                trigger = InputType.Debug_CameraShake,
+                                increase = InputType.Debug_ShakeIncrease,
+                                decrease = InputType.Debug_ShakeDecrease,
+                                range = new RangedFloat(0, Enum.GetValues(typeof(ShakeMode)).Length - 1),
+                                updateValue = (value, dir) => value + dir,
+                                callback = mode => { GameDebug.Log((ShakeMode)mode); CameraSystem.instance.Shake((ShakeMode)mode, MathUtils.SmoothStart3); },
+                            });
         GameDebug.BindInput(InputType.Debug_CameraShock, () => CameraSystem.instance.Shock(2));
         
         // Log
         GameDebug.BindInput(InputType.Debug_ToggleLog, () => GameDebug.ToggleLogger());
         GameDebug.BindInput(InputType.Debug_ClearLog, () => GameDebug.ClearLog());
-
+        
         // Time
         GameDebug.BindInput(new DebugInput
-        {
-            trigger = InputType.Debug_ResetTime, increase = InputType.Debug_FastTime, decrease = InputType.Debug_SlowTime,
-            value = 1f, range = new RangedFloat(.125f, 4f),
-            updateValue = (value, dir) => value * Mathf.Pow(2, dir),
-            changed = scale => { Time.timeScale = scale; GameDebug.Log(Time.timeScale); },
-            callback = _ => { Time.timeScale = 1; GameDebug.Log("Reset Time.timeScale!"); }
-        });
-
+                            {
+                                trigger = InputType.Debug_ResetTime,
+                                increase = InputType.Debug_FastTime,
+                                decrease = InputType.Debug_SlowTime,
+                                value = 1f,
+                                range = new RangedFloat(.125f, 4f),
+                                updateValue = (value, dir) => value * Mathf.Pow(2, dir),
+                                changed = scale => { Time.timeScale = scale; GameDebug.Log(Time.timeScale); },
+                                callback = _ => { Time.timeScale = 1; GameDebug.Log("Reset Time.timeScale!"); }
+                            });
+        
         // VFX
         GameDebug.BindInput(InputType.Debug_SpawnParticle, () => ParticleEffect.instance.SpawnParticle(ParticleType.Explosion, Vector2.zero, 1));
         GameDebug.BindInput(InputType.Debug_TestPlayerVFX, player.TestPlayerVFX);
@@ -2014,7 +2141,8 @@ public class GameManager : MonoBehaviour
             case GameMode.Main:
             {
                 AudioManager.PlayAudio(AudioType.Music_Main);
-            } break;
+            }
+            break;
             case GameMode.Play:
             {
                 {
@@ -2076,20 +2204,24 @@ public class GameManager : MonoBehaviour
                             if (player)
                                 Destroy(player.gameObject);
                         }
-                    } break;
+                    }
+                    break;
                     case BoundsType.Tilemap:
                     {
                         tilemap = level.tilemap.CompressAndRefresh();
                         defaultBounds = level.tilemap.cellBounds.ToBounds();
                         GameInput.TriggerEvent(GameEventType.NextRoom, null);
-                    } break;
+                    }
+                    break;
                     case BoundsType.Custom:
                     {
                         defaultBounds = new Bounds(Vector3.zero, level.boundsSize + mainCam.HalfSize() * 2);
                         GameInput.TriggerEvent(GameEventType.NextRoom, null);
-                    } break;
+                    }
+                    break;
                 }
-            } break;
+            }
+            break;
         }
         
         player = GameObject.FindGameObjectWithTag("Player")?.GetComponent<Entity>();

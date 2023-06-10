@@ -1,0 +1,32 @@
+version(2);
+project_name = "Vailoz";
+
+patterns = {
+    "*.c",
+    "*.cpp",
+    "*.cs",
+    "*.jai",
+    "*.h",
+    "*.m",
+    "*.mm",
+    "*.bat",
+    "*.sh",
+    "*.4coder",
+    "*.txt",
+};
+blacklist_patterns = {
+    ".*",
+};
+
+load_paths_base = {
+    { ".", .relative = true, .recursive = true, },
+};
+load_paths = {
+    .win = load_paths_base,
+    .linux = load_paths_base,
+    .mac = load_paths_base,
+};
+
+reference_paths = {
+    "D:\\Documents\\Unity\\Decompile\\Temp\\",
+};
