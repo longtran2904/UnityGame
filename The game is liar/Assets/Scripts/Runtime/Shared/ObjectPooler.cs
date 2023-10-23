@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 
 public interface IPooledObject
@@ -131,9 +131,9 @@ public static class ObjectPooler
                 instance.SetActive(true);
                 
                 IPooledObject pooledObj = instance.GetComponent<IPooledObject>();
+#if false
                 System.Type objType = pooledObj.GetType();
-                //if (objType.GetCustomAttribute<SerializedPoolAttribute>() != null)
-                if (false)
+                if (objType.GetCustomAttribute<SerializedPoolAttribute>() != null)
                 {
                     Component component = instance.GetComponent(objType);
                     Component originalComponent = dictionary[type][0].GetComponent(objType);
@@ -151,6 +151,7 @@ public static class ObjectPooler
                     GameDebug.Log($"End serializing after: {depth} layer{(depth > 1 ? "s" : "")}. Elapsed Time: {watch.ElapsedMilliseconds}ms");
                     GameDebug.EndDebug();
                 }
+#endif
                 
                 // TODO: Assert that the default object isn't changing
                 pooledObj.OnObjectSpawn(dictionary[type][0]);

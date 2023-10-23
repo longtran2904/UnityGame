@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Edgar.GraphBasedGenerator.Grid2D;
 using UnityEngine;
 using UnityEngine.Tilemaps;

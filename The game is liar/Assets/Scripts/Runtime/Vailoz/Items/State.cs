@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using UnityEngine;
 
 public enum StatusType { Burn, Bleed, Poison, Freeze, Slow, Blind, Injured }

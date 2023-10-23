@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.IO;
 using System.Text;
@@ -74,7 +74,7 @@ public static class GameUtils
             return attributes[0] as T;
         return null;
     }*/
-
+    
     public static T GetCustomAttribute<T>(this System.Reflection.ICustomAttributeProvider provider, bool inherit = false) where T : Attribute
     {
         object[] attributes = provider.GetCustomAttributes(typeof(T), inherit);
@@ -139,12 +139,20 @@ public static class GameUtils
             if (isSerializable(data))
                 callback(data);
             else if (hasSerializable(data))
+            {
                 if (data.type.IsArray)
-                for (int i = 0, length = Mathf.Min(Array.ConvertAll(data.objs, array => ((Array)array).Length)); i < length; i++)
-                recursive(SerializeData.Create(data, () => Array.ConvertAll(data.objs, array => ((Array)array).GetValue(i)), index: i));
-            else
-                foreach (FieldInfo field in data.type.GetFields())
-                recursive(SerializeData.Create(data, () => Array.ConvertAll(data.objs, obj => obj == null ? null : field.GetValue(obj)), field));
+                {
+                    int length = Mathf.Min(Array.ConvertAll(data.objs, array => ((Array)array).Length));
+                    for (int i = 0; i < length; i++)
+                        recursive(SerializeData.Create(data, () => Array.ConvertAll(data.objs, array => ((Array)array).GetValue(i)), index: i));
+                }
+                else
+                {
+                    foreach (FieldInfo field in data.type.GetFields())
+                        recursive(SerializeData.Create(data,
+                                                       () => Array.ConvertAll(data.objs, obj => obj == null ? null : field.GetValue(obj)), field));
+                }
+            }
         }
     }
 #endregion
@@ -168,7 +176,7 @@ public static class GameUtils
     }
     
     public static string GetAllString<T>(System.Collections.Generic.IList<T> array, string prefix = "", string postfix = "", int indentLevel = 0, uint lineWidth = 1,
-                                      Func<T, int, string> toString = null, StringBuilder builder = null)
+                                         Func<T, int, string> toString = null, StringBuilder builder = null)
     {
         int arrayLength = array?.Count ?? 0;
         int predictLength = arrayLength > 0 ? (array[0]?.ToString().Length ?? 1) : 1;
@@ -204,30 +212,30 @@ public static class GameUtils
     {
         return System.Text.RegularExpressions.Regex.Replace(o.ToString(), "([a-z](?=[A-Z]|[0-9])|[A-Z](?=[A-Z][a-z]|[0-9])|[0-9](?=[^0-9]))", "$1 ");
     }
-
+    
     public static string EscapeString(string str, string ignoreEscape)
     {
         string[] unescapes = new string[]
         {
-                "\\", // NOTE: Must be the first element
-                "\'", "\"", "\0", "\a", "\b", "\f", "\n", "\r", "\t", "\v",
+            "\\", // NOTE: Must be the first element
+            "\'", "\"", "\0", "\a", "\b", "\f", "\n", "\r", "\t", "\v",
         };
         string[] escapes = new string[]
         {
-                "\\\\",
-                "\\\'", "\\\"", "\\0", "\\a", "\\b", "\\f", "\\n", "\\r", "\\t", "\\v",
+            "\\\\",
+            "\\\'", "\\\"", "\\0", "\\a", "\\b", "\\f", "\\n", "\\r", "\\t", "\\v",
         };
-
+        
         // NOTE: Create and use StringBuilder.Replace can be slightly faster, but will be slower than String.Replace when you call ToString
         // https://stackoverflow.com/questions/6524528/string-replace-vs-stringbuilder-replace
         for (int i = 0; i < unescapes.Length; ++i)
             if (unescapes[i] != ignoreEscape)
-                str = str.Replace(unescapes[i], escapes[i]);
+            str = str.Replace(unescapes[i], escapes[i]);
         return str;
     }
-    #endregion
-
-    #region Physics
+#endregion
+    
+#region Physics
     public static RaycastHit2D BoxCast(Vector2 pos, Vector2 size, Color color)
     {
         GameDebug.DrawBox(pos, size, color);
@@ -289,21 +297,37 @@ public static class GameUtils
         DrawGL(GL.LINES, color, a, b);
     }
     
+    private static Material glMat = null;
+    
+    public static void BeginGL()
+    {
+        if (!glMat)
+        {
+            GL.PushMatrix();
+            glMat = new Material(Shader.Find("Sprites/Default")) { hideFlags = HideFlags.HideAndDontSave };
+            glMat.SetPass(0);
+            //GL.LoadOrtho();
+        }
+        else Debug.LogError("Must call EndGL before calling another BeginGL");
+    }
+    
+    public static void EndGL()
+    {
+        if (glMat)
+        {
+            GL.PopMatrix();
+            UnityEngine.Object.DestroyImmediate(glMat);
+        }
+        else Debug.LogError("Must call BeginGL before calling another EndGL");
+    }
+    
     private static void DrawGL(int mode, Color color, params Vector3[] vertices)
     {
-        Material mat = new Material(Shader.Find("Sprites/Default")) { hideFlags = HideFlags.HideAndDontSave };
-        
-        GL.PushMatrix();
-        mat.SetPass(0);
-        GL.LoadOrtho();
         GL.Begin(mode);
         GL.Color(color);
         foreach (var vertex in vertices)
-        {
             GL.Vertex(vertex);
-        }
         GL.End();
-        GL.PopMatrix();
     }
     
     public static void SetMaterialBlock(SpriteRenderer sr, Action<MaterialPropertyBlock> func)
@@ -338,7 +362,7 @@ public static class GameUtils
     }
     
     // NOTE: Use this to destroy in the OnValidate or in the editor
-    public static IEnumerator DestroyInEditor(GameObject go)
+    public static IEnumerator DestroyInEditor(UnityEngine.Object go)
     {
         yield return new WaitForEndOfFrame();
         UnityEngine.Object.DestroyImmediate(go);
@@ -346,6 +370,14 @@ public static class GameUtils
 #endregion
     
 #region Coroutine
+    public static IEnumerator InvokeAfter(float delayTime, Action action, Func<bool> waitingCondition)
+    {
+        float duration = delayTime + Time.time;
+        while (Time.time <= duration && waitingCondition())
+            yield return null;
+        action();
+    }
+    
     public static Coroutine InvokeAfter(this MonoBehaviour behaviour, float delayTime, Action action, bool useRealTime = false)
     {
         if (behaviour != null && action != null)
@@ -368,16 +400,8 @@ public static class GameUtils
     public static Coroutine InvokeAfter(this MonoBehaviour behaviour, float delayTime, Action action, Func<bool> waitingCondition)
     {
         if (behaviour != null && action != null)
-            return behaviour.StartCoroutine(InvokeAfter());
+            return behaviour.StartCoroutine(InvokeAfter(delayTime, action, waitingCondition));
         return null;
-        
-        IEnumerator InvokeAfter()
-        {
-            float duration = delayTime + Time.time;
-            while (Time.time <= duration && waitingCondition())
-                yield return null;
-            action();
-        }
     }
     
     public static Coroutine InvokeAfterFrames(this MonoBehaviour behaviour, int frame, Action action)

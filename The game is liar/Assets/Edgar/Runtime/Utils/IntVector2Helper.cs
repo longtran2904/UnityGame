@@ -1,4 +1,4 @@
-﻿using Edgar.Geometry;
+using Edgar.Geometry;
 
 namespace Edgar.Unity
 {

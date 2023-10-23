@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Edgar.Geometry;
 using Edgar.GraphBasedGenerator.Common;
 using UnityEngine;

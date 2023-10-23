@@ -1,4 +1,4 @@
-//#define SCRIPTABLE_VFX
+#define NEW_VFX
 using System.Collections;
 using UnityEngine;
 
@@ -26,25 +26,6 @@ public enum EntityProperty
     AtEndOfMoveRegion,
     
     Count
-}
-
-public enum EntityState
-{
-    None,
-    
-    Jumping,
-    Falling,
-    Landing,
-    
-    StartMoving,
-    StopMoving,
-    
-    StartAttack,
-    StartCooldown,
-    
-    OnSpawn,
-    OnHit,
-    OnDeath,
 }
 
 public class Entity : MonoBehaviour, IPooledObject
@@ -154,13 +135,14 @@ public class Entity : MonoBehaviour, IPooledObject
     
     public IEnumerator UseAbility(EntityAbility ability, MoveType moveType, TargetType targetType, float speed)
     {
-        Debug.Log(ability.type);
         ability.flags.SetProperty(AbilityFlag.CanExecute, false);
         float cooldownTime = 0;
         this.moveType = MoveType.None;
         float timer = 0;
         ability.vfx.canStop = () => ability.flags.HasProperty(AbilityFlag.CanExecute);
+#if !NEW_VFX
         PlayVFX(ability.vfx);
+#endif
         while (timer < ability.interuptibleTime)
         {
             if (ability.flags.HasProperty(AbilityFlag.Interuptible))
@@ -185,13 +167,13 @@ public class Entity : MonoBehaviour, IPooledObject
                     targetDir = MathUtils.Sign(targetPos - (Vector2)transform.position) * new Vector2(-1, 1);
                 if (ability.flags.HasProperty(AbilityFlag.LockOnPlayerForEternity))
                 {
-                    testProperties[0].SetProperty(VFXProperty.StartTrailing, false);
                     StartFalling(false);
                     yield break;
                 }
             } break;
             case AbilityType.Teleport:
             {
+                Debug.Break();
                 float playerUp = GameManager.player.transform.up.y;
                 Vector3 destination;
                 {
@@ -209,7 +191,7 @@ public class Entity : MonoBehaviour, IPooledObject
                         Vector3 offset = new Vector3(offsetX, 0);
                         bool onGround = GameUtils.BoxCast(destination + offset - new Vector3(0, spriteExtents.y * playerUp),
                                                           new Vector2(spriteExtents.x, .1f), Color.yellow);
-                        bool insideWall = GameUtils.BoxCast(destination + offset + new Vector3(0, .1f * playerUp), sr.bounds.size, Color.green);
+                        bool insideWall = GameUtils.BoxCast(destination + offset + new Vector3(0, .1f * playerUp), data.sr.bounds.size, Color.green);
                         if (onGround && !insideWall)
                         {
                             destination.x += offsetX;
@@ -225,8 +207,7 @@ public class Entity : MonoBehaviour, IPooledObject
                 yield return null;
                 transform.position = destination;
                 CalculateMoveRegion();
-            }
-            break;
+            } break;
             case AbilityType.Explode:
             {
                 // NOTE: If the enemy die then it will be handled by the vfx system
@@ -248,7 +229,7 @@ public class Entity : MonoBehaviour, IPooledObject
         this.moveType = moveType;
         
         yield return null;
-        currentAbility = MathUtils.LoopIndex(currentAbility + 1, abilities.Length, true);
+        //currentAbility = MathUtils.LoopIndex(currentAbility + 1, abilities.Length, true);
         
         yield return new WaitForSeconds(cooldownTime);
         ability.flags.SetProperty(AbilityFlag.CanExecute, true);
@@ -277,7 +258,7 @@ public class Entity : MonoBehaviour, IPooledObject
     
     [Header("Stat")]
     public Property<EntityProperty> properties;
-    public Property<VFXProperty>[] testProperties;
+    public EntityType type;
     public EntityAbility[] abilities;
     private int currentAbility;
     
@@ -324,10 +305,6 @@ public class Entity : MonoBehaviour, IPooledObject
     public float jumpPressedRememberTime;
     private float jumpPressedRemember;
     
-    public AudioType footstepAudio;
-    public RangedFloat timeBtwFootsteps;
-    private float timeBtwFootstepsValue;
-    
     private Vector2 velocity;
     private Rigidbody2D rb;
     private Collider2D cd;
@@ -335,28 +312,28 @@ public class Entity : MonoBehaviour, IPooledObject
     private Vector2 targetDir;
     private Vector2 targetPos;
     private Vector2 offsetDir;
-    private EntityState state;
     
     [Header("Effects")]
     public Material whiteMat;
     public ParticleSystem leftDust;
     public ParticleSystem rightDust;
-    public VFXCollection vfx;
     public EntityVFX spawnVFX, deathVFX, hurtVFX;
     
-    private TMPro.TextMeshPro text;
-    private TrailRenderer trail;
-    private Animator anim;
+#if false
     private SpriteRenderer sr;
-    private Vector2 spriteExtents;
+    private Animator anim;
+    private TrailRenderer trail;
+    private TMPro.TextMeshPro text;
+#else
+    private VFXData data;
+#endif
+    [HideInInspector]
+    public Vector2 spriteExtents;
     
     public void OnObjectInit()
     {
         if (HasProperty(EntityProperty.UsePooling))
-        {
             Init();
-            deathVFX.done += () => gameObject.SetActive(false);
-        }
     }
     
     public void CustomInit()
@@ -409,11 +386,8 @@ public class Entity : MonoBehaviour, IPooledObject
             jumpPressedRememberTime = entity.jumpPressedRememberTime;
             jumpPressedRemember = 0;
             
-            timeBtwFootstepsValue = 0;
-            
             velocity = Vector2.zero;
             speedY = 0;
-            state = EntityState.OnSpawn;
             
             // NOTE: weaponStat, collisionTags, dRotate, maxFallingSPeed, spring, fallDir?
         }
@@ -425,11 +399,11 @@ public class Entity : MonoBehaviour, IPooledObject
         if (HasProperty(EntityProperty.DieAfterEffect))
         {
             float animTime = 0;
-            if (anim)
+            if (data.anim)
             {
-                sr.enabled = true;
-                AnimatorStateInfo state = anim.GetCurrentAnimatorStateInfo(0);
-                anim.Play(state.shortNameHash);
+                data.sr.enabled = true;
+                AnimatorStateInfo state = data.anim.GetCurrentAnimatorStateInfo(0);
+                data.anim.Play(state.shortNameHash);
                 animTime = state.length;
             }
             
@@ -443,7 +417,8 @@ public class Entity : MonoBehaviour, IPooledObject
             
             aliveTime = Mathf.Max(animTime, particleTime);
         }
-        aliveTime = Mathf.Max(aliveTime, HasProperty(EntityProperty.DieAfterMoveTime) ? moveTime : 0);
+        if (HasProperty(EntityProperty.DieAfterMoveTime))
+            aliveTime = Time.time + moveTime;
     }
     
     // Start is called before the first frame update
@@ -453,7 +428,6 @@ public class Entity : MonoBehaviour, IPooledObject
         {
             Init();
             OnObjectSpawn(null);
-            deathVFX.done += () => Destroy(this);
         }
     }
     
@@ -462,10 +436,16 @@ public class Entity : MonoBehaviour, IPooledObject
     {
         rb = GetComponent<Rigidbody2D>();
         cd = GetComponent<Collider2D>();
-        text = GetComponent<TMPro.TextMeshPro>();
-        trail = GetComponent<TrailRenderer>();
-        anim = GetComponent<Animator>();
-        sr = GetComponent<SpriteRenderer>();
+        
+        data = new VFXData
+        {
+            transform = transform,
+            sr = GetComponent<SpriteRenderer>(),
+            anim = GetComponent<Animator>(),
+            text = GetComponent<TMPro.TextMeshPro>(),
+            trail = GetComponent<TrailRenderer>(),
+        };
+        SpriteRenderer sr = data.sr;
         
         if (rb && maxFallingSpeed != 0)
         {
@@ -474,17 +454,9 @@ public class Entity : MonoBehaviour, IPooledObject
             rb.drag = drag;
         }
         if (whiteMat)
-            whiteMat = Instantiate(whiteMat);
+            data.whiteMat = Instantiate(whiteMat);
         if (sr)
             spriteExtents = sr.bounds.extents;
-        
-        if (HasProperty(EntityProperty.SpawnCellWhenDie))
-            deathVFX.done += () =>
-        {
-            int dropValue = valueRange.randomValue;
-            for (int i = 0; i < dropValue; i++)
-                ObjectPooler.Spawn(PoolType.Cell, transform.position);
-        };
         
         MoveType move = moveType;
         RotateType rotate = rotateType;
@@ -499,7 +471,6 @@ public class Entity : MonoBehaviour, IPooledObject
         if (spring != null && spring.f != 0)
             spring.Init(GameManager.player.transform.position.y);
         
-        state = EntityState.OnSpawn;
     }
     
     public void InitCamera(bool automatic, bool useSmoothDamp, Vector2 value, float waitTime)
@@ -539,7 +510,10 @@ public class Entity : MonoBehaviour, IPooledObject
     public void InitDamagePopup(int damage, bool isCritical)
     {
         targetDir = Vector2.one;
-        text.text = damage.ToString();
+#if NEW_VFX
+        VFXManager.PlayVFX(EntityType.DamagePopup, data, VFXKind.Life, damage * (isCritical ? -1 : 1), true);
+#else
+        data.text.text = damage.ToString();
         spawnVFX = new EntityVFX
         {
             properties = new Property<VFXProperty>(VFXProperty.ScaleOverTime, VFXProperty.FadeTextWhenDone),
@@ -547,6 +521,7 @@ public class Entity : MonoBehaviour, IPooledObject
             fontSize = isCritical ? 3f : 2.5f, textColor = isCritical ? Color.red : Color.white,
         };
         PlayVFX(spawnVFX);
+#endif
     }
     
     [EasyButtons.Button]
@@ -561,63 +536,13 @@ public class Entity : MonoBehaviour, IPooledObject
         attackTrigger = AttackTrigger.MouseInput;
     }
     
-    public void Shoot(bool isCritical)
+    public void Shoot(bool isCritical, float rotZ)
     {
-        Entity bullet = ObjectPooler.Spawn<Entity>(PoolType.Bullet_Normal, transform.position, transform.eulerAngles);
-        bullet.InitBullet(isCritical ? stat.damage : stat.critDamage, isCritical, false);
+        Vector3 rot = transform.eulerAngles + Vector3.forward * rotZ;
+        Entity bullet = ObjectPooler.Spawn<Entity>(PoolType.Bullet_Normal, transform.GetChild(0).position, rot);
+        bullet.InitBullet(isCritical ? stat.critDamage : stat.damage, isCritical, false);
     }
 #endregion
-    
-    /*struct EntityTrigger
-    {
-        public Property<TriggerFlag> flags;
-        public int healthToExecute;
-        public Vector2 distanceToExecute;
-        
-        public float bufferTime;
-    };
-    
-    enum ActionState
-    {
-        None,
-        Charge,
-        Execute,
-        //Exit,
-        Cooldown,
-    }
-    
-    class EntityAction
-    {
-        public EntityTrigger trigger;
-        public Property<ActionFlag> flags;
-        
-        public ActionState state;
-        public ActionType type; // None, Move, Jump, Flip, Teleport, Explode
-        
-        public float chargeTime;
-        public float duration;
-        //public float exitTime;
-        public float cooldownTime;
-        
-        public int damage;
-        public float range;
-        public float speed
-        {
-            get => duration / range;
-            set => range = duration / value;
-        }
-    };
-    
-    EntityAction[] actions;
-    private int currentAction;
-    
-    void UpdateAction()
-    {
-        foreach (EntityAction action in actions)
-        {
-            
-        }
-    }*/
     
     // Update is called once per frame
     void Update()
@@ -630,7 +555,8 @@ public class Entity : MonoBehaviour, IPooledObject
         // NOTE: We're passing -transform.up.y rather than -rb.gravityScale because:
         // 1. Some objects don't have a rigidbody. It's also in my roadmap to replace the rigidbody system entirely.
         // 2. The isGrounded only equals false if and only if the down velocity isn't zero.
-        bool isGrounded = SetProperty(EntityProperty.IsGrounded, GameUtils.GroundCheck(transform.position, spriteExtents, -transform.up.y, Color.red));
+        bool isGrounded = SetProperty(EntityProperty.IsGrounded,
+                                      GameUtils.GroundCheck(transform.position, spriteExtents, -transform.up.y, Color.red));
         
         if (abilities.Length > 0 &&
             abilities[currentAbility].flags.HasProperty(AbilityFlag.CanExecute) &&
@@ -652,6 +578,7 @@ public class Entity : MonoBehaviour, IPooledObject
         if (HasProperty(EntityProperty.FallingOnSpawn) && !isGrounded)
             return;
         
+        //~ NOTE(long): Shooting
         {
             bool canShoot = false;
             bool canReload = false;
@@ -661,23 +588,38 @@ public class Entity : MonoBehaviour, IPooledObject
                 {
                     if (!HasProperty(EntityProperty.IsReloading))
                     {
-                        canShoot  = ammo > 0         && GameInput.GetInput(InputType.Shoot);
-                        canReload = ammo < stat.ammo && GameInput.GetInput(InputType.Reload);
+                        canShoot   = ammo >  0 && GameInput.GetInput(InputType.Shoot) && Time.time > attackDuration.max;
+                        canReload  = ammo == 0 && GameInput.GetInput(InputType.Shoot);
+                        canReload |= ammo <  stat.ammo && GameInput.GetInput(InputType.Reload);
                     }
                 } break;
             }
             
-            if (canShoot && Time.time > attackDuration.max)
+            if (canShoot)
             {
                 ammo--;
                 attackDuration.max = Time.time + stat.timeBtwShots;
-                state = EntityState.StartAttack;
                 
                 bool isCritical = Random.value < stat.critChance;
-                float rot = attackDuration.range > 0 ? (Mathf.PerlinNoise(0, attackDuration.range) * 2f - 1f) * 15f : 0;
-                Shoot(isCritical);
+                float rot = attackDuration.range > 0 ? (Mathf.PerlinNoise(0, attackDuration.range) * 2 - 1) * 15 : 0;
+                Shoot(isCritical, rot);
+#if NEW_VFX
+                Vector2 knockback = -transform.right * .4f;
+                VFXManager.PlayVFX(EntityType.Weapon, data, VFXKind.Attack, 0, true,
+                                   start =>
+                                   {
+                                       Vector2 playerDir = GameManager.player.transform.Direction();
+                                       knockback *= start ? playerDir : -Vector2.one;
+                                       
+                                       transform.position += (Vector3)(knockback * playerDir);
+                                       spring.prevX += knockback.y * playerDir.y;
+                                       // TODO(long): targetOffset is directional (MoveEntity: targetPos += offsetDir * targetOffset)
+                                       // Maybe add another var for global offset?
+                                       targetOffset += knockback;
+                                   }, () => !gameObject.activeSelf || HasProperty(EntityProperty.IsReloading));
+#endif
             }
-            else if ((ammo == 0 && canShoot) || canReload)
+            else if (canReload)
             {
                 StartCoroutine(Reloading(stat, GameManager.gameUI.UpdateReload,
                                          enable =>
@@ -726,19 +668,56 @@ public class Entity : MonoBehaviour, IPooledObject
             transform.position = MathUtils.Clamp(transform.position, moveRegion.min, moveRegion.max, transform.position.z);
         //GameDebug.DrawBox(moveRegion, Color.green);
         
-        
+        //~ NOTE(long): Jumping
         bool startJumping = jumpPressedRemember >= 0 && groundRemember >= 0;
         {
+#if NEW_VFX
+            if (GameManager.player == this)
+            {
+                if (startJumping)
+                {
+                    jumpPressedRemember = 0;
+                    groundRemember = 0;
+                    // NOTE(long): Increase the y position a small amount so the ground checking will make isGrounded false next frame
+                    transform.position += new Vector3(0, 0.05f, 0);
+                    rb.gravityScale *= -1;
+                    VFXManager.PlayVFX(EntityType.Player, data, VFXKind.Jump, velocity.x, true);
+                }
+                
+                else if (!wasGrounded && isGrounded)
+                {
+                    if (HasProperty(EntityProperty.FallingOnSpawn))
+                        StartFalling(false);
+                    CapsuleCollider2D cs = cd as CapsuleCollider2D;
+                    System.Action<bool> func = start => cs.direction = start ? CapsuleDirection2D.Horizontal : CapsuleDirection2D.Vertical;
+                    VFXManager.PlayVFX(EntityType.Player, data, VFXKind.Fall, velocity.x, false, cs != null ? func : null,
+                                       () => jumpPressedRemember >= 0 && groundRemember >= 0);
+                }
+                
+                else if (wasGrounded && !isGrounded)
+                {
+                    VFXManager.PlayVFX(EntityType.Player, data, VFXKind.Fall, 0, true);
+                }
+                
+                else if (isGrounded)
+                {
+                    float deltaVelocity = MathUtils.Sign(velocity.x - prevVelocity.x);
+                    if (velocity.x == -prevVelocity.x)
+                        deltaVelocity *= 2;
+                    VFXManager.PlayVFX(EntityType.Player, data, VFXKind.Move, deltaVelocity, velocity.x != 0);
+                }
+            }
+#else
             EntityVFX playerVFX = new EntityVFX
             {
                 shakeMode = ShakeMode.PlayerJump,
                 waitTime = .25f,
                 particles = new ParticleSystem[] { velocity.x >= 0 ? leftDust : null, velocity.x <= 0 ? rightDust : null },
             };
+            
             // Start jumping
             if (startJumping)
             {
-                state = EntityState.Jumping;
                 jumpPressedRemember = 0;
                 groundRemember = 0;
                 SetProperty(EntityProperty.IsGrounded, false);
@@ -751,10 +730,10 @@ public class Entity : MonoBehaviour, IPooledObject
                     playerVFX.properties.SetProperty(VFXProperty.FlipX, true);
                 }
             }
+            
             // Landing
             else if (!wasGrounded && isGrounded)
             {
-                state = EntityState.Landing;
                 if (HasProperty(EntityProperty.FallingOnSpawn))
                     StartFalling(false);
                 
@@ -771,13 +750,14 @@ public class Entity : MonoBehaviour, IPooledObject
                     }
                 }
             }
+            
             // Start falling
             else if (wasGrounded && !isGrounded)
             {
-                state = EntityState.Falling;
                 // TODO: Has a falling animation rather than the first frame of the idle one
                 playerVFX = new EntityVFX { properties = new Property<VFXProperty>(VFXProperty.StopAnimation), nextAnimation = "Idle" };
             }
+            
             else
             {
                 playerVFX = null;
@@ -796,224 +776,18 @@ public class Entity : MonoBehaviour, IPooledObject
                             playerVFX = new EntityVFX();
                         playerVFX.particles = new ParticleSystem[] { deltaVelocity.x > 0 ? leftDust : rightDust };
                         if (prevVelocity.x == 0)
-                        {
-                            state = EntityState.StartMoving;
                             playerVFX.nextAnimation = "Move";
-                        }
                         else if (velocity.x == 0)
-                        {
-                            state = EntityState.StopMoving;
                             playerVFX.nextAnimation = "Idle";
-                        }
                     }
                 }
             }
             
-#if !SCRIPTABLE_VFX
             // NOTE: Currently, only the player has a jumping/landing/falling VFX, but that will probably change soon.
             // When that happens, remember to abstract this code out. Currently, we have a check that only the player can call PlayVFX here.
             if (GameManager.player == this)
                 PlayVFX(playerVFX);
-#else
-            if (vfx)
-                foreach (var effect in vfx.items[state])
-                StartCoroutine(PlayVFX(effect));
 #endif
-            state = EntityState.None;
-        }
-    }
-    
-    public IEnumerator PlayVFX(VFX vfx)
-    {
-        if (vfx == null)
-            yield break;
-        Debug.Log(vfx.name);
-        
-        if (vfx.timeline.min > 0)
-            yield return new WaitForSeconds(vfx.timeline.min);
-        System.Action after = () => { };
-        IEnumerator[] enumerators = new IEnumerator[4];
-        int enumeratorCount = 0;
-        
-        // Position/Scale
-        {
-            float duration = vfx.flags.HasProperty(VFXFlag.OverTime) ? vfx.timeline.range : 0;
-            if (vfx.flags.HasProperty(VFXFlag.OffsetPosition))
-                Offset(() => transform.position, p => transform.position = p);
-            if (vfx.flags.HasProperty(VFXFlag.OffsetScale) && vfx.type != VFXType.Trail)
-                Offset(() => transform.localScale, s => transform.localScale = s);
-            
-            void Offset(System.Func<Vector3> getter, System.Action<Vector3> setter)
-            {
-                StartCoroutine(ChangeOverTime(p => setter(p), getter(), getter() + (Vector3)vfx.offset, duration));
-                after += () => StartCoroutine(ChangeOverTime(p => setter(p), getter(), getter() - (Vector3)vfx.offset, vfx.stayTime));
-                //enumerators[enumeratorCount++] = ChangeOverTime(p => setter(p), getter(), getter() - (Vector3)vfx.offset, vfx.stayTime);
-                
-                static IEnumerator ChangeOverTime(System.Action<Vector3> setValue, Vector3 startValue, Vector3 endValue, float decreaseTime)
-                {
-                    if (decreaseTime > 0)
-                    {
-                        float t = 0;
-                        while (t <= 1)
-                        {
-                            setValue(Vector3.Lerp(startValue, endValue, t));
-                            t += Time.deltaTime / decreaseTime;
-                            yield return null;
-                        }
-                    }
-                    setValue(endValue);
-                    //Debug.Log($"{vfx.name}: {Time.frameCount}, {startValue}, {endValue}");
-                }
-            }
-        }
-        
-        // Rotation
-        after += () =>
-        {
-            Vector3 rotation = Vector3.zero;
-            if (vfx.flags.HasProperty(VFXFlag.FlipX))
-                rotation.x = 180;
-            if (vfx.flags.HasProperty(VFXFlag.FlipY))
-                rotation.y = 180;
-            if (vfx.flags.HasProperty(VFXFlag.FlipZ))
-                rotation.z = 180;
-            transform.Rotate(rotation);
-        };
-        
-        // Animation
-        if (anim)
-        {
-            if (!string.IsNullOrEmpty(vfx.animation))
-                anim.Play(vfx.animation);
-            if (vfx.flags.HasProperty(VFXFlag.StopAnimation))
-                anim.speed = 0;
-            if (vfx.flags.HasProperty(VFXFlag.ResumeAnimation))
-                after += () => anim.speed = 1; // NOTE: Maybe resume animation instantly
-        }
-        
-        // Other
-        {
-            if (vfx.flags.HasProperty(VFXFlag.StopTime))
-                StartCoroutine(GameUtils.StopTime(vfx.timeline.range));
-            if (vfx.flags.HasProperty(VFXFlag.ToggleCurrent))
-                gameObject.SetActive(!gameObject.activeSelf);
-            
-            ParticleEffect.instance.SpawnParticle(vfx.particleType, transform.position, vfx.size);
-            AudioManager.PlayAudio(vfx.audio);
-            CameraSystem.instance.Shake(vfx.shakeMode);
-            CameraSystem.instance.Shock(vfx.speed, vfx.size);
-            
-            if (vfx.pools != null)
-                foreach (PoolType pool in vfx.pools)
-                ObjectPooler.Spawn(pool, transform.position);
-        }
-        
-        switch (vfx.type)
-        {
-            case VFXType.Camera:
-            {
-                StartCoroutine(CameraSystem.instance.Flash(vfx.timeline.range, vfx.color.a));
-            }
-            break;
-            case VFXType.Flash:
-            {
-                StartCoroutine(Flashing(sr, whiteMat, vfx.color, vfx.timeline.range, vfx.stayTime));
-                
-                static IEnumerator Flashing(SpriteRenderer sr, Material whiteMat, Color color, float duration, float flashTime)
-                {
-                    if (whiteMat == null)
-                        yield break;
-                    
-                    whiteMat.color = color;
-                    Debug.Log("Start flashing");
-                    
-                    while (duration > 0)
-                    {
-                        float currentTime = Time.time;
-                        Material defMat = sr.material;
-                        sr.material = whiteMat;
-                        yield return new WaitForSeconds(flashTime);
-                        
-                        sr.material = defMat;
-                        yield return new WaitForSeconds(flashTime);
-                        duration -= Time.time - currentTime;
-                    }
-                    
-                    whiteMat.color = Color.white;
-                    Debug.Log("End flashing");
-                }
-            }
-            break;
-            case VFXType.Fade:
-            {
-                StartCoroutine(DecreaseOverTime(alpha => sr.color += new Color(0, 0, 0, alpha - sr.color.a), vfx.color.a, vfx.timeline.range));
-            }
-            break;
-            case VFXType.Trail:
-            {
-                StartCoroutine(EnableTrail(trail, vfx.timeline.range, vfx.stayTime));
-                if (vfx.flags.HasProperty(VFXFlag.OffsetScale))
-                    after += () => StartCoroutine(DecreaseOverTime(width => trail.widthMultiplier = width, trail.widthMultiplier, vfx.stayTime));
-                //enumerators[enumeratorCount++] = DecreaseOverTime(width => trail.widthMultiplier = width, trail.widthMultiplier, vfx.stayTime);
-                if (vfx.flags.HasProperty(VFXFlag.FadeOut))
-                {
-                    // TODO: Fade trail
-                }
-                
-                static IEnumerator EnableTrail(TrailRenderer trail, float emitTime, float stayTime)
-                {
-                    trail.enabled = true;
-                    trail.emitting = true;
-                    yield return new WaitForSeconds(emitTime);
-                    
-                    trail.emitting = false;
-                    yield return new WaitForSeconds(stayTime);
-                    
-                    trail.Clear();
-                    trail.emitting = true;
-                    trail.enabled = false;
-                }
-            }
-            break;
-            case VFXType.Text:
-            {
-                TMPro.TextMeshPro text = GetComponent<TMPro.TextMeshPro>();
-                if (vfx.color != Color.clear)
-                    text.color = vfx.color;
-                if (vfx.size != 0)
-                    text.fontSize = vfx.size;
-                if (vfx.flags.HasProperty(VFXFlag.FadeOut))
-                    after += () => StartCoroutine(DecreaseOverTime(alpha => text.alpha = alpha, text.alpha, vfx.stayTime));
-                //enumerators[enumeratorCount++] = DecreaseOverTime(alpha => text.alpha = alpha, text.alpha, vfx.stayTime);
-            }
-            break;
-        }
-        
-        yield return new WaitForSeconds(vfx.timeline.range);
-        after();
-        /*Coroutine[] coroutines = new Coroutine[enumeratorCount];
-        for (int i = 0; i < enumeratorCount; i++)
-            coroutines[i] = StartCoroutine(enumerators[i]);
-        foreach (Coroutine coroutine in coroutines)
-        {
-            yield return coroutine;
-        }*/
-        
-        // TODO: Maybe change this to an offset-based
-        static IEnumerator DecreaseOverTime(System.Action<float> setValue, float startValue, float decreaseTime)
-        {
-            if (decreaseTime > 0)
-            {
-                float t = 0;
-                while (t <= 1)
-                {
-                    setValue(Mathf.Lerp(startValue, 0, t));
-                    t += Time.deltaTime / decreaseTime;
-                    yield return null;
-                }
-                yield return new WaitForEndOfFrame();
-                setValue(startValue);
-            }
         }
     }
     
@@ -1049,7 +823,7 @@ public class Entity : MonoBehaviour, IPooledObject
         {
             case TargetType.Input:
             {
-                targetDir = new Vector2(GameInput.GetAxis(AxisType.Horizontal), GameInput.GetAxis(AxisType.Vertical));
+                targetDir = GameInput.GetAxis();
             } break;
             case TargetType.Player:
             {
@@ -1142,7 +916,7 @@ public class Entity : MonoBehaviour, IPooledObject
         Count
     }
     
-    static void RotateEntity(Transform transform, RotateType rotateType, float dRotate, float velocityX)
+    void RotateEntity(Transform transform, RotateType rotateType, float dRotate, float velocityX)
     {
         float dirX = 0;
         Transform player = GameManager.player.transform;
@@ -1163,7 +937,10 @@ public class Entity : MonoBehaviour, IPooledObject
             } break;
             case RotateType.Weapon:
             {
-                transform.rotation = GameManager.player.fallRemember > 0 ? player.rotation : MathUtils.GetQuaternionFlipY(mouseDir, player.up.y);
+                if (GameManager.player.fallRemember > 0 || HasProperty(EntityProperty.IsReloading))
+                    transform.rotation = player.rotation;
+                else
+                    transform.rotation = MathUtils.LookRotation(mouseDir, player.forward);
             } break;
             case RotateType.Linear:
             {
@@ -1193,25 +970,7 @@ public class Entity : MonoBehaviour, IPooledObject
     
     public void TestPlayerVFX()
     {
-#if !SCRIPTABLE_VFX
         Hurt(0);
-#else
-        VFX vfx1 = CreateTestVFX("vfx1", new RangedFloat(.0f, .5f), new Vector2(-.25f, .25f));
-        VFX vfx2 = CreateTestVFX("vfx2", new RangedFloat(.3f, .8f), new Vector2(.25f, -.25f));
-        
-        StartCoroutine(PlayVFX(vfx1));
-        StartCoroutine(PlayVFX(vfx2));
-        
-        static VFX CreateTestVFX(string name, RangedFloat timeline, Vector2 offset)
-        {
-            VFX vfx = ScriptableObject.CreateInstance<VFX>();
-            vfx.name = name;
-            vfx.offset = offset;
-            vfx.flags.SetProperty(VFXFlag.OffsetScale, true);
-            vfx.timeline = timeline;
-            return vfx;
-        }
-#endif
     }
     
     public void Hurt(int damage)
@@ -1221,13 +980,28 @@ public class Entity : MonoBehaviour, IPooledObject
             health -= damage;
             
             // TODO: Replace this with a stat
+            MoveType move = moveType;
+            RotateType rotate = rotateType;
+            
             moveType = MoveType.None;
             rotateType = RotateType.None;
             SetProperty(EntityProperty.CanBeHurt, false);
+            
             if (health > 0)
             {
-                state = EntityState.OnHit;
-                //PlayVFX(hurtVFX);
+#if NEW_VFX
+                VFXManager.PlayVFX(type, data, VFXKind.Hurt, 0, false, start =>
+                                   {
+                                       if (!start)
+                                       {
+                                           moveType = move;
+                                           rotateType = rotate;
+                                           SetProperty(EntityProperty.CanBeHurt, true);
+                                       }
+                                   });
+#else
+                PlayVFX(hurtVFX);
+#endif
             }
             else
                 Die();
@@ -1236,8 +1010,24 @@ public class Entity : MonoBehaviour, IPooledObject
     
     void Die()
     {
-        state = EntityState.OnDeath;
+        System.Action done = () =>
+        {
+            if (HasProperty(EntityProperty.SpawnCellWhenDie))
+                for (int i = valueRange.randomValue; i > 0; i--)
+                ObjectPooler.Spawn(PoolType.Cell, transform.position);
+            
+            if (HasProperty(EntityProperty.UsePooling))
+                gameObject.SetActive(false);
+            else
+                Destroy(this);
+        };
+        
+#if NEW_VFX
+        VFXManager.PlayVFX(type, data, VFXKind.Life, 0, false, start => { if (!start) done(); });
+#else
+        deathVFX.done = done;
         PlayVFX(deathVFX);
+#endif
     }
     
     public bool HasProperty(EntityProperty property)
@@ -1319,464 +1109,7 @@ public class Entity : MonoBehaviour, IPooledObject
         }
     }
     
-#region VFX
-    public enum VFXProperty
-    {
-        StopAnimation,
-        ChangeEffectObjBack,
-        ScaleOverTime,
-        FadeTextWhenDone,
-        StartTrailing,
-        DecreaseTrailWidth,
-        PlayParticleInOrder,
-        FlipX,
-        FlipY,
-        FlipZ,
-    }
-    
-    [System.Serializable]
-    public class EntityVFX
-    {
-        public Property<VFXProperty> properties;
-        
-        public System.Action done;
-        public System.Func<bool> canStop;
-        public string nextAnimation;
-        public GameObject effectObj;
-        public ParticleSystem[] particles;
-        
-        [Header("Time")]
-        public float waitTime;
-        public float scaleTime;
-        public float rotateTime;
-        
-        [Header("Trail Effect")]
-        public float trailEmitTime;
-        public float trailStayTime;
-        
-        [Header("Flashing")]
-        public float flashTime;
-        public float flashDuration;
-        public Color triggerColor;
-        
-        [Header("Text Effect")]
-        public Color textColor;
-        public float fontSize;
-        
-        [Header("Camera Effect")]
-        public float stopTime;
-        public float trauma;
-        public ShakeMode shakeMode;
-        public float shockSpeed;
-        public float shockSize;
-        public float camFlashTime;
-        public float camFlashAlpha;
-        
-        [Header("After Fade")]
-        public float alpha;
-        public float fadeTime;
-        
-        [Header("Explode Particle")]
-        public float range;
-        public ParticleType particleType;
-        
-        [Header("Other")]
-        public AudioType audio;
-        public PoolType poolType;
-        public Vector2 scaleOffset;
-    }
-    
-    void PlayVFX(EntityVFX vfx)
-    {
-        if (vfx == null)
-            return;
-        Debug.Log(name + ": " + state, this);
-        
-        if (vfx.properties.HasProperty(VFXProperty.ScaleOverTime))
-            StartCoroutine(ScaleOverTime(transform, vfx.scaleTime, vfx.scaleOffset));
-        else
-            transform.localScale += (Vector3)vfx.scaleOffset;
-        
-        if (!string.IsNullOrEmpty(vfx.nextAnimation))
-            anim.Play(vfx.nextAnimation);
-        if (vfx.properties.HasProperty(VFXProperty.StopAnimation))
-            anim.speed = 0;
-        
-        if (vfx.textColor != Color.clear)
-            text.color = vfx.textColor;
-        if (vfx.fontSize != 0)
-            text.fontSize = vfx.fontSize;
-        
-        float totalParticleTime = 0;
-        float particleCount = vfx.particles?.Length ?? 0;
-        for (int i = 0; i < particleCount; ++i)
-        {
-            if (vfx.particles[i])
-            {
-                this.InvokeAfter(totalParticleTime, () => vfx.particles[i].Play(), true);
-                if (vfx.properties.HasProperty(VFXProperty.PlayParticleInOrder))
-                    totalParticleTime += vfx.particles[i].main.duration;
-            }
-        }
-        
-        if (vfx.effectObj)
-            vfx.effectObj.SetActive(!vfx.effectObj.activeSelf);
-        
-        StartCoroutine(CameraSystem.instance.Flash(vfx.camFlashTime, vfx.camFlashAlpha));
-        CameraSystem.instance.Shake(vfx.shakeMode, null);//, vfx.trauma == 0 ? 1 : vfx.trauma);
-        CameraSystem.instance.Shock(vfx.shockSpeed, vfx.shockSize);
-        
-        AudioManager.PlayAudio(vfx.audio);
-        ObjectPooler.Spawn(vfx.poolType, transform.position);
-        ParticleEffect.instance.SpawnParticle(vfx.particleType, transform.position, vfx.range);
-        
-        StartCoroutine(GameUtils.StopTime(vfx.stopTime));
-        StartCoroutine(Flashing(sr, whiteMat, vfx.triggerColor, vfx.flashDuration, vfx.flashTime, vfx.canStop));
-        float x = vfx.properties.HasProperty(VFXProperty.FlipX) ? 180 : 0;
-        float y = vfx.properties.HasProperty(VFXProperty.FlipY) ? 180 : 0;
-        float z = vfx.properties.HasProperty(VFXProperty.FlipZ) ? 180 : 0;
-        if (x != 0 || y != 0 || z != 0)
-            this.InvokeAfter(vfx.rotateTime, () => transform.Rotate(new Vector3(x, y, z)));
-        
-        this.InvokeAfter(Mathf.Max(vfx.flashDuration, totalParticleTime, vfx.scaleTime), () =>
-                         {
-                             if (vfx.properties.HasProperty(VFXProperty.FadeTextWhenDone))
-                                 StartCoroutine(FadeText(text, vfx.alpha, vfx.fadeTime));
-                             else
-                                 StartCoroutine(Flashing(sr, whiteMat, new Color(1, 1, 1, vfx.alpha), vfx.fadeTime, vfx.fadeTime, vfx.canStop));
-                             
-                             if (vfx.properties.HasProperty(VFXProperty.StartTrailing))
-                                 StartCoroutine(EnableTrail(trail, vfx.trailEmitTime, vfx.trailStayTime));
-                             if (vfx.properties.HasProperty(VFXProperty.DecreaseTrailWidth))
-                                 this.InvokeAfter(vfx.trailEmitTime, () => StartCoroutine(DecreaseTrailWidth(trail, vfx.trailStayTime)));
-                             
-                             this.InvokeAfter(Mathf.Max(vfx.fadeTime, vfx.trailEmitTime + vfx.trailStayTime) + vfx.waitTime, () =>
-                                              {
-                                                  if (!vfx.properties.HasProperty(VFXProperty.ScaleOverTime))
-                                                      transform.localScale -= (Vector3)vfx.scaleOffset;
-                                                  if (vfx.properties.HasProperty(VFXProperty.ChangeEffectObjBack))
-                                                      vfx.effectObj.SetActive(!vfx.effectObj.activeSelf);
-                                                  if (anim)
-                                                      anim.speed = 1;
-                                                  vfx.done?.Invoke();
-                                              });
-                         });
-        
-        static IEnumerator Flashing(SpriteRenderer sr, Material whiteMat, Color color, float duration, float flashTime, System.Func<bool> canStop)
-        {
-            if (whiteMat == null)
-                yield break;
-            
-            whiteMat.color = color;
-            
-            while (duration > 0)
-            {
-                if (canStop?.Invoke() ?? false)
-                    break;
-                
-                float currentTime = Time.time;
-                Material defMat = sr.material;
-                sr.material = whiteMat;
-                yield return new WaitForSeconds(flashTime);
-                
-                sr.material = defMat;
-                yield return new WaitForSeconds(flashTime);
-                duration -= Time.time - currentTime;
-            }
-            
-            whiteMat.color = Color.white;
-        }
-        
-        static IEnumerator ScaleOverTime(Transform transform, float duration, Vector3 scaleOffset)
-        {
-            while (duration > 0)
-            {
-                duration -= Time.deltaTime;
-                transform.localScale += scaleOffset * Time.deltaTime;
-                yield return null;
-            }
-            
-            while (transform.gameObject.activeSelf)
-            {
-                transform.localScale -= scaleOffset * Time.deltaTime;
-                yield return null;
-            }
-        }
-        
-        static IEnumerator FadeText(TMPro.TextMeshPro text, float alpha, float fadeTime)
-        {
-            float dAlpha = (text.alpha - alpha) / fadeTime;
-            while (text.alpha > alpha)
-            {
-                text.alpha -= dAlpha * Time.deltaTime;
-                yield return null;
-            }
-        }
-        
-        static IEnumerator EnableTrail(TrailRenderer trail, float emitTime, float stayTime)
-        {
-            trail.enabled = true;
-            trail.emitting = true;
-            yield return new WaitForSeconds(emitTime);
-            
-            trail.emitting = false;
-            yield return new WaitForSeconds(stayTime);
-            
-            trail.Clear();
-            trail.emitting = true;
-            trail.enabled = false;
-        }
-        
-        static IEnumerator DecreaseTrailWidth(TrailRenderer trail, float decreaseTime)
-        {
-            float startWidth = trail.widthMultiplier;
-            float startTime = decreaseTime;
-            while (decreaseTime > 0)
-            {
-                trail.widthMultiplier = decreaseTime / startTime * startWidth;
-                decreaseTime -= Time.deltaTime;
-                yield return null;
-            }
-            trail.widthMultiplier = startWidth;
-        }
-    }
-#endregion
+#if !NEW_VFX
+    void PlayVFX(EntityVFX vfx) => VFXManager.PlayVFX(vfx, data, this);
+#endif
 }
-
-/*void PlayVFX(EntityVFX vfx)
-{
-    // Sample Code
-
-    // Player hurt
-    EntityVFX vfx = new EntityVFX
-    {
-        stopTime = .15f,
-        flashDuration = .1f,
-        flashTime = .1f,
-        triggerColor = Color.white,
-        camFlashTime = .15f,
-        camFlashAlpha = .8f,
-        stopAnimation = true,
-        //effectObj = hitEffect, revertObj = true
-    };
-
-    // Player death
-    vfx = new EntityVFX
-    {
-        audio = AudioType.Player_Death,
-        nextAnimation = "Death",
-        effectObj = transform.GetChild(0).gameObject,
-        stopTime = 2,
-        particles = new ParticleSystem[] { deathBurstParticle, deathFlowParticle },
-    };
-
-    // Player flip
-    transform.position -= GetPosOnGround();
-    vfx = new EntityVFX
-    {
-        shakeMode = ShakeMode.Medium,
-        audio = AudioType.Player_Jump,
-        scaleOffset = new Vector2(-.25f, .25f),
-        duration = .2f,
-        particles = checking() ? ...
-    };
-
-    // Bullet hit effect
-    ObjectPooler.Spawn(damagePopup, collision.transform.position, Quaternion.identity).GetComponent<MovingEntity>().InitDamagePopup(damage);
-    vfx = new EntityVFX
-    {
-        poolType = PoolType.VFX_Destroyed_Bullet,
-        audio = AudioType.Weapon_Hit_Wall,
-        effectObj = gameObject,
-    };
-
-    // Explosion
-    vfx = new EntityVFX
-    {
-        audio = AudioType.Enemy_Explosion,
-        shakeMode = ShakeMode.Strong,
-        smoothFunc = MathUtils.SmoothStart3,
-        shockSpeed = 2,
-        shockSize = .1f,
-        particleType = ParticleType.Explosion, range = explodeRange,
-        stopTime = .05f,
-    };
-    if (IsInRange(explodeRange))
-        player.Hurt(abilityDamage);
-    int dropValue = moneyDrop.randomValue;
-    for (int i = 0; i < dropValue; i++)
-        ObjectPooler.Spawn(PoolType.Cell, transform.position, Quaternion.identity);
-    numberOfEnemiesAlive--;
-    Destroy(gameObject);
-
-    // Enemy Death
-    vfx = new EntityVFX
-    {
-        shakeMode = ShakeMode.Medium,
-        poolType = PoolType.VFX_Destroyed_Enemy,
-        stopTime = .05f,
-        audio = AudioType.Enemy_Death,
-        // TODO: Spawn splash of blood and small pieces
-    };
-    int dropValue = moneyDrop.randomValue;
-    for (int i = 0; i < dropValue; i++)
-        ObjectPooler.Spawn(PoolType.Cell, transform.position, Quaternion.identity);
-    numberOfEnemiesAlive--;
-    Destroy(gameObject);
-
-    // Enemy Hurt
-    vfx = new EntityVFX
-    {
-        audio = AudioType.Player_Hurt,
-        stopTime = .02f,
-        flashDuration = .1f,
-        flashTime = .1f,
-        triggerColor = hurtColor,
-    };
-
-    // Damage popup
-    vfx = new EntityVFX
-    {
-        duration = 1,
-        scaleOffset = Vector2.one * .5f,
-        alpha = 3,
-        done = ,
-    };
-
-    // ----------------------------------------
-
-    GameInput.EnableAllInputs(false);
-    controller.audioManager.PlayAudio(AudioType.Player_Death);
-    anim.Play("Death");
-    transform.GetChild(0).gameObject.SetActive(false);
-    yield return new WaitForSeconds(.5f);
-
-    Time.timeScale = 0;
-    deathBurstParticle.Play();
-    yield return new WaitForSecondsRealtime(2);
-
-    Time.timeScale = 1;
-    deathFlowParticle.Play();
-    yield return new WaitForSeconds(deathFlowParticle.main.duration);
-    // TODO: Replay and enable all inputs
-
-    // ----------------------------------------
-
-    anim.speed = 0;
-    sr.material = hurtMat;
-    hitEffect.SetActive(true);
-    transform.localScale = new Vector2(.75f, 1f);
-
-    Time.timeScale = 0f;
-    StartCoroutine(cam.Flash(.15f, .8f));
-    yield return new WaitForSecondsRealtime(.15f);
-    Time.timeScale = 1f;
-
-    yield return new WaitForSeconds(.1f);
-    sr.material = defMat;
-    hitEffect.SetActive(false);
-    transform.localScale = new Vector2(1f, 1f);
-
-    Color temp = sr.color;
-    temp.a = invincibleOpacity;
-    sr.color = temp;
-
-    yield return new WaitForSeconds(invincibleTime);
-
-    temp.a = 1;
-    sr.color = temp;
-    anim.speed = 1;
-
-    // ----------------------------------------
-
-    CameraShake.instance?.Shake(ShakeMode.Medium, trauma: .4f);
-    PlayDust(-moveInput);
-    audioManager.PlayAudio(isJumping ? AudioType.Player_Jump : AudioType.Player_Land);
-
-    // Change Size
-    transform.localScale = isJumping ? new Vector3(.75f, 1.25f) : new Vector3(1.25f, .75f);
-    transform.position -= GetPosOnGround();
-
-    StopCoroutine(resetSize);
-    resetSize = this.InvokeAfter(.2f, () => {
-        transform.localScale = new Vector3(1f, 1f);
-        if (!isJumping)
-            transform.position -= GetPosOnGround();
-    });
-
-    Vector3 GetPosOnGround()
-    {
-        float groundHeight = Physics2D.BoxCast(transform.position, new Vector2(spriteExtents.x / 2, 0.01f), 0, -transform.up, spriteExtents.y * 2,
-                LayerMask.GetMask("Ground")).distance;
-        Vector3 offset = new Vector3(0, groundHeight - spriteExtents.y * transform.localScale.y) * transform.up.y;
-        Debug.DrawRay(transform.position, -transform.up * groundHeight, Color.blue);
-        return offset;
-    }
-
-    // ----------------------------------------
-
-    if (spawnDamagePopup)
-        ObjectPooler.Spawn(damagePopup, collision.transform.position, Quaternion.identity).GetComponent<MovingEntity>().InitDamagePopup(damage);
-    ObjectPooler.Spawn(PoolType.VFX_Destroyed_Bullet, transform.position, Quaternion.identity);
-    audioManager.PlayAudio(AudioType.Weapon_Hit_Wall);
-    gameObject.SetActive(false);
-
-    // ----------------------------------------
-
-    Charge();
-    yield return new WaitForSeconds(abilityChargeTime);
-
-    audioManager.PlaySfx(abilitySound);
-    CameraShake.instance.Shake(cameraShakeMode, MathUtils.SmoothStart3);
-    CameraShake.instance.Shock(2);
-    // TODO: Change ParticleEffect to a singleton
-    FindObjectOfType<ParticleEffect>().SpawnParticle(ParticleType.Explosion, transform.position, explodeRange);
-    if (IsInRange(explodeRange))
-        player.Hurt(abilityDamage);
-    Die(true);
-
-    // ----------------------------------------
-
-    whiteMat.color = color;
-    while (duration > 0)
-    {
-        float currentTime = Time.time;
-
-        sr.material = whiteMat;
-        yield return new WaitForSeconds(flashTime);
-
-        sr.material = defMat;
-        yield return new WaitForSeconds(flashTime);
-
-        duration -= Time.time - currentTime;
-    }
-
-    // ----------------------------------------
-
-    if (!explode)
-    {
-        CameraShake.instance.Shake(ShakeMode.Medium);
-        ObjectPooler.Spawn(PoolType.VFX_Destroyed_Enemy, transform.position, Quaternion.identity);
-    }
-
-    // TODO: Spawn splash of blood and small pieces
-
-    player.InvokeAfter(.3f, () => player.StartCoroutine(GameUtils.StopTime(.05f)));
-    audioManager.PlayAudio(AudioType.Enemy_Death);
-    int dropValue = moneyDrop.randomValue;
-    for (int i = 0; i < dropValue; i++)
-        ObjectPooler.Spawn(PoolType.Cell, transform.position, Quaternion.identity);
-    numberOfEnemiesAlive--;
-    Destroy(gameObject);
-
-    // ----------------------------------------
-
-    if (state == EnemyState.Invincible)
-        return;
-    // TODO: Have different hurt sound for enemies.
-    audioManager.PlayAudio(AudioType.Player_Hurt);
-    health.value -= damage;
-    if (health.value > 0f)
-        StartCoroutine(GameUtils.StopTime(.02f));
-    StartCoroutine(Flashing(.1f, .1f, hurtColor));
-}*/

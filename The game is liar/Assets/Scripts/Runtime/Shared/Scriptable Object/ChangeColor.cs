@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 [CreateAssetMenu(menuName = "Scriptable/ChangeColor")]
 public class ChangeColor : ScriptableObject

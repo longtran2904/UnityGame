@@ -165,8 +165,8 @@ public class GameManager : MonoBehaviour
             string[] names = GameUtils.GetValueFromObject<string[]>(obj, "serializedEnumNames", true);
             
             builder.AppendIndentLine(fieldName, indentLevel);
-            builder.AppendIndentFormat("Properties of {0}: ", indentLevel + 1, fieldName).Append(property.ToString()).Append(", ")
-                .AppendLine(Convert.ToString((long)property, 2));
+            builder.AppendIndentFormat("Properties of {0}: ", indentLevel + 1, fieldName).Append(property.ToString());
+            builder.Append(", ").AppendLine(Convert.ToString((long)property, 2));
             
             List<string> setNames = new List<string>(names.Length);
             for (int i = 0; i < names.Length; i++)
@@ -405,12 +405,24 @@ public class GameManager : MonoBehaviour
             }
             Array.Copy(_assemblies, assemblies, _assemblies.Length);
         }
+        
         StringBuilder builder = new StringBuilder(assemblies.Length * 256 * 16);
-        
-        Func<Assembly, bool> filterAssembly = assembly => string.Compare(GetName(assembly), 0, "Unity", 0, "Unity".Length) == 0;
-        if (!writeToFolder)
-            filterAssembly = assembly => string.Compare(GetName(assembly), 0, "Unity", 0, "Unity".Length) == 0 || GetName(assembly) == "DLL";
-        
+        Func<Assembly, bool> filterAssembly = assembly =>
+        {
+            string asmName = GetName(assembly);
+            string[] prefixes = new string[] { "Unity", "System", };
+            string[] names = new string[] { "mscorlib", writeToFolder ? null : "DLL" };
+            
+            foreach (string prefix in prefixes)
+                if (asmName.StartsWith(prefix))
+                return true;
+            
+            foreach (string name in names)
+                if (asmName == name)
+                return true;
+            
+            return false;
+        };
         NameCollisionData.Init(assemblies, 32768);
         
         List<System.Threading.Tasks.Task<string>> tasks = new List<System.Threading.Tasks.Task<string>>(assemblies.Length);
@@ -504,7 +516,7 @@ public class GameManager : MonoBehaviour
                 {
                     fileTasks.Add(RunTask(() =>
                                           {
-                                              string path = "D:/Documents/Unity/Decompile/Temp/";
+                                              string path = "D:/Documents/Unity/Decompile/";
                                               if (type.Namespace != null)
                                                   path += type.Namespace + "/";
                                               System.IO.Directory.CreateDirectory(path);
@@ -650,7 +662,7 @@ public class GameManager : MonoBehaviour
             EventInfo eventInfo = member as EventInfo;
             Type type = member as Type;
             MethodBase method = member as MethodBase;
-            bool isDelegate = type != null && typeof(Delegate).IsAssignableFrom(type);
+            bool isDelegate = type != null && type.IsSubclassOf(typeof(MulticastDelegate))/*typeof(Delegate).IsAssignableFrom(type)*/;
             
             bool skip = false;
             switch (member.MemberType)
@@ -880,7 +892,7 @@ public class GameManager : MonoBehaviour
             
             // https://codeblog.jonskeet.uk/2014/08/22/when-is-a-constant-not-a-constant-when-its-a-decimal/
             var decimalConst = field?.GetCustomAttribute<System.Runtime.CompilerServices.DecimalConstantAttribute>();
-            bool isDelegate = type != null && typeof(Delegate).IsAssignableFrom(type);
+            bool isDelegate = type != null && type.IsSubclassOf(typeof(MulticastDelegate))/*typeof(Delegate).IsAssignableFrom(type)*/;
             
             MethodInfo getter = null, setter = null;
             {
@@ -1860,8 +1872,8 @@ public class GameManager : MonoBehaviour
                 if (value is ReadOnlyCollection<CustomAttributeTypedArgument> argArray)
                 {
                     builder.Append($"new[] {{");
-                                                                                                                                            AppendArray(builder, argArray, null, null, arg => AppendDefaultValue(builder, arg.ArgumentType, arg.Value));
-                                                                                                                                            builder.Append(" }");
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      AppendArray(builder, argArray, null, null, arg => AppendDefaultValue(builder, arg.ArgumentType, arg.Value));
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      builder.Append(" }");
                 }
                 else if (valueType == typeof(string))
                     builder.Append($"\"{GameUtils.EscapeString(str, "\'")}\"");
@@ -1987,6 +1999,67 @@ public class GameManager : MonoBehaviour
         return hitInfo;
     }
     
+    public struct SearchParameter
+    {
+        public Vector2 minSearchSize, maxSearchSize;
+        public RegionType posType;
+        public PositionType filterResult;
+    }
+    
+    public static (bool, Vector2) SearchValidPos(Vector2 searchPos, Vector2 entityExtents, float upDir, SearchParameter parameter)
+    {
+        Vector2 result = searchPos;
+        bool success = false;
+        
+#if false
+        int index = (int)parameter.posType;
+        List<Rect>[] allRegions = ;
+        List<Rect> validRegions = new List<Vector2>(allRegions[index].Count);
+        
+        foreach (Rect region in allRegions[index])
+        {
+            if (MathUtils.InRange(Mathf.Abs(region.x - searchPos.x), parameter.minSearchSize.x, parameter.maxSearchSize.x) &&
+                MathUtils.InRange(Mathf.Abs(region.y - searchPos.y), parameter.minSearchSize.y, parameter.maxSearchSize.y))
+            {
+                validRegions.Add(region);
+            }
+        }
+        
+        switch (parameter.filterResult)
+        {
+            case PositionType.Random:
+            {
+                for (int i = 0, count = validRegions.Count; i < count; ++i)
+                {
+                    result = validRegions.PopRandom();
+                    if (IsValidTile(in result, entityExtents))
+                    {
+                        success = true;
+                        break;
+                    }
+                }
+            } break;
+            
+            case PositionType.Min:
+            {
+                
+            } break;
+            
+            case PositionType.Middle:
+            {
+                
+            } break;
+            
+            case PositionType.Max:
+            {
+                
+            } break;
+        }
+#endif
+        
+        return (success, result);
+    }
+    
     public static Rect CalculateMoveRegion(Vector2 pos, Vector2 extents, float dirY)
     {
         Rect result = new Rect();
@@ -2045,7 +2118,7 @@ public class GameManager : MonoBehaviour
                                 trigger = InputType.Debug_CameraShake,
                                 increase = InputType.Debug_ShakeIncrease,
                                 decrease = InputType.Debug_ShakeDecrease,
-                                range = new RangedFloat(0, Enum.GetValues(typeof(ShakeMode)).Length - 1),
+                                range = new RangedFloat(Enum.GetValues(typeof(ShakeMode))),
                                 updateValue = (value, dir) => value + dir,
                                 callback = mode => { GameDebug.Log((ShakeMode)mode); CameraSystem.instance.Shake((ShakeMode)mode, MathUtils.SmoothStart3); },
                             });
@@ -2069,8 +2142,9 @@ public class GameManager : MonoBehaviour
                             });
         
         // VFX
-        GameDebug.BindInput(InputType.Debug_SpawnParticle, () => ParticleEffect.instance.SpawnParticle(ParticleType.Explosion, Vector2.zero, 1));
-        GameDebug.BindInput(InputType.Debug_TestPlayerVFX, player.TestPlayerVFX);
+        GameDebug.BindInput(InputType.Debug_SpawnParticle,
+                            () => ParticleEffect.instance.SpawnParticle(ParticleType.Explosion, Vector2.zero, 1));
+        GameDebug.BindInput(InputType.Debug_TestPlayerVFX, /*player.TestPlayerVFX*/() => player.Hurt(0));
     }
     
     private void Update()

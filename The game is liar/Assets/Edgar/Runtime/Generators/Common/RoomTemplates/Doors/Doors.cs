@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Edgar.GraphBasedGenerator.Grid2D;
 using UnityEngine;

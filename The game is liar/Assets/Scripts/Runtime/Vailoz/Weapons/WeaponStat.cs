@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 [CreateAssetMenu(menuName = "Data/Weapon Stat")]
 public class WeaponStat : ScriptableObject

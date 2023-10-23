@@ -1,4 +1,4 @@
-﻿//#if ENABLE_VSTU
+//#if ENABLE_VSTU
 //using System;
 //using System.IO;
 //using System.Linq;

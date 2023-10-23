@@ -1,4 +1,4 @@
-﻿namespace Edgar.Unity
+namespace Edgar.Unity
 {
     /// <summary>
     /// Represents a connection between two rooms.

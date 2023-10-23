@@ -1,4 +1,4 @@
-﻿namespace Edgar.Unity
+namespace Edgar.Unity
 {
     /// <summary>
     /// Priorities of post-processing steps.

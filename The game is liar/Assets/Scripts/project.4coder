@@ -27,6 +27,8 @@ load_paths = {
     .mac = load_paths_base,
 };
 
-reference_paths = {
-    "D:\\Documents\\Unity\\Decompile\\Temp\\",
+reference_paths =
+{
+    "D:\\Documents\\Unity\\Decompile\\",
+    "D:\\Documents\\GitHub\\Rogue-like-game-i-guess\\The game is liar\\Assets\\Edgar",
 };

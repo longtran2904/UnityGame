@@ -1,4 +1,4 @@
-﻿using Edgar.Unity;
+using Edgar.Unity;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 

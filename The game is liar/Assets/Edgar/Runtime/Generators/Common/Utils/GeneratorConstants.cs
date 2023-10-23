@@ -1,4 +1,4 @@
-﻿namespace Edgar.Unity
+namespace Edgar.Unity
 {
     /// <summary>
     /// Constants that are used in the generator.

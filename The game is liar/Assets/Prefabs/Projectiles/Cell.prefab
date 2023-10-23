@@ -291,6 +291,7 @@ MonoBehaviour:
     - DamageWhenCollide
     - DieWhenCollide
     - DieAfterMoveTime
+    - DieAfterEffect
     - SpawnCellWhenDie
     - SpawnDamagePopup
     - ClampToMoveRegion
@@ -301,21 +302,11 @@ MonoBehaviour:
     - AddMoneyWhenCollide
     - FallingOnSpawn
     - IsGrounded
+    - IsReloading
     - AtEndOfMoveRegion
     - Count
-    properties: 1037999999562760
-  testProperties:
-  - serializedEnumNames:
-    - StopAnimation
-    - ChangeEffectObjBack
-    - ScaleOverTime
-    - FadeTextWhenDone
-    - ShockCamera
-    - StartTrailing
-    - DecreaseTrailWidth
-    - PlayParticleInOrder
-    - Count
-    properties: 160
+    properties: 1037999999576072
+  type: 6
   abilities:
   - flags:
       serializedEnumNames:
@@ -336,11 +327,12 @@ MonoBehaviour:
         - ChangeEffectObjBack
         - ScaleOverTime
         - FadeTextWhenDone
-        - ShockCamera
         - StartTrailing
         - DecreaseTrailWidth
         - PlayParticleInOrder
-        - Count
+        - FlipX
+        - FlipY
+        - FlipZ
         properties: 0
       nextAnimation: 
       effectObj: {fileID: 0}
@@ -354,7 +346,6 @@ MonoBehaviour:
       flashDuration: 0
       triggerColor: {r: 0, g: 0, b: 0, a: 0}
       textColor: {r: 0, g: 0, b: 0, a: 0}
-      newText: 
       fontSize: 0
       stopTime: 0
       trauma: 0
@@ -370,7 +361,6 @@ MonoBehaviour:
       audio: 0
       poolType: 0
       scaleOffset: {x: 0, y: 0}
-      rotation: {x: 0, y: 0, z: 0}
     type: 1
     healthToExecute: 0
     distanceToExecute: 5
@@ -385,12 +375,13 @@ MonoBehaviour:
   damage: 0
   money: 10
   ammo: 0
-  inventory: {fileID: 0}
   collisionTags:
   - Player
   valueRange:
     min: 0
     max: 0
+  stat: {fileID: 0}
+  attackTrigger: 0
   moveType: 4
   rotateType: 0
   targetType: 2
@@ -409,6 +400,8 @@ MonoBehaviour:
   fallDir:
     min: -1
     max: 1
+  regionType: 0
+  verticalHeight: 0
   moveTime: 0
   groundRememberTime: 0
   fallRememberTime: 0
@@ -420,6 +413,7 @@ MonoBehaviour:
   whiteMat: {fileID: 2100000, guid: a52db8d2e3bb7c84f9a724b122d7baa7, type: 2}
   leftDust: {fileID: 0}
   rightDust: {fileID: 0}
+  vfx: {fileID: 0}
   spawnVFX:
     properties:
       serializedEnumNames:
@@ -427,11 +421,12 @@ MonoBehaviour:
       - ChangeEffectObjBack
       - ScaleOverTime
       - FadeTextWhenDone
-      - ShockCamera
       - StartTrailing
       - DecreaseTrailWidth
       - PlayParticleInOrder
-      - Count
+      - FlipX
+      - FlipY
+      - FlipZ
       properties: 0
     nextAnimation: 
     effectObj: {fileID: 0}
@@ -445,7 +440,6 @@ MonoBehaviour:
     flashDuration: 0
     triggerColor: {r: 0, g: 0, b: 0, a: 0}
     textColor: {r: 0, g: 0, b: 0, a: 0}
-    newText: 
     fontSize: 0
     stopTime: 0
     trauma: 0
@@ -461,7 +455,6 @@ MonoBehaviour:
     audio: 0
     poolType: 0
     scaleOffset: {x: 0, y: 0}
-    rotation: {x: 0, y: 0, z: 0}
   deathVFX:
     properties:
       serializedEnumNames:
@@ -469,11 +462,12 @@ MonoBehaviour:
       - ChangeEffectObjBack
       - ScaleOverTime
       - FadeTextWhenDone
-      - ShockCamera
       - StartTrailing
       - DecreaseTrailWidth
       - PlayParticleInOrder
-      - Count
+      - FlipX
+      - FlipY
+      - FlipZ
       properties: 0
     nextAnimation: 
     effectObj: {fileID: 0}
@@ -487,7 +481,6 @@ MonoBehaviour:
     flashDuration: 0
     triggerColor: {r: 0, g: 0, b: 0, a: 0}
     textColor: {r: 0, g: 0, b: 0, a: 0}
-    newText: 
     fontSize: 0
     stopTime: 0
     trauma: 0
@@ -503,7 +496,6 @@ MonoBehaviour:
     audio: 20
     poolType: 0
     scaleOffset: {x: 0, y: 0}
-    rotation: {x: 0, y: 0, z: 0}
   hurtVFX:
     properties:
       serializedEnumNames:
@@ -511,11 +503,12 @@ MonoBehaviour:
       - ChangeEffectObjBack
       - ScaleOverTime
       - FadeTextWhenDone
-      - ShockCamera
       - StartTrailing
       - DecreaseTrailWidth
       - PlayParticleInOrder
-      - Count
+      - FlipX
+      - FlipY
+      - FlipZ
       properties: 0
     nextAnimation: 
     effectObj: {fileID: 0}
@@ -529,7 +522,6 @@ MonoBehaviour:
     flashDuration: 0
     triggerColor: {r: 0, g: 0, b: 0, a: 0}
     textColor: {r: 0, g: 0, b: 0, a: 0}
-    newText: 
     fontSize: 0
     stopTime: 0
     trauma: 0
@@ -545,4 +537,3 @@ MonoBehaviour:
     audio: 0
     poolType: 0
     scaleOffset: {x: 0, y: 0}
-    rotation: {x: 0, y: 0, z: 0}

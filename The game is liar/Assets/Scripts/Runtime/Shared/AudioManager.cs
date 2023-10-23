@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEngine;
 
 public enum AudioType
@@ -11,27 +11,27 @@ public enum AudioType
     Player_Land,
     Player_Death,
     Player_DefeatBoss,
-
+    
     Turret_Shoot,
     Enemy_Explosion,
     Enemy_Death,
     Boss_Explosion,
     Boss_Hit_Wall,
     Boss_Dash,
-
+    
     Weapon_Shotgun,
     Weapon_Bounce,
     Weapon_Trickshot,
     Weapon_Hit_Wall,
-
+    
     Game_Select,
     Game_Buy,
     Game_Pickup,
     Game_OpenChest,
-
+    
     Music_Main,
     Music_Boss,
-
+    
     Audio_Count
 }
 
@@ -50,7 +50,7 @@ public static class AudioManager
     private static Audio[] audios;
     private static AudioType firstMusic;
     private static float[] pitches;
-
+    
     public static void Init(GameObject obj, Audio[] audios, AudioType firstMusic, int sourceCount)
     {
         sources = new AudioSource[sourceCount];
@@ -83,7 +83,40 @@ public static class AudioManager
             }
         }*/
     }
-
+    
+    public static System.Collections.Generic.Dictionary<MonoBehaviour, Coroutine> database = new System.Collections.Generic.Dictionary<MonoBehaviour, Coroutine>(64);
+    
+    public static void RepeatAudio(MonoBehaviour runner, AudioType type, RangedFloat waitTime = default)
+    {
+        if (type == AudioType.None)
+        {
+            if (database.TryGetValue(runner, out Coroutine routine) && routine != null)
+            {
+                runner.StopCoroutine(routine);
+                database[runner] = null;
+            }
+            Debug.Log("Stop Audio");
+        }
+        else
+        {
+            if (database.TryGetValue(runner, out Coroutine prevRoutine))
+                Debug.Assert(prevRoutine == null, prevRoutine);
+            
+            Coroutine routine = runner.StartCoroutine(Repeat());
+            database[runner] = routine;
+            Debug.Log("Play Audio");
+        }
+        
+        System.Collections.IEnumerator Repeat()
+        {
+            while (true)
+            {
+                PlayAudio(type);
+                yield return new WaitForSeconds(waitTime.randomValue);
+            }
+        }
+    }
+    
     // RANT: I want to do something fundamental here: I want to play a sound with a randomized volume and pitch.
     // That's it. A straightforward and common thing to do in games.
     // But I can't because Unity doesn't provide any function to play a sound with a different pitch (PlayOneShot only takes in a volume argument).
@@ -98,7 +131,7 @@ public static class AudioManager
             return;
         Audio audio = audios[(int)type - 1];
         Debug.Assert(audio.type == type, $"AudioType {type} isn't matched with {audio.type}!");
-
+        
         float pitch = audio.pitch.randomValue;
         foreach (AudioSource source in sources)
         {
@@ -114,7 +147,7 @@ public static class AudioManager
         }
         Debug.LogWarning($"Can't find a valid audio source for {type}!");
     }
-
+    
     public static void ReadAudio(float[] data, int channels)
     {
         for (int i = 0; i < data.Length; i++)

@@ -10,17 +10,17 @@ public struct CameraShakeData
     public int seed;
     public Vector2 dir;
     public SmoothFunc smoothFunc;
-
+    
     public bool isValid => trauma > 0f;
-
+    
     public Vector3 UpdateShake(float delta) // return posX, posY, rotZ
     {
         Vector3 result = new Vector3(
-            Mathf.PerlinNoise(seed + 0, Time.time * speed),
-            Mathf.PerlinNoise(seed + 1, Time.time * speed),
-            Mathf.PerlinNoise(seed + 2, Time.time * speed)
-        );
-
+                                     Mathf.PerlinNoise(seed + 0, Time.time * speed),
+                                     Mathf.PerlinNoise(seed + 1, Time.time * speed),
+                                     Mathf.PerlinNoise(seed + 2, Time.time * speed)
+                                     );
+        
         if (dir == Vector2.zero)
             result += (Vector3)((Vector2)result - Vector2.one);
         else
@@ -48,11 +48,11 @@ public class CameraSystem : MonoBehaviour
     public Vector3[] shakeForces;
     public float[] shakeSpeeds;
     public float[] traumas;
-
+    
     private Vector3 basePosition;
     private int shakeDataCount;
     private CameraShakeData[] shakeData = new CameraShakeData[256];
-
+    
     public Material shockMat;
     private bool useShock;
     private float maxTime;
@@ -60,7 +60,7 @@ public class CameraSystem : MonoBehaviour
     private int timeID;
     private int speedID;
     private int sizeID;
-
+    
     private void Awake()
     {
         if (!instance)
@@ -68,19 +68,19 @@ public class CameraSystem : MonoBehaviour
         basePosition = transform.localPosition;
         int forceLength = shakeForces.Length, speedLength = shakeSpeeds.Length, traumaLength = traumas.Length;
         Debug.Assert(forceLength == speedLength && traumaLength == speedLength && forceLength == typeof(ShakeMode).GetEnumValues().Length,
-            $"Force: {forceLength}, Speed: {speedLength}, Trauma: {traumaLength}");
-
+                     $"Force: {forceLength}, Speed: {speedLength}, Trauma: {traumaLength}");
+        
         timeID = Shader.PropertyToID("_Timer");
         speedID = Shader.PropertyToID("_Speed");
         sizeID = Shader.PropertyToID("_Size");
         ResetShockwave();
     }
-
+    
     void Update()
     {
         transform.localPosition = basePosition;
         transform.localRotation = Quaternion.identity;
-
+        
         Vector3 shakePos = Vector3.zero;
         float shakeRot = 0;
         for (int i = 0; i < shakeDataCount; i++)
@@ -95,18 +95,18 @@ public class CameraSystem : MonoBehaviour
             shakePos += (Vector3)(Vector2)shake;
             shakeRot += shake.z;
         }
-
+        
         END:
         transform.localPosition = shakePos;
         transform.localRotation = Quaternion.Euler(0, 0, shakeRot);
-
+        
         if (useShock)
             if (timer <= maxTime)
-                shockMat.SetFloat(timeID, timer += Time.unscaledDeltaTime);
-            else
-                ResetShockwave();
+            shockMat.SetFloat(timeID, timer += Time.unscaledDeltaTime);
+        else
+            ResetShockwave();
     }
-
+    
     public System.Collections.IEnumerator Flash(float time, float alpha)
     {
         flashScreen.enabled = true;
@@ -121,9 +121,9 @@ public class CameraSystem : MonoBehaviour
         }
         flashScreen.enabled = false;
     }
-
+    
     public void Shake(ShakeMode mode, SmoothFunc smoothFunc = null) => Shake(mode, Vector2.zero, smoothFunc);
-
+    
     public void Shake(ShakeMode mode, Vector2 dir, SmoothFunc smoothFunc = null)
     {
         int seed = Random.Range(-100, 100);
@@ -140,7 +140,7 @@ public class CameraSystem : MonoBehaviour
         Debug.Assert(shakeDataCount < shakeData.Length, "Shake data is full: " + shakeDataCount);
         shakeDataCount = Mathf.Clamp(shakeDataCount, 0, shakeData.Length - 1);
     }
-
+    
     public void Shock(float speed = 1, float size = .1f)
     {
         if (!useShock && speed != 0)
@@ -151,7 +151,7 @@ public class CameraSystem : MonoBehaviour
             useShock = true;
         }
     }
-
+    
     private void ResetShockwave()
     {
         shockMat.SetFloat(timeID, 0f);
