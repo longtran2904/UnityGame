@@ -36,11 +36,12 @@ public enum InputType
 public enum GameEventType
 {
     None,
-    //Reload,
-    //Dialogue,
     GameOver,
     EndRoom,
     NextRoom,
+    
+    //Reload,
+    //Dialogue,
     
     Count
 }

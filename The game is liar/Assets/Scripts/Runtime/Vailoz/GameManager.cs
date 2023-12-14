@@ -171,7 +171,7 @@ public class GameManager : MonoBehaviour
             List<string> setNames = new List<string>(names.Length);
             for (int i = 0; i < names.Length; i++)
                 if (MathUtils.HasFlag(property, i))
-                setNames.Add(names[i]);
+                    setNames.Add(names[i]);
             GameUtils.GetAllString(setNames, $"All set flags of {fieldName}: ", "\n", indentLevel + 1, builder: builder);
             
             GameUtils.GetAllString(names, $"Serialized names of {fieldName}: ", "\n", indentLevel + 1,
@@ -227,9 +227,9 @@ public class GameManager : MonoBehaviour
             {
                 foreach (Assembly assembly in assemblies)
                     foreach (Type type in assembly.GetTypes())
-                    if (!type.IsGenericParameter)
-                    if (types.ContainsKey(type.Name))
-                    types[type.Name].Add(type);
+                        if (!type.IsGenericParameter)
+                            if (types.ContainsKey(type.Name))
+                                types[type.Name].Add(type);
                 else
                     types.Add(type.Name, new List<Type>() { type });
             }
@@ -276,13 +276,13 @@ public class GameManager : MonoBehaviour
             Attribute[] atts = Array.ConvertAll(member.GetCustomAttributes(false), att => (Attribute)att);
             for (int i = 0; i < data.Count; ++i)
                 if (atts[i].GetType() != data[i].AttributeType)
-                Debug.Log("Attribute: " + atts[i].GetType() + " Data: " + data[i].AttributeType);
+                    Debug.Log("Attribute: " + atts[i].GetType() + " Data: " + data[i].AttributeType);
             else
                 usedAttributes.Add(data[i].AttributeType);
             
             for (int i = data.Count; i < atts.Length; ++i)
                 if (!unusedAttributes.Contains(atts[i].GetType()))
-                unusedAttributes.Add(atts[i].GetType());
+                    unusedAttributes.Add(atts[i].GetType());
         }
     }
     
@@ -415,11 +415,11 @@ public class GameManager : MonoBehaviour
             
             foreach (string prefix in prefixes)
                 if (asmName.StartsWith(prefix))
-                return true;
+                    return true;
             
             foreach (string name in names)
                 if (asmName == name)
-                return true;
+                    return true;
             
             return false;
         };
@@ -493,7 +493,7 @@ public class GameManager : MonoBehaviour
         {
             foreach (Assembly assembly in assemblies)
                 if (filterAssembly(assembly))
-                callback(assembly);
+                    callback(assembly);
         }
         
         T[] IteratePartitionAssemblies<T>(Func<Assembly, T> callback)
@@ -503,7 +503,7 @@ public class GameManager : MonoBehaviour
                     {
                         for (int i = range.Item1; i < range.Item2; i++)
                             if (filterAssembly(assemblies[i]))
-                            data[i] = callback(assemblies[i]);
+                                data[i] = callback(assemblies[i]);
                     });
             return data;
         }
@@ -582,7 +582,7 @@ public class GameManager : MonoBehaviour
                 Type[][] allTypes = IteratePartitionAssemblies(assembly => assembly.GetTypes());
                 for (int i = 0; i < allTypes.Length; ++i)
                     if (allTypes[i] != null)
-                    tasks.Add(RunTask(i, i => AppendTypeWithPartition(assemblies[i], null)));
+                        tasks.Add(RunTask(i, i => AppendTypeWithPartition(assemblies[i], null)));
             }
             break;
             case ThreadType.Partition_All:
@@ -1191,7 +1191,7 @@ public class GameManager : MonoBehaviour
                             
                             foreach (string name in names)
                                 if (name == method.Name)
-                                return equal;
+                                    return equal;
                             return !equal;
                         }
                         
@@ -1375,12 +1375,12 @@ public class GameManager : MonoBehaviour
             // https://stackoverflow.com/questions/9793242/type-getinterfaces-for-declared-interfaces-only
             // VS also doesn't handle the interface inheritance case
             /*if (!type.IsInterface)
-                match = itf => Array.Exists(type.GetInterfaceMap(itf).TargetMethods,
-                        method => method.DeclaringType == type && !(method.IsVirtual && method.GetBaseDefinition() != method));*/
+            match = itf => Array.Exists(type.GetInterfaceMap(itf).TargetMethods,
+            method => method.DeclaringType == type && !(method.IsVirtual && method.GetBaseDefinition() != method));*/
             
             foreach (Type itf in interfaces)
                 if (match(itf))
-                types.Add(itf);
+                    types.Add(itf);
             
             return types.ToArray();
         }
@@ -1568,7 +1568,7 @@ public class GameManager : MonoBehaviour
                         int startIndex = endIndex - GetGenericArguments(sharedParent).Length;
                         for (int i = startIndex; i < endIndex && definitionType != sharedParent; ++i)
                             if (currentArgs[i] != targetArgs[i])
-                            definitionType = sharedParent;
+                                definitionType = sharedParent;
                         endIndex = startIndex;
                     }
                 }
@@ -1597,7 +1597,7 @@ public class GameManager : MonoBehaviour
                         int length = Mathf.Min(names.Length, currentNames.Length);
                         for (; i < length; ++i)
                             if (names[i] != currentNames[i])
-                            break;
+                                break;
                     }
                     
                     // NOTE: result will be null if i == 0 (when the two types don't share the same parent)
@@ -1662,7 +1662,7 @@ public class GameManager : MonoBehaviour
                     {
                         for (int i = 0; targetType != null; ++i, targetType = targetType.DeclaringType)
                             if (targetType == type || targetType == type.DeclaringType)
-                            return i;
+                                return i;
                         return failedDistanceValue;
                     }
                     
@@ -1675,8 +1675,8 @@ public class GameManager : MonoBehaviour
                         string[] targetNamespaces = targetType.Namespace?.Split('.');
                         if (namespaces != null && targetNamespaces != null && namespaces.Length <= targetNamespaces.Length)
                             for (; score < namespaces.Length; ++score)
-                            if (namespaces[score] != targetNamespaces[score])
-                            return 0;
+                                if (namespaces[score] != targetNamespaces[score])
+                                    return 0;
                         return score;
                     }
                 }
@@ -1774,7 +1774,7 @@ public class GameManager : MonoBehaviour
             {
                 if (mode == MemberNameMode.IsDecl && type.IsGenericParameter)
                     if (AppendAttributes(builder, type.GetCustomAttributesData(), -1))
-                    builder.Append(' ');
+                        builder.Append(' ');
                 AppendTupleName(builder, type, tupleNames, mode);
             }
         }
@@ -1872,8 +1872,8 @@ public class GameManager : MonoBehaviour
                 if (value is ReadOnlyCollection<CustomAttributeTypedArgument> argArray)
                 {
                     builder.Append($"new[] {{");
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      AppendArray(builder, argArray, null, null, arg => AppendDefaultValue(builder, arg.ArgumentType, arg.Value));
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      builder.Append(" }");
+                                   AppendArray(builder, argArray, null, null, arg => AppendDefaultValue(builder, arg.ArgumentType, arg.Value));
+                                   builder.Append(" }");
                 }
                 else if (valueType == typeof(string))
                     builder.Append($"\"{GameUtils.EscapeString(str, "\'")}\"");
@@ -1915,7 +1915,7 @@ public class GameManager : MonoBehaviour
         {
             foreach (var attribute in attributes)
                 if (attribute.AttributeType.FullName == fullname)
-                return true;
+                    return true;
             return false;
         }
     }
@@ -1991,9 +1991,15 @@ public class GameManager : MonoBehaviour
         emptyPos = Vector3Int.zero;
         if (hitInfo)
         {
-            Vector3Int hitPosCeil = QueryTiles(tilemap, hitInfo.point.ToVector2Int(true).ToVector3Int(), true, 0, (int)dirY);
-            Vector3Int hitPosFloor = QueryTiles(tilemap, hitInfo.point.ToVector2Int(false).ToVector3Int(), true, 0, (int)dirY);
-            groundPos = Mathf.Abs(hitPosFloor.y - hitInfo.point.y) < Mathf.Abs(hitPosCeil.y - hitInfo.point.y) ? hitPosFloor : hitPosCeil;
+            Vector2 point = hitInfo.point;
+#if false
+            Vector3Int hitPosCeil  = QueryTiles(tilemap, point.ToVector2Int(true ).ToVector3Int(), true, 0, (int)dirY);
+            Vector3Int hitPosFloor = QueryTiles(tilemap, point.ToVector2Int(false).ToVector3Int(), true, 0, (int)dirY);
+            groundPos = Mathf.Abs(hitPosFloor.y - point.y) < Mathf.Abs(hitPosCeil.y - point.y) ? hitPosFloor : hitPosCeil;
+#else
+            groundPos = QueryTiles(tilemap, Vector2Int.FloorToInt(point).ToVector3Int(), true, 0, (int)dirY);
+#endif
+            
             emptyPos = groundPos + new Vector3Int(0, -(int)dirY, 0);
         }
         return hitInfo;
@@ -2088,9 +2094,10 @@ public class GameManager : MonoBehaviour
             result = MathUtils.CreateRectMinMax(minPos + extents * new Vector2(+1, -dirY), maxPos + extents * new Vector2(-1, -dirY));
             
             //GameDebug.Log($"Hit pos: {hitPos}, Min pos: {minPos}, Max pos: {maxPos}, Rect: {result}");
+            Rect wallRect = MathUtils.CreateRectMinMax((Vector3)minWallPos, (Vector3)maxWallPos);
+            Rect groundRect = MathUtils.CreateRectMinMax((Vector3)minGroundPos, (Vector3)maxGroundPos);
+            GameDebug.Assert(wallRect.size != Vector2.zero && groundRect.size != Vector2.zero, $"Wall: {wallRect}, Ground: {groundRect}");
             GameDebug.DrawBox(result, Color.green);
-            GameDebug.DrawLine((Vector3)minGroundPos, (Vector3)maxGroundPos, Color.red);
-            GameDebug.DrawLine((Vector3)minWallPos, (Vector3)maxWallPos, Color.yellow);
         }
         return result;
     }

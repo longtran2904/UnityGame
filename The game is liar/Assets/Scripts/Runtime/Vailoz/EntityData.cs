@@ -26,22 +26,72 @@ public enum TransformFlag
 public class EntityTransform
 {
     public Entity entity;
+    //public Vector2 pos { get => transform.position; set => transform.position = value; }
+    public Vector2 pos;
+    public Vector2 vel;
+    
     public Transform transform => entity.transform;
-    public Vector2 pos, vel;
+    public Vector2 gravityDir => (Physics2D.gravity * /*rb.*/gravityScale).normalized;
+    public Vector2 right => entity.transform.right;
+    
+    public float gravityScale;
+    private Rigidbody2D rb;
+    
+    public EntityTransform(Entity entity)
+    {
+        this.entity = entity;
+        pos = entity.transform.position;
+        rb = entity.GetComponent<Rigidbody2D>();
+        if (rb)
+        {
+            gravityScale = rb.gravityScale;
+            rb.gravityScale = 0;
+        }
+    }
+    
+    public void Update()
+    {
+        if (rb)
+        {
+            if (rb.isKinematic)
+                transform.transform.position = pos;
+            else
+                rb.velocity = vel;
+        }
+        else
+            transform.transform.position = pos;
+    }
+    
+    public void Reset()
+    {
+        pos = transform.transform.position;
+        if (rb)
+            vel = rb.velocity;
+    }
 }
 
 public struct MoveStat
 {
     public float minSpeed, maxSpeed, acc, dec;
-    public MoveStat(float speed)
+    public float k1, k2, k3;
+    public float drag;
+    
+    public MoveStat(float speed, float accel = 0)
     {
         minSpeed = maxSpeed = speed;
-        acc = dec = 0;
+        acc = dec = accel;
+        drag = 0;
+        k1 = k2 = k3 = 0;
     }
-    public MoveStat(float acceleration, float startSpeed = 0)
+    
+    public static MoveStat SecondOrder(float f, float z, float r)
     {
-        minSpeed = maxSpeed = startSpeed;
-        acc = dec = acceleration;
+        return new MoveStat
+        {
+            k1 = z / (Mathf.PI * f),
+            k2 = 1 / ((2 * Mathf.PI * f) * (2 * Mathf.PI * f)),
+            k3 = r * z / (2 * Mathf.PI * f),
+        };
     }
 }
 
@@ -53,6 +103,7 @@ public enum TargetOffsetType
     PlayerDir,
     PlayerUp,
     EntityRight,
+    GravityDir,
 }
 
 public struct OffsetData
@@ -60,17 +111,18 @@ public struct OffsetData
     public TargetOffsetType type;
     public Vector2 offset;
     
-    public Vector2 GetOffset(Vector2 entityDir)
+    public Vector2 GetOffset(EntityTransform transform)
     {
         Vector2 currentDir = Vector2.one;
         Transform player = GameManager.player.transform;
         switch (type)
         {
             case TargetOffsetType.Input:       currentDir = GameInput.GetAxis();     break;
-            case TargetOffsetType.Mouse:       currentDir = GameInput.GetMouseDir(); break;
+            case TargetOffsetType.Mouse:       currentDir = GameInput./*GetMouseDir()*/GetDirToMouse(transform.pos); break;
             case TargetOffsetType.PlayerDir:   currentDir = player.Direction();      break;
             case TargetOffsetType.PlayerUp:    currentDir = player.up;               break;
-            case TargetOffsetType.EntityRight: currentDir = entityDir;               break;
+            case TargetOffsetType.EntityRight: currentDir = transform.right;         break;
+            case TargetOffsetType.GravityDir:  currentDir = transform.gravityDir;    break;
         }
         return currentDir * offset;
     }
@@ -90,26 +142,28 @@ public class TransformData
     
     public MoveStat stat;
     
-    public static void TransformEntity(TransformData data, EntityTransform transform, float dt)
+    public static void TransformEntity(TransformData data, EntityTransform transform, Vector2 targetPos, float dt)
     {
         for (; data != null; data = data.next)
         {
-            Vector2 targetPos = data.targetPos, entityPos = transform.pos, entityVel = transform.vel, entityDir = transform.transform.right;
+            Vector2 entityPos = transform.pos, entityVel = transform.vel;
+            Vector2 oldVel = entityVel;
             
-            targetPos += data.targetOffset.GetOffset(entityDir);
+            Vector2 targetOffset = data.targetOffset.GetOffset(transform);
+            targetPos += targetOffset;
             Vector2 targetDir = targetPos - entityPos;
             
             bool freezeX = data.flags.HasProperty(TransformFlag.FreezeX), reverseX = data.flags.HasProperty(TransformFlag.ReverseX);
             bool freezeY = data.flags.HasProperty(TransformFlag.FreezeY), reverseY = data.flags.HasProperty(TransformFlag.ReverseY);
             
-            if (freezeX) targetDir.x = 0;
+            if (freezeX) targetDir.x = entityVel.x = 0;
             if (reverseX)
             {
                 if (freezeX) entityPos.x = targetPos.x;
                 else         targetDir.x *= -1;
             }
             
-            if (freezeY) targetDir.y = 0;
+            if (freezeY) targetDir.y = entityVel.y = 0;
             if (reverseY)
             {
                 if (freezeY) entityPos.y = targetPos.y;
@@ -125,25 +179,42 @@ public class TransformData
                 {
                     Debug.Assert(data.stat.maxSpeed >= data.stat.minSpeed);
                     
-                    float mag = Mathf.Max(entityVel.magnitude, data.stat.minSpeed);
-                    Vector2 targetVel = targetDir * (data.stat.maxSpeed > 0 ? data.stat.maxSpeed: mag);
-                    float targetMag = targetVel.magnitude; // NOTE(long): targetMag != data.stat.maxSpeed when targetDir == Vector2.zero
+                    float currentMag = Mathf.Max(entityVel.magnitude, data.stat.minSpeed);
+                    Vector2 currentVel = (entityVel == Vector2.zero ? targetDir : entityVel.normalized) * currentMag;
                     
-                    entityVel = Vector2.MoveTowards(entityVel.normalized * mag, targetVel, dt * (targetMag < mag ? data.stat.dec : data.stat.acc));
+                    float targetMag = data.stat.maxSpeed;
+                    if (targetMag == 0)
+                        targetMag = currentMag + 1000; // This can be any value so long as it's greater than acc * dt
+                    if (targetDir == Vector2.zero)
+                        targetMag = 0; // This is for the acc calculation below
+                    Vector2 targetVel = targetDir * targetMag;
+                    
+                    float acc = targetMag < currentMag ? data.stat.dec : data.stat.acc;
+                    
+                    if (acc == 0)
+                        entityVel = targetVel;
+                    else
+                        entityVel = Vector2.MoveTowards(currentVel, targetVel, acc * dt);
+                    //https://forum.unity.com/threads/drag-factor-what-is-it.85504/#post-1827892
+                    //https://www.reddit.com/r/Unity3D/comments/n13or0/a_function_for_calculating_rigidbody2d_drag_from/
+                    entityVel *= (1.0f / (1.0f + dt * data.stat.drag));
                     entityPos += entityVel * dt;
                 } break;
                 
                 case TransformType.SecondOrder:
                 {
-                    float k1 = 0, k2 = 0, k3 = 0;
-                    entityPos.x = MathUtils.SecondOrder(dt, k1, k2, k3, targetPos.x, data.targetPos.x, entityPos.x, ref entityVel.x);
-                    entityPos.y = MathUtils.SecondOrder(dt, k1, k2, k3, targetPos.y, data.targetPos.y, entityPos.y, ref entityVel.y);
+                    float k1 = data.stat.k1, k2 = data.stat.k2, k3 = data.stat.k3;
+                    if (!freezeX)
+                        entityPos.x = MathUtils.SecondOrder(dt, k1, k2, k3, targetPos.x, data.targetPos.x, entityPos.x, ref entityVel.x);
+                    if (!freezeY)
+                        entityPos.y = MathUtils.SecondOrder(dt, k1, k2, k3, targetPos.y, data.targetPos.y, entityPos.y, ref entityVel.y);
                 } break;
             }
             
             targetDir = targetPos - entityPos;
             Vector2 rotateDir = Quaternion.AngleAxis(data.zOffset, Vector3.forward) * targetDir;
             Vector3 rotation = Vector3.zero;
+            Vector2 entityDir = transform.transform.Direction();
             
             switch (data.rotateType)
             {
@@ -158,12 +229,15 @@ public class TransformData
                 } break;
             }
             
-            data.targetPos = targetPos;
+            if (freezeX) entityVel.x = oldVel.x;
+            if (freezeY) entityVel.y = oldVel.y;
+            
             transform.pos = entityPos;
             transform.vel = entityVel;
             transform.transform.Rotate(rotation);
         }
-        transform.transform.position = transform.pos;
+        //transform.transform.position = transform.pos;
+        transform.Update();
     }
 }
 
@@ -201,11 +275,17 @@ public class EntityTrigger
     
     private float timer;
     
-    public EntityTrigger(TriggerType trigger, float value = 0, bool targetPlayer = false)
+    public EntityTrigger(TriggerType trigger, float value = 0, bool targetPlayer = false, bool inverse = false)
     {
         type = trigger;
         triggerValue = new RangedFloat(value);
         flags.SetProperty(TriggerFlag.TargetPlayer, targetPlayer);
+        flags.SetProperty(TriggerFlag.Inverse, inverse);
+    }
+    
+    public EntityTrigger(InputType trigger)
+    {
+        input = trigger;
     }
     
     public bool IsTrigger(Entity entity, EntityAction action, bool hasValidPos)
@@ -233,7 +313,8 @@ public class EntityTrigger
             case TriggerType.ValidPos:  result = hasValidPos;                                                                    break;
         }
         
-        result &= input != InputType.None ? GameInput.GetInput(input) : true;
+        if (input != InputType.None)
+            result &= GameInput.GetInput(input);
         if (flags.HasProperty(TriggerFlag.Inverse))
             result = !result;
         
@@ -247,6 +328,7 @@ public enum MoveRegionType
     WalkRegion,
     GroundPos,
     Manual,
+    Entity,
 }
 
 public enum MoveTarget
@@ -256,6 +338,7 @@ public enum MoveTarget
     Player,
     Entity,
     Region,
+    Custom,
 }
 
 public class ActionList
@@ -267,6 +350,7 @@ public class ActionList
     public static void Execute(ActionList firstList, EntityTransform transform, float dt)
     {
         Entity entity = transform.entity;
+        transform.Reset();
         
         for (ActionList list = firstList; list != null; list = list.next)
         {
@@ -277,14 +361,19 @@ public class ActionList
             
             if (action.timer > action.duration)
             {
-                list.current = action.next;
                 action.timer = 0;
-                break;
+                if (action.next != null)
+                {
+                    list.current = action.next;
+                    continue;
+                }
             }
             
             TransformData data = action.transform;
             
             (bool valid, Vector2 targetPos) = action.GetTargetPos(transform.pos, data.targetPos, entity.spriteExtents);
+            
+            bool onGround = GameUtils.GroundCheck(transform.transform.position, entity.spriteExtents, -transform.transform.up.y, Color.red);
             
             if (action.timer <= action.interuptTime)
             {
@@ -292,15 +381,144 @@ public class ActionList
                 {
                     list.current = list.first;
                     action.timer = 0;
-                    break;
+                    continue;
                 }
             }
             
-            TransformData.TransformEntity(data, transform, dt);
+            TransformData.TransformEntity(data, transform, targetPos, dt);
+            data.targetPos = targetPos;
             transform.pos = action.UpdateMoveRegion(action.regionType, transform.pos, entity.spriteExtents, -transform.transform.up.y);
             
             action.timer += dt;
         }
+    }
+    
+    public EntityAction PushAction(TriggerType type, MoveStat stat)
+    {
+        return PushAction(new EntityAction
+                          {
+                              trigger = new EntityTrigger(type),
+                              transform = new TransformData
+                              {
+                                  type = TransformType.Acceleration,
+                                  stat = stat,
+                              },
+                          });
+    }
+    
+    public EntityAction PushAction(InputType type, MoveStat stat)
+    {
+        return PushAction(new EntityAction
+                          {
+                              trigger = new EntityTrigger(type),
+                              transform = new TransformData
+                              {
+                                  type = TransformType.Acceleration,
+                                  stat = stat,
+                              },
+                          });
+    }
+    
+    public EntityAction PushAction(MoveStat stat)
+    {
+        return PushAction(new EntityAction
+                          {
+                              transform = new TransformData
+                              {
+                                  type = stat.k2 == 0 ? TransformType.Acceleration : TransformType.SecondOrder,
+                                  stat = stat,
+                              },
+                          });
+    }
+    
+    public EntityAction PushAction(EntityAction action)
+    {
+        if (first == null)
+            first = action;
+        else
+        {
+            ActionList nextList = new ActionList();
+            nextList.next = next;
+            next = nextList;
+            next.first = action;
+        }
+        
+        if (action.transform == null)
+            action.transform = new TransformData();
+        
+        return action;
+    }
+    
+    public EntityAction PushAction() => PushAction(new EntityAction());
+    
+    public static ActionList CreatePlayer(MoveStat move, MoveStat fall, bool canMove)
+    {
+        ActionList result = new ActionList();
+        
+        if (canMove)
+            result.PushAction(/*TriggerType.InputX, */move).SetTarget(MoveTarget.Input).SetFreezeAxis(false, true);
+        EntityAction fallAction = result.PushAction(fall).SetTargetOffset(TargetOffsetType.GravityDir, Vector2.up).SetFreezeAxis(true);
+        // NOTE(long): Do we need this condition
+        fallAction.PushTriggers(new EntityTrigger(TriggerType.OnGround, inverse: true));
+        
+        result.PushAction().SetTargetOffset(TargetOffsetType.Mouse).SetRotation(RotateType.FlipX);
+        result.PushAction().SetTargetOffset(TargetOffsetType.GravityDir, Vector2.down).SetRotation(RotateType.FlipY);
+        
+        return result;
+    }
+    
+    public static ActionList CreateWeapon(MoveStat move, Vector2 posOffset, float zOffset = 0)
+    {
+        ActionList result = new ActionList();
+        
+        EntityAction moveAction = result.PushAction(move);
+        moveAction.SetTarget(MoveTarget.Player);
+        moveAction.SetTargetOffset(TargetOffsetType.PlayerDir, posOffset);
+        moveAction.PushSubAction().SetTargetOffset(TargetOffsetType.Mouse).SetRotation(RotateType.LookAt);
+        //moveAction.SetRotation(RotateType.LookAt, zOffset);
+        moveAction.SetStickAxis(true);
+        
+        return result;
+    }
+    
+    public static ActionList CreateMaggot(MoveStat stat, Vector2 distanceToTeleport, RangedFloat teleportOffset, float waitAfterTp)
+    {
+        ActionList result = new ActionList();
+        
+        EntityAction moveAction = result.PushAction(stat);
+        moveAction.TargetRegion(MoveRegionType.WalkRegion, PositionType.Max);
+        
+        EntityAction teleportation = moveAction.PushSubAction();
+        teleportation.PushTriggers(new EntityTrigger(TriggerType.DistanceX, distanceToTeleport.x, true),
+                                   new EntityTrigger(TriggerType.DistanceY, distanceToTeleport.y, true),
+                                   new EntityTrigger(TriggerType.ValidPos));
+        teleportation.SetTarget(MoveTarget.Player);
+        teleportation.SetSearchParam(Vector2.right * teleportOffset.min, Vector2.right * teleportOffset.max, RegionType.Ground);
+        teleportation.SetStickAxis(true, true);
+        teleportation.PushWaitAction(waitAfterTp);
+        
+        return result;
+    }
+    
+    public static ActionList CreateNoEye(MoveStat moveStat, MoveStat dashStat, MoveStat cooldownStat, float distanceToDash,
+                                         float interuptTime, float chargeDuration, float dashDuration, float cooldownDuration)
+    {
+        ActionList result = new ActionList();
+        
+        EntityAction moveAction = result.PushAction(moveStat);
+        moveAction.SetTarget(MoveTarget.Player);
+        
+        EntityAction chargeAction = moveAction.PushWaitAction(chargeDuration, interuptTime);
+        chargeAction.PushTriggers(new EntityTrigger(TriggerType.Distance, distanceToDash, true));
+        
+        EntityAction dashAction = chargeAction.PushSubAction(dashStat, dashDuration);
+        dashAction.SetTarget(MoveTarget.Player);
+        
+        EntityAction cooldownAction = chargeAction.PushSubAction(cooldownStat, cooldownDuration);
+        dashAction.SetTarget(MoveTarget.Player);
+        cooldownAction.SetTargetOffset(TargetOffsetType.None, -Vector2.one);
+        
+        return result;
     }
 }
 
@@ -323,6 +541,31 @@ public class EntityAction
     private Rect region;
     public float timer;
     
+    public EntityAction PushSubAction()
+    {
+        EntityAction result = new EntityAction();
+        result.transform = new TransformData();
+        next = result;
+        return result;
+    }
+    
+    public EntityAction PushSubAction(MoveStat stat, float duration = 0)
+    {
+        EntityAction result = PushSubAction();
+        result.transform.stat = stat;
+        result.duration = duration;
+        result.transform.type = TransformType.Acceleration;
+        return result;
+    }
+    
+    public EntityAction PushWaitAction(float waitTime, float interuptTime = 0)
+    {
+        EntityAction waitAction = PushSubAction();
+        waitAction.duration = waitTime;
+        waitAction.interuptTime = interuptTime;
+        return waitAction;
+    }
+    
     public void PushTriggers(params EntityTrigger[] triggers)
     {
         for (int i = 0; i < triggers.Length - 1; ++i)
@@ -334,8 +577,52 @@ public class EntityAction
     {
         for (EntityTrigger trigger = this.trigger; trigger != null; trigger = trigger.next)
             if (!trigger.IsTrigger(entity, this, hasValidPos))
-            return false;
+                return false;
         return true;
+    }
+    
+    public EntityAction SetRotation(RotateType rotateType, float zOffset = 0)
+    {
+        transform.rotateType = rotateType;
+        transform.zOffset = zOffset;
+        return this;
+    }
+    
+    public EntityAction SetTarget(MoveTarget target)
+    {
+        targetType = target;
+        return this;
+    }
+    
+    public EntityAction TargetRegion(MoveRegionType regionType, PositionType posType)
+    {
+        this.regionType = regionType;
+        searchParam.filterResult = posType;
+        targetType = MoveTarget.Region;
+        return this;
+    }
+    
+    public EntityAction SetSearchParam(Vector2 minSize, Vector2 maxSize, RegionType searchType, PositionType filter = PositionType.Random)
+    {
+        searchParam = new GameManager.SearchParameter
+        {
+            minSearchSize = minSize,
+            maxSearchSize = maxSize,
+            posType = searchType,
+            filterResult = filter
+        };
+        return this;
+    }
+    
+    public EntityAction SetTargetOffset(TargetOffsetType type) => SetTargetOffset(type, Vector2.one);
+    public EntityAction SetTargetOffset(TargetOffsetType type, Vector2 offset)
+    {
+        transform.targetOffset = new OffsetData
+        {
+            type = type,
+            offset = offset,
+        };
+        return this;
     }
     
     public void PingPong(float distance, bool horizontal)
@@ -343,6 +630,20 @@ public class EntityAction
         targetType = MoveTarget.Region;
         regionType = MoveRegionType.GroundPos;
         region.size = (horizontal ? Vector2.right : Vector2.up) * distance;
+    }
+    
+    public EntityAction SetStickAxis(bool stickX = false, bool stickY = false)
+    {
+        if (stickX) transform.flags.SetProperties(TransformFlag.FreezeX, TransformFlag.ReverseX);
+        if (stickY) transform.flags.SetProperties(TransformFlag.FreezeY, TransformFlag.ReverseY);
+        return this;
+    }
+    
+    public EntityAction SetFreezeAxis(bool freezeX = false, bool freezeY = false)
+    {
+        if (freezeX) transform.flags.SetProperties(TransformFlag.FreezeX);
+        if (freezeY) transform.flags.SetProperties(TransformFlag.FreezeY);
+        return this;
     }
     
     public (bool, Vector2) GetTargetPos(Vector2 currentPos, Vector2 oldTarget, Vector2 spriteExtents)
@@ -355,6 +656,7 @@ public class EntityAction
         {
             case MoveTarget.Input:  result += GameInput.GetAxis(); break;
             
+            case MoveTarget.Custom: result = oldTarget; goto case MoveTarget.Entity;
             case MoveTarget.Player: result = playerPos; goto case MoveTarget.Entity;
             case MoveTarget.Entity:
             {
@@ -365,10 +667,12 @@ public class EntityAction
             
             case MoveTarget.Region:
             {
+                result = oldTarget;
                 if (oldTarget != region.min && oldTarget != region.max)
                     result = GetRectPos(region, searchParam.filterResult);
-                if (MathUtils.IsApproximate(currentPos, oldTarget))
-                    result = oldTarget == region.max ? region.min : region.max;
+                bool isTargetingMax = oldTarget == region.max;
+                if (MathUtils.IsApproximate(currentPos, oldTarget, .1f, isTargetingMax ? 1 : -1))
+                    result = isTargetingMax ? region.min : region.max;
                 
                 Vector2 GetRectPos(Rect rect, PositionType type)
                 {
@@ -395,6 +699,7 @@ public class EntityAction
         {
             case MoveRegionType.WalkRegion: region = GameManager.CalculateMoveRegion(position, extents, dirY); break;
             case MoveRegionType.Manual:     region = new Rect(position, extents * 2);                          break;
+            case MoveRegionType.Entity:     region.position = position;                                        break;
             
             case MoveRegionType.GroundPos:
             {
@@ -502,5 +807,44 @@ void Knockback(Entity entity, float force)
     EntityAction action = GetMoveAction(entity);
     action.transform.next = new TransformData();
     action.transform.next.targetOffset = new OffsetData { type = TargetOffsetType.EntityRight, offset = Vector2.one * force };
+}
+
+void UpdatePlayer(Entity entity)
+{
+    float moveInput = entity.GetMoveDir().x;
+    Vector2 velocity = entity.Move(Vector2.right * moveInput);
+    
+    bool isGrounded = ;
+    bool wasGrounded = ;
+    
+    JumpState state = entity.UpdateJumpState(InputType.Jump, isGrounded, wasGrounded);
+    
+    if (state == JumpState.Jump)
+        entity.Jump(velocity);
+    else
+        entity.HandleJumpState(state, velocity);
+    
+    float facingDir = entity.GetRotation(RotateDir.X);
+    if (facingDir != moveInput)
+        entity.FlipRotation(RotateDir.X);
+}
+
+void UpdateMaggot(Entity entity, TriggerData tpTrigger, TriggerData expTrigger, GameManager.SearchParameter teleParam, float cooldownTime, float waitTime)
+{
+    MoveInput moveInput = entity.GetMoveInput();
+    if (moveInput.flags.HasProperty(InputFlag.Trigger))
+    {
+        entity.transform.position = moveInput.target;
+        entity.SetWaitState(waitTime);
+        entity.SetCooldown(cooldownTime);
+    }
+    else
+        entity.Move(Vector2.right * moveInput.GetTargetDir().x);
+    
+    if (tpTrigger.IsTrigger(entity))
+        entity.SetSearch(teleParam);
+    
+    if (expTrigger.IsTrigger(entity))
+        entity.Explode();
 }
 #endif

@@ -1,4 +1,5 @@
 #define NEW_VFX
+#define NEW_AI
 using System.Collections;
 using UnityEngine;
 
@@ -32,33 +33,33 @@ public class Entity : MonoBehaviour, IPooledObject
 {
 #region Ability
     /*
-     * RUNNING
-     * - Turn speed
-     * - Acceleration
-     * - Decceleration
-     * - Max speed
-     * JUMPING
-     * - Duration
-     * - Jump height
-     * - Down gravity
-     * - Air acceleration (what about air decceleration?)
-     * - Air control (movement in air/can the player change direction in air?/The equivalent of turn speed but in air)
-     * - Air brake (does the player still move forward when he stop pressing?)
-     * CAMERA
-     * - Damping (X/Y/Jump)
-     * - Lookahead
-     * - Zoom
-     * ASSISTS
-     * - Coyote time
-     * - Jump buffer
-     * - Terminal velocity
-     * - Rounded corners
-     * JUICE
-     * - Particles (run/jump/land)
-     * - Squash and stretch (jump/land)
-     * - Trail
-     * - Lean (angle and speed)
-     */
+    * RUNNING
+    * - Turn speed
+    * - Acceleration
+    * - Decceleration
+    * - Max speed
+    * JUMPING
+    * - Duration
+    * - Jump height
+    * - Down gravity
+    * - Air acceleration (what about air decceleration?)
+    * - Air control (movement in air/can the player change direction in air?/The equivalent of turn speed but in air)
+    * - Air brake (does the player still move forward when he stop pressing?)
+    * CAMERA
+    * - Damping (X/Y/Jump)
+    * - Lookahead
+    * - Zoom
+    * ASSISTS
+    * - Coyote time
+    * - Jump buffer
+    * - Terminal velocity
+    * - Rounded corners
+    * JUICE
+    * - Particles (run/jump/land)
+    * - Squash and stretch (jump/land)
+    * - Trail
+    * - Lean (angle and speed)
+    */
     
     // Move horizontally based on input
     // Jump
@@ -128,7 +129,7 @@ public class Entity : MonoBehaviour, IPooledObject
         {
             foreach (bool b in values)
                 if (b == condition)
-                return condition;
+                    return condition;
             return !condition;
         }
     }
@@ -147,7 +148,7 @@ public class Entity : MonoBehaviour, IPooledObject
         {
             if (ability.flags.HasProperty(AbilityFlag.Interuptible))
                 if (!CanUseAbility(ability))
-                goto END;
+                    goto END;
             yield return null;
             timer += Time.deltaTime;
         }
@@ -184,7 +185,7 @@ public class Entity : MonoBehaviour, IPooledObject
                     // TODO: Maybe teleport opposite to where the player is heading or teleport to nearby platform
                     if (!IsPosValid(distance))
                         if (!IsPosValid(-distance))
-                        goto END;
+                            goto END;
                     
                     bool IsPosValid(float offsetX)
                     {
@@ -312,6 +313,7 @@ public class Entity : MonoBehaviour, IPooledObject
     private Vector2 targetDir;
     private Vector2 targetPos;
     private Vector2 offsetDir;
+    private EntityTransform entityTransform;
     
     [Header("Effects")]
     public Material whiteMat;
@@ -421,6 +423,14 @@ public class Entity : MonoBehaviour, IPooledObject
             aliveTime = Time.time + moveTime;
     }
     
+#if NEW_AI
+    ActionList actions = null;
+    void FixedUpdate()
+    {
+        ActionList.Execute(actions, entityTransform, Time.fixedDeltaTime);
+    }
+#endif
+    
     // Start is called before the first frame update
     void Start()
     {
@@ -471,6 +481,48 @@ public class Entity : MonoBehaviour, IPooledObject
         if (spring != null && spring.f != 0)
             spring.Init(GameManager.player.transform.position.y);
         
+#if NEW_AI
+        entityTransform = new EntityTransform(this);
+        switch (type)
+        {
+            case EntityType.Player:
+            {
+                MoveStat fall = new MoveStat(0, Mathf.Abs(Physics2D.gravity.y * entityTransform.gravityScale));
+                fall.drag = MathUtils.GetDragFromAcceleration(Mathf.Abs(Physics2D.gravity.y * entityTransform.gravityScale), maxFallingSpeed);
+                actions = ActionList.CreatePlayer(new MoveStat(speed), fall, name == "Player Entity");
+            } break;
+            
+            case EntityType.Bullet:
+            {
+                
+            } break;
+            
+            case EntityType.Weapon:
+            {
+                actions = ActionList.CreateWeapon(MoveStat.SecondOrder(spring.f, spring.z, spring.r), targetOffset);
+            } break;
+            
+            case EntityType.Maggot:
+            {
+                actions = ActionList.CreateMaggot(new MoveStat(speed), new Vector2(20, 3), new RangedFloat(5), .2f);
+            } break;
+            
+            case EntityType.NoEye:
+            {
+                
+            } break;
+            
+            case EntityType.Cell:
+            {
+                
+            } break;
+            
+            case EntityType.DamagePopup:
+            {
+                
+            } break;
+        }
+#endif
     }
     
     public void InitCamera(bool automatic, bool useSmoothDamp, Vector2 value, float waitTime)
@@ -556,12 +608,14 @@ public class Entity : MonoBehaviour, IPooledObject
         // 1. Some objects don't have a rigidbody. It's also in my roadmap to replace the rigidbody system entirely.
         // 2. The isGrounded only equals false if and only if the down velocity isn't zero.
         bool isGrounded = SetProperty(EntityProperty.IsGrounded,
-                                      GameUtils.GroundCheck(transform.position, spriteExtents, -transform.up.y, Color.red));
+                                      GameUtils.GroundCheck(transform.position, spriteExtents, -transform.up.y, Color.clear));
         
+#if !NEW_AI
         if (abilities.Length > 0 &&
             abilities[currentAbility].flags.HasProperty(AbilityFlag.CanExecute) &&
             CanUseAbility(abilities[currentAbility]))
             StartCoroutine(UseAbility(abilities[currentAbility], moveType, targetType, speed));
+#endif
         
         groundRemember -= Time.deltaTime;
         if (isGrounded)
@@ -660,9 +714,11 @@ public class Entity : MonoBehaviour, IPooledObject
         if (aliveTime != 0 && Time.time > aliveTime)
             Die();
         
+#if !NEW_AI
         RotateEntity(transform, rotateType, dRotate, velocity.x);
         Vector2 prevVelocity = velocity;
         MoveEntity();
+#endif
         
         if (HasProperty(EntityProperty.ClampToMoveRegion))
             transform.position = MathUtils.Clamp(transform.position, moveRegion.min, moveRegion.max, transform.position.z);
@@ -671,7 +727,12 @@ public class Entity : MonoBehaviour, IPooledObject
         //~ NOTE(long): Jumping
         bool startJumping = jumpPressedRemember >= 0 && groundRemember >= 0;
         {
-#if NEW_VFX
+#if NEW_AI
+            if (GameInput.GetInput(InputType.Jump) && tag == "Player")
+            {
+                entityTransform.gravityScale *= -1;
+            }
+#elif NEW_VFX
             if (GameManager.player == this)
             {
                 if (startJumping)
@@ -1014,7 +1075,7 @@ public class Entity : MonoBehaviour, IPooledObject
         {
             if (HasProperty(EntityProperty.SpawnCellWhenDie))
                 for (int i = valueRange.randomValue; i > 0; i--)
-                ObjectPooler.Spawn(PoolType.Cell, transform.position);
+                    ObjectPooler.Spawn(PoolType.Cell, transform.position);
             
             if (HasProperty(EntityProperty.UsePooling))
                 gameObject.SetActive(false);

@@ -183,7 +183,7 @@ public static class MathUtils
         float aMax = aMin + aRange;
         float bMax = bMin + bRange;
         return (bMin >= aMin && bMin <= aMax) ||
-        (bMax >= aMin && bMax <= aMax);
+            (bMax >= aMin && bMax <= aMax);
     }
     
     public static float Average(float a, float b)
@@ -196,7 +196,8 @@ public static class MathUtils
     public static Vector2Int ToVector2Int(this Vector2 v, bool ceil = false)
     {
         if (ceil)
-            return new Vector2Int(Mathf.CeilToInt(v.x), Mathf.CeilToInt(v.y));
+            return new Vector2Int(Mathf.CeilToInt(Mathf.Abs(v.x)) * (int)Mathf.Sign(v.x),
+                                  Mathf.CeilToInt(Mathf.Abs(v.y)) * (int)Mathf.Sign(v.y));
         return new Vector2Int((int)v.x, (int)v.y);
     }
     
@@ -259,7 +260,7 @@ public static class MathUtils
         float y = a.y - b.y;
         bool isApproximate = Mathf.Abs(x) <= epsilon && Mathf.Abs(y) <= epsilon;
         bool outOfRange = compareDir != 0 ? Sign(x) == Sign(compareDir) || Sign(y) == Sign(compareDir) : true;
-        return isApproximate || outOfRange;
+        return isApproximate && outOfRange;
     }
     
     public static Vector2 X(this Vector2 v, float x) => new Vector2(x, v.y);
@@ -269,7 +270,7 @@ public static class MathUtils
     public static bool InRange(Vector2 center, Vector2 pos, float range)
     {
         return (pos.x < center.x + range && pos.x > center.x - range) &&
-        (pos.y < center.y + range && pos.y > center.y - range);
+            (pos.y < center.y + range && pos.y > center.y - range);
     }
     
     /// <param name="degree">In degree, the function will automatically convert it to radian</param>
@@ -410,13 +411,13 @@ public static class MathUtils
 #region Rect
     /*
     RANT: Unity doesn't document these cases, they also don't provide any API to cover the other cases.
-
+    
     Rect a = new Rect(Vector2.zero, Vector2.one);
     Rect b = new Rect(Vector2.right, Vector2.one);
     Debug.Log(a.Overlaps(b));                               // False
     Debug.Log(a.Contains(Vector2.right));                   // False
     Debug.Log(a.Contains(Vector2.zero));                    // True
-
+    
     RectInt aInt = new RectInt(Vector2Int.zero , Vector2Int.one);
     RectInt bInt = new RectInt(Vector2Int.right, Vector2Int.one);
     Debug.Log(aInt.Overlaps(bInt));                         // False
@@ -1034,7 +1035,7 @@ public static class MathUtils
         canProcess ??= _ => true;
         foreach (U item in collection)
             if (canProcess(item))
-            list.Add(convert(item));
+                list.Add(convert(item));
     }
     
     // NOTE: This's just a temporary function because C# doesn't have a ListSegment type like ArraySegement

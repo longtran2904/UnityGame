@@ -61,26 +61,26 @@ public static class AudioManager
         AudioManager.firstMusic = firstMusic;
         /*foreach (Audio audio in audios)
         {
-            for (int i = 0; i < audio.clips.Length; ++i)
-            {
-                AudioClip clip = audio.clips[i];
-                AudioClip newClip = AudioClip.Create(clip.name, clip.samples, clip.channels, clip.frequency, true, OnAudioRead);
-                float[] data = new float[clip.samples];
-                if (clip.GetData(data, 0))
-                    newClip.SetData(data, 0);
-                audio.clips[i] = newClip;
-
-                static void OnAudioRead(float[] data)
-                {
-                    Debug.Log("Reading");
-                    for (int i = 0; i < data.Length; i++)
-                    {
-                        if (data[i] != 0)
-                            Debug.Log(data[i]);
-                        data[i] *= 1;
-                    }
-                }
-            }
+        for (int i = 0; i < audio.clips.Length; ++i)
+        {
+        AudioClip clip = audio.clips[i];
+        AudioClip newClip = AudioClip.Create(clip.name, clip.samples, clip.channels, clip.frequency, true, OnAudioRead);
+        float[] data = new float[clip.samples];
+        if (clip.GetData(data, 0))
+        newClip.SetData(data, 0);
+        audio.clips[i] = newClip;
+        
+        static void OnAudioRead(float[] data)
+        {
+        Debug.Log("Reading");
+        for (int i = 0; i < data.Length; i++)
+        {
+        if (data[i] != 0)
+        Debug.Log(data[i]);
+        data[i] *= 1;
+        }
+        }
+        }
         }*/
     }
     
@@ -95,7 +95,6 @@ public static class AudioManager
                 runner.StopCoroutine(routine);
                 database[runner] = null;
             }
-            Debug.Log("Stop Audio");
         }
         else
         {
@@ -104,7 +103,6 @@ public static class AudioManager
             
             Coroutine routine = runner.StartCoroutine(Repeat());
             database[runner] = routine;
-            Debug.Log("Play Audio");
         }
         
         System.Collections.IEnumerator Repeat()
