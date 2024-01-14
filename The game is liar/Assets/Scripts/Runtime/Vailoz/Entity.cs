@@ -172,6 +172,7 @@ public class Entity : MonoBehaviour, IPooledObject
                     yield break;
                 }
             } break;
+            
             case AbilityType.Teleport:
             {
                 Debug.Break();
@@ -209,12 +210,14 @@ public class Entity : MonoBehaviour, IPooledObject
                 transform.position = destination;
                 CalculateMoveRegion();
             } break;
+            
             case AbilityType.Explode:
             {
                 // NOTE: If the enemy die then it will be handled by the vfx system
                 if (IsInRange(ability.range, GameManager.player.transform.position))
                     GameManager.player.Hurt(ability.damage);
             } break;
+            
             case AbilityType.Jump:
             {
                 
@@ -260,8 +263,14 @@ public class Entity : MonoBehaviour, IPooledObject
     [Header("Stat")]
     public Property<EntityProperty> properties;
     public EntityType type;
+    
     public EntityAbility[] abilities;
     private int currentAbility;
+    
+#if NEW_AI
+    private float abilityTimer;
+    private AbilityTime time;
+#endif
     
     public int health;
     public int damage;
@@ -313,7 +322,6 @@ public class Entity : MonoBehaviour, IPooledObject
     private Vector2 targetDir;
     private Vector2 targetPos;
     private Vector2 offsetDir;
-    private EntityTransform entityTransform;
     
     [Header("Effects")]
     public Material whiteMat;
@@ -423,14 +431,6 @@ public class Entity : MonoBehaviour, IPooledObject
             aliveTime = Time.time + moveTime;
     }
     
-#if NEW_AI
-    ActionList actions = null;
-    void FixedUpdate()
-    {
-        ActionList.Execute(actions, entityTransform, Time.fixedDeltaTime);
-    }
-#endif
-    
     // Start is called before the first frame update
     void Start()
     {
@@ -480,49 +480,6 @@ public class Entity : MonoBehaviour, IPooledObject
         ammo = stat?.ammo ?? 0;
         if (spring != null && spring.f != 0)
             spring.Init(GameManager.player.transform.position.y);
-        
-#if NEW_AI
-        entityTransform = new EntityTransform(this);
-        switch (type)
-        {
-            case EntityType.Player:
-            {
-                MoveStat fall = new MoveStat(0, Mathf.Abs(Physics2D.gravity.y * entityTransform.gravityScale));
-                fall.drag = MathUtils.GetDragFromAcceleration(Mathf.Abs(Physics2D.gravity.y * entityTransform.gravityScale), maxFallingSpeed);
-                actions = ActionList.CreatePlayer(new MoveStat(speed), fall, name == "Player Entity");
-            } break;
-            
-            case EntityType.Bullet:
-            {
-                
-            } break;
-            
-            case EntityType.Weapon:
-            {
-                actions = ActionList.CreateWeapon(MoveStat.SecondOrder(spring.f, spring.z, spring.r), targetOffset);
-            } break;
-            
-            case EntityType.Maggot:
-            {
-                actions = ActionList.CreateMaggot(new MoveStat(speed), new Vector2(20, 3), new RangedFloat(5), .2f);
-            } break;
-            
-            case EntityType.NoEye:
-            {
-                
-            } break;
-            
-            case EntityType.Cell:
-            {
-                
-            } break;
-            
-            case EntityType.DamagePopup:
-            {
-                
-            } break;
-        }
-#endif
     }
     
     public void InitCamera(bool automatic, bool useSmoothDamp, Vector2 value, float waitTime)
@@ -728,10 +685,6 @@ public class Entity : MonoBehaviour, IPooledObject
         bool startJumping = jumpPressedRemember >= 0 && groundRemember >= 0;
         {
 #if NEW_AI
-            if (GameInput.GetInput(InputType.Jump) && tag == "Player")
-            {
-                entityTransform.gravityScale *= -1;
-            }
 #elif NEW_VFX
             if (GameManager.player == this)
             {
@@ -882,22 +835,11 @@ public class Entity : MonoBehaviour, IPooledObject
         SetProperty(EntityProperty.AtEndOfMoveRegion, false);
         switch (targetType)
         {
-            case TargetType.Input:
-            {
-                targetDir = GameInput.GetAxis();
-            } break;
-            case TargetType.Player:
-            {
-                targetPos = GameManager.player.transform.position;
-            } goto case TargetType.Target;
-            case TargetType.Random:
-            {
-                targetDir = MathUtils.RandomVector2();
-            } break;
-            case TargetType.MoveDir:
-            {
-                targetDir = transform.right;
-            } break;
+            case TargetType.Input:   targetDir = GameInput.GetAxis();       break;
+            case TargetType.Random:  targetDir = MathUtils.RandomVector2(); break;
+            case TargetType.MoveDir: targetDir = transform.right;           break;
+            
+            case TargetType.Player:  targetPos = GameManager.player.transform.position; goto case TargetType.Target;
             case TargetType.MoveRegion:
             {
                 if (targetPos != moveRegion.max && targetPos != moveRegion.min)
@@ -916,6 +858,7 @@ public class Entity : MonoBehaviour, IPooledObject
                         transform.position = moveRegion.min.Z(transform.position.z);
                 }
             } goto case TargetType.Target;
+            
             case TargetType.Target:
             {
                 switch (offsetType)
@@ -930,20 +873,16 @@ public class Entity : MonoBehaviour, IPooledObject
         
         switch (moveType)
         {
-            case MoveType.None:
-            {
-                velocity = Vector2.zero;
-            } break;
+            case MoveType.None: velocity = Vector2.zero; break;
+            case MoveType.Fly: velocity = targetDir.normalized * speed; break;
+            
             case MoveType.Run:
             {
                 targetDir.x = MathUtils.Sign(targetDir.x);
                 targetDir.y = 0;
                 velocity = new Vector2(targetDir.x * speed, rb.velocity.y);
             } break;
-            case MoveType.Fly:
-            {
-                velocity = targetDir.normalized * speed;
-            } break;
+            
             case MoveType.SmoothDamp: // TODO: Do we still need SmoothDamp? MoveType.Spring seems to also include this already.
             {
                 transform.position = MathUtils.SmoothDamp(transform.position, targetPos, ref velocity, new Vector2(speed, speedY),
@@ -956,6 +895,7 @@ public class Entity : MonoBehaviour, IPooledObject
                 //transform.SetPositionAndRotation(newPos, GameManager.player.transform.rotation);
                 transform.position = newPos;
             } return;
+            
             case MoveType.Custom: return;
         }
         
@@ -1134,7 +1074,7 @@ public class Entity : MonoBehaviour, IPooledObject
         }
     }
     
-    bool IsInRange(float range, Vector2 targetPos)
+    public bool IsInRange(float range, Vector2 targetPos)
     {
         return (targetPos - (Vector2)transform.position).sqrMagnitude < range * range;
     }

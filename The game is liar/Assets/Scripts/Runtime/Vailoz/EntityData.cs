@@ -1,850 +1,452 @@
 using UnityEngine;
 
-public enum TransformType
+#if NEW_AI
+enum JumpState
 {
-    None,
-    Acceleration,
-    SecondOrder,
-}
-
-public enum RotateType
-{
-    FlipX,
-    FlipY,
-    RotateZ,
-    LookAt,
-}
-
-public enum TransformFlag
-{
-    FreezeX,
-    FreezeY,
-    ReverseX,
-    ReverseY,
-}
-
-public class EntityTransform
-{
-    public Entity entity;
-    //public Vector2 pos { get => transform.position; set => transform.position = value; }
-    public Vector2 pos;
-    public Vector2 vel;
-    
-    public Transform transform => entity.transform;
-    public Vector2 gravityDir => (Physics2D.gravity * /*rb.*/gravityScale).normalized;
-    public Vector2 right => entity.transform.right;
-    
-    public float gravityScale;
-    private Rigidbody2D rb;
-    
-    public EntityTransform(Entity entity)
-    {
-        this.entity = entity;
-        pos = entity.transform.position;
-        rb = entity.GetComponent<Rigidbody2D>();
-        if (rb)
-        {
-            gravityScale = rb.gravityScale;
-            rb.gravityScale = 0;
-        }
-    }
-    
-    public void Update()
-    {
-        if (rb)
-        {
-            if (rb.isKinematic)
-                transform.transform.position = pos;
-            else
-                rb.velocity = vel;
-        }
-        else
-            transform.transform.position = pos;
-    }
-    
-    public void Reset()
-    {
-        pos = transform.transform.position;
-        if (rb)
-            vel = rb.velocity;
-    }
-}
-
-public struct MoveStat
-{
-    public float minSpeed, maxSpeed, acc, dec;
-    public float k1, k2, k3;
-    public float drag;
-    
-    public MoveStat(float speed, float accel = 0)
-    {
-        minSpeed = maxSpeed = speed;
-        acc = dec = accel;
-        drag = 0;
-        k1 = k2 = k3 = 0;
-    }
-    
-    public static MoveStat SecondOrder(float f, float z, float r)
-    {
-        return new MoveStat
-        {
-            k1 = z / (Mathf.PI * f),
-            k2 = 1 / ((2 * Mathf.PI * f) * (2 * Mathf.PI * f)),
-            k3 = r * z / (2 * Mathf.PI * f),
-        };
-    }
-}
-
-public enum TargetOffsetType
-{
-    None,
-    Input,
-    Mouse,
-    PlayerDir,
-    PlayerUp,
-    EntityRight,
-    GravityDir,
-}
-
-public struct OffsetData
-{
-    public TargetOffsetType type;
-    public Vector2 offset;
-    
-    public Vector2 GetOffset(EntityTransform transform)
-    {
-        Vector2 currentDir = Vector2.one;
-        Transform player = GameManager.player.transform;
-        switch (type)
-        {
-            case TargetOffsetType.Input:       currentDir = GameInput.GetAxis();     break;
-            case TargetOffsetType.Mouse:       currentDir = GameInput./*GetMouseDir()*/GetDirToMouse(transform.pos); break;
-            case TargetOffsetType.PlayerDir:   currentDir = player.Direction();      break;
-            case TargetOffsetType.PlayerUp:    currentDir = player.up;               break;
-            case TargetOffsetType.EntityRight: currentDir = transform.right;         break;
-            case TargetOffsetType.GravityDir:  currentDir = transform.gravityDir;    break;
-        }
-        return currentDir * offset;
-    }
-}
-
-public class TransformData
-{
-    public TransformData next;
-    public Property<TransformFlag> flags;
-    
-    public Vector2 targetPos;
-    public OffsetData targetOffset;
-    
-    public TransformType type;
-    public RotateType rotateType;
-    public float zOffset;
-    
-    public MoveStat stat;
-    
-    public static void TransformEntity(TransformData data, EntityTransform transform, Vector2 targetPos, float dt)
-    {
-        for (; data != null; data = data.next)
-        {
-            Vector2 entityPos = transform.pos, entityVel = transform.vel;
-            Vector2 oldVel = entityVel;
-            
-            Vector2 targetOffset = data.targetOffset.GetOffset(transform);
-            targetPos += targetOffset;
-            Vector2 targetDir = targetPos - entityPos;
-            
-            bool freezeX = data.flags.HasProperty(TransformFlag.FreezeX), reverseX = data.flags.HasProperty(TransformFlag.ReverseX);
-            bool freezeY = data.flags.HasProperty(TransformFlag.FreezeY), reverseY = data.flags.HasProperty(TransformFlag.ReverseY);
-            
-            if (freezeX) targetDir.x = entityVel.x = 0;
-            if (reverseX)
-            {
-                if (freezeX) entityPos.x = targetPos.x;
-                else         targetDir.x *= -1;
-            }
-            
-            if (freezeY) targetDir.y = entityVel.y = 0;
-            if (reverseY)
-            {
-                if (freezeY) entityPos.y = targetPos.y;
-                else         targetDir.y *= -1;
-            }
-            
-            targetPos = entityPos + targetDir;
-            targetDir.Normalize();
-            
-            switch (data.type)
-            {
-                case TransformType.Acceleration:
-                {
-                    Debug.Assert(data.stat.maxSpeed >= data.stat.minSpeed);
-                    
-                    float currentMag = Mathf.Max(entityVel.magnitude, data.stat.minSpeed);
-                    Vector2 currentVel = (entityVel == Vector2.zero ? targetDir : entityVel.normalized) * currentMag;
-                    
-                    float targetMag = data.stat.maxSpeed;
-                    if (targetMag == 0)
-                        targetMag = currentMag + 1000; // This can be any value so long as it's greater than acc * dt
-                    if (targetDir == Vector2.zero)
-                        targetMag = 0; // This is for the acc calculation below
-                    Vector2 targetVel = targetDir * targetMag;
-                    
-                    float acc = targetMag < currentMag ? data.stat.dec : data.stat.acc;
-                    
-                    if (acc == 0)
-                        entityVel = targetVel;
-                    else
-                        entityVel = Vector2.MoveTowards(currentVel, targetVel, acc * dt);
-                    //https://forum.unity.com/threads/drag-factor-what-is-it.85504/#post-1827892
-                    //https://www.reddit.com/r/Unity3D/comments/n13or0/a_function_for_calculating_rigidbody2d_drag_from/
-                    entityVel *= (1.0f / (1.0f + dt * data.stat.drag));
-                    entityPos += entityVel * dt;
-                } break;
-                
-                case TransformType.SecondOrder:
-                {
-                    float k1 = data.stat.k1, k2 = data.stat.k2, k3 = data.stat.k3;
-                    if (!freezeX)
-                        entityPos.x = MathUtils.SecondOrder(dt, k1, k2, k3, targetPos.x, data.targetPos.x, entityPos.x, ref entityVel.x);
-                    if (!freezeY)
-                        entityPos.y = MathUtils.SecondOrder(dt, k1, k2, k3, targetPos.y, data.targetPos.y, entityPos.y, ref entityVel.y);
-                } break;
-            }
-            
-            targetDir = targetPos - entityPos;
-            Vector2 rotateDir = Quaternion.AngleAxis(data.zOffset, Vector3.forward) * targetDir;
-            Vector3 rotation = Vector3.zero;
-            Vector2 entityDir = transform.transform.Direction();
-            
-            switch (data.rotateType)
-            {
-                case RotateType.FlipX: if (rotateDir.x != 0 && Mathf.Sign(rotateDir.x) != Mathf.Sign(entityDir.x)) rotation.y = 180; break;
-                case RotateType.FlipY: if (rotateDir.y != 0 && Mathf.Sign(rotateDir.y) != Mathf.Sign(entityDir.y)) rotation.x = 180; break;
-                case RotateType.RotateZ: rotation.z = MathUtils.GetRotZ(rotateDir); break;
-                
-                case RotateType.LookAt:
-                {
-                    Vector3 targetForward = GameManager.player.transform.forward; // TODO(long): Abstract the player's forward vector out
-                    transform.transform.rotation = MathUtils.LookRotation(rotateDir, targetForward);
-                } break;
-            }
-            
-            if (freezeX) entityVel.x = oldVel.x;
-            if (freezeY) entityVel.y = oldVel.y;
-            
-            transform.pos = entityPos;
-            transform.vel = entityVel;
-            transform.transform.Rotate(rotation);
-        }
-        //transform.transform.position = transform.pos;
-        transform.Update();
-    }
-}
-
-public enum TriggerType
-{
-    None,
-    Health,
-    Ammo,
-    Distance,
-    DistanceX,
-    DistanceY,
     OnGround,
-    InputX,
-    InputY,
-    ValidPos,
+    InAir,
+    Land,
+    Jump,
 }
 
-public enum TriggerFlag
-{
-    Inverse,
-    TargetPlayer,
-    DelayTrigger,
-}
-
-public class EntityTrigger
-{
-    public Property<TriggerFlag> flags;
-    public EntityTrigger next;
-    public TriggerType type;
-    public InputType input;
-    
-    [MinMax(0, 100)]
-    public RangedFloat triggerValue;
-    public float bufferTime;
-    
-    private float timer;
-    
-    public EntityTrigger(TriggerType trigger, float value = 0, bool targetPlayer = false, bool inverse = false)
-    {
-        type = trigger;
-        triggerValue = new RangedFloat(value);
-        flags.SetProperty(TriggerFlag.TargetPlayer, targetPlayer);
-        flags.SetProperty(TriggerFlag.Inverse, inverse);
-    }
-    
-    public EntityTrigger(InputType trigger)
-    {
-        input = trigger;
-    }
-    
-    public bool IsTrigger(Entity entity, EntityAction action, bool hasValidPos)
-    {
-        bool result = true;
-        bool targetPlayer = flags.HasProperty(TriggerFlag.TargetPlayer);
-        
-        Entity target = targetPlayer ? GameManager.player : entity;
-        Transform transform = target.transform;
-        Vector2 extents = target.spriteExtents;
-        
-        Vector2 playerPos = (Vector2)GameManager.player.transform.position;
-        Vector2 distance = (targetPlayer ? playerPos : action.transform.targetPos) - (Vector2)entity.transform.position;
-        
-        switch (type)
-        {
-            case TriggerType.Health:    result = triggerValue.InRange(target.health);                                            break;
-            case TriggerType.Ammo:      result = triggerValue.InRange(target.ammo);                                              break;
-            case TriggerType.Distance:  result = triggerValue.InRange(distance.magnitude);                                       break;
-            case TriggerType.DistanceX: result = triggerValue.InRange(distance.x);                                               break;
-            case TriggerType.DistanceY: result = triggerValue.InRange(distance.y);                                               break;
-            case TriggerType.OnGround:  result = GameUtils.GroundCheck(transform.position, extents, -transform.up.y, Color.red); break;
-            case TriggerType.InputX:    result = GameInput.GetAxis(AxisType.Horizontal) != 0;                                    break;
-            case TriggerType.InputY:    result = GameInput.GetAxis(AxisType.Vertical  ) != 0;                                    break;
-            case TriggerType.ValidPos:  result = hasValidPos;                                                                    break;
-        }
-        
-        if (input != InputType.None)
-            result &= GameInput.GetInput(input);
-        if (flags.HasProperty(TriggerFlag.Inverse))
-            result = !result;
-        
-        return result;
-    }
-}
-
-public enum MoveRegionType
+enum AbilityState
 {
     None,
-    WalkRegion,
-    GroundPos,
-    Manual,
-    Entity,
+    Charge,
+    Execute,
+    Cooldown,
 }
 
-public enum MoveTarget
+public struct AbilityTime
 {
-    None,
-    Input,
-    Player,
-    Entity,
-    Region,
-    Custom,
+    public float interupt;
+    public float charge;
+    public float execute;
+    public float cooldown;
 }
 
-public class ActionList
+public struct EntityStat
 {
-    public ActionList next;
-    public EntityAction first;
-    public EntityAction current;
+    public int damage;
+    public int health;
     
-    public static void Execute(ActionList firstList, EntityTransform transform, float dt)
+    public float range;
+    public float speed;
+    // acc and dec, min and max (terminal) speed
+}
+
+public class EntityAI
+{
+    struct AbilityData
     {
-        Entity entity = transform.entity;
-        transform.Reset();
-        
-        for (ActionList list = firstList; list != null; list = list.next)
+        public enum AbilityFlag
         {
-            Debug.Assert(list.first != null);
-            if (list.current == null)
-                list.current = list.first;
-            EntityAction action = list.current;
+            ExecuteWhenLowHealth,
+            ExecuteWhenInRangeX,
+            ExecuteWhenInRangeY,
+        }
+        
+        public Property<AbilityFlag> flags;
+        public int healthToExecute;
+        public Vector2 distanceToExecute;
+        
+        public AbilityTime time;
+        public EntityStat stat;
+        
+        public bool IsTrigger(Entity entity)
+        {
+            Property<AbilityFlag> flags = this.flags;
+            Vector2 targetPos = GameManager.player.transform.position;
+            Vector2 entityPos = entity.transform.position;
             
-            if (action.timer > action.duration)
-            {
-                action.timer = 0;
-                if (action.next != null)
-                {
-                    list.current = action.next;
-                    continue;
-                }
-            }
+            bool lowHealth   = Check(AbilityFlag.ExecuteWhenLowHealth, entity.health < healthToExecute);
+            bool isInRangeX  = Check(AbilityFlag.ExecuteWhenInRangeX, Mathf.Abs(targetPos.x - entityPos.x) <= distanceToExecute.x);
+            bool isInRangeY  = Check(AbilityFlag.ExecuteWhenInRangeY, Mathf.Abs(targetPos.y - entityPos.y) <= distanceToExecute.y);
             
-            TransformData data = action.transform;
+            bool Check(AbilityFlag flag, bool condition) => flags.HasProperty(flag) == condition;
             
-            (bool valid, Vector2 targetPos) = action.GetTargetPos(transform.pos, data.targetPos, entity.spriteExtents);
-            
-            bool onGround = GameUtils.GroundCheck(transform.transform.position, entity.spriteExtents, -transform.transform.up.y, Color.red);
-            
-            if (action.timer <= action.interuptTime)
-            {
-                if (!action.CanTrigger(entity, valid))
-                {
-                    list.current = list.first;
-                    action.timer = 0;
-                    continue;
-                }
-            }
-            
-            TransformData.TransformEntity(data, transform, targetPos, dt);
-            data.targetPos = targetPos;
-            transform.pos = action.UpdateMoveRegion(action.regionType, transform.pos, entity.spriteExtents, -transform.transform.up.y);
-            
-            action.timer += dt;
+            return lowHealth && isInRangeX && isInRangeY;
         }
     }
     
-    public EntityAction PushAction(TriggerType type, MoveStat stat)
+    static void SetAbilityState(Entity entity, AbilityState state)
     {
-        return PushAction(new EntityAction
-                          {
-                              trigger = new EntityTrigger(type),
-                              transform = new TransformData
-                              {
-                                  type = TransformType.Acceleration,
-                                  stat = stat,
-                              },
-                          });
-    }
-    
-    public EntityAction PushAction(InputType type, MoveStat stat)
-    {
-        return PushAction(new EntityAction
-                          {
-                              trigger = new EntityTrigger(type),
-                              transform = new TransformData
-                              {
-                                  type = TransformType.Acceleration,
-                                  stat = stat,
-                              },
-                          });
-    }
-    
-    public EntityAction PushAction(MoveStat stat)
-    {
-        return PushAction(new EntityAction
-                          {
-                              transform = new TransformData
-                              {
-                                  type = stat.k2 == 0 ? TransformType.Acceleration : TransformType.SecondOrder,
-                                  stat = stat,
-                              },
-                          });
-    }
-    
-    public EntityAction PushAction(EntityAction action)
-    {
-        if (first == null)
-            first = action;
-        else
+        entity.abilityState = state;
+        float[] times = new float[]
         {
-            ActionList nextList = new ActionList();
-            nextList.next = next;
-            next = nextList;
-            next.first = action;
+            entity.
         }
-        
-        if (action.transform == null)
-            action.transform = new TransformData();
-        
-        return action;
+        entity.abilityTimer = ;
     }
     
-    public EntityAction PushAction() => PushAction(new EntityAction());
-    
-    public static ActionList CreatePlayer(MoveStat move, MoveStat fall, bool canMove)
+    JumpState UpdateJumpState(Entity entity, bool pressJump)
     {
-        ActionList result = new ActionList();
+        // NOTE: We're passing -transform.up.y rather than -rb.gravityScale because:
+        // 1. Some objects don't have a rigidbody. It's also in my roadmap to replace the rigidbody system entirely.
+        // 2. The isGrounded only equals false if and only if the down velocity isn't zero.
+        bool isGrounded = GameUtils.GroundCheck(entity.transform.position, entity.spriteExtents, -entity.transform.up.y, Color.clear);
+        bool wasGrounded = entity.HasProperty(EntityProperty.IsGrounded);
+        entity.SetProperty(EntityProperty.IsGrounded, isGrounded);
         
-        if (canMove)
-            result.PushAction(/*TriggerType.InputX, */move).SetTarget(MoveTarget.Input).SetFreezeAxis(false, true);
-        EntityAction fallAction = result.PushAction(fall).SetTargetOffset(TargetOffsetType.GravityDir, Vector2.up).SetFreezeAxis(true);
-        // NOTE(long): Do we need this condition
-        fallAction.PushTriggers(new EntityTrigger(TriggerType.OnGround, inverse: true));
+        entity.groundRemember -= Time.deltaTime;
+        if (isGrounded)
+            entity.groundRemember = entity.groundRememberTime;
         
-        result.PushAction().SetTargetOffset(TargetOffsetType.Mouse).SetRotation(RotateType.FlipX);
-        result.PushAction().SetTargetOffset(TargetOffsetType.GravityDir, Vector2.down).SetRotation(RotateType.FlipY);
+        entity.fallRemember -= Time.deltaTime;
+        if (!isGrounded)
+            entity.fallRemember = entity.fallRememberTime;
         
-        return result;
+        entity.jumpPressedRemember -= Time.deltaTime;
+        // NOTE(long): Do I care about EntityProperty.CanJump?
+        if (/*entity.HasProperty(EntityProperty.CanJump) && */pressJump)
+            entity.jumpPressedRemember = entity.jumpPressedRememberTime;
+        
+        if ( isGrounded &&  wasGrounded) return JumpState.OnGround;
+        if (!isGrounded && !wasGrounded) return JumpState.InAir;
+        if (isGrounded) return JumpState.Land;
+        return JumpState.Jump;
     }
     
-    public static ActionList CreateWeapon(MoveStat move, Vector2 posOffset, float zOffset = 0)
+    AbilityState UpdateAbilityState(Entity entity)
     {
-        ActionList result = new ActionList();
-        
-        EntityAction moveAction = result.PushAction(move);
-        moveAction.SetTarget(MoveTarget.Player);
-        moveAction.SetTargetOffset(TargetOffsetType.PlayerDir, posOffset);
-        moveAction.PushSubAction().SetTargetOffset(TargetOffsetType.Mouse).SetRotation(RotateType.LookAt);
-        //moveAction.SetRotation(RotateType.LookAt, zOffset);
-        moveAction.SetStickAxis(true);
-        
-        return result;
-    }
-    
-    public static ActionList CreateMaggot(MoveStat stat, Vector2 distanceToTeleport, RangedFloat teleportOffset, float waitAfterTp)
-    {
-        ActionList result = new ActionList();
-        
-        EntityAction moveAction = result.PushAction(stat);
-        moveAction.TargetRegion(MoveRegionType.WalkRegion, PositionType.Max);
-        
-        EntityAction teleportation = moveAction.PushSubAction();
-        teleportation.PushTriggers(new EntityTrigger(TriggerType.DistanceX, distanceToTeleport.x, true),
-                                   new EntityTrigger(TriggerType.DistanceY, distanceToTeleport.y, true),
-                                   new EntityTrigger(TriggerType.ValidPos));
-        teleportation.SetTarget(MoveTarget.Player);
-        teleportation.SetSearchParam(Vector2.right * teleportOffset.min, Vector2.right * teleportOffset.max, RegionType.Ground);
-        teleportation.SetStickAxis(true, true);
-        teleportation.PushWaitAction(waitAfterTp);
-        
-        return result;
-    }
-    
-    public static ActionList CreateNoEye(MoveStat moveStat, MoveStat dashStat, MoveStat cooldownStat, float distanceToDash,
-                                         float interuptTime, float chargeDuration, float dashDuration, float cooldownDuration)
-    {
-        ActionList result = new ActionList();
-        
-        EntityAction moveAction = result.PushAction(moveStat);
-        moveAction.SetTarget(MoveTarget.Player);
-        
-        EntityAction chargeAction = moveAction.PushWaitAction(chargeDuration, interuptTime);
-        chargeAction.PushTriggers(new EntityTrigger(TriggerType.Distance, distanceToDash, true));
-        
-        EntityAction dashAction = chargeAction.PushSubAction(dashStat, dashDuration);
-        dashAction.SetTarget(MoveTarget.Player);
-        
-        EntityAction cooldownAction = chargeAction.PushSubAction(cooldownStat, cooldownDuration);
-        dashAction.SetTarget(MoveTarget.Player);
-        cooldownAction.SetTargetOffset(TargetOffsetType.None, -Vector2.one);
-        
-        return result;
-    }
-}
-
-public class EntityAction
-{
-    public const float MAX_DURATION_TIME = 365*24*60*60;
-    
-    public EntityAction next;
-    public EntityTrigger trigger;
-    
-    public float duration;
-    public float interuptTime;
-    
-    public MoveTarget targetType;
-    public MoveRegionType regionType;
-    public GameManager.SearchParameter searchParam;
-    
-    public TransformData transform;
-    
-    private Rect region;
-    public float timer;
-    
-    public EntityAction PushSubAction()
-    {
-        EntityAction result = new EntityAction();
-        result.transform = new TransformData();
-        next = result;
-        return result;
-    }
-    
-    public EntityAction PushSubAction(MoveStat stat, float duration = 0)
-    {
-        EntityAction result = PushSubAction();
-        result.transform.stat = stat;
-        result.duration = duration;
-        result.transform.type = TransformType.Acceleration;
-        return result;
-    }
-    
-    public EntityAction PushWaitAction(float waitTime, float interuptTime = 0)
-    {
-        EntityAction waitAction = PushSubAction();
-        waitAction.duration = waitTime;
-        waitAction.interuptTime = interuptTime;
-        return waitAction;
-    }
-    
-    public void PushTriggers(params EntityTrigger[] triggers)
-    {
-        for (int i = 0; i < triggers.Length - 1; ++i)
-            triggers[i].next = triggers[i+1].next;
-        trigger = triggers[0];
-    }
-    
-    public bool CanTrigger(Entity entity, bool hasValidPos)
-    {
-        for (EntityTrigger trigger = this.trigger; trigger != null; trigger = trigger.next)
-            if (!trigger.IsTrigger(entity, this, hasValidPos))
-                return false;
-        return true;
-    }
-    
-    public EntityAction SetRotation(RotateType rotateType, float zOffset = 0)
-    {
-        transform.rotateType = rotateType;
-        transform.zOffset = zOffset;
-        return this;
-    }
-    
-    public EntityAction SetTarget(MoveTarget target)
-    {
-        targetType = target;
-        return this;
-    }
-    
-    public EntityAction TargetRegion(MoveRegionType regionType, PositionType posType)
-    {
-        this.regionType = regionType;
-        searchParam.filterResult = posType;
-        targetType = MoveTarget.Region;
-        return this;
-    }
-    
-    public EntityAction SetSearchParam(Vector2 minSize, Vector2 maxSize, RegionType searchType, PositionType filter = PositionType.Random)
-    {
-        searchParam = new GameManager.SearchParameter
+        float timer = entity.abilityTimer;
+        if (timer > 0)
         {
-            minSearchSize = minSize,
-            maxSearchSize = maxSize,
-            posType = searchType,
-            filterResult = filter
-        };
-        return this;
-    }
-    
-    public EntityAction SetTargetOffset(TargetOffsetType type) => SetTargetOffset(type, Vector2.one);
-    public EntityAction SetTargetOffset(TargetOffsetType type, Vector2 offset)
-    {
-        transform.targetOffset = new OffsetData
-        {
-            type = type,
-            offset = offset,
-        };
-        return this;
-    }
-    
-    public void PingPong(float distance, bool horizontal)
-    {
-        targetType = MoveTarget.Region;
-        regionType = MoveRegionType.GroundPos;
-        region.size = (horizontal ? Vector2.right : Vector2.up) * distance;
-    }
-    
-    public EntityAction SetStickAxis(bool stickX = false, bool stickY = false)
-    {
-        if (stickX) transform.flags.SetProperties(TransformFlag.FreezeX, TransformFlag.ReverseX);
-        if (stickY) transform.flags.SetProperties(TransformFlag.FreezeY, TransformFlag.ReverseY);
-        return this;
-    }
-    
-    public EntityAction SetFreezeAxis(bool freezeX = false, bool freezeY = false)
-    {
-        if (freezeX) transform.flags.SetProperties(TransformFlag.FreezeX);
-        if (freezeY) transform.flags.SetProperties(TransformFlag.FreezeY);
-        return this;
-    }
-    
-    public (bool, Vector2) GetTargetPos(Vector2 currentPos, Vector2 oldTarget, Vector2 spriteExtents)
-    {
-        bool success = true;
-        Vector2 playerPos = GameManager.player.transform.position;
-        Vector2 result = currentPos;
-        
-        switch (targetType)
-        {
-            case MoveTarget.Input:  result += GameInput.GetAxis(); break;
+            float time = entity.time.charge;
+            if (timer < time)
+                return AbilityState.Charge;
             
-            case MoveTarget.Custom: result = oldTarget; goto case MoveTarget.Entity;
-            case MoveTarget.Player: result = playerPos; goto case MoveTarget.Entity;
-            case MoveTarget.Entity:
+            time += entity.time.execute;
+            if (timer < time)
+                return AbilityState.Execute;
+            
+            time += entity.time.wait;
+            if (timer < time)
+                return AbilityState.Wait;
+            
+            time += entity.time.cooldown;
+            if (timer > time)
+                entity.abilityTimer = 0;
+        }
+        return AbilityState.None;
+    }
+    
+    Vector2 MoveX(Entity entity, float dirX)
+    {
+        entity.velocity = new Vector2(dirX * entity.speed, entity.rb.velocity.y);
+        entity.rb.velocity = entity.velocity;
+        return entity.velocity;
+    }
+    
+    Vector2 Move(Entity entity, Vector2 dir)
+    {
+        entity.velocity = dir * entity.speed * Time.deltaTime;
+        entity.rb.velocity = entity.velocity;
+        return entity.velocity;
+    }
+    
+    void Jump(Entity entity, Vector2 velocity)
+    {
+        entity.jumpPressedRemember = 0;
+        entity.groundRemember = 0;
+        
+        // NOTE(long): Increase the y position a small amount so the ground checking will make isGrounded false next frame
+        entity.transform.position += new Vector3(0, 0.05f, 0);
+        entity.rb.gravityScale *= -1;
+    }
+    
+    void DefaultJumpVFX(Entity entity, JumpState state, Vector2 velocity, Vector2 prevVelocity)
+    {
+        switch (state)
+        {
+            case JumpState.Jump:
             {
-                float upDir = Mathf.Sign(spriteExtents.y);
-                spriteExtents.y = Mathf.Abs(spriteExtents.y);
-                (success, result) = GameManager.SearchValidPos(result, spriteExtents, upDir, searchParam);
+                VFXManager.PlayVFX(entity.type, entity.data, VFXKind.Jump, velocity.x, true);
             } break;
             
-            case MoveTarget.Region:
+            case JumpState.Land:
             {
-                result = oldTarget;
-                if (oldTarget != region.min && oldTarget != region.max)
-                    result = GetRectPos(region, searchParam.filterResult);
-                bool isTargetingMax = oldTarget == region.max;
-                if (MathUtils.IsApproximate(currentPos, oldTarget, .1f, isTargetingMax ? 1 : -1))
-                    result = isTargetingMax ? region.min : region.max;
+                VFXManager.PlayVFX(entity.type, entity.data, VFXKind.Fall, velocity.x, false, start =>
+                                   {
+                                       CapsuleCollider2D cs = entity.cd as CapsuleCollider2D;
+                                       if (cs)
+                                           cs.direction = start ? CapsuleDirection2D.Horizontal : CapsuleDirection2D.Vertical;
+                                   }, () => entity.jumpPressedRemember >= 0 && entity.groundRemember >= 0);
+            } break;
+            
+            case JumpState.InAir:
+            {
+                VFXManager.PlayVFX(entity.type, entity.data, VFXKind.Fall, 0, true);
+            } break;
+            
+            case JumpState.OnGround:
+            {
+                float deltaVelocity = MathUtils.Sign(velocity.x - prevVelocity.x);
+                if (velocity.x == -prevVelocity.x)
+                    deltaVelocity *= 2;
+                VFXManager.PlayVFX(entity.type, entity.data, VFXKind.Move, deltaVelocity, velocity.x != 0);
+            } break;
+        }
+    }
+    
+    Entity GetPlayer() => GameManager.player;
+    Vector2 GetPlayerPos() => GetPlayer().transform.position;
+    Vector2 DirToPlayer(Entity entity) => (GetPlayerPos() - (Vector2)entity.transform.position).normalized;
+    
+    Vector2 GetRegionPos(Entity entity, PositionType initPos = PositionType.Max)
+    {
+        Rect region = GameManager.CalculateMoveRegion(entity.transform.position, entity.spriteExtents, -entity.transform.up.y);
+        Vector2 target = GetTargetPos(entity);
+        
+        if (target != region.min && target != region.max)
+            target = GetRectPos(region, initPos);
+        bool isTargetingMax = target == region.max;
+        if (MathUtils.IsApproximate(entity.transform.position, target, .1f, isTargetingMax ? 1 : -1))
+            target = isTargetingMax ? region.min : region.max;
+        
+        return target;
+        
+        Vector2 GetRectPos(Rect rect, PositionType type)
+        {
+            switch (type)
+            {
+                case PositionType.Random: return MathUtils.RandomPoint(rect.min, rect.max);
+                case PositionType.Min:    return rect.min;
+                case PositionType.Middle: return rect.center;
+                case PositionType.Max:    return rect.max;
+                default: throw new System.ComponentModel.InvalidEnumArgumentException();
+            }
+        }
+    }
+    
+    void Teleport(Entity entity, float range)
+    {
+        Transform transform = entity.transform;
+        float playerUp = GameManager.player.transform.up.y;
+        
+        bool canTp = false;
+        Vector3 destination = GameManager.player.transform.position;
+        {
+            destination.y += (entity.spriteExtents.y - GameManager.player.spriteExtents.y) * playerUp;
+            
+            // TODO(long): Maybe teleport opposite to where the player is heading or teleport to nearby platform?
+            float distance = range * Mathf.Sign(GameManager.player.transform.position.x - transform.position.x);
+            canTp = IsPosValid(distance) || IsPosValid(-distance);
+            
+            bool IsPosValid(float offsetX)
+            {
+                Vector2 pos = destination + new Vector3(offsetX, 0);
+                bool onGround = GameUtils.BoxCast(pos - new Vector2(0, entity.spriteExtents.y * playerUp),
+                                                  new Vector2(entity.spriteExtents.x, .1f), Color.yellow);
+                bool insideWall = GameUtils.BoxCast(pos + new Vector2(0, .1f * playerUp), entity.data.sr.bounds.size, Color.green);
                 
-                Vector2 GetRectPos(Rect rect, PositionType type)
+                if (onGround && !insideWall)
                 {
-                    switch (type)
-                    {
-                        case PositionType.Random: return MathUtils.RandomPoint(rect.min, rect.max);
-                        case PositionType.Min:    return rect.min;
-                        case PositionType.Middle: return rect.center;
-                        case PositionType.Max:    return rect.max;
-                    }
-                    Debug.Assert(false);
-                    success = false;
-                    return currentPos;
+                    destination.x += offsetX;
+                    return true;
+                }
+                return false;
+            }
+        }
+        
+        if (canTp)
+        {
+            if (playerUp != transform.up.y)
+                transform.Rotate(180, 0, 0);
+            transform.position = destination;
+        }
+        
+        // TODO(long): PlayVFX
+    }
+    
+    void Explode(Entity entity, float range, int damage)
+    {
+        // NOTE(long): If the enemy die then it will be handled by the vfx system
+        if (entity.IsInRange(range, GetPlayerPos()))
+            GameManager.player.Hurt(damage);
+    }
+    
+    void Shoot(Entity entity, AbilityData shoot)
+    {
+        // TODO(long): Calculate critical hit and spray pattern
+        bool isCritical = false;
+        float rotZ = 0;
+        int damage = shoot.stat.damage;
+        
+        Transform transform = entity.transform;
+        Vector3 rotation = transform.eulerAngles + Vector3.forward * rotZ;
+        Entity bullet = ObjectPooler.Spawn<Entity>(PoolType.Bullet_Normal, transform.GetChild(0).position, rotation);
+        bullet.InitBullet(damage, isCritical, false);
+        
+        // TODO(long): Play VFX
+        SetAbilityState(entity, AbilityState.Cooldown);
+    }
+    
+    void Reload(Entity entity, WeaponStat stat)
+    {
+        // TODO set the update state flag
+        entity.StartCoroutine(Reloading(stat, GameManager.gameUI.UpdateReload,
+                                        enable =>
+                                        {
+                                            GameManager.gameUI.EnableReload(enable, stat.standardReload);
+                                            GameInput.EnableInput(InputType.Interact, !enable);
+                                            //entity.SetProperty(EntityProperty.IsReloading, enable);
+                                            SetAbilityState(entity, enable ? AbilityState.Charge : AbilityState.None);
+                                            entity.ammo = enable ? 0 : stat.ammo;
+                                        }));
+        
+        System.Collections.IEnumerator Reloading(WeaponStat stat, System.Func<float, bool, bool> updateUI, System.Action<bool> enable)
+        {
+            enable(true);
+            yield return null;
+            
+            float maxTime = stat.standardReload;
+            float t = 0;
+            bool hasReloaded = false;
+            while (t <= maxTime)
+            {
+                yield return null;
+                t += Time.deltaTime;
+                if (!hasReloaded)
+                {
+                    bool isPerfect = updateUI(t, hasReloaded = GameInput.GetInput(InputType.Reload));
+                    if (hasReloaded)
+                        maxTime = isPerfect ? stat.perfectReload : stat.failedReload;
+                }
+            }
+            
+            enable(false);
+        }
+    }
+    
+    void Dash(Entity entity, AbilityData data)
+    {
+        SetAbilityState(entity, AbilityState.Execute, data.time);
+        entity.damage = data.stat.damage;
+        entity.speed  = data.stat.speed;
+    }
+    
+    Vector2 GetTargetPos(Entity entity) => entity.targetPos;
+    Vector2 UpdateTargetPos(Entity entity, Vector2 newPos)
+    {
+        Vector2 oldPos = entity.targetPos;
+        entity.targetPos = newPos;
+        return oldPos;
+    }
+    
+    // NOTE(long): Maybe be just use entity.targetDir directly
+    Vector2 GetTargetDir(Entity entity) => entity.targetPos - (Vector2)entity.transform.position;
+    Vector2 UpdateTargetDir(Entity entity, Vector2 newDir)
+    {
+        Vector2 oldDir = GetTargetDir(entity);
+        entity.targetPos = (Vector2)entity.transform.position + newDir;
+        return oldDir;
+    }
+    
+    void UpdatePlayer(Entity entity)
+    {
+        float moveInput = GameInput.GetAxis(AxisType.Horizontal);
+        Vector2 prevVelocity = entity.velocity;
+        Vector2 velocity = MoveX(entity, moveInput);
+        
+        if (Mathf.Sign(entity.transform.right.x) != Mathf.Sign(GameInput.GetDirToMouse(entity.transform.position).x))
+            entity.transform.Rotate(0, 180, 0);
+        
+        JumpState state = UpdateJumpState(entity, GameInput.GetInput(InputType.Jump));
+        DefaultJumpVFX(entity, state, velocity, prevVelocity);
+    }
+    
+    void UpdateMaggot(Entity entity, AbilityData teleport, AbilityData explode)
+    {
+        Transform transform = entity.transform;
+        Vector2 playerPos = GetPlayerPos();
+        
+        AbilityState state = UpdateAbilityState(entity);
+        
+        if (state == AbilityState.None)
+        {
+            bool targetPlayer = false; // TODO(long): Check the entity flags
+            float moveInput = Mathf.Sign((targetPlayer ? playerPos : GetRegionPos(entity)).x - transform.position.x);
+            MoveX(entity, moveInput);
+            
+            if (teleport.IsTrigger(entity))
+            {
+                Teleport(entity, teleport.stat.range);
+                SetAbilityState(entity, AbilityState.Cooldown);
+            }
+            
+            if (MathUtils.InRange(transform.position, playerPos, explode.distanceToExecute.x))
+                SetAbilityState(entity, AbilityState.Charge);
+        }
+        else if (state == AbilityState.Execute)
+            Explode(entity, explode.stat.range, explode.stat.damage);
+    }
+    
+    void UpdateWeapon(Entity entity, Vector2 posOffset, Vector3 k, AbilityData shoot)
+    {
+        Entity playerEntity = GetPlayer();
+        Transform player = playerEntity.transform;
+        Transform transform = entity.transform;
+        
+        Vector2 targetPos = (Vector2)player.position + posOffset * player.Direction();
+        Vector2 oldPos = UpdateTargetPos(entity, targetPos);
+        float newY = MathUtils.SecondOrder(Time.deltaTime, k.x, k.y, k.z, targetPos.y, oldPos.y,
+                                           transform.position.y, ref entity.velocity.y);
+        transform.position.Set(targetPos.x, newY, transform.position.z);
+        
+        AbilityState state = UpdateAbilityState(entity);
+        bool isReloading = state == AbilityState.Charge;
+        
+        if (!playerEntity.HasProperty(EntityProperty.IsGrounded) || isReloading)
+            transform.rotation = player.rotation;
+        else
+            transform.rotation = MathUtils.LookRotation(GameInput.GetDirToMouse(transform.position), player.forward);
+        
+        if (!isReloading)
+        {
+            if ((entity.ammo == 0               && GameInput.GetInput(InputType.Shoot)) &&
+                (entity.ammo < entity.stat.ammo && GameInput.GetInput(InputType.Reload)))
+                Reload(entity, entity.stat);
+            else if (state == AbilityState.Cooldown)
+                UpdateAbilityState(entity);
+            else if (entity.ammo > 0 && GameInput.GetInput(InputType.Shoot))
+                Shoot(entity, shoot);
+        }
+    }
+    
+    void UpdateNoEye(Entity entity, AbilityData dash, AbilityData cooldown)
+    {
+        bool targetPlayer = false;
+        Vector2 playerDir = DirToPlayer(entity);
+        Move(entity, targetPlayer ? playerDir : GetTargetDir(entity));
+        
+        AbilityState state = UpdateAbilityState(entity);
+        
+        switch (state)
+        {
+            case AbilityState.None:
+            {
+                if (dash.IsTrigger(entity))
+                    Dash(entity, dash);
+            } break;
+            
+            case AbilityState.Cooldown:
+            {
+                if (targetPlayer)
+                {
+                    UpdateTargetDir(entity, playerDir * new Vector2(1, -1));
+                    Dash(entity, cooldown);
+                    // TODO(long): targetPlayer = false
+                }
+                else
+                {
+                    Entity prefab = ObjectPooler.GetDefaultObject<Entity>(PoolType.Enemy_NoEye);
+                    entity.speed = prefab.speed;
+                    entity.health = prefab.health;
+                    // TODO(long): targetPlayer = true
                 }
             } break;
         }
-        
-        return (success, result);
     }
-    
-    public Vector2 UpdateMoveRegion(MoveRegionType type, Vector2 position, Vector2 extents, float dirY)
-    {
-        switch (type)
-        {
-            case MoveRegionType.WalkRegion: region = GameManager.CalculateMoveRegion(position, extents, dirY); break;
-            case MoveRegionType.Manual:     region = new Rect(position, extents * 2);                          break;
-            case MoveRegionType.Entity:     region.position = position;                                        break;
-            
-            case MoveRegionType.GroundPos:
-            {
-                if (GameManager.GetGroundPos(position, extents, dirY, out _, out Vector3Int groundPos))
-                    region.position = new Vector2(position.x, groundPos.y + extents.y);
-            } break;
-        }
-        
-        return (type == MoveRegionType.None && region == Rect.zero) ? position : MathUtils.Clamp(position, region.min, region.max);
-    }
-}
-
-#if false
-EntityAction CreatePlayerAction(Entity player, MoveStat moveStat, MoveStat gravityStat)
-{
-    EntityAction result = new EntityAction
-    {
-        trigger = new EntityTrigger(TriggerType.InputX),
-        target = new TargetData(MoveTarget.Input),
-        
-        transform = new TransformData
-        {
-            type = TransformType.Acceleration,
-            flags = new Property<TransformFlag>(TransformFlag.FreezeY),
-            rotateType = RotateType.FlipY,
-            stat = moveStat,
-        },
-    };
-    
-    result.next = new EntityAction
-    {
-        trigger = new EntityTrigger
-        {
-            flags = new Property(TriggerFlag.Inverse),
-            type = TriggerType.OnGround,
-            bufferTime = ,
-        }
-        
-        transform = new TransformData
-        {
-            type = TransformType.Acceleration,
-            targetOffset = new OffsetData { offset = Vector2.down },
-            stat = gravityStat,
-        },
-    };
-    
-    return result;
-}
-
-EntityAction CreateWeaponAction(Entity weapon, Vector2 posOffset, MoveStat moveStat)
-{
-    return new EntityAction
-    {
-        target = new TargetData(MoveTarget.Player),
-        transform = new TransformData
-        {
-            flags = new Property<TransformFlag>(TransformFlag.FreezeX, TransformFlag.ReverseX),
-            targetOffset = new OffsetData { type = TargetOffsetType.PlayerDir, offset = posOffset },
-            type = TransformType.SecondOrder,
-            rotateType = RotateType.LookAt,
-            stat = moveStat,
-        },
-    };
-}
-
-void PushEmptyAction(Entity entity, EntityTrigger trigger, float chargeTime, float interuptTime, float cooldownTime)
-{
-    return new EntityAction
-    {
-        trigger = trigger,
-        duration = chargeTime,
-        interuptTime = interuptTime,
-        cooldownTime = cooldownTime,
-    };
-}
-
-EntityAction MoveToPlayer(Entity entity, EntityTrigger trigger, float speed, MoveRegionType region = MoveRegionType.None)
-{
-    return new EntityAction
-    {
-        trigger = trigger,
-        target = new TargetData(MoveTarget.Player, region),
-        transform = new TransformData
-        {
-            type = TransformType.Acceleration,
-            stat = new MoveStat(speed),
-        }
-    };
-}
-
-void Jump(Entity entity)
-{
-    EntityAction gravity = GetGravityAction(entity);
-    gravity.transform.targetOffset.offset.y *= -1;
-}
-
-void Knockback(Entity entity, float force)
-{
-    EntityAction knockback = new EntityAction { transform = new TransformData() };
-    knockback.transform.targetOffset = new OffsetData { type = TargetOffsetType.EntityRight, offset = Vector2.one * force };
-    PushNewAction(entity, knockback);
-    
-    // or
-    
-    EntityAction action = GetMoveAction(entity);
-    action.transform.next = new TransformData();
-    action.transform.next.targetOffset = new OffsetData { type = TargetOffsetType.EntityRight, offset = Vector2.one * force };
-}
-
-void UpdatePlayer(Entity entity)
-{
-    float moveInput = entity.GetMoveDir().x;
-    Vector2 velocity = entity.Move(Vector2.right * moveInput);
-    
-    bool isGrounded = ;
-    bool wasGrounded = ;
-    
-    JumpState state = entity.UpdateJumpState(InputType.Jump, isGrounded, wasGrounded);
-    
-    if (state == JumpState.Jump)
-        entity.Jump(velocity);
-    else
-        entity.HandleJumpState(state, velocity);
-    
-    float facingDir = entity.GetRotation(RotateDir.X);
-    if (facingDir != moveInput)
-        entity.FlipRotation(RotateDir.X);
-}
-
-void UpdateMaggot(Entity entity, TriggerData tpTrigger, TriggerData expTrigger, GameManager.SearchParameter teleParam, float cooldownTime, float waitTime)
-{
-    MoveInput moveInput = entity.GetMoveInput();
-    if (moveInput.flags.HasProperty(InputFlag.Trigger))
-    {
-        entity.transform.position = moveInput.target;
-        entity.SetWaitState(waitTime);
-        entity.SetCooldown(cooldownTime);
-    }
-    else
-        entity.Move(Vector2.right * moveInput.GetTargetDir().x);
-    
-    if (tpTrigger.IsTrigger(entity))
-        entity.SetSearch(teleParam);
-    
-    if (expTrigger.IsTrigger(entity))
-        entity.Explode();
 }
 #endif

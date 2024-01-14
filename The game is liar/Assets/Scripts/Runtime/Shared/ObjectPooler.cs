@@ -162,6 +162,8 @@ public static class ObjectPooler
         return null;
     }
     
+    public static T GetDefaultObject<T>(PoolType type) => dictionary[type][0].GetComponent<T>();
+    
     public static T Spawn<T>(PoolType type, Vector2 pos, Vector3 rot) => Spawn_(type, pos, Quaternion.Euler(rot)).GetComponent<T>();
     
     public static void Spawn(PoolType type, Vector2 pos) => Spawn_(type, pos, Quaternion.identity);
