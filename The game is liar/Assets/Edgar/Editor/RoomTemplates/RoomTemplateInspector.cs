@@ -88,7 +88,7 @@ namespace Edgar.Unity.Editor
             SceneView.onSceneGUIDelegate -= OnSceneGUITest;
 #endif
 
-            if (UnityEditor.Experimental.SceneManagement.PrefabStageUtility.GetCurrentPrefabStage() != null)
+            if (UnityEditor.SceneManagement.PrefabStageUtility.GetCurrentPrefabStage() != null)
             {
                 
 #if UNITY_2019_1_OR_NEWER
@@ -111,7 +111,7 @@ namespace Edgar.Unity.Editor
                 return;
             }
 
-            if (UnityEditor.Experimental.SceneManagement.PrefabStageUtility.GetCurrentPrefabStage() == null)
+            if (UnityEditor.SceneManagement.PrefabStageUtility.GetCurrentPrefabStage() == null)
             {
 #if UNITY_2019_1_OR_NEWER
                 SceneView.duringSceneGui -= OnSceneGUITest;

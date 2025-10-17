@@ -5,6 +5,8 @@ using Edgar.Unity;
 using UnityEngine.Tilemaps;
 using System.Reflection;
 using System.Collections.ObjectModel;
+using System.Linq;
+
 
 #if true
 using StringBuilder = System.Text.StringBuilder;
@@ -98,7 +100,7 @@ public class GameManager : MonoBehaviour
     
     private static Bounds defaultBounds;
     private static Tilemap tilemap;
-    
+
 #if UNITY_EDITOR
     [EasyButtons.Button]
     private static void FindAllEntityProperties(bool generateFile)
@@ -273,16 +275,23 @@ public class GameManager : MonoBehaviour
         
         public static void GetUnusedAttributes(MemberInfo member, IList<CustomAttributeData> data)
         {
-            Attribute[] atts = Array.ConvertAll(member.GetCustomAttributes(false), att => (Attribute)att);
-            for (int i = 0; i < data.Count; ++i)
-                if (atts[i].GetType() != data[i].AttributeType)
-                    Debug.Log("Attribute: " + atts[i].GetType() + " Data: " + data[i].AttributeType);
-            else
-                usedAttributes.Add(data[i].AttributeType);
-            
-            for (int i = data.Count; i < atts.Length; ++i)
-                if (!unusedAttributes.Contains(atts[i].GetType()))
-                    unusedAttributes.Add(atts[i].GetType());
+            try
+            {
+                Attribute[] atts = Array.ConvertAll(member.GetCustomAttributes(false), att => (Attribute)att);
+
+                for (int i = 0; i < data.Count; ++i)
+                {
+                    if (atts[i].GetType() != data[i].AttributeType)
+                        Debug.Log("Attribute: " + atts[i].GetType() + " Data: " + data[i].AttributeType);
+                    else
+                        usedAttributes.Add(data[i].AttributeType);
+                }
+
+                for (int i = data.Count; i < atts.Length; ++i)
+                    if (!unusedAttributes.Contains(atts[i].GetType()))
+                        unusedAttributes.Add(atts[i].GetType());
+            }
+            catch { }
         }
     }
     
@@ -337,6 +346,7 @@ public class GameManager : MonoBehaviour
         "System.Runtime.CompilerServices.NullableContextAttribute",
     };
     
+    // From testing: Partition_Assembly > Assembly > Partition_Type > Partition_Load > Load > Partition_All > All > Type > None
     enum ThreadType
     {
         None,
@@ -393,19 +403,14 @@ public class GameManager : MonoBehaviour
         watch = new System.Diagnostics.Stopwatch();
         watch.Start();
         
-        Assembly[] assemblies;
-        {
-            Assembly[] _assemblies = AppDomain.CurrentDomain.GetAssemblies();
-            bool exist = Array.Exists(_assemblies, assembly => GetName(assembly) == "DLL");
-            assemblies = new Assembly[_assemblies.Length + (exist ? 0 : 1)];
-            if (!exist)
-            {
-                byte[] content = System.IO.File.ReadAllBytes("D:/Documents/Projects/C#-DLL/DLL/DLL/obj/Debug/netstandard2.0/DLL.dll");
-                assemblies[_assemblies.Length] = Assembly.Load(content);
-            }
-            Array.Copy(_assemblies, assemblies, _assemblies.Length);
-        }
-        
+        Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+        Array.Sort(assemblies, (a, b) => string.Compare(a.GetName().Name, b.GetName().Name));
+
+        List<string> locations = new List<string>(assemblies.Length);
+        foreach (Assembly asm in assemblies)
+            if (!asm.IsDynamic && !string.IsNullOrEmpty(asm.Location))
+                locations.Add(asm.Location);
+
         StringBuilder builder = new StringBuilder(assemblies.Length * 256 * 16);
         Func<Assembly, bool> filterAssembly = assembly =>
         {
@@ -497,16 +502,16 @@ public class GameManager : MonoBehaviour
         }
         
         T[] IteratePartitionAssemblies<T>(Func<Assembly, T> callback)
-        {
-            T[] data = new T[assemblies.Length];
-            ForEach(0, assemblies.Length, range =>
-                    {
-                        for (int i = range.Item1; i < range.Item2; i++)
-                            if (filterAssembly(assemblies[i]))
-                                data[i] = callback(assemblies[i]);
-                    });
-            return data;
-        }
+            {
+                T[] data = new T[assemblies.Length];
+                ForEach(0, assemblies.Length, range =>
+                        {
+                            for (int i = range.Item1; i < range.Item2; i++)
+                                if (filterAssembly(assemblies[i]))
+                                    data[i] = callback(assemblies[i]);
+                        });
+                return data;
+            }
         
         void AppendGlobalType(StringBuilder builder, Type type, string data)
         {
@@ -1359,6 +1364,7 @@ public class GameManager : MonoBehaviour
         static Type[] GetBaseTypes(Type type)
         {
             Type[] interfaces = type.IsEnum ? new Type[0] : type.GetInterfaces();
+            Array.Sort(interfaces, (a, b) => string.Compare(a.Name, b.Name));
             bool hasBaseType = type.BaseType != null && type.BaseType != typeof(object) && !type.IsValueType;
             List<Type> types = new List<Type>(interfaces.Length + (hasBaseType ? 1 : 0));
             
@@ -1367,7 +1373,6 @@ public class GameManager : MonoBehaviour
             
             Type[] baseInterfaces = hasBaseType ? type.BaseType.GetInterfaces() : new Type[0];
             Func<Type, bool> match = itf => !Array.Exists(baseInterfaces, t => t == itf);
-            Array.Sort(baseInterfaces, (a, b) => string.Compare(a.Name, b.Name));
             
             // NOTE: This only display "implemented" interfaces, not "declared" interfaces
             // Because of that, it won't work for inherit/empty interfaces and inherit classes that don't override the interface's members
@@ -1920,7 +1925,7 @@ public class GameManager : MonoBehaviour
         }
     }
 #endif
-    
+
     // RANT: This function only gets called in LevelInfoPostProcess.cs and its job is to:
     // 1. Add 2 rule tiles at the 2 ends of a door line.
     // 2. Delete all the tiles that are at the door's tiles.

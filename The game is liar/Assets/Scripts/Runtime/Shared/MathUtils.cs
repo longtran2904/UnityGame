@@ -259,8 +259,8 @@ public static class MathUtils
         float x = a.x - b.x;
         float y = a.y - b.y;
         bool isApproximate = Mathf.Abs(x) <= epsilon && Mathf.Abs(y) <= epsilon;
-        bool outOfRange = compareDir != 0 ? Sign(x) == Sign(compareDir) || Sign(y) == Sign(compareDir) : true;
-        return isApproximate && outOfRange;
+        bool outOfRange = compareDir != 0 ? (Sign(x) == Sign(compareDir) || Sign(y) == Sign(compareDir)) : true;
+        return isApproximate || outOfRange;
     }
     
     public static Vector2 X(this Vector2 v, float x) => new Vector2(x, v.y);

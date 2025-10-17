@@ -5,20 +5,20 @@ public class Weapon : MonoBehaviour
     public WeaponStat stat;
     public GameObject muzzleFlash;
     public Vector2 posOffset;
-
+    
     public int currentAmmo;
     [HideInInspector] public Transform shootPos;
-
+    
     public bool moveUpAndDownWhenDrop;
     [ShowWhen("moveUpAndDownWhenDrop")] public float speed;
     [ShowWhen("moveUpAndDownWhenDrop")] public float halfDistance;
     [ShowWhen("moveUpAndDownWhenDrop")] public RangedFloat waitTime;
-
+    
     private bool isMoving;
     private Rigidbody2D rb;
     private BoxCollider2D box;
     private TextboxTrigger trigger;
-
+    
     // RANT: What I'm trying to do here is to just know when the collider is hitting the ground (meaning the tag/layer is "Ground" and the normal surface is Vector2.up).
     // Obviously, because Unity is f****** retarded so this little simple task is impossible.
     // Why I was trying to do this in the first place?
@@ -51,13 +51,13 @@ public class Weapon : MonoBehaviour
             trigger.textboxType = TextboxType.Weapon;
             rb.velocity = Vector2.zero;
             rb.bodyType = RigidbodyType2D.Kinematic;
-
+            
             if (moveUpAndDownWhenDrop)
             {
                 isMoving = true;
                 trigger.hitGroundPos += new Vector3(0, halfDistance);
                 StartCoroutine(UpAndDown(halfDistance, trigger.hitGroundPos.y));
-
+                
                 System.Collections.IEnumerator UpAndDown(float halfDistance, float center)
                 {
                     yield return new WaitForSeconds(waitTime.randomValue);
@@ -75,7 +75,7 @@ public class Weapon : MonoBehaviour
             }
         }
     }
-
+    
     public Weapon Init()
     {
         currentAmmo = stat.ammo;
@@ -88,10 +88,10 @@ public class Weapon : MonoBehaviour
         box = gameObject.AddComponent<BoxCollider2D>();
         trigger = GetComponent<TextboxTrigger>();
         trigger.weapon = this;
-
+        
         return this;
     }
-
+    
     public void Drop(Transform parent, Vector2 dropDir)
     {
         Prepare(true, parent);
@@ -99,20 +99,20 @@ public class Weapon : MonoBehaviour
         rb.velocity = dropDir;
         trigger.textboxType = TextboxType.None;
     }
-
+    
     public void Pickup(Transform parent)
     {
         Prepare(false, parent);
         isMoving = false;
     }
-
+    
     void Prepare(bool drop, Transform parent)
     {
         box.enabled = drop;
         if (parent)
             ResetPosToTransform(parent);
     }
-
+    
     public void ResetPosToTransform(Transform holder)
     {
         transform.SetPositionAndRotation(GameUtils.GetDirectionalPos(holder, posOffset), holder.rotation);

@@ -69,6 +69,346 @@ public class Entity : MonoBehaviour, IPooledObject
     // Teleport when player is far away
     // Move towards the player, teleport when hit a cliff
     
+    public class Ability
+    {
+        public enum TriggerFlag
+        {
+            LowHealth,
+            InRange,
+            InRangeX,
+            InRangeY,
+            EndRegion,
+            
+            // OnHit, OnSpawn, OnDeath
+        }
+        
+        public class EntityTrigger
+        {
+            public Property<TriggerFlag> flags;
+            public int   health;
+            public float distance;
+            public float distanceX;
+            public float distanceY;
+        }
+        
+        public enum MoveTarget
+        {
+            None,
+            Input,
+            Entity,
+            Player,
+            GroundNearPlayer,
+            Region,
+        }
+        
+        public enum MoveOffset
+        {
+            None,
+            Mouse,
+            PlayerDir,
+            EntityRight,
+        }
+        
+        public struct TargetData
+        {
+            public MoveTarget target;
+            public PositionType posType;
+            
+            public MoveOffset offsetType;
+            public Vector2 offset;
+            
+            public Vector2 GetTargetPos(Entity entity, Vector2 oldTarget, Rect region)
+            {
+                Entity player = GameManager.player;
+                Vector2 extents = entity.spriteExtents;
+                
+                Vector2 playerPos  = player.transform.position;
+                Vector2 currentPos = entity.transform.position;
+                
+                Vector2 result = oldTarget;
+                switch (target)
+                {
+                    case MoveTarget.Input:  result = currentPos + GameInput.GetAxis(); goto default;
+                    case MoveTarget.Entity: result = currentPos; goto default;
+                    case MoveTarget.Player: result =  playerPos; goto default;
+                    default:                result += GetOffset(entity.transform); break;
+                    
+                    case MoveTarget.GroundNearPlayer:
+                    {
+                        float up = player.transform.up.y;
+                        Vector2 pos = playerPos + Vector2.up * (extents.y - player.spriteExtents.y) * up;
+                        Debug.Log(Vector2.up * (extents.y - player.spriteExtents.y) * up);
+                        if      (IsPosValid(pos + offset, up))
+                            result = pos + offset;
+                        else if (IsPosValid(pos - offset, up))
+                            result = pos - offset;
+                        else
+                            result = currentPos;
+                        
+                        bool IsPosValid(Vector2 pos, float up)
+                        {
+                            bool onFloor = GameUtils.BoxCast(pos - new Vector2(0, extents.y * up), new Vector2(extents.x, .1f), Color.yellow);
+                            bool inWall  = GameUtils.BoxCast(pos + new Vector2(0, .1f * up), extents * 2, Color.green);
+                            return onFloor && !inWall;
+                        }
+                    } break;
+                    
+                    case MoveTarget.Region:
+                    {
+                        if (oldTarget != region.min && oldTarget != region.max)
+                            result = GetRectPos(region, posType); // @RECONSIDER(long): Do I even need posType? Maybe I should always use Max
+                        bool isTargetingMax = oldTarget == region.max;
+                        if (MathUtils.IsApproximate(currentPos, oldTarget, .1f, isTargetingMax ? 1 : -1))
+                            result = isTargetingMax ? region.min : region.max;
+                        
+                        Vector2 GetRectPos(Rect rect, PositionType type)
+                        {
+                            switch (type)
+                            {
+                                case PositionType.Random: return MathUtils.RandomPoint(rect.min, rect.max);
+                                case PositionType.Min:    return rect.min;
+                                case PositionType.Middle: return rect.center;
+                                case PositionType.Max:    return rect.max;
+                            }
+                            Debug.Assert(false);
+                            return oldTarget;
+                        }
+                    } goto default;
+                }
+                
+                return result;
+            }
+            
+            public Vector2 GetOffset(Transform transform)
+            {
+                Vector2 currentDir = Vector2.one;
+                Transform player = GameManager.player.transform;
+                switch (offsetType)
+                {
+                    case MoveOffset.Mouse:       currentDir = GameInput.GetDirToMouse(transform.position); break;
+                    case MoveOffset.PlayerDir:   currentDir = player.Direction();      break;
+                    case MoveOffset.EntityRight: currentDir = transform.right;         break;
+                }
+                return currentDir * offset;
+            }
+        }
+        
+        public enum ActionFlag
+        {
+            Interuptible,
+            DamageInRange,
+            Untargetable,
+            TeleportToTarget,
+        }
+        
+        public class EntityStat
+        {
+            public Property<ActionFlag> flags;
+            public TargetData target;
+            public RotateType rotateType;
+            public int health, damage;
+            public float speed, range;
+            public float duration, searchTime;
+        }
+        
+        public EntityTrigger trigger;
+        public float cooldownTime;
+        public float failedTime;
+        
+        public EntityStat[] actions;
+        
+        public bool IsTrigger(Entity entity)
+        {
+            Vector2 playerPos = GameManager.player.transform.position;
+            Vector2 pos = entity.transform.position;
+            
+            bool lowHealth  = trigger.flags.HasProperty(TriggerFlag.LowHealth) == (entity.health < trigger.health);
+            bool isInRange  = trigger.flags.HasProperty(TriggerFlag.InRange)   == InRange2D(pos, playerPos, trigger.distance);
+            bool isInRangeX = trigger.flags.HasProperty(TriggerFlag.InRangeX)  == InRange1D(pos.x, playerPos.x, trigger.distanceX);
+            bool isInRangeY = trigger.flags.HasProperty(TriggerFlag.InRangeY)  == InRange1D(pos.y, playerPos.y, trigger.distanceY);
+            bool endRegion  = trigger.flags.HasProperty(TriggerFlag.EndRegion) == (InRange2D(pos, entity.moveRegion.max, .01f) ||
+                                                                                   InRange2D(pos, entity.moveRegion.min, .01f));
+            
+            return lowHealth && (isInRange || (isInRangeX && isInRangeY)) && endRegion;
+            
+            bool InRange1D(float   a, float   b, float d) => Mathf.Abs(a - b) < d;
+            bool InRange2D(Vector2 a, Vector2 b, float d) => (a - b).sqrMagnitude < d * d;
+        }
+        
+        public AbilityResult Execute(Entity entity, EntityState state, float timer)
+        {
+            EntityStat action = actions[state.currentAction];
+            Debug.Assert(action.duration   >= 0);
+            Debug.Assert(action.searchTime >= 0);
+            Debug.Assert(action.searchTime <= action.duration);
+            
+            if (state.timer == 0)
+            {
+                // set state
+                if (state.currentAction == 0)
+                {
+                    state.health = entity.health;
+                    state.damage = entity.damage;
+                    state.speed  = entity.speed;
+                    state.range  = entity.range;
+                    
+                    state.target = entity.targetType;
+                    state.rotate = entity.rotateType;
+                }
+                
+                entity.health += entity.health * action.health;
+                entity.damage += entity.damage * action.damage;
+                entity.speed  += entity.speed  * action.speed;
+                entity.range  += entity.range  * action.range;
+                
+                entity.targetType = TargetType.None;
+                if (action.rotateType != RotateType.None)
+                    entity.rotateType = action.rotateType;
+            }
+            
+            if (state.timer <= action.searchTime) // @RECONSIDER(long): <= and remove the IsTrigger in UpdateState
+            {
+                if (action.flags.HasProperty(ActionFlag.Interuptible))
+                    if (!IsTrigger(entity))
+                        return ResetState(AbilityResult.Fail);
+                
+                state.targetPos = action.target.GetTargetPos(entity, state.targetPos, entity.moveRegion);
+                //state.targetPos += action.target.GetOffset(entity.transform);
+                
+                if (action.flags.HasProperty(ActionFlag.Untargetable) && state.targetPos == (Vector2)entity.transform.position)
+                    return ResetState(AbilityResult.Fail);
+            }
+            
+            if (state.timer > action.duration)
+            {
+                if (action.flags.HasProperty(ActionFlag.DamageInRange))
+                    if (entity.IsInRange(action.range, GameManager.player.transform.position))
+                        GameManager.player.Hurt(action.damage);
+                if (action.flags.HasProperty(ActionFlag.TeleportToTarget))
+                    entity.transform.position = state.targetPos.Z(entity.transform.position.z);
+                return ResetState(AbilityResult.Success);
+            }
+            
+            state.timer += Time.deltaTime;
+            return AbilityResult.None;
+            
+            AbilityResult ResetState(AbilityResult value)
+            {
+                entity.health = state.health;
+                entity.damage = state.damage;
+                entity.speed  = state.speed;
+                entity.range  = state.range;
+                entity.rotateType = state.rotate;
+                entity.targetType = state.target;
+                return value;
+            }
+        }
+        
+        public static Ability CreateMaggot()
+        {
+            Ability result = new Ability
+            {
+                trigger = new EntityTrigger { distance  = 20, distanceY = 3, },
+                cooldownTime = .5f,
+                actions = new EntityStat[]
+                {
+                    new EntityStat
+                    {
+                        flags = new Property<ActionFlag>(ActionFlag.Untargetable, ActionFlag.TeleportToTarget),
+                        target = new TargetData { target = MoveTarget.GroundNearPlayer, offset = new Vector2(5, 0) },
+                        speed = -1, duration = .3f, searchTime = .3f,
+                    },
+                    new EntityStat { speed = -1, duration = .2f, /*searchTime = .2f,*/ },
+                }
+            };
+            return result;
+        }
+        
+        public static Ability CreateNoEye()
+        {
+            Ability result = new Ability
+            {
+                trigger = new EntityTrigger { flags = TriggerFlag.InRange, distance = 4, },
+                cooldownTime = 1,
+                actions = new EntityStat[]
+                {
+                    new EntityStat
+                    {
+                        flags = new Property<ActionFlag>(ActionFlag.Interuptible),
+                        target = new TargetData { target = MoveTarget.Player },
+                        speed = -1, duration = .8f, searchTime = .5f,
+                    },
+                    new EntityStat { speed = 2, duration = .3f, },
+                }
+            };
+            return result;
+        }
+    }
+    
+    public enum AbilityResult
+    {
+        None,
+        Success,
+        Fail,
+    }
+    
+    private EntityState state;
+    public class EntityState
+    {
+        public System.Collections.Generic.Dictionary<Ability, float> abilities;
+        public Ability currentAbility;
+        
+        public int currentAction;
+        public float timer;
+        public Vector2 targetPos;
+        
+        public RotateType rotate;
+        public TargetType target;
+        
+        public int health, damage;
+        public float speed, range;
+        
+        public EntityState(params Ability[] abilities)
+        {
+            this.abilities = new System.Collections.Generic.Dictionary<Ability, float>(abilities.Length);
+            foreach (Ability ability in abilities)
+                this.abilities.Add(ability, 0); 
+        }
+        
+        public void UpdateState(Entity entity)
+        {
+            if (currentAbility == null)
+            {
+                foreach (Ability ability in abilities.Keys)
+                {
+                    if (ability.IsTrigger(entity) && Time.time > abilities[ability])
+                    {
+                        currentAbility = ability;
+                        Debug.Log("Trigger: " + entity.name);
+                        Debug.Break();
+                        break;
+                    }
+                }
+            }
+            
+            if (currentAbility != null)
+            {
+                AbilityResult result = currentAbility.Execute(entity, this, timer);
+                
+                if (result != AbilityResult.None)
+                {
+                    bool failed = result == AbilityResult.Fail;
+                    Debug.Log("Done! Failed: " + failed);
+                    timer = 0;
+                    currentAction = failed ? 0 : (currentAction + 1) % currentAbility.actions.Length;
+                    if (currentAction == 0)
+                        abilities[currentAbility] = Time.time + (failed ? currentAbility.failedTime : currentAbility.cooldownTime);
+                    currentAbility = null;
+                }
+            }
+        }
+    }
+    
     public enum AbilityType
     {
         None,
@@ -100,7 +440,7 @@ public class Entity : MonoBehaviour, IPooledObject
         public EntityVFX vfx;
         public AbilityType type;
         
-        public int healthToExecute;
+        public int   healthToExecute;
         public float distanceToExecute;
         public float distanceToExecuteY;
         public float cooldownTime;
@@ -265,11 +605,8 @@ public class Entity : MonoBehaviour, IPooledObject
     public EntityType type;
     
     public EntityAbility[] abilities;
+#if !NEW_AI
     private int currentAbility;
-    
-#if NEW_AI
-    private float abilityTimer;
-    private AbilityTime time;
 #endif
     
     public int health;
@@ -289,7 +626,7 @@ public class Entity : MonoBehaviour, IPooledObject
     public MoveType moveType;
     public RotateType rotateType;
     public TargetType targetType;
-    [Range(0f, 50f)] public float speed;
+    [Range(0.0f, 50.0f)] public float speed;
     public float dRotate;
     public float range;
     public float maxFallingSpeed;
@@ -359,7 +696,8 @@ public class Entity : MonoBehaviour, IPooledObject
         if (entity)
         {
             properties = entity.properties;
-            // TODO: testProperties
+            
+#if !NEW_AI
             Debug.Assert(entity.abilities?.Length == abilities?.Length);
             currentAbility = 0;
             for (int i = 0; i < entity.abilities.Length; ++i)
@@ -367,6 +705,7 @@ public class Entity : MonoBehaviour, IPooledObject
                 abilities[i].flags = entity.abilities[i].flags;
                 abilities[i].vfx.properties = entity.abilities[i].vfx.properties;
             }
+#endif
             
             health = entity.health;
             damage = entity.damage;
@@ -671,21 +1010,27 @@ public class Entity : MonoBehaviour, IPooledObject
         if (aliveTime != 0 && Time.time > aliveTime)
             Die();
         
-#if !NEW_AI
+#if NEW_AI
+        switch (type)
+        {
+            case EntityType.Maggot: state ??= new EntityState(Ability.CreateMaggot()); break;
+            case EntityType.NoEye:  state ??= new EntityState(Ability.CreateNoEye()); break;
+        }
+        state?.UpdateState(this);
+#endif
+        
         RotateEntity(transform, rotateType, dRotate, velocity.x);
         Vector2 prevVelocity = velocity;
         MoveEntity();
-#endif
         
         if (HasProperty(EntityProperty.ClampToMoveRegion))
             transform.position = MathUtils.Clamp(transform.position, moveRegion.min, moveRegion.max, transform.position.z);
-        //GameDebug.DrawBox(moveRegion, Color.green);
+        GameDebug.DrawBox(moveRegion, Color.green);
         
         //~ NOTE(long): Jumping
         bool startJumping = jumpPressedRemember >= 0 && groundRemember >= 0;
         {
-#if NEW_AI
-#elif NEW_VFX
+#if NEW_VFX || NEW_AI
             if (GameManager.player == this)
             {
                 if (startJumping)
@@ -883,7 +1228,7 @@ public class Entity : MonoBehaviour, IPooledObject
                 velocity = new Vector2(targetDir.x * speed, rb.velocity.y);
             } break;
             
-            case MoveType.SmoothDamp: // TODO: Do we still need SmoothDamp? MoveType.Spring seems to also include this already.
+            case MoveType.SmoothDamp: // @RECONSIDER(long): Do we still need SmoothDamp? MoveType.Spring seems to also include this already.
             {
                 transform.position = MathUtils.SmoothDamp(transform.position, targetPos, ref velocity, new Vector2(speed, speedY),
                                                           Time.deltaTime, transform.position.z);
@@ -1058,18 +1403,23 @@ public class Entity : MonoBehaviour, IPooledObject
         {
             if (collision.CompareTag(tag))
             {
-                Entity entity;
-                if (entity = collision.GetComponent<Entity>())
+                Entity entity = collision.GetComponent<Entity>();
+                if (entity)
                 {
                     if (HasProperty(EntityProperty.DamageWhenCollide))
                         entity.Hurt(damage);
                     if (HasProperty(EntityProperty.AddMoneyWhenCollide))
                         entity.money += money;
                 }
+                
                 if (HasProperty(EntityProperty.DieWhenCollide))
                     Die();
+                
                 if (HasProperty(EntityProperty.SpawnDamagePopup))
-                    ObjectPooler.Spawn<Entity>(PoolType.DamagePopup, transform.position).InitDamagePopup(damage, HasProperty(EntityProperty.IsCritical));
+                    ObjectPooler.Spawn<Entity>(PoolType.DamagePopup, transform.position)
+                        .InitDamagePopup(damage, HasProperty(EntityProperty.IsCritical));
+                
+                break;
             }
         }
     }

@@ -1,5 +1,5 @@
 {
-    "m_SGVersion": 2,
+    "m_SGVersion": 3,
     "m_Type": "UnityEditor.ShaderGraph.GraphData",
     "m_ObjectId": "b28dbc5348e54f25bb3c8e548b8c4fd2",
     "m_Properties": [
@@ -41,6 +41,12 @@
         }
     ],
     "m_Keywords": [],
+    "m_Dropdowns": [],
+    "m_CategoryData": [
+        {
+            "m_Id": "72866bb01f064c31b3aaa0dffec483f3"
+        }
+    ],
     "m_Nodes": [
         {
             "m_Id": "9654745f16de1b86b3eb037d8051358e"
@@ -647,10 +653,11 @@
         "serializedMesh": {
             "m_SerializedMesh": "{\"mesh\":{\"fileID\":10210,\"guid\":\"0000000000000000e000000000000000\",\"type\":0}}",
             "m_Guid": ""
-        }
+        },
+        "preventRotation": false
     },
     "m_Path": "Shader Graphs",
-    "m_ConcretePrecision": 0,
+    "m_GraphPrecision": 0,
     "m_PreviewMode": 2,
     "m_OutputNode": {
         "m_Id": ""
@@ -790,9 +797,13 @@
         "m_GuidSerialized": "e0fa6d7a-a911-43cf-bef5-f64cb63b6b90"
     },
     "m_Name": "Brightness",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Vector1_108d336330174f51bb257034c81b10ba",
     "m_OverrideReferenceName": "_Brightness",
     "m_GeneratePropertyBlock": true,
+    "m_UseCustomSlotLabel": false,
+    "m_CustomSlotLabel": "",
     "m_Precision": 0,
     "overrideHLSLDeclaration": false,
     "hlslDeclarationOverride": 0,
@@ -907,9 +918,13 @@
         "m_GuidSerialized": "9074a887-d9f5-48e1-becb-e16663a14a23"
     },
     "m_Name": "NoiseScale",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Vector1_4E9DA0BD",
     "m_OverrideReferenceName": "_NoiseScale",
     "m_GeneratePropertyBlock": true,
+    "m_UseCustomSlotLabel": false,
+    "m_CustomSlotLabel": "",
     "m_Precision": 0,
     "overrideHLSLDeclaration": false,
     "hlslDeclarationOverride": 0,
@@ -999,9 +1014,13 @@
         "m_GuidSerialized": "18a4227a-9ca6-4014-b21e-4f6171a855e1"
     },
     "m_Name": "Ratio",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Vector1_1ccce6480931471aa24bf541b95113e3",
     "m_OverrideReferenceName": "_Ratio",
     "m_GeneratePropertyBlock": true,
+    "m_UseCustomSlotLabel": false,
+    "m_CustomSlotLabel": "",
     "m_Precision": 0,
     "overrideHLSLDeclaration": false,
     "hlslDeclarationOverride": 0,
@@ -1741,9 +1760,13 @@
         "m_GuidSerialized": "7729936d-bfa6-4d40-af99-f10ac81410f9"
     },
     "m_Name": "MaxBaseValue",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Vector1_256141ED",
     "m_OverrideReferenceName": "_MaxBaseValue",
     "m_GeneratePropertyBlock": true,
+    "m_UseCustomSlotLabel": false,
+    "m_CustomSlotLabel": "",
     "m_Precision": 0,
     "overrideHLSLDeclaration": false,
     "hlslDeclarationOverride": 0,
@@ -1864,9 +1887,13 @@
         "m_GuidSerialized": "0f99a162-c277-4550-8084-7ffcb0075100"
     },
     "m_Name": "PixelateAmount",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Vector1_71870C30",
     "m_OverrideReferenceName": "_PixelateAmount",
     "m_GeneratePropertyBlock": true,
+    "m_UseCustomSlotLabel": false,
+    "m_CustomSlotLabel": "",
     "m_Precision": 0,
     "overrideHLSLDeclaration": false,
     "hlslDeclarationOverride": 0,
@@ -1973,6 +2000,51 @@
         "e32": 0.0,
         "e33": 1.0
     }
+}
+
+{
+    "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.CategoryData",
+    "m_ObjectId": "72866bb01f064c31b3aaa0dffec483f3",
+    "m_Name": "",
+    "m_ChildObjectList": [
+        {
+            "m_Id": "b7bc1a4a2e839a80b69ecb8164281ee9"
+        },
+        {
+            "m_Id": "6f3f1c5e4ea32c8c914e55b9fb9daadd"
+        },
+        {
+            "m_Id": "150fe4146023fd8c8eec204cf4706769"
+        },
+        {
+            "m_Id": "b12eb6e88211068cb15133f7f7c8a4d4"
+        },
+        {
+            "m_Id": "63ce0d9d06d4718b94b64462ee9ef182"
+        },
+        {
+            "m_Id": "f023d8386f239d84a89e82cb52ad0dc3"
+        },
+        {
+            "m_Id": "9f50f9b7aed7f984a886b6593fe6cb41"
+        },
+        {
+            "m_Id": "fda220013da2409994539a63185ce9b9"
+        },
+        {
+            "m_Id": "a67227c2b1c5628fa877c3c05589f7d2"
+        },
+        {
+            "m_Id": "7e3c9c399d6445e184b3c93a6b135d06"
+        },
+        {
+            "m_Id": "108d336330174f51bb257034c81b10ba"
+        },
+        {
+            "m_Id": "1ccce6480931471aa24bf541b95113e3"
+        }
+    ]
 }
 
 {
@@ -2094,9 +2166,13 @@
         "m_GuidSerialized": "031b9a70-78c9-44e1-966c-87d2b6aeeb92"
     },
     "m_Name": "BackgroundColor",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Color_7e3c9c399d6445e184b3c93a6b135d06",
     "m_OverrideReferenceName": "_BackgroundColor",
     "m_GeneratePropertyBlock": true,
+    "m_UseCustomSlotLabel": false,
+    "m_CustomSlotLabel": "",
     "m_Precision": 0,
     "overrideHLSLDeclaration": false,
     "hlslDeclarationOverride": 0,
@@ -2107,6 +2183,7 @@
         "b": 0.16470588743686677,
         "a": 1.0
     },
+    "isMainColor": false,
     "m_ColorMode": 0
 }
 
@@ -2472,9 +2549,13 @@
         "m_GuidSerialized": "81e8a144-c644-4e77-b5b4-47ddbf48f5e6"
     },
     "m_Name": "MaxTimeNoiseScale",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Vector1_68B6B60",
     "m_OverrideReferenceName": "_MaxTimeNoiseScale",
     "m_GeneratePropertyBlock": true,
+    "m_UseCustomSlotLabel": false,
+    "m_CustomSlotLabel": "",
     "m_Precision": 0,
     "overrideHLSLDeclaration": false,
     "hlslDeclarationOverride": 0,
@@ -2621,9 +2702,13 @@
         "m_GuidSerialized": "c59057ef-0cad-4864-9b0c-9d4735daa7a5"
     },
     "m_Name": "Color",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Color_D12584FD",
     "m_OverrideReferenceName": "_Color",
     "m_GeneratePropertyBlock": true,
+    "m_UseCustomSlotLabel": false,
+    "m_CustomSlotLabel": "",
     "m_Precision": 0,
     "overrideHLSLDeclaration": false,
     "hlslDeclarationOverride": 0,
@@ -2634,6 +2719,7 @@
         "b": 0.7490196228027344,
         "a": 1.0
     },
+    "isMainColor": false,
     "m_ColorMode": 1
 }
 
@@ -2810,9 +2896,13 @@
         "m_GuidSerialized": "72d13f34-cfb3-4a00-9f6f-d3bca66405fa"
     },
     "m_Name": "MinBaseValue",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Vector1_B4B9C687",
     "m_OverrideReferenceName": "_MinBaseValue",
     "m_GeneratePropertyBlock": true,
+    "m_UseCustomSlotLabel": false,
+    "m_CustomSlotLabel": "",
     "m_Precision": 0,
     "overrideHLSLDeclaration": false,
     "hlslDeclarationOverride": 0,
@@ -2981,9 +3071,13 @@
         "m_GuidSerialized": "9a5c544c-4741-4893-bfe6-ae40efa73101"
     },
     "m_Name": "MainTex",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Texture2D_216F888",
     "m_OverrideReferenceName": "_MainTex",
     "m_GeneratePropertyBlock": true,
+    "m_UseCustomSlotLabel": false,
+    "m_CustomSlotLabel": "",
     "m_Precision": 0,
     "overrideHLSLDeclaration": false,
     "hlslDeclarationOverride": 0,
@@ -2992,6 +3086,8 @@
         "m_SerializedTexture": "{\"texture\":{\"fileID\":2800000,\"guid\":\"560254d5289f2c24fad3f149edb9edcc\",\"type\":3}}",
         "m_Guid": ""
     },
+    "isMainTexture": false,
+    "useTilingAndOffset": false,
     "m_Modifiable": true,
     "m_DefaultType": 0
 }
@@ -3609,17 +3705,23 @@
 }
 
 {
-    "m_SGVersion": 0,
+    "m_SGVersion": 1,
     "m_Type": "UnityEditor.Rendering.Universal.ShaderGraph.UniversalTarget",
     "m_ObjectId": "df0d5f2be35e4e29b01267659916a07c",
     "m_ActiveSubTarget": {
         "m_Id": "1b27969d4b9e4cd8a5676c0045cd953e"
     },
+    "m_AllowMaterialOverride": false,
     "m_SurfaceType": 0,
+    "m_ZTestMode": 4,
+    "m_ZWriteControl": 0,
     "m_AlphaMode": 0,
-    "m_TwoSided": false,
+    "m_RenderFace": 2,
     "m_AlphaClip": false,
-    "m_CustomEditorGUI": ""
+    "m_CastShadows": true,
+    "m_ReceiveShadows": true,
+    "m_CustomEditorGUI": "",
+    "m_SupportVFX": false
 }
 
 {
@@ -3874,9 +3976,13 @@
         "m_GuidSerialized": "c6bcb57e-84bf-45d0-95a2-0275e4dcfbc9"
     },
     "m_Name": "MinTimeNosieScale",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Vector1_830D2BF6",
     "m_OverrideReferenceName": "_MinTimeNoiseScale",
     "m_GeneratePropertyBlock": true,
+    "m_UseCustomSlotLabel": false,
+    "m_CustomSlotLabel": "",
     "m_Precision": 0,
     "overrideHLSLDeclaration": false,
     "hlslDeclarationOverride": 0,
@@ -4121,9 +4227,13 @@
         "m_GuidSerialized": "2d3f5602-a971-4ef3-9693-0c668bf83b3e"
     },
     "m_Name": "Speed",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Vector1_fda220013da2409994539a63185ce9b9",
     "m_OverrideReferenceName": "_Speed",
     "m_GeneratePropertyBlock": true,
+    "m_UseCustomSlotLabel": false,
+    "m_CustomSlotLabel": "",
     "m_Precision": 0,
     "overrideHLSLDeclaration": false,
     "hlslDeclarationOverride": 0,

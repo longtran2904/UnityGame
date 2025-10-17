@@ -76,7 +76,7 @@ public static class ObjectPooler
             {
                 dictionary[pool.type][i] = Object.Instantiate(pool.prefab, Vector3.zero, Quaternion.identity, obj.transform);
                 dictionary[pool.type][i].SetActive(false);
-                //if (i != 0) // NOTE: Do I need to init the original object?
+                //if (i != 0) // @RECONSIDER(long): Do I need to init the original object?
                 dictionary[pool.type][i].GetComponent<IPooledObject>().OnObjectInit();
             }
         }

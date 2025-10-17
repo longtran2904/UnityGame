@@ -39,6 +39,11 @@ public struct Property<T> : ISerializationCallbackReceiver where T : System.Enum
         SetProperties(properties);
     }
     
+    public static implicit operator Property<T>(T flags)
+    {
+        return new Property<T>(flags);
+    }
+    
     public bool HasProperty(T property)
     {
         int p = System.Convert.ToInt32(property);
@@ -55,7 +60,7 @@ public struct Property<T> : ISerializationCallbackReceiver where T : System.Enum
     {
         if (properties != null)
             foreach (T property in properties)
-            SetProperty(property, true);
+                SetProperty(property, true);
     }
     
     public override string ToString()
