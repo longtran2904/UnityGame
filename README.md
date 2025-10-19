@@ -1,5 +1,5 @@
-# Vailoz
-An _unfinished_ roguelike game project with a _unique_ twist.
+# Project
+An _unfinished_ roguelike game project with a _unique_ twist, developed in **Unity**.
 
 <img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/de5ca275-8111-44e8-ad79-7592c753b424" />
 
