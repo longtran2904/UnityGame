@@ -14,11 +14,20 @@ Here is some older footage with poorer lighting and worse post-processing:
 ### Level
 
 ![minimap](/Game/Assets/Files/game_minimap.gif)
+
 ![window](/Game/Assets/Files/game_window.gif)
+
+https://github.com/user-attachments/assets/e4b1cedf-b634-4901-acae-85de2fbc4640
 
 ### Shop
 
 ![shop](/Game/Assets/Files/game_shop.gif)
+
+<img width="1920" height="1080" alt="game_chest" src="https://github.com/user-attachments/assets/94239609-75ef-4fa5-88cb-8062b063f2e3" />
+
+### Combat
+
+https://github.com/user-attachments/assets/c2ffee18-cd52-4199-a373-1a6e029d0395
 
 ## Notes
 I made this project back when I was a much less experienced programmer and designer.\
