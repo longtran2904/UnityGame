@@ -9,8 +9,16 @@ I also created several custom Unity tools, inspectors, and visualization systems
 The current version is somewhat unstable as I was in the middle of migrating to a new VFX and Entity system — earlier builds may be more stable.\
 All pixel art is hand-drawn by me (a programmer) using a mouse.
 
-Here's an old demo with worse lighting and post-processing effects:
-https://github.com/longtran2904/Vailoz/blob/master/The%20game%20is%20liar/Assets/Files/Vailoz.mp4
+Here is some older footage with poorer lighting and worse post-processing:
+
+### Level
+
+![minimap](/Game/Assets/Files/game_minimap.gif)
+![window](/Game/Assets/Files/game_window.gif)
+
+### Shop
+
+![shop](/Game/Assets/Files/game_shop.gif)
 
 ## Notes
 I made this project back when I was a much less experienced programmer and designer.\
